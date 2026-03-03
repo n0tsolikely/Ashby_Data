@@ -1,0 +1,158 @@
+STUART CODEX
+9.1 Security, Privacy, and Data Handling (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines Stuart’s security and privacy posture at the system level, including what data is stored, where it can go, and how the user stays in control.
+
+This is not “enterprise theater.” It is core to Stuart because:
+- V1 must support sensitive environments (elder care incidents, internal org meetings).
+- Users must not fear hidden uploads or hidden retention.
+- Profiles (LOCAL_ONLY / HYBRID / CLOUD) exist specifically to control data boundaries.
+- Auditability requires knowing what left the machine and when.
+
+Chat-canon constraints enforced here:
+- LOCAL_ONLY means no network calls and no off-device processing.
+- HYBRID/CLOUD may use remote services but only with explicit disclosure + confirmation.
+- Artifacts are stored locally and are user-owned.
+- Nothing processes automatically on upload.
+- Sharing templates or data is never background/default; it’s explicit and previewable.
+
+1) Data categories Stuart handles
+
+Stuart can handle:
+
+D1) Raw sources
+- audio/video recordings
+- captured microphone audio
+- uploaded template documents/images
+These are the most sensitive.
+
+D2) Derived ground truth
+- transcript.json/txt
+- diarization.json
+- alignment artifacts
+
+D3) Derived outputs
+- meeting minutes / journal / incident / creator notes (JSON/MD/PDF)
+- captions files
+- translations
+
+D4) Audit metadata
+- run logs (run.json, config snapshots)
+- evidence maps (citations)
+- indexing metadata (tokenized text, embeddings if used)
+
+D5) Overlay metadata
+- speaker mapping overlays
+- corrections overlays
+- user tags
+
+2) Canonical privacy posture by profile (locked)
+
+LOCAL_ONLY
+- No network calls.
+- No remote adapters.
+- All processing (ASR, diarization, formalization, indexing, rendering) must be local.
+- Artifacts remain on disk under STUART_ROOT.
+- Exports are user-triggered and local.
+
+HYBRID
+- Local by default.
+- Remote services allowed only with explicit disclosure + confirmation per run.
+- Redaction/minimization should be offered before sending content remotely.
+- Run record must capture provider + data scope.
+
+CLOUD
+- Remote services are allowed and may be default (depending on user configuration).
+- Explicit execution gating still applies (no auto-run).
+- Run record must capture provider + data scope.
+- Users must be able to export/delete local artifacts at will.
+
+3) Explicit disclosure rules (non-negotiable)
+
+DISC-1) Disclose before sending off-device
+If any content will leave the device (audio, transcript text, embeddings):
+- Stuart must disclose what will be sent, where, and for what purpose.
+- Stuart must require confirmation (Submit/Confirm).
+- Stuart must record the decision in run.json.
+
+DISC-2) Disclose what Stuart does not know
+If a provider’s retention policy is unknown:
+- Stuart must not claim otherwise.
+It can say: “Provider retention unknown” and record that.
+
+DISC-3) No hidden background uploads
+There is no “telemetry upload of content” in V1.
+If any analytics exists later, it must be opt-in and must never include raw content.
+
+4) Storage security
+
+V1 requirement baseline:
+- Store all artifacts under user-controlled storage root (STUART_ROOT).
+- Provide “Reveal in folder” so users can see what exists.
+- Provide “Delete session” to remove all artifacts for a session.
+
+Optional (future) enhancements:
+- encryption at rest (per-session key)
+- OS keychain integration
+- secure wipe policies
+
+Even if encryption is not implemented in V1, the folder structure and deletion behavior must be correct.
+
+5) Access control and multi-user systems
+
+If Stuart is installed on a multi-user machine:
+- STUART_ROOT should be per-user by default.
+- Sessions should not be shared across OS users unless explicitly configured.
+
+If Stuart is integrated into a team environment later:
+- access control must be explicit and governed by the platform.
+This is vNext; V1 focuses on local single-user safety.
+
+6) Data minimization policies for remote runs (HYBRID/CLOUD)
+
+When a remote adapter is used:
+- send only what is required.
+Examples:
+- remote ASR: audio leaves device (most sensitive)
+- remote formalization: transcript text may be sent (less sensitive than raw audio in some cases, but still sensitive)
+- remote indexing: transcript text might be sent (sensitive)
+Redaction adapter should be offered for transcript text.
+
+Stuart must avoid sending:
+- unrelated sessions
+- prior session archives
+- or arbitrary “memory” to remote services.
+
+7) Audit trail and user trust
+
+Stuart must maintain an audit trail that can answer:
+- “Did this audio leave the machine?”
+- “Which provider processed this transcript?”
+- “Was this formalization generated locally or remotely?”
+- “Was redaction applied before sending?”
+
+This is why run.json and config snapshots exist.
+Audit is not optional; it is part of the trust contract.
+
+8) Safe defaults
+
+Default v1 posture should be:
+- LOCAL_ONLY is available and obvious.
+- No processing on upload.
+- Evidence preserved.
+- Printing uses local PDF generation.
+- No marketplace or sharing by default.
+
+9) Self-audit (9.1)
+
+Chat-canon alignment checklist:
+- Profiles enforce data boundaries: LOCAL_ONLY = no network; HYBRID/CLOUD require disclosure/confirmation/logging. (Maintained.)
+- No silent processing: nothing runs on upload; user triggers runs. (Maintained.)
+- Artifacts are local and user-owned: stored under STUART_ROOT; deletable/exportable. (Maintained.)
+- Sharing is explicit and previewable; no background uploads. (Maintained.)
+- Audit trail exists to answer privacy questions. (Maintained.)
+
+This section is complete.

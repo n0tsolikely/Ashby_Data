@@ -1,0 +1,147 @@
+STUART CODEX
+8.3 Diarization Adapters (Local vs Remote, Overlap) (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines diarization adapters: the components that segment audio by speaker labels (Stage 2).
+
+Why this matters:
+- Meeting minutes and incident calls often require speaker separation.
+- Diarization is one of the biggest trust-risk areas because wrong speaker attribution is worse than no attribution.
+- Stuart must be able to run diarization locally for privacy-sensitive environments, but may use remote diarizers when permitted.
+
+Chat-canon constraints enforced here:
+- Diarization produces labels (SPEAKER_00) not real names.
+- Speaker naming is an overlay and must not rewrite diarization truth.
+- Uncertainty must be disclosed; overlap must be handled honestly.
+- Remote diarization is privacy-sensitive and requires explicit disclosure/confirmation.
+- Degraded mode (speaker unknown) must exist and be clearly labeled.
+
+1) What a diarization adapter is responsible for
+
+A diarization adapter is responsible for:
+- consuming normalized audio (Stage 1),
+- producing time ranges labeled with speaker IDs,
+- optionally estimating number of speakers,
+- optionally detecting overlap regions,
+- and reporting confidence/warnings.
+
+A diarization adapter is NOT responsible for:
+- transcription words,
+- speaker naming (“Greg”),
+- formalization,
+- indexing,
+- printing.
+
+2) Diarization adapter interface (conceptual)
+
+A minimal diarization adapter interface must support:
+
+- diarize(audio_manifest, audio_path, config) -> diarization_result
+Where diarization_result includes:
+- diarization.json (segments with start/end, speaker_label)
+- optional: overlap regions
+- confidence metrics and warnings
+
+Optional but recommended:
+- diarize_chunk(audio_path, start_time, end_time, config) -> diarization_chunk
+- supports_overlap_detection (true/false)
+- supports_estimated_speaker_count (true/false)
+- supports_resume (true/false)
+
+3) Capability declarations (adapter must self-describe)
+
+Every diarization adapter MUST declare:
+- supports_overlap_detection
+- provides_confidence
+- max_speakers_supported (or “unknown”)
+- expected compute tier (CPU ok / GPU recommended)
+- whether it can maintain consistent speaker IDs across chunks (important)
+
+If overlap detection is not supported:
+- Stuart must warn that overlap segments may be unreliable.
+- Formalizations must avoid precise speaker claims in overlapped regions.
+
+4) Local vs remote diarization (profile-driven)
+
+LOCAL_ONLY:
+- diarization must run locally.
+- no network calls.
+- if diarization is too heavy for the device, Stuart must offer:
+  - proceed without diarization (degraded mode),
+  - or allow the user to move the processing to a different machine (still local to them) rather than silently going cloud.
+
+HYBRID:
+- diarization may be local or remote.
+- remote diarization requires:
+  - explicit disclosure (audio leaves machine)
+  - user confirmation
+  - run record logging provider/adapter id + data scope
+
+CLOUD:
+- remote diarization allowed, still requiring explicit execution and logging.
+
+5) Speaker label rules (locked)
+
+DIA-1) Labels only
+Adapter outputs SPEAKER_00, SPEAKER_01, etc. No real names.
+
+DIA-2) No silent name assignment
+Even if the model “guesses” identity, that is not allowed.
+Identity is a user overlay.
+
+DIA-3) Confidence matters
+If confidence is low, downstream stages must not speak confidently about “who said what.”
+
+6) Overlap (people talking over each other)
+
+Overlap is common (interjections).
+The diarization adapter should:
+- detect overlap if possible,
+- mark overlap regions,
+- and provide confidence warnings.
+
+If overlap exists:
+- Stuart must avoid over-clean “speaker separation fantasy.”
+- It’s better to say “overlap here; uncertain attribution” than pretend accuracy.
+
+7) Chunked diarization and speaker consistency
+
+If diarization is chunked for long audio:
+- speaker labels may drift between chunks (SPEAKER_00 in chunk 1 might not match SPEAKER_00 in chunk 2).
+
+Canonical requirement:
+- diarization adapters should attempt to maintain global speaker identity across chunks.
+If they cannot:
+- Stuart must warn clearly,
+- alignment must apply conservative UNKNOWN attribution in uncertain areas,
+- and speaker mapping overlays must not pretend identity is stable.
+
+8) Run record and audit requirements
+
+Every diarization run MUST record:
+- diarization adapter id + version
+- config snapshot (speaker count hints, overlap options, thresholds)
+- data scope (local/remote; audio sent?)
+- outputs created (diarization.json, report)
+This supports disputes and privacy audits.
+
+9) Degraded mode: diarization unavailable or skipped
+
+If diarization is skipped or fails:
+- Stuart still produces transcripts.
+- aligned transcript uses UNKNOWN speaker labels.
+- meeting minutes can still be generated (if user confirms), but must not attribute statements to specific speakers.
+- “attendance/spoke” retrieval semantics must remain honest.
+
+10) Self-audit (8.3)
+
+Chat-canon alignment checklist:
+- Label-only diarization: adapter outputs speaker labels, never real names. (Maintained.)
+- Speaker mapping overlay separation: naming is user overlay, not diarizer output. (Maintained.)
+- Uncertainty + overlap honesty: disclose low confidence and overlaps; avoid confident wrongness. (Maintained.)
+- Profile gating: LOCAL_ONLY stays local; remote diarization requires disclosure + confirmation + logging. (Maintained.)
+- Degraded mode exists: no diarization → still usable transcript + limited features. (Maintained.)
+
+This section is complete.

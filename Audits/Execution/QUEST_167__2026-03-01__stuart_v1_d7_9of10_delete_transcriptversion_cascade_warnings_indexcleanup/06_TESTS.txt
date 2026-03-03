@@ -1,0 +1,284 @@
+## Command Receipt Log
+WRAPPER: synapse_quest_run.sh
+ENGINE_ROOT: /home/notsolikely/Ashby_Engine
+DATA_ROOT: /home/notsolikely/Ashby_Data
+---
+CMD: source /home/notsolikely/venvs/ashby-env/bin/activate && cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_delete_transcript_version_cascade.py tests/test_web_delete_run_and_session_endpoints.py tests/test_delete_run_removes_fs_and_index.py tests/test_delete_session_removes_runs_and_index.py tests/test_meetings_transcript_versions_api_v1.py
+...FF.......                                                             [100%]
+=================================== FAILURES ===================================
+_____________________ test_delete_run_removes_fs_and_index _____________________
+
+tmp_path = PosixPath('/tmp/pytest-of-notsolikely/pytest-19/test_delete_run_removes_fs_and0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72e259563e60>
+
+    def test_delete_run_removes_fs_and_index(tmp_path: Path, monkeypatch) -> None:
+        monkeypatch.setenv("STUART_ROOT", str(tmp_path / "stuart_runtime"))
+        lay = init_stuart_root()
+    
+        run_id = "run_delete_1"
+        session_id = "ses_delete_1"
+        run_dir = lay.runs / run_id
+        run_dir.mkdir(parents=True, exist_ok=True)
+        (run_dir / "run.json").write_text(
+            json.dumps({"run_id": run_id, "session_id": session_id, "status": "succeeded"}, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+    
+        _seed_index(lay.root, session_id=session_id, run_id=run_id)
+    
+        out = delete_run(run_id)
+        assert out["run_id"] == run_id
+>       assert out["session_id"] == session_id
+E       AssertionError: assert None == 'ses_delete_1'
+
+tests/test_delete_run_removes_fs_and_index.py:65: AssertionError
+__________________ test_delete_session_removes_runs_and_index __________________
+
+tmp_path = PosixPath('/tmp/pytest-of-notsolikely/pytest-19/test_delete_session_removes_ru0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72e2574583e0>
+
+    def test_delete_session_removes_runs_and_index(tmp_path: Path, monkeypatch) -> None:
+        monkeypatch.setenv("STUART_ROOT", str(tmp_path / "stuart_runtime"))
+        lay = init_stuart_root()
+    
+        # Session manifests
+        ses_a_dir = lay.sessions / "ses_a"
+        ses_a_dir.mkdir(parents=True, exist_ok=True)
+        (ses_a_dir / "session.json").write_text(
+            json.dumps({"session_id": "ses_a", "mode": "meeting", "title": "A"}, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        ses_b_dir = lay.sessions / "ses_b"
+        ses_b_dir.mkdir(parents=True, exist_ok=True)
+        (ses_b_dir / "session.json").write_text(
+            json.dumps({"session_id": "ses_b", "mode": "meeting", "title": "B"}, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+    
+        # Run manifests
+        for rid, sid in (("run_a1", "ses_a"), ("run_a2", "ses_a"), ("run_b1", "ses_b")):
+            rdir = lay.runs / rid
+            rdir.mkdir(parents=True, exist_ok=True)
+            (rdir / "run.json").write_text(
+                json.dumps({"run_id": rid, "session_id": sid, "status": "succeeded"}, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+    
+        # Contributions and overlays
+        cdir = lay.contributions / "con_a"
+        cdir.mkdir(parents=True, exist_ok=True)
+        (cdir / "contribution.json").write_text(
+            json.dumps({"contribution_id": "con_a", "session_id": "ses_a"}, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        (lay.overlays / "ses_a").mkdir(parents=True, exist_ok=True)
+        (lay.overlays / "ses_b").mkdir(parents=True, exist_ok=True)
+    
+        _seed_session_data(lay.root)
+    
+        out = delete_session("ses_a")
+        assert out["session_id"] == "ses_a"
+>       assert set(out["deleted_runs"]) == {"run_a1", "run_a2"}
+E       AssertionError: assert set() == {'run_a1', 'run_a2'}
+E         
+E         Extra items in the right set:
+E         'run_a1'
+E         'run_a2'
+E         Use -v to get more diff
+
+tests/test_delete_session_removes_runs_and_index.py:79: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_delete_run_removes_fs_and_index.py::test_delete_run_removes_fs_and_index
+FAILED tests/test_delete_session_removes_runs_and_index.py::test_delete_session_removes_runs_and_index
+2 failed, 10 passed in 1.99s
+RC: 1
+BLOCKED: command failed (see RC above): source /home/notsolikely/venvs/ashby-env/bin/activate && cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_delete_transcript_version_cascade.py tests/test_web_delete_run_and_session_endpoints.py tests/test_delete_run_removes_fs_and_index.py tests/test_delete_session_removes_runs_and_index.py tests/test_meetings_transcript_versions_api_v1.py
+CMD: source /home/notsolikely/venvs/ashby-env/bin/activate && cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_delete_transcript_version_cascade.py tests/test_web_delete_run_and_session_endpoints.py tests/test_delete_run_removes_fs_and_index.py tests/test_delete_session_removes_runs_and_index.py tests/test_meetings_transcript_versions_api_v1.py
+...FF.......                                                             [100%]
+=================================== FAILURES ===================================
+_____________________ test_delete_run_removes_fs_and_index _____________________
+
+tmp_path = PosixPath('/tmp/pytest-of-notsolikely/pytest-20/test_delete_run_removes_fs_and0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x716ac9f21b80>
+
+    def test_delete_run_removes_fs_and_index(tmp_path: Path, monkeypatch) -> None:
+        monkeypatch.setenv("STUART_ROOT", str(tmp_path / "stuart_runtime"))
+        lay = init_stuart_root()
+    
+        run_id = "run_delete_1"
+        session_id = "ses_delete_1"
+        run_dir = lay.runs / run_id
+        run_dir.mkdir(parents=True, exist_ok=True)
+        (run_dir / "run.json").write_text(
+            json.dumps({"run_id": run_id, "session_id": session_id, "status": "succeeded"}, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+    
+        _seed_index(lay.root, session_id=session_id, run_id=run_id)
+    
+        out = delete_run(run_id)
+        assert out["run_id"] == run_id
+>       assert out["session_id"] == session_id
+E       AssertionError: assert None == 'ses_delete_1'
+
+tests/test_delete_run_removes_fs_and_index.py:65: AssertionError
+__________________ test_delete_session_removes_runs_and_index __________________
+
+tmp_path = PosixPath('/tmp/pytest-of-notsolikely/pytest-20/test_delete_session_removes_ru0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x716ac9dd2090>
+
+    def test_delete_session_removes_runs_and_index(tmp_path: Path, monkeypatch) -> None:
+        monkeypatch.setenv("STUART_ROOT", str(tmp_path / "stuart_runtime"))
+        lay = init_stuart_root()
+    
+        # Session manifests
+        ses_a_dir = lay.sessions / "ses_a"
+        ses_a_dir.mkdir(parents=True, exist_ok=True)
+        (ses_a_dir / "session.json").write_text(
+            json.dumps({"session_id": "ses_a", "mode": "meeting", "title": "A"}, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        ses_b_dir = lay.sessions / "ses_b"
+        ses_b_dir.mkdir(parents=True, exist_ok=True)
+        (ses_b_dir / "session.json").write_text(
+            json.dumps({"session_id": "ses_b", "mode": "meeting", "title": "B"}, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+    
+        # Run manifests
+        for rid, sid in (("run_a1", "ses_a"), ("run_a2", "ses_a"), ("run_b1", "ses_b")):
+            rdir = lay.runs / rid
+            rdir.mkdir(parents=True, exist_ok=True)
+            (rdir / "run.json").write_text(
+                json.dumps({"run_id": rid, "session_id": sid, "status": "succeeded"}, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+    
+        # Contributions and overlays
+        cdir = lay.contributions / "con_a"
+        cdir.mkdir(parents=True, exist_ok=True)
+        (cdir / "contribution.json").write_text(
+            json.dumps({"contribution_id": "con_a", "session_id": "ses_a"}, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        (lay.overlays / "ses_a").mkdir(parents=True, exist_ok=True)
+        (lay.overlays / "ses_b").mkdir(parents=True, exist_ok=True)
+    
+        _seed_session_data(lay.root)
+    
+        out = delete_session("ses_a")
+        assert out["session_id"] == "ses_a"
+>       assert set(out["deleted_runs"]) == {"run_a1", "run_a2"}
+E       AssertionError: assert set() == {'run_a1', 'run_a2'}
+E         
+E         Extra items in the right set:
+E         'run_a1'
+E         'run_a2'
+E         Use -v to get more diff
+
+tests/test_delete_session_removes_runs_and_index.py:79: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_delete_run_removes_fs_and_index.py::test_delete_run_removes_fs_and_index
+FAILED tests/test_delete_session_removes_runs_and_index.py::test_delete_session_removes_runs_and_index
+2 failed, 10 passed in 1.80s
+RC: 1
+BLOCKED: command failed (see RC above): source /home/notsolikely/venvs/ashby-env/bin/activate && cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_delete_transcript_version_cascade.py tests/test_web_delete_run_and_session_endpoints.py tests/test_delete_run_removes_fs_and_index.py tests/test_delete_session_removes_runs_and_index.py tests/test_meetings_transcript_versions_api_v1.py
+CMD: source /home/notsolikely/venvs/ashby-env/bin/activate && cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_delete_transcript_version_cascade.py tests/test_web_delete_run_and_session_endpoints.py tests/test_delete_run_removes_fs_and_index.py tests/test_delete_session_removes_runs_and_index.py tests/test_meetings_transcript_versions_api_v1.py
+...FF.......                                                             [100%]
+=================================== FAILURES ===================================
+_____________________ test_delete_run_removes_fs_and_index _____________________
+
+tmp_path = PosixPath('/tmp/pytest-of-notsolikely/pytest-21/test_delete_run_removes_fs_and0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fb5dbdc3cb0>
+
+    def test_delete_run_removes_fs_and_index(tmp_path: Path, monkeypatch) -> None:
+        monkeypatch.setenv("STUART_ROOT", str(tmp_path / "stuart_runtime"))
+        lay = init_stuart_root()
+    
+        run_id = "run_delete_1"
+        session_id = "ses_delete_1"
+        run_dir = lay.runs / run_id
+        run_dir.mkdir(parents=True, exist_ok=True)
+        (run_dir / "run.json").write_text(
+            json.dumps({"run_id": run_id, "session_id": session_id, "status": "succeeded"}, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+    
+        _seed_index(lay.root, session_id=session_id, run_id=run_id)
+    
+        out = delete_run(run_id)
+        assert out["run_id"] == run_id
+>       assert out["session_id"] == session_id
+E       AssertionError: assert None == 'ses_delete_1'
+
+tests/test_delete_run_removes_fs_and_index.py:65: AssertionError
+__________________ test_delete_session_removes_runs_and_index __________________
+
+tmp_path = PosixPath('/tmp/pytest-of-notsolikely/pytest-21/test_delete_session_removes_ru0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fb5da3aeea0>
+
+    def test_delete_session_removes_runs_and_index(tmp_path: Path, monkeypatch) -> None:
+        monkeypatch.setenv("STUART_ROOT", str(tmp_path / "stuart_runtime"))
+        lay = init_stuart_root()
+    
+        # Session manifests
+        ses_a_dir = lay.sessions / "ses_a"
+        ses_a_dir.mkdir(parents=True, exist_ok=True)
+        (ses_a_dir / "session.json").write_text(
+            json.dumps({"session_id": "ses_a", "mode": "meeting", "title": "A"}, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        ses_b_dir = lay.sessions / "ses_b"
+        ses_b_dir.mkdir(parents=True, exist_ok=True)
+        (ses_b_dir / "session.json").write_text(
+            json.dumps({"session_id": "ses_b", "mode": "meeting", "title": "B"}, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+    
+        # Run manifests
+        for rid, sid in (("run_a1", "ses_a"), ("run_a2", "ses_a"), ("run_b1", "ses_b")):
+            rdir = lay.runs / rid
+            rdir.mkdir(parents=True, exist_ok=True)
+            (rdir / "run.json").write_text(
+                json.dumps({"run_id": rid, "session_id": sid, "status": "succeeded"}, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+    
+        # Contributions and overlays
+        cdir = lay.contributions / "con_a"
+        cdir.mkdir(parents=True, exist_ok=True)
+        (cdir / "contribution.json").write_text(
+            json.dumps({"contribution_id": "con_a", "session_id": "ses_a"}, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        (lay.overlays / "ses_a").mkdir(parents=True, exist_ok=True)
+        (lay.overlays / "ses_b").mkdir(parents=True, exist_ok=True)
+    
+        _seed_session_data(lay.root)
+    
+        out = delete_session("ses_a")
+        assert out["session_id"] == "ses_a"
+>       assert set(out["deleted_runs"]) == {"run_a1", "run_a2"}
+E       AssertionError: assert set() == {'run_a1', 'run_a2'}
+E         
+E         Extra items in the right set:
+E         'run_a1'
+E         'run_a2'
+E         Use -v to get more diff
+
+tests/test_delete_session_removes_runs_and_index.py:79: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_delete_run_removes_fs_and_index.py::test_delete_run_removes_fs_and_index
+FAILED tests/test_delete_session_removes_runs_and_index.py::test_delete_session_removes_runs_and_index
+2 failed, 10 passed in 2.08s
+RC: 1
+BLOCKED: command failed (see RC above): source /home/notsolikely/venvs/ashby-env/bin/activate && cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_delete_transcript_version_cascade.py tests/test_web_delete_run_and_session_endpoints.py tests/test_delete_run_removes_fs_and_index.py tests/test_delete_session_removes_runs_and_index.py tests/test_meetings_transcript_versions_api_v1.py
+CMD: source /home/notsolikely/venvs/ashby-env/bin/activate && cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_delete_transcript_version_cascade.py tests/test_web_delete_run_and_session_endpoints.py tests/test_delete_run_removes_fs_and_index.py tests/test_delete_session_removes_runs_and_index.py tests/test_meetings_transcript_versions_api_v1.py
+............                                                             [100%]
+12 passed in 1.82s
+RC: 0
+FAIL: governance validation errors:
+- 03_VERIFY.md is placeholder-only; it must contain real verification content
+BLOCKED: governance validate failed (see output above).
+PASS: governance validation OK for QUEST_167 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_167__2026-03-01__stuart_v1_d7_9of10_delete_transcriptversion_cascade_warnings_indexcleanup
+OK: finalize complete (validation PASS recorded).

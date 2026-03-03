@@ -1,0 +1,67 @@
+
+==================================== ERRORS ====================================
+_____ ERROR collecting tests/test_meetings_web_api_contract_minimum_v1.py ______
+ImportError while importing test module '/home/notsolikely/Ashby_Engine/tests/test_meetings_web_api_contract_minimum_v1.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests/test_meetings_web_api_contract_minimum_v1.py:3: in <module>
+    from ashby.interfaces.web.app import create_app
+ashby/interfaces/web/app.py:12: in <module>
+    from fastapi import BackgroundTasks, FastAPI, Request
+E   ModuleNotFoundError: No module named 'fastapi'
+_____ ERROR collecting tests/test_meetings_web_api_envelope_consistency.py _____
+ImportError while importing test module '/home/notsolikely/Ashby_Engine/tests/test_meetings_web_api_envelope_consistency.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests/test_meetings_web_api_envelope_consistency.py:5: in <module>
+    import httpx
+E   ModuleNotFoundError: No module named 'httpx'
+__________ ERROR collecting tests/test_meetings_web_door_scaffold.py ___________
+ImportError while importing test module '/home/notsolikely/Ashby_Engine/tests/test_meetings_web_door_scaffold.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests/test_meetings_web_door_scaffold.py:3: in <module>
+    import httpx
+E   ModuleNotFoundError: No module named 'httpx'
+_______ ERROR collecting tests/test_meetings_web_reformalize_controls.py _______
+ImportError while importing test module '/home/notsolikely/Ashby_Engine/tests/test_meetings_web_reformalize_controls.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests/test_meetings_web_reformalize_controls.py:8: in <module>
+    import httpx
+E   ModuleNotFoundError: No module named 'httpx'
+______ ERROR collecting tests/test_meetings_web_upload_preview_no_run.py _______
+ImportError while importing test module '/home/notsolikely/Ashby_Engine/tests/test_meetings_web_upload_preview_no_run.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests/test_meetings_web_upload_preview_no_run.py:5: in <module>
+    import httpx
+E   ModuleNotFoundError: No module named 'httpx'
+____________ ERROR collecting tests/test_meetings_web_upload_run.py ____________
+ImportError while importing test module '/home/notsolikely/Ashby_Engine/tests/test_meetings_web_upload_run.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests/test_meetings_web_upload_run.py:8: in <module>
+    import httpx
+E   ModuleNotFoundError: No module named 'httpx'
+=========================== short test summary info ============================
+ERROR tests/test_meetings_web_api_contract_minimum_v1.py
+ERROR tests/test_meetings_web_api_envelope_consistency.py
+ERROR tests/test_meetings_web_door_scaffold.py
+ERROR tests/test_meetings_web_reformalize_controls.py
+ERROR tests/test_meetings_web_upload_preview_no_run.py
+ERROR tests/test_meetings_web_upload_run.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 6 errors during collection !!!!!!!!!!!!!!!!!!!!
+6 errors in 0.17s

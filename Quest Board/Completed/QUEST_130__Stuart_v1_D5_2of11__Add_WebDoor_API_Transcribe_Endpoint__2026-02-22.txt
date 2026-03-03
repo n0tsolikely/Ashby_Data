@@ -1,0 +1,146 @@
+================================================================================
+IDENTITY (REQUIRED)
+================================================================================
+Quest ID:
+QUEST_130
+
+Title:
+Stuart v1 — Dungeon 5 (2/11): Add /api/transcribe endpoint (Option B) that creates a transcribe-only run
+
+Subject:
+Ashby / Stuart
+
+Origin:
+Guild Orders Rev4 — Dungeon 5: provide a transcribe run path callable from UI (Option B: new endpoint).
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- Guild Orders: Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt (Dungeon 5)
+- Engine: Ashby_Engine/ashby/interfaces/web/app.py
+- Engine: Ashby_Engine/ashby/modules/meetings/store.py (create_run)
+- Engine: Ashby_Engine/ashby/modules/meetings/pipeline/job_runner.py (TRANSCRIBE handler from QUEST_129)
+
+================================================================================
+CODEX ANCHORS + CONSTRAINT SUMMARY (DRAFT)
+================================================================================
+Codex Anchors (DRAFT):
+- Guild Orders Rev4 — Dungeon 5 (Option B: /api/transcribe)
+- Stuart_Codex_Full.txt §7.4 (Transcription writes durable artifacts)
+- Stuart_Codex_Full.txt §7A (Transcript versions; multiple per session)
+
+Codex Constraint Summary:
+- Transcribe must be callable directly.
+- The endpoint must be deterministic and must not fabricate transcripts.
+
+================================================================================
+QUEST BOARD FOLDER STATE
+================================================================================
+Quest Board Folder State: BOARD
+
+================================================================================
+DESCRIPTION
+================================================================================
+Implement a first-class endpoint for Transcribe so the UI does not need to use /api/run (formalize) for transcription.
+
+This should create a run with a plan containing only the TRANSCRIBE step (QUEST_129).
+
+================================================================================
+SCOPE / OBJECTIVE
+================================================================================
+In Ashby_Engine/ashby/interfaces/web/app.py:
+
+- Add POST /api/transcribe
+- Request payload shape (v1):
+  {
+    "session_id": "ses_...",
+    "ui": {
+      "mode": "meeting"|"journal" (optional default: meeting),
+      "speakers": "auto"|1|2|3 (optional; speaker hint only)
+      "diarization_enabled": true|false (plumbed fully in QUEST_132)
+    }
+  }
+
+- Server behavior:
+  - Validate session_id exists.
+  - Build a run plan:
+    {"steps": [{"kind": "transcribe", "params": { ...normalized params...}}]}
+  - create_run(session_id, plan)
+  - spawn run job (same mechanism as /api/run)
+  - return {run_id, state}
+
+- Error handling:
+  - 400 on missing/invalid session_id
+  - 400 if session has no uploaded contributions/audio (more robust guard handled in SIDE-QUEST_084; this endpoint should still refuse empty sessions)
+
+================================================================================
+OUT OF SCOPE
+================================================================================
+- UI wiring (QUEST_131)
+- Cancellation UX (SIDE-QUEST_086/087)
+
+================================================================================
+DEPENDENCIES
+================================================================================
+QUEST_129
+
+================================================================================
+RISK
+================================================================================
+Risk: R1
+
+================================================================================
+DOOR IMPACT
+================================================================================
+Door Impact:
+- WEB (adds a new door endpoint)
+
+================================================================================
+TESTING LEVEL
+================================================================================
+Testing Level: TL2
+
+================================================================================
+VERIFICATION PLAN (DRAFT)
+================================================================================
+- pytest: exercise /api/transcribe creates a run with plan.steps[0].kind == "transcribe".
+- Manual:
+  - start server
+  - create/upload a session
+  - curl -X POST /api/transcribe and confirm run_id returned
+  - poll /api/runs/{run_id} until terminal
+
+================================================================================
+CHANGE CLASS + VISION DELTA
+================================================================================
+Change Class: STRUCTURAL
+Vision Delta: ALIGNED
+
+================================================================================
+SYSTEM CONTEXT STATEMENT
+================================================================================
+The Web Door exposes /api/run for formalization runs. Transcription must be callable without coupling to formalization.
+
+================================================================================
+ANTI-DUPLICATION PLAN
+================================================================================
+- rg -n "@app\.post\("/api/transcribe"" Ashby_Engine/ashby/interfaces/web/app.py
+- rg -n "api_transcribe" Ashby_Engine/ashby/interfaces/web/app.py
+- Confirm no existing transcribe endpoint exists before adding.
+
+================================================================================
+PLACEMENT INTENT
+================================================================================
+- Web Door endpoint: Ashby_Engine/ashby/interfaces/web/app.py
+- Run creation: Ashby_Engine/ashby/modules/meetings/store.py
+
+================================================================================
+TALENT POINT
+================================================================================
+Talent Point Awarded: NO
+
+================================================================================
+EXECUTION AUDIT BUNDLE
+================================================================================
+Audit Bundle Folder Path: (set when moving to ACCEPTED)

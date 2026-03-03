@@ -1,0 +1,127 @@
+QUEST_ID: QUEST_163
+TITLE: Stuart v1 — D7 5/10 — Formalize Pipeline v2 (annotated segments + template spec + metadata)
+DATE: 2026-03-01
+STATUS: ACCEPTED (Ready for Codex execution)
+RISK_CLASS: R3 (Core formalization path changes; must keep artifacts stable)
+OWNER: OpenAI Codex (local CLI)
+
+CONTEXT / WHY
+Engine-side formalization currently sends only transcript_text + template_id to the gateway.
+Dungeon 7 requires:
+- Annotated transcript segments (speaker turns, segment_id, timestamps, speaker labels + mapped names)
+- Template shaping via template_spec (template_version, defaults, parsed sections, raw text)
+- Outputs record config metadata (template/version, retention, include_citations, show_empty_sections, consumed transcript_version_id)
+
+CANON ANCHORS
+- Guild Orders D7 (ACTIVE): Dungeon 7 sections B, D, and “Outputs record …”
+- Stuart Codex: retention knob + templates
+- Canonical Vision: evidence-first; structure-first
+
+REPO REALITY
+Formalize minutes/journal:
+- Ashby_Engine/ashby/modules/meetings/formalize/minutes_json.py
+- Ashby_Engine/ashby/modules/meetings/formalize/journal_json.py
+- LLM service request: Ashby_Engine/ashby/modules/llm/service.py (updated in prior quest)
+- Template loader: Ashby_Engine/ashby/modules/meetings/template_registry.py (updated prior quest)
+
+Plan/run integration:
+- Ashby_Engine/ashby/modules/meetings/plan_builder.py (formalize step params)
+- Ashby_Engine/ashby/modules/meetings/pipeline/job_runner.py (exec formalize step)
+
+SCOPE LOCK
+IN SCOPE
+1) Modify minutes_json.py + journal_json.py to:
+   - Load TemplateSpec (id/version/defaults/sections/raw template text)
+   - Resolve include_citations/show_empty_sections:
+     - If provided by plan params: use them
+     - Else: use template defaults
+   - Build transcript_segments payload from TranscriptSegment objects:
+     - segment_id (stable)
+     - start_ms/end_ms
+     - speaker_label (e.g., SPEAKER_00)
+     - speaker_name (mapped name if active overlay provides it; else None)
+     - text
+   - Call the LLM gateway with transcript_segments + template_text + template_sections
+2) Persist config metadata into output JSON (minutes.json / journal.json):
+   - template_id
+   - template_version
+   - retention
+   - include_citations
+   - show_empty_sections
+   - transcript_version_id (consumed)
+3) Update job_runner formalize step to pass the two flags through to the formalize functions.
+4) Update tests that assert gateway call payloads for minutes/journal.
+
+OUT OF SCOPE
+- Renderer behavior changes (next quest)
+- UI download controls (later quest)
+- Deletion flows (later quests)
+
+IMPLEMENTATION (deterministic)
+1) Update function signatures
+- minutes_json.py:
+  - formalize_meeting_to_minutes_json(..., include_citations: bool = False, show_empty_sections: bool = False, ...)
+- journal_json.py similarly
+- Update all call sites (job_runner and any other callers).
+
+2) Load TemplateSpec
+- Use the new load_template_spec(...) API from template_registry.
+- TemplateSpec must supply:
+  - template_version (string)
+  - defaults dict (include_citations/show_empty_sections)
+  - sections list (for prompt)
+  - raw template text/body text
+
+3) Build transcript_segments payload
+- In minutes_json.py/journal_json.py, you already have transcript_segments (List[TranscriptSegment]) via _load_transcript_segments().
+- Apply speaker map overlay:
+  - Use existing load_speaker_map_overlay(...) (or the D6-upgraded equivalent) to resolve speaker_label → mapped speaker_name.
+  - Add speaker_name only (NOT “Speaker_01” label) into payload.
+- DO NOT change internal speaker labels; speaker_label stays SPEAKER_00 etc.
+- segment_id must be the canonical id already present in TranscriptSegment.
+
+4) Call gateway with segments + template content
+- Construct LLMFormalizeRequest with:
+  - transcript_segments=[...]
+  - transcript_text can be included as fallback/debug, but must not be the only thing.
+  - template_text=TemplateSpec.body_text or raw_text (decide and be consistent)
+  - template_sections=TemplateSpec.sections (structured list)
+  - include_citations/show_empty_sections flags (optional, even if provider doesn’t use them)
+- Ensure profile selection stays as-is.
+
+5) Write metadata into output JSON
+- After receiving output_json from gateway:
+  - Set/overwrite:
+    - output_json["template_id"] = template_id
+    - output_json["template_version"] = template_version
+    - output_json["retention"] = retention
+    - output_json["include_citations"] = bool(include_citations)
+    - output_json["show_empty_sections"] = bool(show_empty_sections)
+    - output_json["transcript_version_id"] = transcript_version_id
+  - Do not remove any validated fields; do not rename existing keys.
+
+6) Tests
+- Update tests that pin the gateway request payload:
+  - Ashby_Engine/tests/test_meetings_minutes_gateway_call_cloud_only.py
+  - Ashby_Engine/tests/test_meetings_journal_gateway_call_cloud_only.py
+  - Ensure they assert:
+    - transcript_segments exists and contains segment_id fields
+    - template_text present
+    - template_sections present (if available)
+- Add/extend one unit test verifying metadata fields exist in written minutes.json output (can use fixtures + fake gateway).
+
+ACCEPTANCE CRITERIA
+- Gateway requests now include transcript_segments + template_text + template_sections.
+- minutes.json/journal.json include the metadata fields above.
+- Existing artifacts still produced: minutes.json/md/pdf and evidence_map.json (TXT later quest).
+- pytest passes.
+
+RECEIPTS REQUIRED
+- Diff/patch
+- pytest output
+
+FAIL CONDITIONS
+- transcript_segments missing from gateway request (still raw transcript blob)
+- segment_id not preserved end-to-end (breaks evidence anchoring)
+- speaker_name incorrectly overwrites speaker_label
+- metadata fields are only stored in run.json and not recorded in output JSON

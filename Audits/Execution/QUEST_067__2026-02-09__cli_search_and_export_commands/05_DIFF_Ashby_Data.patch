@@ -1,0 +1,651 @@
+diff -ruN /tmp/Ashby_CANON_2026-02-09_v23_baseline/Ashby_Data/Audits/Execution/QUEST_067__2026-02-09__cli_search_and_export_commands/05_DIFF_Ashby_Engine.patch /mnt/data/Ashby_Data/Audits/Execution/QUEST_067__2026-02-09__cli_search_and_export_commands/05_DIFF_Ashby_Engine.patch
+--- /tmp/Ashby_CANON_2026-02-09_v23_baseline/Ashby_Data/Audits/Execution/QUEST_067__2026-02-09__cli_search_and_export_commands/05_DIFF_Ashby_Engine.patch	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/Ashby_Data/Audits/Execution/QUEST_067__2026-02-09__cli_search_and_export_commands/05_DIFF_Ashby_Engine.patch	2026-02-09 08:56:57.639161191 +0000
+@@ -0,0 +1,482 @@
++diff -ruN /tmp/Ashby_CANON_2026-02-09_v23_baseline/Ashby_Engine/.pytest_cache/v/cache/nodeids /mnt/data/Ashby_Engine/.pytest_cache/v/cache/nodeids
++--- /tmp/Ashby_CANON_2026-02-09_v23_baseline/Ashby_Engine/.pytest_cache/v/cache/nodeids	2026-02-09 07:29:46.000000000 +0000
+++++ /mnt/data/Ashby_Engine/.pytest_cache/v/cache/nodeids	2026-02-09 08:53:46.215235240 +0000
++@@ -14,6 +14,8 @@
++   "tests/test_meetings_clarify_preview.py::test_mode_missing_triggers_clarification_with_enumerated_options",
++   "tests/test_meetings_clarify_preview.py::test_mode_provided_defaults_applied",
++   "tests/test_meetings_clarify_preview.py::test_telegram_door_never_offers_template_selection",
+++  "tests/test_meetings_cli_search_export.py::test_cli_export_produces_session_bundle_zip",
+++  "tests/test_meetings_cli_search_export.py::test_cli_search_sessions_snippets_and_citations",
++   "tests/test_meetings_cli_stuart.py::test_cli_upload_run_status",
++   "tests/test_meetings_diarization_policy.py::test_journal_mode_skips_diarization",
++   "tests/test_meetings_diarization_policy.py::test_meeting_mode_writes_speaker_hint_and_payload_field",
++Binary files /tmp/Ashby_CANON_2026-02-09_v23_baseline/Ashby_Engine/ashby/modules/meetings/__pycache__/cli_stuart.cpython-311.pyc and /mnt/data/Ashby_Engine/ashby/modules/meetings/__pycache__/cli_stuart.cpython-311.pyc differ
++diff -ruN /tmp/Ashby_CANON_2026-02-09_v23_baseline/Ashby_Engine/ashby/modules/meetings/cli_stuart.py /mnt/data/Ashby_Engine/ashby/modules/meetings/cli_stuart.py
++--- /tmp/Ashby_CANON_2026-02-09_v23_baseline/Ashby_Engine/ashby/modules/meetings/cli_stuart.py	2026-02-09 07:23:59.000000000 +0000
+++++ /mnt/data/Ashby_Engine/ashby/modules/meetings/cli_stuart.py	2026-02-09 08:42:47.223434605 +0000
++@@ -12,6 +12,9 @@
++ from ashby.modules.meetings.schemas.run_request import RunRequest
++ from ashby.modules.meetings.session_state import set_active_speaker_overlay
++ from ashby.modules.meetings.store import add_contribution, create_run, create_session, get_run_state
+++from ashby.modules.meetings.export import export_session_bundle
+++from ashby.modules.meetings.index import connect as idx_connect, ensure_schema as idx_ensure_schema, get_db_path, search as idx_search
+++from ashby.modules.meetings.schemas.search import CitationAnchor
++ 
++ 
++ def _as_jsonable(d: Dict[str, Any]) -> Dict[str, Any]:
++@@ -213,8 +216,101 @@
++ 
++ 
++ def cmd_search(args: argparse.Namespace) -> Dict[str, Any]:
++-    plan = {"steps": [{"kind": "search", "params": {"query": args.query, "session_id": args.session_id, "limit": args.limit}}]}
++-    return _make_run(args.session_id, plan, auto_go=True)
+++    """Search the library via SQLite FTS.
+++
+++    Contract (D4 + D5): ranked sessions/snippets with citation anchors.
+++    Rails:
+++      - does NOT create a run
+++      - does NOT open artifacts
+++    """
+++
+++    q = (getattr(args, "query", "") or "").strip()
+++    if not q:
+++        return {"ok": True, "query": q, "sessions": [], "total_hits": 0, "message": "Empty query."}
+++
+++    session_filter = (getattr(args, "session_id", None) or "").strip() or None
+++    mode_filter = (getattr(args, "mode", None) or "").strip() or None
+++    limit = int(getattr(args, "limit", 10) or 10)
+++
+++    db_path = get_db_path()
+++    conn = idx_connect(db_path)
+++    try:
+++        idx_ensure_schema(conn)
+++        hits = idx_search(conn, q, limit=limit, session_id=session_filter, mode=mode_filter)
+++    finally:
+++        conn.close()
+++
+++    # Group by session_id (sessions-first output)
+++    by_ses: Dict[str, Dict[str, Any]] = {}
+++    for h in hits:
+++        sid = h.session_id
+++        if sid not in by_ses:
+++            by_ses[sid] = {
+++                "session_id": sid,
+++                "title": h.title,
+++                "mode": h.mode,
+++                "best_score": float(h.score),
+++                "hits": [],
+++            }
+++        else:
+++            by_ses[sid]["best_score"] = float(min(by_ses[sid]["best_score"], float(h.score)))
+++            # Prefer first non-empty title/mode
+++            if not by_ses[sid].get("title") and h.title:
+++                by_ses[sid]["title"] = h.title
+++            if not by_ses[sid].get("mode") and h.mode:
+++                by_ses[sid]["mode"] = h.mode
+++
+++        cit = CitationAnchor(
+++            session_id=h.session_id,
+++            run_id=h.run_id,
+++            segment_id=int(h.segment_id),
+++            speaker_label=h.speaker_label,
+++            t_start=h.t_start,
+++            t_end=h.t_end,
+++            source_path=h.source_path,
+++        ).to_dict()
+++
+++        by_ses[sid]["hits"].append(
+++            {
+++                "score": float(h.score),
+++                "snippet": h.snippet,
+++                "citation": cit,
+++            }
+++        )
+++
+++    sessions = list(by_ses.values())
+++    # Deterministic ordering: best score asc, then session_id
+++    sessions.sort(key=lambda s: (float(s.get("best_score", 0.0)), str(s.get("session_id"))))
+++    # Deterministic ordering within session: score asc
+++    for s in sessions:
+++        s["hits"].sort(key=lambda it: float(it.get("score", 0.0)))
+++
+++    return {
+++        "ok": True,
+++        "query": q,
+++        "limit": limit,
+++        "session_filter": session_filter,
+++        "mode_filter": mode_filter,
+++        "total_hits": int(len(hits)),
+++        "sessions": sessions,
+++    }
+++
+++
+++def cmd_export(args: argparse.Namespace) -> Dict[str, Any]:
+++    """Export a session bundle zip.
+++
+++    CLI surface for the export bundle primitive.
+++    """
+++    session_id = (getattr(args, "session_id", None) or "").strip()
+++    if not session_id:
+++        raise ValueError("--session is required")
+++
+++    out_raw = (getattr(args, "out", None) or "").strip() or None
+++    out_path = Path(out_raw).expanduser().resolve() if out_raw else None
+++
+++    res = export_session_bundle(session_id, out_path=out_path)
+++    return {"ok": True, **res.to_dict()}
+++
++ 
++ 
++ def build_parser() -> argparse.ArgumentParser:
++@@ -277,12 +373,19 @@
++     ex.add_argument("who", help="Speaker name (must match active overlay mapping)")
++     ex.set_defaults(_handler=cmd_extract)
++ 
++-    sr = sub.add_parser("search", help="Search transcripts via SQLite FTS (returns citation-aware results).")
++-    sr.add_argument("session_id", help="Session id (ses_...)")
+++    sr = sub.add_parser("search", help="Search the library via SQLite FTS (sessions/snippets + citations).")
++     sr.add_argument("query", help="Search query text")
+++    sr.add_argument("--session", dest="session_id", default=None, help="Optional session id (ses_...)")
+++    sr.add_argument("--mode", choices=["meeting", "journal"], default=None, help="Optional mode filter")
++     sr.add_argument("--limit", type=int, default=10)
++     sr.set_defaults(_handler=cmd_search)
++ 
+++
+++    exp = sub.add_parser("export", help="Export a session bundle zip (read-only copy).")
+++    exp.add_argument("--session", dest="session_id", required=True, help="Session id (ses_...)")
+++    exp.add_argument("--out", dest="out", default=None, help="Optional output zip path (default: STUART_ROOT/exports).")
+++    exp.set_defaults(_handler=cmd_export)
+++
++     return p
++ 
++ 
++diff -ruN /tmp/Ashby_CANON_2026-02-09_v23_baseline/Ashby_Engine/ashby/modules/meetings/export/__init__.py /mnt/data/Ashby_Engine/ashby/modules/meetings/export/__init__.py
++--- /tmp/Ashby_CANON_2026-02-09_v23_baseline/Ashby_Engine/ashby/modules/meetings/export/__init__.py	1970-01-01 00:00:00.000000000 +0000
+++++ /mnt/data/Ashby_Engine/ashby/modules/meetings/export/__init__.py	2026-02-09 08:24:25.871623936 +0000
++@@ -0,0 +1,12 @@
+++"""Meetings export utilities.
+++
+++This package contains deterministic, read-only export helpers intended for
+++operator tooling (CLI) and later door surfaces.
+++
+++Note: Exporting is a *copy* operation. Canonical artifacts under STUART_ROOT
+++are never mutated by bundling.
+++"""
+++
+++from .bundle import export_session_bundle
+++
+++__all__ = ["export_session_bundle"]
++Binary files /tmp/Ashby_CANON_2026-02-09_v23_baseline/Ashby_Engine/ashby/modules/meetings/export/__pycache__/__init__.cpython-311.pyc and /mnt/data/Ashby_Engine/ashby/modules/meetings/export/__pycache__/__init__.cpython-311.pyc differ
++Binary files /tmp/Ashby_CANON_2026-02-09_v23_baseline/Ashby_Engine/ashby/modules/meetings/export/__pycache__/bundle.cpython-311.pyc and /mnt/data/Ashby_Engine/ashby/modules/meetings/export/__pycache__/bundle.cpython-311.pyc differ
++diff -ruN /tmp/Ashby_CANON_2026-02-09_v23_baseline/Ashby_Engine/ashby/modules/meetings/export/bundle.py /mnt/data/Ashby_Engine/ashby/modules/meetings/export/bundle.py
++--- /tmp/Ashby_CANON_2026-02-09_v23_baseline/Ashby_Engine/ashby/modules/meetings/export/bundle.py	1970-01-01 00:00:00.000000000 +0000
+++++ /mnt/data/Ashby_Engine/ashby/modules/meetings/export/bundle.py	2026-02-09 08:32:25.531448163 +0000
++@@ -0,0 +1,191 @@
+++from __future__ import annotations
+++
+++import zipfile
+++from dataclasses import dataclass
+++from datetime import datetime, timezone
+++from pathlib import Path
+++from typing import Iterable, List, Optional, Tuple
+++
+++from ashby.modules.meetings.init_root import init_stuart_root
+++from ashby.modules.meetings.manifests import load_manifest
+++
+++
+++_DETERMINISTIC_ZIP_DT = (2000, 1, 1, 0, 0, 0)
+++
+++
+++@dataclass(frozen=True)
+++class ExportBundleResult:
+++    session_id: str
+++    zip_path: str
+++    files_added: int
+++
+++    def to_dict(self) -> dict:
+++        return {
+++            "session_id": self.session_id,
+++            "zip_path": self.zip_path,
+++            "files_added": int(self.files_added),
+++        }
+++
+++
+++def _safe_rel(root: Path, p: Path) -> Optional[str]:
+++    """Return a normalized posix relative path inside the bundle.
+++
+++    Rails:
+++    - bundle content MUST be under STUART_ROOT
+++    - we never include absolute paths
+++    """
+++    try:
+++        rel = p.resolve().relative_to(root.resolve())
+++    except Exception:
+++        return None
+++    return rel.as_posix()
+++
+++
+++def _iter_files_recursive(dir_path: Path) -> Iterable[Path]:
+++    for p in sorted(dir_path.rglob("*")):
+++        if p.is_file():
+++            yield p
+++
+++
+++def _collect_session_files(session_id: str) -> List[Path]:
+++    lay = init_stuart_root()
+++    root = lay.root
+++
+++    out: List[Path] = []
+++
+++    # Session manifests
+++    sess_dir = lay.sessions / session_id
+++    out.append(sess_dir / "session.json")
+++    st = sess_dir / "session_state.json"
+++    if st.exists():
+++        out.append(st)
+++
+++    # Overlays (speaker_map only for now)
+++    ovr_dir = lay.overlays / session_id
+++    if ovr_dir.exists():
+++        out.extend([p for p in _iter_files_recursive(ovr_dir)])
+++
+++    # Contributions: scan and match session_id
+++    if lay.contributions.exists():
+++        for con_dir in sorted(lay.contributions.iterdir()):
+++            if not con_dir.is_dir():
+++                continue
+++            man = con_dir / "contribution.json"
+++            if not man.exists():
+++                continue
+++            try:
+++                c = load_manifest(man)
+++            except Exception:
+++                continue
+++            if c.get("session_id") != session_id:
+++                continue
+++            out.append(man)
+++            # Include all other files in the contribution dir (source, derived_audio, etc.)
+++            for p in sorted(con_dir.iterdir()):
+++                if p.is_file() and p.name != "contribution.json":
+++                    out.append(p)
+++
+++    # Runs: scan and match session_id
+++    if lay.runs.exists():
+++        for run_dir in sorted(lay.runs.iterdir()):
+++            if not run_dir.is_dir():
+++                continue
+++            run_json = run_dir / "run.json"
+++            if not run_json.exists():
+++                continue
+++            try:
+++                r = load_manifest(run_json)
+++            except Exception:
+++                continue
+++            if r.get("session_id") != session_id:
+++                continue
+++
+++            out.append(run_json)
+++            ev = run_dir / "events.jsonl"
+++            if ev.exists():
+++                out.append(ev)
+++
+++            art_dir = run_dir / "artifacts"
+++            if art_dir.exists():
+++                out.extend(list(_iter_files_recursive(art_dir)))
+++
+++    # Filter to files that exist (some optional paths above)
+++    return [p for p in out if p.exists() and p.is_file()]
+++
+++
+++def export_session_bundle(
+++    session_id: str,
+++    *,
+++    out_dir: Optional[Path] = None,
+++    out_path: Optional[Path] = None,
+++) -> ExportBundleResult:
+++    """Create a read-only zip bundle of a session's manifests + artifacts.
+++
+++    Contract (D5 / QUEST_067):
+++    - returns a zip path
+++    - no mutation of canonical store
+++
+++    Notes:
+++    - This is a minimal v1 export to unblock CLI usage.
+++    - A fuller spec lives in QUEST_074.
+++
+++    Determinism rails:
+++    - files are written in sorted order
+++    - zip timestamps and perms are normalized
+++    - output path uses session created date (UTC) when not specified
+++    """
+++    lay = init_stuart_root()
+++    root = lay.root
+++
+++    sess_json = lay.sessions / session_id / "session.json"
+++    if not sess_json.exists():
+++        raise FileNotFoundError(f"Unknown session_id (missing manifest): {sess_json}")
+++
+++    sess = load_manifest(sess_json)
+++    created_ts = sess.get("created_ts")
+++    if not isinstance(created_ts, (int, float)):
+++        created_ts = None
+++
+++    if out_path is None:
+++        if out_dir is None:
+++            out_dir = lay.exports
+++        out_dir = Path(out_dir)
+++        out_dir.mkdir(parents=True, exist_ok=True)
+++
+++        if created_ts is None:
+++            # deterministic fallback: literal string (no current-time dependence)
+++            date_str = "unknown_date"
+++        else:
+++            dt = datetime.fromtimestamp(float(created_ts), tz=timezone.utc)
+++            date_str = dt.strftime("%Y%m%d")
+++
+++        out_path = out_dir / f"{session_id}__export_bundle__{date_str}.zip"
+++
+++    out_path = Path(out_path)
+++    out_path.parent.mkdir(parents=True, exist_ok=True)
+++
+++    files = _collect_session_files(session_id)
+++
+++    items: List[Tuple[Path, str]] = []
+++    for p in files:
+++        rel = _safe_rel(root, p)
+++        if not rel:
+++            continue
+++        # Guard: never include exports/ (avoid recursive bundle of prior bundles)
+++        if rel.startswith("exports/"):
+++            continue
+++        items.append((p, rel))
+++
+++    # Deterministic ordering
+++    items.sort(key=lambda t: t[1])
+++
+++    # Create zip without overwrite
+++    with zipfile.ZipFile(out_path, mode="x", compression=zipfile.ZIP_DEFLATED) as z:
+++        for src, arc in items:
+++            data = src.read_bytes()
+++            zi = zipfile.ZipInfo(filename=arc, date_time=_DETERMINISTIC_ZIP_DT)
+++            # Normalize perms (rw-r--r--)
+++            zi.external_attr = (0o644 & 0xFFFF) << 16
+++            z.writestr(zi, data)
+++
+++    return ExportBundleResult(session_id=session_id, zip_path=str(out_path), files_added=len(items))
++Binary files /tmp/Ashby_CANON_2026-02-09_v23_baseline/Ashby_Engine/tests/__pycache__/test_meetings_cli_search_export.cpython-311-pytest-8.2.2.pyc and /mnt/data/Ashby_Engine/tests/__pycache__/test_meetings_cli_search_export.cpython-311-pytest-8.2.2.pyc differ
++diff -ruN /tmp/Ashby_CANON_2026-02-09_v23_baseline/Ashby_Engine/tests/test_meetings_cli_search_export.py /mnt/data/Ashby_Engine/tests/test_meetings_cli_search_export.py
++--- /tmp/Ashby_CANON_2026-02-09_v23_baseline/Ashby_Engine/tests/test_meetings_cli_search_export.py	1970-01-01 00:00:00.000000000 +0000
+++++ /mnt/data/Ashby_Engine/tests/test_meetings_cli_search_export.py	2026-02-09 08:48:07.140617524 +0000
++@@ -0,0 +1,112 @@
+++from __future__ import annotations
+++
+++import json
+++import zipfile
+++from pathlib import Path
+++
+++from ashby.modules.meetings.cli_stuart import cmd_export, cmd_search
+++from ashby.modules.meetings.index import ingest_run
+++from ashby.modules.meetings.store import create_run, create_session
+++
+++
+++class NS:
+++    def __init__(self, **kw):
+++        self.__dict__.update(kw)
+++
+++
+++def _write_transcript_json(path: Path, *, text: str) -> None:
+++    """Write a minimal transcript.json compatible with ingest_run."""
+++    path.parent.mkdir(parents=True, exist_ok=True)
+++    payload = {
+++        "segments": [
+++            {
+++                "segment_id": 0,
+++                "speaker": "SPEAKER_00",
+++                "start_ms": 0,
+++                "end_ms": 500,
+++                "text": text,
+++            }
+++        ]
+++    }
+++    path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+++
+++
+++def _seed_session_with_run(root: Path, *, mode: str, title: str, transcript_text: str) -> tuple[str, str]:
+++    """Create a session + run + transcript artifact deterministically."""
+++    # create_session/create_run use STUART_ROOT from env; caller sets it.
+++    session_id = create_session(mode=mode, title=title)
+++
+++    plan = {
+++        "steps": [
+++            {
+++                "kind": "formalize",
+++                "params": {
+++                    "mode": mode,
+++                    "template_id": "default",
+++                    "retention": "MED",
+++                },
+++            }
+++        ]
+++    }
+++    run_id = create_run(session_id=session_id, plan=plan)
+++
+++    run_dir = root / "runs" / run_id
+++    art_dir = run_dir / "artifacts"
+++    _write_transcript_json(art_dir / "transcript.json", text=transcript_text)
+++
+++    # Add a couple of representative outputs so export can include them.
+++    (art_dir / "minutes.md").write_text("# Minutes\n\nhello", encoding="utf-8")
+++    (art_dir / "evidence_map.json").write_text("{}", encoding="utf-8")
+++
+++    ingest_run(run_id)
+++    return session_id, run_id
+++
+++
+++def test_cli_search_sessions_snippets_and_citations(tmp_path: Path, monkeypatch):
+++    root = tmp_path / "stuart_runtime"
+++    monkeypatch.setenv("STUART_ROOT", str(root))
+++
+++    ses_a, _run_a = _seed_session_with_run(root, mode="meeting", title="A", transcript_text="we discussed kimchi today")
+++    _ses_b, _run_b = _seed_session_with_run(root, mode="meeting", title="B", transcript_text="we discussed bananas")
+++
+++    out = cmd_search(NS(query="kimchi", session_id=None, mode=None, limit=10))
+++    assert out["ok"] is True
+++    assert out["query"] == "kimchi"
+++    assert out["total_hits"] >= 1
+++
+++    sessions = out.get("sessions")
+++    assert isinstance(sessions, list)
+++    assert len(sessions) == 1
+++
+++    s0 = sessions[0]
+++    assert s0["session_id"] == ses_a
+++    assert "hits" in s0 and isinstance(s0["hits"], list) and len(s0["hits"]) >= 1
+++
+++    h0 = s0["hits"][0]
+++    assert isinstance(h0.get("snippet"), str) and h0["snippet"]
+++    cit = h0.get("citation")
+++    assert isinstance(cit, dict)
+++    assert cit.get("session_id") == ses_a
+++    assert isinstance(cit.get("run_id"), str) and cit.get("run_id")
+++    assert isinstance(cit.get("segment_id"), int)
+++
+++
+++def test_cli_export_produces_session_bundle_zip(tmp_path: Path, monkeypatch):
+++    root = tmp_path / "stuart_runtime"
+++    monkeypatch.setenv("STUART_ROOT", str(root))
+++
+++    session_id, run_id = _seed_session_with_run(root, mode="meeting", title="Export", transcript_text="kimchi")
+++
+++    out = cmd_export(NS(session_id=session_id, out=None))
+++    assert out["ok"] is True
+++    zpath = Path(out["zip_path"])
+++    assert zpath.exists()
+++
+++    with zipfile.ZipFile(zpath, "r") as z:
+++        names = set(z.namelist())
+++
+++    assert f"sessions/{session_id}/session.json" in names
+++    assert f"runs/{run_id}/run.json" in names
+++    assert f"runs/{run_id}/artifacts/transcript.json" in names
+++    assert f"runs/{run_id}/artifacts/minutes.md" in names
+++    assert f"runs/{run_id}/artifacts/evidence_map.json" in names
+diff -ruN /tmp/Ashby_CANON_2026-02-09_v23_baseline/Ashby_Data/Audits/Execution/QUEST_067__2026-02-09__cli_search_and_export_commands/06_PYTEST_smoke_gate_-q.exitcode /mnt/data/Ashby_Data/Audits/Execution/QUEST_067__2026-02-09__cli_search_and_export_commands/06_PYTEST_smoke_gate_-q.exitcode
+--- /tmp/Ashby_CANON_2026-02-09_v23_baseline/Ashby_Data/Audits/Execution/QUEST_067__2026-02-09__cli_search_and_export_commands/06_PYTEST_smoke_gate_-q.exitcode	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/Ashby_Data/Audits/Execution/QUEST_067__2026-02-09__cli_search_and_export_commands/06_PYTEST_smoke_gate_-q.exitcode	2026-02-09 08:53:47.007326527 +0000
+@@ -0,0 +1 @@
++0
+diff -ruN /tmp/Ashby_CANON_2026-02-09_v23_baseline/Ashby_Data/Audits/Execution/QUEST_067__2026-02-09__cli_search_and_export_commands/06_PYTEST_smoke_gate_-q.txt /mnt/data/Ashby_Data/Audits/Execution/QUEST_067__2026-02-09__cli_search_and_export_commands/06_PYTEST_smoke_gate_-q.txt
+--- /tmp/Ashby_CANON_2026-02-09_v23_baseline/Ashby_Data/Audits/Execution/QUEST_067__2026-02-09__cli_search_and_export_commands/06_PYTEST_smoke_gate_-q.txt	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/Ashby_Data/Audits/Execution/QUEST_067__2026-02-09__cli_search_and_export_commands/06_PYTEST_smoke_gate_-q.txt	2026-02-09 08:53:46.217470849 +0000
+@@ -0,0 +1,16 @@
++/opt/pyvenv/lib/python3.11/site-packages/ddtrace/vendor/psutil/_pslinux.py:527: RuntimeWarning: 'sin' and 'sout' swap memory stats couldn't be determined and were set to 0 ([Errno 2] No such file or directory: '/proc/vmstat')
++  warnings.warn(msg, RuntimeWarning)
++...........                                                              [100%]
++=============================== warnings summary ===============================
++../../../opt/pyvenv/lib/python3.11/site-packages/ddtrace/internal/module.py:220
++  /opt/pyvenv/lib/python3.11/site-packages/ddtrace/internal/module.py:220: PendingDeprecationWarning: Please use `import python_multipart` instead.
++    self.loader.exec_module(module)
++
++tests/test_meetings_web_door_scaffold.py::test_index_has_mode_placeholder_and_no_default_selected
++tests/test_meetings_web_door_scaffold.py::test_index_has_library_and_search_controls
++  /opt/pyvenv/lib/python3.11/site-packages/starlette/templating.py:178: DeprecationWarning: The `name` is not the first parameter anymore. The first parameter should be the `Request` instance.
++  Replace `TemplateResponse(name, {"request": request})` by `TemplateResponse(request, name)`.
++    warnings.warn(
++
++-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
++11 passed, 3 warnings in 9.30s
+diff -ruN "/tmp/Ashby_CANON_2026-02-09_v23_baseline/Ashby_Data/Quest Board/Accepted/QUEST_067__Stuart_v1_D5_7of7_CLI_search_and_export_commands_2026-02-04.txt" "/mnt/data/Ashby_Data/Quest Board/Accepted/QUEST_067__Stuart_v1_D5_7of7_CLI_search_and_export_commands_2026-02-04.txt"
+--- "/tmp/Ashby_CANON_2026-02-09_v23_baseline/Ashby_Data/Quest Board/Accepted/QUEST_067__Stuart_v1_D5_7of7_CLI_search_and_export_commands_2026-02-04.txt"	2026-02-09 00:40:39.000000000 +0000
++++ "/mnt/data/Ashby_Data/Quest Board/Accepted/QUEST_067__Stuart_v1_D5_7of7_CLI_search_and_export_commands_2026-02-04.txt"	1970-01-01 00:00:00.000000000 +0000
+@@ -1,66 +0,0 @@
+-QUEST TEMPLATE — SYNAPSE GUILD
+-QUEST ID:
+-QUEST_067
+-
+-Created By:
+-Ash (Brains)
+-
+-Title:
+-Stuart v1 — Dungeon 5 (7/7): CLI v1 search + export commands
+-
+-Context: Stuart CLI
+-
+-Origin:
+-Control Sync — 2026-02-04 (Stuart v1 finish-line: REV5)
+-
+-Priority: P1
+-
+-Links:
+-- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV5.txt (Dungeon 5)
+-
+-Status: ACTIVE
+-
+-Audit Bundle Path:
+-  /mnt/data/Ashby_Data/Audits/Execution/QUEST_067__2026-02-09__cli_search_and_export_commands
+-
+-Accepted On:
+-2026-02-09
+-Accepted By:
+-Hands (Peter)
+-Completed On:
+-
+-Completed By:
+-
+-────────────────────────────────────────────────────────
+-DESCRIPTION
+-────────────────────────────────────────────────────────
+-Add CLI commands to search the library and export a session bundle zip.
+-
+-────────────────────────────────────────────────────────
+-SCOPE / OBJECTIVE
+-────────────────────────────────────────────────────────
+-- Add `stuart search <query>` with optional session/mode filters
+-- Add `stuart export --session <id>` (calls export bundle)
+-
+-────────────────────────────────────────────────────────
+-OUT OF SCOPE
+-────────────────────────────────────────────────────────
+-- Interactive TUI
+-
+-────────────────────────────────────────────────────────
+-DEPENDENCIES
+-────────────────────────────────────────────────────────
+-- QUEST_058
+-- QUEST_074
+-
+-────────────────────────────────────────────────────────
+-EXECUTION NOTES
+-────────────────────────────────────────────────────────
+-- Search should list sessions first; do not auto-open artifacts.
+-
+-────────────────────────────────────────────────────────
+-COMPLETION CRITERIA (REQUIRED)
+-────────────────────────────────────────────────────────
+-- [ ] CLI search returns ranked sessions + snippets + citations
+-- [ ] CLI export produces a zip bundle (via export bundle implementation)
+-
+diff -ruN "/tmp/Ashby_CANON_2026-02-09_v23_baseline/Ashby_Data/Quest Board/Completed/QUEST_067__Stuart_v1_D5_7of7_CLI_search_and_export_commands_2026-02-04.txt" "/mnt/data/Ashby_Data/Quest Board/Completed/QUEST_067__Stuart_v1_D5_7of7_CLI_search_and_export_commands_2026-02-04.txt"
+--- "/tmp/Ashby_CANON_2026-02-09_v23_baseline/Ashby_Data/Quest Board/Completed/QUEST_067__Stuart_v1_D5_7of7_CLI_search_and_export_commands_2026-02-04.txt"	1970-01-01 00:00:00.000000000 +0000
++++ "/mnt/data/Ashby_Data/Quest Board/Completed/QUEST_067__Stuart_v1_D5_7of7_CLI_search_and_export_commands_2026-02-04.txt"	2026-02-09 08:54:54.325835734 +0000
+@@ -0,0 +1,66 @@
++QUEST TEMPLATE — SYNAPSE GUILD
++QUEST ID:
++QUEST_067
++
++Created By:
++Ash (Brains)
++
++Title:
++Stuart v1 — Dungeon 5 (7/7): CLI v1 search + export commands
++
++Context: Stuart CLI
++
++Origin:
++Control Sync — 2026-02-04 (Stuart v1 finish-line: REV5)
++
++Priority: P1
++
++Links:
++- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV5.txt (Dungeon 5)
++
++Status: COMPLETE
++
++Audit Bundle Path:
++  /mnt/data/Ashby_Data/Audits/Execution/QUEST_067__2026-02-09__cli_search_and_export_commands
++
++Accepted On:
++2026-02-09
++Accepted By:
++Hands (Peter)
++Completed On:
++2026-02-09
++Completed By:
++Ash (Brains)
++────────────────────────────────────────────────────────
++DESCRIPTION
++────────────────────────────────────────────────────────
++Add CLI commands to search the library and export a session bundle zip.
++
++────────────────────────────────────────────────────────
++SCOPE / OBJECTIVE
++────────────────────────────────────────────────────────
++- Add `stuart search <query>` with optional session/mode filters
++- Add `stuart export --session <id>` (calls export bundle)
++
++────────────────────────────────────────────────────────
++OUT OF SCOPE
++────────────────────────────────────────────────────────
++- Interactive TUI
++
++────────────────────────────────────────────────────────
++DEPENDENCIES
++────────────────────────────────────────────────────────
++- QUEST_058
++- QUEST_074
++
++────────────────────────────────────────────────────────
++EXECUTION NOTES
++────────────────────────────────────────────────────────
++- Search should list sessions first; do not auto-open artifacts.
++
++────────────────────────────────────────────────────────
++COMPLETION CRITERIA (REQUIRED)
++────────────────────────────────────────────────────────
++- [ ] CLI search returns ranked sessions + snippets + citations
++- [ ] CLI export produces a zip bundle (via export bundle implementation)
++

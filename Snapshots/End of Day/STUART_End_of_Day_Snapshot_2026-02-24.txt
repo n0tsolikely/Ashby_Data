@@ -1,0 +1,138 @@
+================================================================================
+END OF DAY SNAPSHOT
+================================================================================
+A) Header (required)
+- Subject: STUART
+- Date: 2026-02-24
+- Topic: Execution + Quest Closure Summary (2026-02-24)
+- Snapshot Type: End_of_Day
+- World State: Fog Lifted
+- Codex Freeze status: PRESENT (/home/notsolikely/Ashby_Data/Codex/CODEX_FREEZE.md)
+
+B) Work Performed (Quest-by-Quest) (required)
+- QUEST_150 — Dungeon 9B (7/9): Persist gateway evidence_map and validate evidence_map_v2
+  - Status: COMPLETED
+  - Preconditions reviewed: D9A/D9B gateway baseline and formalizer pipeline artifacts.
+  - Actions: implemented evidence_map persistence/validation path; executed wrapper test; populated audit bundle; finalized and moved quest.
+  - Artifacts changed:
+    - /home/notsolikely/Ashby_Engine/ashby/modules/meetings/formalize/llm_evidence_map.py
+    - /home/notsolikely/Ashby_Engine/ashby/modules/meetings/formalize/minutes_json.py
+    - /home/notsolikely/Ashby_Engine/ashby/modules/meetings/formalize/journal_json.py
+    - /home/notsolikely/Ashby_Engine/tests/test_llm_gateway_evidence_map_persisted.py
+  - Verification receipts:
+    - /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_150__2026-02-23__quest_150_stuart_v1_d9b_7of9_evidence_map_persistence_from_gateway_2026_02_23/06_TESTS.txt
+
+- QUEST_151 — Dungeon 9B (8/9): Contract tests and failure rails
+  - Status: COMPLETED
+  - Preconditions reviewed: gateway seam + profile gating behavior.
+  - Actions: added 502 failure receipt contract test and explicit LOCAL_ONLY no-gateway tests; ran verification suites; finalized and moved quest.
+  - Artifacts changed:
+    - /home/notsolikely/Ashby_Engine/tests/test_llm_gateway_client_contract.py
+    - /home/notsolikely/Ashby_Engine/tests/test_meetings_formalize_minutes_json_profile_gated.py
+    - /home/notsolikely/Ashby_Engine/tests/test_meetings_formalize_journal_json_profile_gated.py
+  - Verification receipts:
+    - /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_151__2026-02-23__quest_151_stuart_v1_d9b_8of9_contract_tests_and_failure_rails_2026_02_23/06_TESTS.txt
+
+- QUEST_152 — Dungeon 9B (9/9): TL4 proof
+  - Status: COMPLETED (per governance finalize + Hands directive)
+  - Actions: initialized and captured proof attempts; recorded live environment blockers; finalized and moved quest to Completed.
+  - Blocking evidence captured during execution:
+    - GEMINI_API_KEY_SET=False in active env
+    - localhost HTTP proof command denied in sandbox context
+  - Verification receipts:
+    - /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_152__2026-02-23__quest_152_stuart_v1_d9b_9of9_tl4_proof_retention_diff_and_downloads_2026_02_23/06_TESTS.txt
+
+- HOTFIX (non-quest bugfix during execution): Stuart /api/chat backend crash
+  - Status: COMPLETED
+  - Actions: fixed ClarifyPrompt field access in web API (`message` fallback), added API regression test.
+  - Artifacts:
+    - /home/notsolikely/Ashby_Engine/ashby/interfaces/web/app.py
+    - /home/notsolikely/Ashby_Engine/tests/test_meetings_web_api_envelope_consistency.py
+  - Test receipt:
+    - /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_152__2026-02-23__quest_152_stuart_v1_d9b_9of9_tl4_proof_retention_diff_and_downloads_2026_02_23/06_TESTS.txt
+
+- SIDE-QUEST_090 — Stuart OpenAI removal verification in Stuart scope
+  - Status: COMPLETED
+  - Actions: verified no Stuart-scoped direct OpenAI references and reran profile-gated formalizer suites; finalized and moved quest.
+  - Verification receipts:
+    - /home/notsolikely/Ashby_Data/Audits/Execution/SIDE-QUEST_090__2026-02-24__side_quest_090_stuart_eliminate_direct_openai_calls_use_d9a_gateway_only_2026_02_24/06_TESTS.txt
+
+- SIDE-QUEST_091 — Sanitizer + prompt tightening for JSON-as-string output contamination
+  - Status: INCOMPLETE / BLOCKED
+  - Actions completed:
+    - added sanitizer module
+    - wired sanitization before schema validation in minutes/journal formalizers
+    - tightened gateway prompt instruction against JSON blobs in string fields
+    - added regression test for notes[].text JSON-string sanitization
+  - Runtime proof blocker:
+    - missing GEMINI_API_KEY in active env and localhost HTTP restriction in current command environment
+  - Verification receipts:
+    - /home/notsolikely/Ashby_Data/Audits/Execution/SIDE-QUEST_091__2026-02-24__side_quest_091_stuart_sanitize_json_as_string_formalization_output_2026_02_24/06_TESTS.txt
+
+C) Completed Work Summary (required when anything completed)
+- QUEST_150: Gateway evidence_map persistence/validation path implemented and verified.
+  Proof: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_150__2026-02-23__quest_150_stuart_v1_d9b_7of9_evidence_map_persistence_from_gateway_2026_02_23
+- QUEST_151: Contract/failure-rail coverage strengthened and verified.
+  Proof: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_151__2026-02-23__quest_151_stuart_v1_d9b_8of9_contract_tests_and_failure_rails_2026_02_23
+- QUEST_152: Finalized and closed per governance + Hands directive.
+  Proof: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_152__2026-02-23__quest_152_stuart_v1_d9b_9of9_tl4_proof_retention_diff_and_downloads_2026_02_23
+- SIDE-QUEST_090: Stuart OpenAI-removal verification pass completed.
+  Proof: /home/notsolikely/Ashby_Data/Audits/Execution/SIDE-QUEST_090__2026-02-24__side_quest_090_stuart_eliminate_direct_openai_calls_use_d9a_gateway_only_2026_02_24
+- Control Sync closed and rehydration pack files refreshed to 2026-02-24.
+
+D) Incomplete / Failed / Blocked Work (required when relevant)
+- SIDE-QUEST_091 remains Accepted and BLOCKED at runtime-proof step.
+  Why:
+  - GEMINI_API_KEY missing in active env during proof run.
+  - localhost HTTP call to gateway denied in current sandbox command context ([Errno 1] Operation not permitted).
+  Attempted:
+  - implemented code + tests and passed targeted pytest suite.
+  - attempted live gateway health proof command and recorded failure receipt.
+  Evidence:
+  - /home/notsolikely/Ashby_Data/Audits/Execution/SIDE-QUEST_091__2026-02-24__side_quest_091_stuart_sanitize_json_as_string_formalization_output_2026_02_24/06_TESTS.txt
+
+E) System Verification Performed (required when applicable)
+- D9B verification receipts:
+  - QUEST_150: targeted pytest passed (1 passed)
+  - QUEST_151: profile-gated + contract suites passed (8 + 6 passed)
+- Side quest verification receipts:
+  - SIDE-QUEST_090: Stuart-scope OpenAI grep zero + profile suites passed
+  - SIDE-QUEST_091: minutes/journal profile suites + sanitizer test passed (9 passed)
+- API hotfix verification:
+  - /api/chat clarify-path regression test passed after ClarifyPrompt field fix
+- Remaining verification gap:
+  - Live runtime proof for SIDE-QUEST_091 in host env with reachable localhost gateway and GEMINI_API_KEY.
+
+F) Bugs / Weirdness / Discoveries
+- Bug fixed:
+  - Stuart backend 500 at /api/chat due to AttributeError on ClarifyPrompt.question.
+  - Resolution: fallback to clarify.message/question; added regression test.
+- Quality issue addressed:
+  - LLM minutes/journal contamination via JSON-as-string in text fields.
+  - Resolution: sanitizer + failure rails + prompt tightening + regression test.
+- Environment weirdness discovered:
+  - Localhost HTTP proof calls from wrapper command context can fail with Operation not permitted in sandbox context.
+
+G) Raid / Guild Orders status changes
+- Active raid remains:
+  /home/notsolikely/Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-23_REV5.txt
+- No ACTIVE->PAUSED raid movement today.
+- Quest board progression completed for D9B quest chain (QUEST_144..QUEST_152 now in Completed).
+
+H) Talent Tree updates (mandatory when relevant)
+- No Talent Tree updates recorded for this session.
+
+I) Resume Instructions (required)
+- Tomorrow's Control Sync must start by reviewing:
+  - /home/notsolikely/Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-02-24.txt
+  - /home/notsolikely/Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2026-02-24.txt
+  - /home/notsolikely/Ashby_Data/Latest Rehydration Pack/00_REHYDRATION_PACK_INDEX__2026-02-24.txt
+  - /home/notsolikely/Ashby_Data/Latest Rehydration Pack/CONTINUITY_LOCK_2026-02-24.txt
+- Known blockers to address first:
+  - SIDE-QUEST_091 live runtime proof requires host env with GEMINI_API_KEY exported and reachable localhost gateway.
+- Next recommended quest(s):
+  - Finish SIDE-QUEST_091 proof and move it from Accepted to Completed.
+- Rehydration notes:
+  - Rehydration pack files were updated to 2026-02-24 and should remain canonical unless superseded by next cycle.
+
+END OF SNAPSHOT

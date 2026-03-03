@@ -1,0 +1,173 @@
+STUART CODEX
+7.6 Stage 5: Formalization (Canonical)
+
+Status: Canonical (Regenerated v2)
+Last updated: 2026-01-12
+
+Stage 5 generates Stuart’s structured deliverables (“formalizations”) from the aligned transcript:
+- Meeting Minutes
+- Journal/Diary entries
+- Incident Reports
+- Creator Notes
+
+This is the highest-risk stage for hallucination and “generic summarizer” failure.
+Chat-canon constraints enforced here:
+- Formalization ≠ summary (structured artifact, not vague compression).
+- Retention knob controls phrasing loss and preservation.
+- Evidence and citations are mandatory for factual claims.
+- Analyst vs Collaborator is enforced; suggestions are gated and labeled.
+- Outputs must be saved as artifacts (JSON/MD/PDF) to avoid chat truncation and to enable printing.
+
+1) Inputs
+
+Stage 5 consumes:
+
+A) aligned_transcript.json (required)
+Primary citeable record.
+
+B) mode + template contract (required)
+- mode_id (Meeting / Journal / Incident / Creator / etc.)
+- template_id + template_version (scoped by mode)
+- retention setting (explicit override or template default)
+
+C) execution context (required)
+- profile (LOCAL_ONLY / HYBRID / CLOUD)
+- selected adapters (formalizer + renderer)
+- redaction settings (if applicable)
+- stance: Analyst (default) or Collaborator (only when invited)
+
+D) optional overlays
+- speaker_map overlay (for display naming, subject to confidence)
+- correction overlays (transcript or speaker)
+
+2) Outputs (minimum required)
+
+Each formalization is stored as its own run under:
+formalizations/<run_id>/
+
+The run folder MUST include:
+
+A) run.json (required)
+Records:
+- run_id
+- run_type (formalize_meeting / formalize_journal / formalize_incident / formalize_creator)
+- mode_id
+- template_id + template_version
+- retention used
+- profile_used
+- adapters_used
+- redaction config (if any)
+- timestamps and status
+
+B) output.json (required)
+Machine-readable structured output per template:
+- sections (ids, ordering)
+- items (decisions/actions/timelines/etc.)
+- citations to transcript segment IDs + timestamps
+- uncertainty flags
+- superseded/current markers
+
+C) output.md (required)
+Human-readable structured document:
+- headings and lists per template
+- no hard-wrap corruption
+- uncertainty markers
+- if collaborator suggestions are included, they must be clearly labeled
+
+D) output.pdf (required)
+Print-ready, deterministic PDF rendered from structured sources.
+
+E) evidence_map.json (required)
+Audit map from each output unit to transcript evidence.
+
+3) Canonical formalization rules (LOCKED)
+
+F-1) Enumerated mode + template only
+If mode/template does not exist, Stage 5 refuses and lists available options.
+No hallucinated modes or templates.
+
+F-2) Template-driven structure
+Required sections must appear even if empty (with explicit “none recorded” messaging).
+Optional sections appear only if there is evidence (unless template requests fixed form).
+
+F-3) Retention governs phrasing preservation
+Retention controls consolidation and quoting behavior:
+LOW / MED / HIGH / NEAR-VERBATIM
+(Defined earlier; enforced consistently.)
+
+F-4) Evidence is mandatory for factual claims
+At minimum:
+- decisions, action items, timelines require strict citations.
+Other sections follow template evidence policy.
+Evidence must survive chunking/merging (no citation loss).
+
+F-5) No invention
+No adding facts, motives, decisions, assignees, impact, or root cause that were not stated.
+If uncertain, mark uncertainty.
+
+F-6) Superseded decision logic is enforced
+Explicit overrides produce:
+- “current” items
+- “superseded” items
+with citations to both original and override.
+
+F-7) Analyst vs Collaborator gating is enforced
+Default Analyst: transcript-derived content only.
+Collaborator (invited): suggestions allowed but must be:
+- labeled as suggestions
+- segregated from official minutes/incidents
+- inserted only by explicit user request
+
+F-8) Artifacts, not chat, are deliverables
+Even if the chat UI shows a preview, the authoritative output is the saved artifact set.
+This avoids output-size limits and makes printing reliable.
+
+4) Chunked / hierarchical formalization (required for long sessions)
+
+Stage 5 MUST support chunked processing:
+
+CH-1) Partition aligned transcript deterministically (time or VAD segments).
+CH-2) Extract candidate items per chunk.
+CH-3) Merge deterministically:
+- dedupe
+- preserve citations
+- preserve chronology
+- preserve superseded/current relationships
+CH-4) Render final output.
+
+This ensures hour-long meetings can produce complete minutes without truncation.
+
+5) Profile behavior and privacy
+
+LOCAL_ONLY:
+- formalization runs locally.
+- redaction is local.
+- no network calls.
+
+HYBRID:
+- remote formalization allowed only with explicit disclosure + confirmation.
+- redaction options applied before sending transcript text out.
+- run record must capture provider/adapter and what data left the machine.
+
+CLOUD:
+- similar, remote-first, still requiring explicit execution + audit logging.
+
+6) Failure behavior
+
+If formalization fails:
+- aligned transcript remains unchanged
+- run marked failed
+- user can retry with different settings/adapters
+- prior successful outputs remain intact
+
+7) Self-audit (7.6 v2)
+
+Chat-canon alignment checklist:
+- Formalization ≠ summary: structure + template + evidence-first. (Maintained.)
+- Retention knob: explicit and predictable loss control. (Maintained.)
+- Evidence/citations: evidence_map.json always; strict for decisions/actions/timeline. (Maintained.)
+- Analyst vs Collaborator: suggestions gated, labeled, never silently inserted. (Maintained.)
+- Print-first: output.pdf required; no hard-wrap artifacts. (Maintained.)
+- Long sessions: chunked/hierarchical processing required to prevent truncation. (Maintained.)
+
+This section is complete.

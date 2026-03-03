@@ -1,0 +1,3 @@
+ashby/modules/meetings/index/__init__.py
+ashby/modules/meetings/index/sqlite_fts.py
+ashby/modules/meetings/schemas/search.py

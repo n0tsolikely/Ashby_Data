@@ -1,0 +1,67 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_059
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 4 (4/5): library list API (sessions + latest runs + metadata)
+
+Context: Stuart retrieval/library
+
+Origin:
+Control Sync — 2026-02-04 (Stuart v1 finish-line: REV5)
+
+Priority: P1
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV5.txt (Dungeon 4)
+
+Status: DONE
+
+Audit Bundle Path:
+  /mnt/data/Ashby_Data/Audits/Execution/QUEST_059__2026-02-07__library_list_sessions_metadata_latest_runs
+
+Accepted On:
+2026-02-07
+Accepted By:
+Hands (Peter)
+Completed On:
+2026-02-08
+
+Completed By:
+Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Add a library listing API so doors can show users a list of sessions (meetings/journals) and fetch their latest outputs without doing a full search.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Add a function to list sessions with created_ts, mode, title (if available), latest run_id
+- Expose list to webapp/cli later
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Full-text search (already in QUEST_058)
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_056
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Library should include enough metadata to show a meaningful list.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] Library list returns sessions with latest run pointers
+- [x] `python3 -m pytest -q` passes
+

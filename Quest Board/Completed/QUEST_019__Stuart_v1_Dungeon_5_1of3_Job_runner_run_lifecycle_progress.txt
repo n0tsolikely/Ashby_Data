@@ -1,0 +1,61 @@
+QUEST ID: QUEST_019
+Title: Stuart v1 — Dungeon 5 (1 of 3): Job runner + run lifecycle + progress reporting
+Context: Stuart
+Origin: Guild Orders: GUILD_ORDERS_STUART_V1_2026-01-16_REV3.txt (Dungeon 5)
+Priority: P0
+Links:
+- Guild Orders: Stuart v1 — Dungeon 5
+- Stuart Execution Pack: run.json status transitions + resume rules + error taxonomy
+- Supersedes (decomposition of): QUEST_006
+- Related: QUEST_013 (immutability/reruns), QUEST_018 (execution gating)
+Status: COMPLETED
+Accepted On: Completed On:
+Completed On: DESCRIPTION
+
+DESCRIPTION
+────────────────────────────────────────
+Implement the long-job execution spine for Stuart: a job runner that reliably executes pipeline runs, records run state transitions in run.json, and exposes progress for UI polling. This is the foundation that all later pipeline stages depend on.
+
+SCOPE / OBJECTIVE
+────────────────────────────────────────
+Implement the pipeline job runner system with:
+- Deterministic run status transitions recorded in run.json (queued/running/succeeded/failed).
+- Timestamps for transitions and completion.
+- A minimal progress reporting interface suitable for webapp polling.
+- Failure recording with error details (do not swallow errors).
+
+Runner must write all run artifacts under STUART_ROOT using the immutability contract (rerun = new run_id).
+
+OUT OF SCOPE
+────────────────────────────────────────
+Implementing diarization/transcription/formalization/rendering stage logic (handled in QUEST_020/021).
+Advanced distributed job queues; v1 may be local-only.
+Perfect retry policies beyond a minimal safe default.
+
+DEPENDENCIES
+────────────────────────────────────────
+- QUEST_013
+- QUEST_018
+
+EXECUTION NOTES
+────────────────────────────────────────
+This quest is about reliability and audit. If the runner is sloppy, everything above it becomes untrustworthy.
+Run records must be append-only in effect: do not overwrite prior runs; create a new run_id.
+
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────
+- [x] A job runner exists that can execute a placeholder pipeline and record status transitions in run.json.
+- [x] run.json includes: run_id, status, created_at, started_at, finished_at, and an error payload when failed.
+- [x] Progress reporting is available (even if coarse: percent or stage name) and can be polled by a UI.
+- [x] Failed runs are recorded honestly and do not claim success.
+- [x] A second run creates a new run_id folder and does not overwrite the first.
+
+TALENT POINT
+────────────────────────────────────────
+On completion:
+- Talent Point Awarded: YES
+- Talent Spent On: TALENT_STUART_JOB_RUNNER_LIFECYCLE — Job Runner Lifecycle + Progress
+
+FINAL NOTES
+────────────────────────────────────────
+(optional)

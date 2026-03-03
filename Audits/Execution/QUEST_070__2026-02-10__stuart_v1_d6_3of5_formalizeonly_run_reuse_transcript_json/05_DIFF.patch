@@ -1,0 +1,486 @@
+--- a/Ashby_Engine/ashby/modules/meetings/pipeline/job_runner.py
++++ b/Ashby_Engine/ashby/modules/meetings/pipeline/job_runner.py
+@@ -63,6 +63,95 @@
+     return p if p.exists() else None
+ 
+ 
++def _first_formalize_reuse_run_id(steps: List[Dict[str, Any]]) -> Optional[str]:
++    """Return the first reuse_run_id found in a formalize step.
++
++    This is used to skip heavy stages early (normalize/transcribe/diarize/align)
++    when the run is a true formalize-only rerun.
++    """
++    for st in steps:
++        try:
++            if _step_kind(st) != "formalize":
++                continue
++            params = st.get("params") if isinstance(st, dict) else {}
++            v = (params or {}).get("reuse_run_id")
++            if isinstance(v, str) and v.strip():
++                return v.strip()
++        except Exception:
++            continue
++    return None
++
++
++def _copy_file_write_once(src: Path, dst: Path) -> None:
++    dst.parent.mkdir(parents=True, exist_ok=True)
++    if dst.exists():
++        raise FileExistsError(f"Refusing to overwrite artifact: {dst}")
++    dst.write_bytes(src.read_bytes())
++
++
++def _materialize_reused_transcripts(*, lay: Any, run_dir: Path, reuse_run_id: str) -> Dict[str, Any]:
++    """Copy transcript artifacts from a prior run into the current run_dir.
++
++    Truth rails:
++    - No mutation of the source run.
++    - Destination writes are write-once.
++    - We copy JSON substrate first (transcript.json + aligned_transcript.json when present).
++    """
++    src_run_dir = lay.runs / reuse_run_id
++    src_artifacts = src_run_dir / "artifacts"
++    if not src_artifacts.exists():
++        raise FileNotFoundError(f"reuse_run_id artifacts missing: {src_artifacts}")
++
++    dst_artifacts = run_dir / "artifacts"
++    dst_artifacts.mkdir(parents=True, exist_ok=True)
++
++    copied: List[Dict[str, Any]] = []
++
++    def maybe_copy(filename: str, *, kind: str) -> Optional[Path]:
++        sp = src_artifacts / filename
++        if not sp.exists():
++            return None
++        dp = dst_artifacts / filename
++        _copy_file_write_once(sp, dp)
++        copied.append(
++            {
++                "kind": kind,
++                "filename": filename,
++                "path": str(dp),
++                "sha256": sha256_file(dp),
++                "source_path": str(sp),
++                "source_sha256": sha256_file(sp),
++            }
++        )
++        return dp
++
++    # Preferred substrate for formalize/indexing.
++    tjson = maybe_copy("transcript.json", kind="transcript_json")
++    ajson = maybe_copy("aligned_transcript.json", kind="aligned_transcript_json")
++    # Legacy convenience (not required, but preserves older tooling expectations).
++    ttxt = maybe_copy("transcript.txt", kind="transcript_txt")
++
++    if tjson is None and ajson is None:
++        raise FileNotFoundError(
++            "reuse_run_id missing transcript substrate (need transcript.json or aligned_transcript.json)"
++        )
++
++    # Write a reuse receipt for auditability (write-once).
++    receipt = run_dir / "inputs" / "reused_transcript.json"
++    if receipt.exists():
++        raise FileExistsError(f"Refusing to overwrite reuse receipt: {receipt}")
++
++    payload = {
++        "version": 1,
++        "reuse_run_id": reuse_run_id,
++        "copied": copied,
++        "created_ts": time.time(),
++    }
++    receipt.parent.mkdir(parents=True, exist_ok=True)
++    receipt.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
++    return {"receipt_path": str(receipt), "receipt_sha256": sha256_file(receipt), "copied": copied}
++
++
+ def _maybe_load_active_speaker_map(session_id: str) -> Dict[str, str]:
+     st = load_session_state(session_id)
+     ovr_id = st.get("active_speaker_overlay_id")
+@@ -88,6 +177,9 @@
+     plan = state.get("plan") if isinstance(state, dict) else {}
+     steps = _steps_from_plan(plan)
+ 
++    # QUEST_070: detect formalize-only reruns early so we can skip heavy stages.
++    formalize_reuse_run_id = _first_formalize_reuse_run_id(steps)
++
+     lay = init_stuart_root()
+     run_dir = lay.runs / run_id
+ 
+@@ -139,8 +231,21 @@
+         },
+     )
+     # QUEST_034: normalize input via adapter matrix (writes artifacts/normalized.wav)
+-    a0 = matrix.normalize(run_dir, resolved.source_path)
+-    update_run_state(run_id, artifact=a0)
++    # QUEST_070: when reuse_run_id is provided for formalize, we skip normalization because
++    # the run will reuse transcript artifacts and will not need audio-derived stages.
++    if formalize_reuse_run_id is None:
++        a0 = matrix.normalize(run_dir, resolved.source_path)
++        update_run_state(run_id, artifact=a0)
++    else:
++        update_run_state(
++            run_id,
++            artifact={
++                "kind": "normalize_skipped",
++                "reason": "reuse_run_id provided (formalize-only rerun)",
++                "reuse_run_id": formalize_reuse_run_id,
++                "created_ts": time.time(),
++            },
++        )
+ 
+     # QUEST_068: Record which speaker overlay (if any) was active when this run began.
+     # This is a *reference* only; overlays are append-only artifacts and session_state is pointer-only.
+@@ -208,12 +313,67 @@
+                     )
+ 
+                 elif kind == "formalize":
+-                    # If caller provided reuse_run_id, reuse transcript artifact instead of regenerating.
+-                    reuse_run_id = (params or {}).get("reuse_run_id")
+-                    transcript_path: Optional[Path] = None
+-                    if isinstance(reuse_run_id, str) and reuse_run_id:
+-                        transcript_path = _get_run_artifact_path(reuse_run_id, "transcript.txt")
+-                    if transcript_path is None:
++                    # QUEST_070: true formalize-only rerun.
++                    # If caller provides reuse_run_id, we reuse transcript.json/aligned_transcript.json
++                    # from the prior run and skip audio-derived heavy stages.
++                    reuse_raw = (params or {}).get("reuse_run_id")
++                    reuse_run_id = reuse_raw.strip() if isinstance(reuse_raw, str) and reuse_raw.strip() else None
++                    did_reuse = False
++
++                    if reuse_run_id is not None:
++                        did_reuse = True
++                        reused = _materialize_reused_transcripts(lay=lay, run_dir=run_dir, reuse_run_id=reuse_run_id)
++
++                        # Receipt artifact (auditable link to source run)
++                        update_run_state(
++                            run_id,
++                            artifact={
++                                "kind": "reused_transcript_receipt",
++                                "path": reused["receipt_path"],
++                                "sha256": reused["receipt_sha256"],
++                                "created_ts": time.time(),
++                                "reuse_run_id": reuse_run_id,
++                            },
++                        )
++
++                        # Record copied transcript substrates as artifacts so downstream components
++                        # can resolve them deterministically.
++                        for c in reused.get("copied") or []:
++                            if not isinstance(c, dict):
++                                continue
++                            fn = c.get("filename")
++                            pth = c.get("path")
++                            sha = c.get("sha256")
++                            if not isinstance(fn, str) or not isinstance(pth, str) or not isinstance(sha, str):
++                                continue
++                            if fn == "aligned_transcript.json":
++                                update_run_state(
++                                    run_id,
++                                    artifact={
++                                        "kind": "aligned_transcript",
++                                        "path": pth,
++                                        "sha256": sha,
++                                        "created_ts": time.time(),
++                                        "reuse_run_id": reuse_run_id,
++                                    },
++                                )
++                            elif fn == "transcript.json":
++                                # Mirror transcribe adapter fields (path + json_path) when possible.
++                                ttxt_path = run_dir / "artifacts" / "transcript.txt"
++                                update_run_state(
++                                    run_id,
++                                    artifact={
++                                        "kind": "transcript",
++                                        "path": str(ttxt_path) if ttxt_path.exists() else pth,
++                                        "json_path": pth,
++                                        "sha256": sha,
++                                        "created_ts": time.time(),
++                                        "engine": "reused",
++                                        "reuse_run_id": reuse_run_id,
++                                    },
++                                )
++
++                    if not did_reuse:
+                         a1 = matrix.transcribe(run_dir)
+                         update_run_state(run_id, artifact=a1)
+ 
+@@ -223,9 +383,10 @@
+                     retention = (params or {}).get("retention") or "MED"
+ 
+                     # QUEST_036: diarization policy
+-                    # - meeting mode: run diarization (real or stub, depending on availability)
++                    # - meeting mode: run diarization+alignment (real or stub, depending on availability)
+                     # - journal mode: skip diarization by default
+-                    if mode != "journal":
++                    # QUEST_070: when did_reuse is True, we skip diarize+align entirely.
++                    if mode != "journal" and not did_reuse:
+                         # Optional speaker hint (2/3+). Keep adapter signature stable by writing a run input receipt.
+                         speakers_raw = (params or {}).get("speakers") or (params or {}).get("speaker_count") or (params or {}).get("num_speakers")
+                         speakers_i = None
+@@ -244,6 +405,16 @@
+                         update_run_state(run_id, artifact=a2)
+                         a_align = matrix.align(run_dir)
+                         update_run_state(run_id, artifact=a_align)
++                    elif mode != "journal" and did_reuse:
++                        update_run_state(
++                            run_id,
++                            artifact={
++                                "kind": "diarize_align_skipped",
++                                "reason": "reuse_run_id provided (formalize-only rerun)",
++                                "reuse_run_id": reuse_run_id,
++                                "created_ts": time.time(),
++                            },
++                        )
+ 
+                     # QUEST_037 + QUEST_057: auto-ingest into SQLite FTS so search works without manual ingest.
+                     # Prefer aligned_transcript.json when present (meeting mode) so speaker labels are preserved.
+--- a/Ashby_Engine/ashby/modules/meetings/formalize/minutes_json.py
++++ b/Ashby_Engine/ashby/modules/meetings/formalize/minutes_json.py
+@@ -36,7 +36,10 @@
+ 
+     payload = json.loads(src.read_text(encoding="utf-8"))
+     session_id = str(payload.get("session_id") or "")
+-    run_id = str(payload.get("run_id") or run_dir.name)
++    # QUEST_070: run_id is the *current* run directory id.
++    # We may reuse transcript artifacts from a prior run; the transcript payload's run_id
++    # is treated as source metadata and must not leak into newly-derived outputs.
++    run_id = run_dir.name
+     segs = list(payload.get("segments") or [])
+     return (session_id, run_id, segs)
+ 
+--- a/Ashby_Engine/ashby/modules/meetings/formalize/journal_json.py
++++ b/Ashby_Engine/ashby/modules/meetings/formalize/journal_json.py
+@@ -36,7 +36,10 @@
+ 
+     payload = json.loads(src.read_text(encoding="utf-8"))
+     session_id = str(payload.get("session_id") or "")
+-    run_id = str(payload.get("run_id") or run_dir.name)
++    # QUEST_070: run_id is the *current* run directory id.
++    # We may reuse transcript artifacts from a prior run; the transcript payload's run_id
++    # is treated as source metadata and must not leak into newly-derived outputs.
++    run_id = run_dir.name
+     segs = list(payload.get("segments") or [])
+     return (session_id, run_id, segs)
+ 
+--- a/Ashby_Engine/ashby/modules/meetings/render/evidence_map.py
++++ b/Ashby_Engine/ashby/modules/meetings/render/evidence_map.py
+@@ -29,7 +29,9 @@
+         payload = json.loads(ajson.read_text(encoding="utf-8"))
+         return (
+             str(payload.get("session_id") or ""),
+-            str(payload.get("run_id") or run_dir.name),
++            # QUEST_070: evidence_map is a derived artifact for the *current* run.
++            # Transcript payload run_id may be from a reused source run.
++            run_dir.name,
+             list(payload.get("segments") or []),
+         )
+ 
+@@ -37,7 +39,9 @@
+         payload = json.loads(tjson.read_text(encoding="utf-8"))
+         return (
+             str(payload.get("session_id") or ""),
+-            str(payload.get("run_id") or run_dir.name),
++            # QUEST_070: evidence_map is a derived artifact for the *current* run.
++            # Transcript payload run_id may be from a reused source run.
++            run_dir.name,
+             list(payload.get("segments") or []),
+         )
+ 
+--- a/Ashby_Engine/ashby/modules/meetings/pipeline/normalize.py
++++ b/Ashby_Engine/ashby/modules/meetings/pipeline/normalize.py
+@@ -1,5 +1,6 @@
+ from __future__ import annotations
+ 
++import os
+ import shutil
+ import subprocess
+ import time
+@@ -15,8 +16,13 @@
+     Writes (write-once):
+       run_dir/artifacts/normalized.wav
+     """
+-    ffmpeg = shutil.which("ffmpeg")
+-    if not ffmpeg:
++    # NOTE: We keep the contract name (normalize_ffmpeg) but allow a fast-path for
++    # local test runs to keep the suite snappy in constrained environments.
++    # This is opt-in via env var and preserves production behavior by default.
++    fast_tests = (os.environ.get("ASHBY_FAST_TESTS") or "").strip().lower() in {"1", "true", "yes"}
++
++    ffmpeg = None if fast_tests else shutil.which("ffmpeg")
++    if not ffmpeg and not fast_tests:
+         raise RuntimeError("ffmpeg not found on PATH (required for normalize stage)")
+ 
+     artifacts_dir = run_dir / "artifacts"
+@@ -26,19 +32,24 @@
+     if out_path.exists():
+         raise FileExistsError(f"Refusing to overwrite normalized audio: {out_path}")
+ 
+-    cmd = [
+-        ffmpeg,
+-        "-y",
+-        "-i", str(source_path),
+-        "-vn",
+-        "-ac", "1",
+-        "-ar", "16000",
+-        "-f", "wav",
+-        str(out_path),
+-    ]
+-    p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+-    if p.returncode != 0:
+-        raise RuntimeError(f"ffmpeg failed (rc={p.returncode}): {p.stderr}")
++    if fast_tests:
++        # Fast tests mode: copy bytes verbatim. Downstream stages in LOCAL_ONLY
++        # treat audio as opaque unless real ASR/diarization engines are enabled.
++        out_path.write_bytes(source_path.read_bytes())
++    else:
++        cmd = [
++            ffmpeg,
++            "-y",
++            "-i", str(source_path),
++            "-vn",
++            "-ac", "1",
++            "-ar", "16000",
++            "-f", "wav",
++            str(out_path),
++        ]
++        p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
++        if p.returncode != 0:
++            raise RuntimeError(f"ffmpeg failed (rc={p.returncode}): {p.stderr}")
+ 
+     return {
+         "kind": "normalized_audio",
+--- a/Ashby_Engine/ashby/modules/meetings/render/pdf_weasyprint.py
++++ b/Ashby_Engine/ashby/modules/meetings/render/pdf_weasyprint.py
+@@ -1,6 +1,7 @@
+ from __future__ import annotations
+ 
+ import time
++import os
+ from pathlib import Path
+ from typing import Any, Dict, Tuple
+ 
+@@ -37,6 +38,10 @@
+     - Refuse overwrite (write-once).
+     - Output naming is caller-controlled via out_name (Codex contract).
+     """
++    # Opt-in fast mode: force stub PDF rendering to keep test/runtime loops quick.
++    # Production behavior remains unchanged unless ASHBY_FAST_TESTS is set.
++    fast_tests = (os.environ.get("ASHBY_FAST_TESTS") or "").strip().lower() in {"1", "true", "yes"}
++
+     exports = run_dir / "exports"
+     exports.mkdir(parents=True, exist_ok=True)
+ 
+@@ -49,6 +54,11 @@
+ 
+     kind = f"{Path(out_name).stem}_pdf"
+ 
++    if fast_tests:
++        out = export_pdf_stub(run_dir, md_path=md_path, out_name=out_name)
++        out["warning"] = "ASHBY_FAST_TESTS enabled; forced stub PDF renderer."
++        return out
++
+     ok, why = _weasyprint_import()
+     if ok:
+         try:
+--- a/Ashby_Engine/tests/test_meetings_formalize_only_reuse_transcript_json.py
++++ b/Ashby_Engine/tests/test_meetings_formalize_only_reuse_transcript_json.py
+@@ -0,0 +1,99 @@
++from __future__ import annotations
++
++import json
++from pathlib import Path
++
++from ashby.core.profile import ExecutionProfile
++from ashby.modules.meetings.adapters.adapter_matrix import MeetingsAdapterMatrix, get_meetings_adapter_matrix
++from ashby.modules.meetings.init_root import init_stuart_root
++from ashby.modules.meetings.pipeline import job_runner
++from ashby.modules.meetings.pipeline.job_runner import run_job
++from ashby.modules.meetings.store import add_contribution, create_run, create_session
++
++
++def test_formalize_only_rerun_reuses_transcript_json_and_skips_heavy_stages(tmp_path: Path, monkeypatch) -> None:
++    """QUEST_070 regression:
++
++    A formalize-only rerun (reuse_run_id) must:
++      - NOT call normalize/transcribe/diarize/align
++      - copy transcript.json/aligned_transcript.json into the new run
++      - produce new derived outputs (minutes.*) with the *new* run_id
++    """
++
++    root = tmp_path / "stuart_runtime"
++    monkeypatch.setenv("STUART_ROOT", str(root))
++
++    session_id = create_session(mode="meeting", title="t")
++
++    # Contribution exists only so input resolution can succeed. Content doesn't matter because
++    # reuse_run_id should skip all audio-derived stages.
++    src = tmp_path / "src.bin"
++    src.write_bytes(b"dummy")
++    add_contribution(session_id=session_id, source_path=src, source_kind="audio")
++
++    # Create a source run_id with transcript substrates (we do NOT execute it).
++    source_run_id = create_run(session_id=session_id, plan={"steps": []})
++    lay = init_stuart_root()
++    src_run_dir = lay.runs / source_run_id
++    artifacts = src_run_dir / "artifacts"
++    artifacts.mkdir(parents=True, exist_ok=True)
++
++    transcript_payload = {
++        "version": 1,
++        "session_id": session_id,
++        "run_id": source_run_id,
++        "segments": [
++            {"segment_id": 0, "start_ms": 0, "end_ms": 1000, "speaker": "SPEAKER_00", "text": "Hello."},
++            {"segment_id": 1, "start_ms": 1000, "end_ms": 2000, "speaker": "SPEAKER_01", "text": "World."},
++        ],
++        "engine": "test",
++    }
++    (artifacts / "transcript.json").write_text(json.dumps(transcript_payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
++    (artifacts / "aligned_transcript.json").write_text(json.dumps(transcript_payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
++
++    # Create a new run that reuses the prior run's transcript substrate.
++    rerun_id = create_run(
++        session_id=session_id,
++        plan={
++            "steps": [
++                {"kind": "formalize", "params": {"mode": "meeting", "template": "default", "reuse_run_id": source_run_id}}
++            ]
++        },
++    )
++
++    # Adapter matrix for the rerun: pdf is allowed; all heavy stages must not be called.
++    real = get_meetings_adapter_matrix(ExecutionProfile.LOCAL_ONLY)
++
++    def boom(*_a, **_kw):
++        raise RuntimeError("heavy stage should not be called when reuse_run_id is set")
++
++    fake = MeetingsAdapterMatrix(
++        profile=real.profile,
++        normalize=boom,
++        align=boom,
++        transcribe=boom,
++        diarize=boom,
++        pdf=real.pdf,
++    )
++    monkeypatch.setattr(job_runner, "get_meetings_adapter_matrix", lambda _profile: fake)
++
++    res = run_job(rerun_id)
++    assert res.ok is True
++
++    rerun_dir = lay.runs / rerun_id
++
++    # Transcript substrate must be present in the rerun.
++    assert (rerun_dir / "artifacts" / "transcript.json").exists()
++    assert (rerun_dir / "artifacts" / "aligned_transcript.json").exists()
++
++    # Derived outputs must reflect the NEW run_id (not the reused source run_id).
++    minutes_path = rerun_dir / "artifacts" / "minutes.json"
++    assert minutes_path.exists()
++    minutes_payload = json.loads(minutes_path.read_text(encoding="utf-8"))
++    assert minutes_payload.get("run_id") == rerun_id
++
++    # Audit receipt must exist.
++    reuse_receipt = rerun_dir / "inputs" / "reused_transcript.json"
++    assert reuse_receipt.exists()
++    receipt_payload = json.loads(reuse_receipt.read_text(encoding="utf-8"))
++    assert receipt_payload.get("reuse_run_id") == source_run_id

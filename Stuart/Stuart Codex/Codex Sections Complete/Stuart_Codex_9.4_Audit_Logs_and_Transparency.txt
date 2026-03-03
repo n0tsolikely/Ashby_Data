@@ -1,0 +1,182 @@
+STUART CODEX
+9.4 Audit Logs and Transparency (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines Stuart’s transparency surfaces and audit logs: what is recorded, how it is exposed to the user, and how the user verifies “what happened” without trusting vibes.
+
+This exists because Stuart’s adoption depends on trust:
+- Users must be able to prove what was said, what was inferred, and what was suggested.
+- Users must be able to prove where their data went (or did not go).
+- Users must be able to verify which mode/template/retention were used.
+- Users must be able to recover when something fails.
+
+Chat-canon constraints enforced here:
+- Truth and auditability are core invariants (not optional features).
+- Explicit execution gating: runs are user-triggered; logs must reflect that.
+- LOCAL_ONLY must have zero network activity; logs must prove it.
+- Formalizations must be evidence-backed with citations and evidence maps.
+- Nothing is allowed to “silently rewrite” ground truth (overlays only).
+
+1) Transparency surfaces (what Stuart must show in the UI)
+
+These are not “advanced settings.” They are required trust UX.
+
+T-1) Current profile indicator (always visible)
+Stuart must show clearly:
+- LOCAL_ONLY / HYBRID / CLOUD
+and it must not be subtle.
+
+T-2) Current mode/template/retention indicator (always visible during a session)
+Stuart must show:
+- selected mode_id
+- selected template_id + version
+- selected retention level
+so the user always knows what output contract is being applied.
+
+T-3) Planned execution preview (before running)
+Before the user hits Submit/Run, Stuart should show:
+- which stages will run (normalize, diarize, transcribe, align, formalize, index, render)
+- which adapters will be used
+- whether any stage is remote
+- what data leaves the machine (if any)
+This preview is the “truth gate” against accidental remote calls and against accidental wrong-mode runs.
+
+T-4) Run status and artifact list (after running)
+After a run completes (success/partial/fail), Stuart must show:
+- run_id
+- stage status summary
+- which artifacts were created (with file links)
+- which artifacts are missing (if partial/fail)
+
+T-5) Evidence visibility controls
+Users must be able to:
+- show citations inline (if template supports)
+- open evidence map
+- jump to transcript timestamps
+- open transcript around a cited segment
+
+2) Audit log artifacts (what must exist on disk)
+
+Audit in Stuart is artifact-first. Logs are files.
+
+A-1) session.json (session manifest)
+Contains:
+- session_id
+- created/updated times
+- title/tags
+- contributions list
+- run history pointers
+- profile history (recorded per run, plus current profile)
+
+A-2) run.json per run (immutable record)
+Every run MUST produce a run.json containing:
+- run_id
+- run_type (normalize, diarize, transcribe, align, formalize_<mode>, index, render)
+- status (success/partial/fail)
+- start/end times
+- profile_used
+- adapters_used (id + version)
+- config_snapshot (mode/template/retention, thresholds, chunking, language hints, redaction settings)
+- data_scope (local vs remote; if remote, what left the machine)
+- inputs_used (contribution ids, artifact paths)
+- outputs_created (artifact paths)
+- error_summary (if fail/partial)
+- recovery_suggestions (human)
+
+A-3) stage reports (recommended, adapter-dependent)
+Examples:
+- transcription_report.json
+- diarization_report.json
+- alignment_report.json
+- formalization merge report (if chunked)
+These are not required for every adapter, but run.json must exist regardless.
+
+A-4) evidence_map.json (for every formalization)
+For each formalization run, evidence_map.json must exist and map:
+- each decision/action/timeline item to transcript segment ids + timestamps
+This is the “I can prove it” backbone.
+
+A-5) redaction_report.json (when redaction is used)
+If redaction is applied for remote processing or export:
+- store a redaction report describing what was redacted and by which rules.
+
+A-6) index status artifacts (recommended)
+If indexing is enabled:
+- store index metadata and “last indexed” markers so Stuart can answer “is my search up to date?”
+
+3) “What left the machine?” logging (privacy audit)
+
+This is a strict requirement.
+
+E-1) Data egress record in run.json
+If any remote adapter is used, run.json must include:
+- destination/provider label (as known)
+- what was sent:
+  - audio? transcript text? embeddings? metadata?
+- redaction applied (yes/no) and which rules
+- confirmation snapshot (user confirmed at time X)
+
+E-2) LOCAL_ONLY proof posture
+In LOCAL_ONLY:
+- run.json must explicitly record that no remote calls were made.
+Stuart should also expose a “show network events” view that is empty for LOCAL_ONLY runs.
+
+4) Overlays and corrections audit
+
+Because you emphasized “no mistakes,” the system must support correction without lying.
+
+O-1) Overlay-only edits
+Corrections to transcript text or speaker attribution must be stored as overlays:
+- transcript_corrections.json
+- speaker_corrections.json
+and must never overwrite the original ground truth artifacts.
+
+O-2) Overlay provenance
+Each overlay entry must record:
+- who (user identity local label)
+- when (timestamp)
+- what changed (before/after)
+- where (segment id / time range)
+
+O-3) Output disclosure
+If a formalization was generated using corrections overlays:
+- run metadata must indicate overlays were applied.
+This prevents disputes about “why does the transcript differ from the audio?”
+
+5) “Explain this output” command (trust affordance)
+
+Stuart should support a simple command:
+- “Explain how this was generated”
+that returns:
+- mode/template/retention used
+- whether diarization was used
+- whether any stage ran remotely
+- which artifacts exist
+- where to find evidence maps
+
+This is critical for non-technical users who need a quick trust summary.
+
+6) Logging levels (avoid leaking content in logs)
+
+Audit logs must not become a second transcript leak surface.
+
+Baseline:
+- run.json should not embed large raw transcript content.
+- run.json can store references to artifact paths and counts/stats.
+- evidence lives in transcript artifacts and evidence_map.json, not in run logs.
+
+If a debug mode exists:
+- it must be explicit and local only.
+
+7) Self-audit (9.4)
+
+Chat-canon alignment checklist:
+- Explicit execution gating is visible in planned execution previews and captured in run logs. (Maintained.)
+- LOCAL_ONLY privacy is provable via run logs with explicit “no remote calls” posture. (Maintained.)
+- Evidence and citations are audit artifacts (evidence_map.json) for every formalization. (Maintained.)
+- No silent rewrites: corrections are overlays with provenance; originals remain preserved. (Maintained.)
+- Trust UX exists: user can see profile/mode/template/retention, list artifacts, and “explain this output.” (Maintained.)
+
+This section is complete.

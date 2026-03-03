@@ -1,0 +1,140 @@
+STUART CODEX
+8.7 Redaction and Sanitization Adapters (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines redaction/sanitization adapters: components that remove or mask sensitive content before data leaves the machine (HYBRID/CLOUD) or before exports/sharing.
+
+Why this matters:
+- You explicitly want LOCAL_ONLY support for sensitive environments (elder care incidents).
+- You also want HYBRID/CLOUD horsepower when privacy is not as strict.
+- If data leaves the device, users need control and clarity over what was removed.
+- Future template sharing introduces PII risk and requires scrubbing.
+
+Chat-canon constraints enforced here:
+- LOCAL_ONLY does not send content off-device, so redaction is primarily for exports, not for network.
+- HYBRID/CLOUD requires explicit disclosure/confirmation; redaction is a user-controlled safeguard.
+- Redaction must be transparent: it must not silently change meaning without disclosure.
+- Redaction must be auditable: what was redacted, where, and by which rules.
+
+1) What a redaction adapter is responsible for
+
+A redaction adapter is responsible for:
+- taking text artifacts (transcripts, aligned transcripts, formalization outputs),
+- applying configured redaction/sanitization rules,
+- producing a redacted copy suitable for remote processing or external export,
+- and producing a redaction report for audit.
+
+A redaction adapter is NOT responsible for:
+- deciding whether remote processing is allowed (profile does that),
+- transcription or diarization,
+- inventing replacements (other than masks),
+- template logic.
+
+2) Redaction scope (where it can apply)
+
+Redaction can apply to:
+
+RDS-1) Remote processing preparation (HYBRID/CLOUD)
+Before sending transcript text to a remote formalizer or indexer.
+
+RDS-2) Export bundles
+“Sanitized export” for sharing outside the organization.
+
+RDS-3) Future template sharing
+Scrub template content prior to submission to a marketplace (future/gated).
+
+In V1, primary redaction use is remote processing preparation and export.
+
+3) Redaction modes (canonical categories)
+
+RED-1) Masking
+Replace detected entities with placeholders:
+- [NAME]
+- [EMAIL]
+- [PHONE]
+- [ADDRESS]
+This preserves structure but removes identifiers.
+
+RED-2) Removal
+Remove segments or lines entirely.
+This is more destructive and must be disclosed.
+
+RED-3) Pseudonymization (optional future)
+Replace names with stable pseudonyms within a session:
+- Person A, Person B
+This preserves readability but still reduces exposure.
+
+V1 may implement masking first; removal/pseudonymization can be optional.
+
+4) Redaction configuration
+
+User must be able to configure redaction with:
+- entity types to redact (names/emails/phones/etc.)
+- custom sensitive terms (org-specific)
+- allowlist terms (do not redact “Greg” if Greg is not sensitive in this context, etc.)
+- whether to redact speaker names from overlays
+- whether to redact timestamps (usually keep timestamps)
+
+Redaction settings used must be captured in run config snapshots.
+
+5) Redaction transparency and audit
+
+RED-AUD-1) Redaction report required
+For every redaction operation, create:
+- redaction_report.json
+including:
+- rules applied
+- entity types redacted
+- counts and locations (segment IDs and ranges)
+- before/after snippets (optional; careful, could reintroduce PII)
+- any failures or uncertain detections
+
+RED-AUD-2) Redaction must be disclosed in outputs
+If a formalization was produced from redacted text, output metadata must note:
+- “This output was generated from redacted transcript input.”
+This prevents confusion when details appear missing.
+
+RED-AUD-3) Never overwrite originals
+Redacted artifacts are separate copies. Originals remain preserved locally.
+
+6) Limits of redaction (honesty rule)
+
+Redaction is not perfect. Stuart must not claim “guaranteed removal of all PII.”
+Instead:
+- redaction is best-effort and configurable,
+- and users must confirm what leaves the machine.
+
+For very sensitive workflows, the recommended profile remains LOCAL_ONLY.
+
+7) Profile behavior
+
+LOCAL_ONLY:
+- redaction is used primarily for exports, not for remote processing (since remote is not allowed).
+- no network calls.
+
+HYBRID:
+- redaction can be applied before remote calls if user enables it.
+- remote calls require disclosure + confirmation regardless of redaction.
+
+CLOUD:
+- redaction can be applied before sending data to cloud services, but disclosure + confirmation remains required unless the user has explicitly configured a “cloud-first” trust posture (future).
+
+8) Integration with template sharing (future)
+
+If template sharing is introduced later:
+- redaction/sanitization is mandatory before submission,
+- user must preview final share payload,
+- and sharing must be explicitly confirmed.
+
+9) Self-audit (8.7)
+
+Chat-canon alignment checklist:
+- LOCAL_ONLY privacy: no off-device processing; redaction used for exports only. (Maintained.)
+- HYBRID/CLOUD safeguards: redaction supports minimization, but disclosure/confirmation still required. (Maintained.)
+- Auditability: redaction produces reports; never overwrites originals. (Maintained.)
+- Future-proofing: supports gated template sharing scrubber requirement. (Maintained.)
+- Honesty: no false promises of perfect PII removal. (Maintained.)
+
+This section is complete.

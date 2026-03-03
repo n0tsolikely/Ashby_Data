@@ -1,0 +1,19 @@
+Archive:  dev_bundle.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+       16  2000-01-01 00:00   audio/con_d8__source.wav
+       24  2000-01-01 00:00   dev/formalizations/run_01KJRX69QVR9XN0C63DT694KZV/events.jsonl
+      115  2000-01-01 00:00   dev/formalizations/run_01KJRX69QVR9XN0C63DT694KZV/evidence_map.json
+       47  2000-01-01 00:00   dev/formalizations/run_01KJRX69QVR9XN0C63DT694KZV/llm_usage_receipt.json
+      137  2000-01-01 00:00   dev/formalizations/run_01KJRX69QVR9XN0C63DT694KZV/minutes.json
+      607  2000-01-01 00:00   dev/formalizations/run_01KJRX69QVR9XN0C63DT694KZV/run.json
+      446  2000-01-01 00:00   dev/transcripts/trv_01KJRX69QXG4FM6V1RBN37M140/transcript_version.json
+      158  2000-01-01 00:00   formalizations/run_01KJRX69QVR9XN0C63DT694KZV/minutes.md
+      113  2000-01-01 00:00   formalizations/run_01KJRX69QVR9XN0C63DT694KZV/minutes.pdf
+      206  2000-01-01 00:00   overlays/transcripts/trv_01KJRX69QXG4FM6V1RBN37M140/speaker_map.json
+       83  2000-01-01 00:00   session.json
+      180  2000-01-01 00:00   transcripts/trv_01KJRX69QXG4FM6V1RBN37M140/transcript.md
+      790  2000-01-01 00:00   transcripts/trv_01KJRX69QXG4FM6V1RBN37M140/transcript.pdf
+      166  2000-01-01 00:00   transcripts/trv_01KJRX69QXG4FM6V1RBN37M140/transcript.txt
+---------                     -------
+     3088                     14 files

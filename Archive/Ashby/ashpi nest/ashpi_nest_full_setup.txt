@@ -1,0 +1,93 @@
+ASHPI NEST TEMPERATURE CONTROL – FULL REBUILD DATA
+
+1. GOOGLE DEVICE ACCESS CREDENTIALS
+
+NEST_REFRESH_TOKEN="1//01eWdG4Pli90dCgYIARAAGAESNwF-L9Ir3BQYD5KUj-ejMwCdAxsfg6xx0URs8UlOYR0T5vZEkTTg1-Wu1qUcDgW4S7UO-OHDZlY"
+NEST_CLIENT_ID="21965826000-2omlmh584m43i7fd62tav7f4d8aaft7i.apps.googleusercontent.com"
+NEST_CLIENT_SECRET="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"
+NEST_REDIRECT_URI="https://www.google.com"
+NEST_SCOPE="https://www.googleapis.com/auth/sdm.service"
+
+2. DEVICE PATH
+
+NEST_DEVICE="enterprises/a773a0bb-fd52-4526-a32a-ee9f559ed902/devices/AVPHwEt4UTxHqZdAPFy2TD25DNQVohbpouw_s7nTVBBoC_t_CM0BMaPeE3mJjwKXJHxL5nI_Q-STEBQ8w3eWCIennQEk6g"
+
+3. PYTHON SCRIPT (ashpi_nest_set.py)
+
+import json
+import requests
+import sys
+
+env = {}
+with open("ashpi_nest.env") as f:
+    for line in f:
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if "=" in line:
+            key, val = line.split("=", 1)
+            val = val.strip().strip('"').strip("'")
+            env[key] = val
+
+NEST_REFRESH_TOKEN = env["NEST_REFRESH_TOKEN"]
+NEST_CLIENT_ID = env["NEST_CLIENT_ID"]
+NEST_CLIENT_SECRET = env["NEST_CLIENT_SECRET"]
+NEST_DEVICE = env["NEST_DEVICE"]
+
+TOKEN_URL = "https://www.googleapis.com/oauth2/v4/token"
+EXECUTE_URL = f"https://smartdevicemanagement.googleapis.com/v1/{NEST_DEVICE}:executeCommand"
+
+def get_access_token():
+    data = {
+        "client_id": NEST_CLIENT_ID,
+        "client_secret": NEST_CLIENT_SECRET,
+        "refresh_token": NEST_REFRESH_TOKEN,
+        "grant_type": "refresh_token",
+    }
+    r = requests.post(TOKEN_URL, data=data)
+    r.raise_for_status()
+    body = r.json()
+    if "access_token" not in body:
+        raise RuntimeError(f"Failed to get access token: {body}")
+    return body["access_token"]
+
+def set_heat_celsius(temp_c: float):
+    access_token = get_access_token()
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json",
+    }
+    payload = {
+        "command": "sdm.devices.commands.ThermostatTemperatureSetpoint.SetHeat",
+        "params": {"heatCelsius": float(temp_c)},
+    }
+    r = requests.post(EXECUTE_URL, headers=headers, data=json.dumps(payload))
+    print("Status:", r.status_code)
+    print("Response:", r.text)
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python3 ashpi_nest_set.py <temp_celsius>")
+        sys.exit(1)
+    try:
+        temp = float(sys.argv[1])
+    except ValueError:
+        print("Invalid number")
+        sys.exit(1)
+    print(f"Setting heat to {temp}°C...")
+    set_heat_celsius(temp)
+
+4. ENV FILE (ashpi_nest.env)
+
+NEST_REFRESH_TOKEN="1//01eWdG4Pli90dCgYIARAAGAESNwF-L9Ir3BQYD5KUj-ejMwCdAxsfg6xx0URs8UlOYR0T5vZEkTTg1-Wu1qUcDgW4S7UO-OHDZlY"
+NEST_CLIENT_ID="21965826000-2omlmh584m43i7fd62tav7f4d8aaft7i.apps.googleusercontent.com"
+NEST_CLIENT_SECRET="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"
+NEST_REDIRECT_URI="https://www.google.com"
+NEST_SCOPE="https://www.googleapis.com/auth/sdm.service"
+NEST_DEVICE="enterprises/a773a0bb-fd52-4526-a32a-ee9f559ed902/devices/AVPHwEt4UTxHqZdAPFy2TD25DNQVohbpouw_s7nTVBBoC_t_CM0BMaPeE3mJjwKXJHxL5nI_Q-STEBQ8w3eWCIennQEk6g"
+
+5. HOW TO USE
+
+source ashpi-env/bin/activate
+python3 ashpi_nest_set.py 24
+

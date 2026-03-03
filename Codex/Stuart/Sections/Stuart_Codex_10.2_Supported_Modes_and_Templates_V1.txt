@@ -1,0 +1,196 @@
+STUART CODEX
+10.2 Supported Modes and Templates (V1) (Canonical)
+
+Status: Canonical (TOC-aligned v2)
+Last updated: 2026-01-12
+
+This section enumerates what modes and templates ship in V1, what their defaults are, and what each mode promises.
+
+This section is intentionally explicit because you called out the biggest failure mode:
+- users (and the model) hallucinate modes/templates that don’t exist.
+
+Chat-canon constraints enforced here:
+- Modes and templates are enumerated (registry truth).
+- Mode selection and template selection are explicit and visible.
+- Uploading a file does not auto-run anything.
+- V1’s highest priority is Meeting Minutes + Journal/Diary working in a high-trust way.
+- Outputs are artifact-first (JSON/MD/PDF) to avoid chat truncation and enable printing.
+
+1) V1 supported modes (enumeration)
+
+V1 ships these modes:
+
+M-1) General Query Mode (No Formalization)
+Purpose:
+- ask questions of existing artifacts (transcripts/minutes/journals)
+- do not generate “official minutes” output
+
+V1 guarantee:
+- answers are evidence-backed and can point to timestamps/segments
+- if evidence is missing, Stuart says so
+
+M-2) Meeting Minutes Mode (Core)
+Purpose:
+- produce structured meeting minutes from single or multi-speaker recordings
+- support diarization + attribution when available
+- support “control sync” style outputs
+
+V1 guarantee:
+- no invented decisions/actions
+- strict evidence citations for decisions and action items
+- speaker attribution is conservative; uncertainty and overlaps are disclosed
+
+M-3) Journal / Diary Mode (Core)
+Purpose:
+- produce a readable “cleaned up” narrative from a single-speaker voice note
+- preserve the original transcript as ground truth
+
+V1 guarantee:
+- transcript remains verbatim best-effort ground truth
+- journal output is derived from transcript and does not invent events
+- optional “near-verbatim” retention for users who want minimal smoothing
+
+M-4) Incident Report Mode (Recommended, may ship in V1 if stable)
+Purpose:
+- produce a structured incident report and timeline
+
+V1 guarantee (if shipped):
+- strict evidence citations for timeline and actions
+- no invented root cause or impact
+- unknowns are explicitly listed as unknowns
+
+Notes:
+- If Incident mode destabilizes V1, it ships in V1.1 without changing the architecture.
+
+2) V1 templates (default set)
+
+Templates are mode-scoped. V1 ships a small default set to keep the UI simple.
+
+2.1 General Query Mode templates
+General Query Mode does not require a template to operate, because it produces answers, not formalized documents.
+However, General Query Mode may still use “answer formats” internally (not user-visible templates). These are not part of the template registry in V1.
+
+2.2 Meeting Minutes templates (V1)
+T-MEET-1) “Meeting Minutes (Standard)”
+Sections (typical):
+- Header (title, date/time, participants if known, recording source)
+- Agenda / Topics Covered
+- Key Discussion Notes (high retention, organized)
+- Decisions (strict evidence required)
+- Action Items (strict evidence required; assignee only if stated)
+- Open Questions / Parking Lot
+- Risks / Blockers (if present)
+- Follow-ups / Next meeting
+
+Defaults:
+- default retention: HIGH (because you want “meeting minutes, not a vague summary”)
+- stance: Analyst
+- diarization: recommended for multi-speaker recordings (but the template still works in degraded mode)
+
+Optional additional V1 template (only if it’s low-risk):
+T-MEET-2) “Meeting Minutes (Short)”
+- fewer sections
+- still strict about decisions/actions citations
+This is convenience, not core.
+
+2.3 Journal/Diary templates (V1)
+T-JOUR-1) “Journal (Narrative)”
+Sections:
+- Header (date/time, title)
+- Narrative Entry (readable, paragraph form)
+- Key Points / Themes (optional)
+- Next Steps / Reflections (optional; only if stated or user asked)
+
+Defaults:
+- default retention: MED or HIGH (depending on how “clean” you want it)
+- stance: Analyst
+- diarization: typically skipped (single speaker)
+
+Optional:
+T-JOUR-2) “Journal (Near-Verbatim)”
+- minimal smoothing, keeps phrasing close to original
+- still removes obvious filler only if user wants
+
+2.4 Incident templates (V1 if shipped)
+T-INC-1) “Incident Report (Standard)”
+Sections:
+- Header (date/time, incident name/id if stated)
+- Summary (careful: derived, not invented)
+- Timeline (strict citations)
+- Impact (only explicit)
+- Actions Taken (strict citations)
+- Action Items / Follow-ups (strict citations)
+- Unknowns / Assumptions (explicitly labeled)
+- Next Update / Owners (only if stated)
+
+Defaults:
+- default retention: HIGH
+- stance: Analyst
+- diarization: recommended for multi-speaker incident calls
+
+3) Retention defaults and allowed ranges (V1)
+
+Retention is always explicit and visible. V1 supports at least:
+- LOW
+- MED
+- HIGH
+- NEAR-VERBATIM
+
+Per-mode defaults:
+- Meeting Minutes: HIGH
+- Journal Narrative: MED/HIGH (configurable default per user)
+- Incident: HIGH
+
+Allowed retention ranges:
+- V1 should allow all levels for all modes, but templates may recommend a default.
+- If a template forbids a retention level (rare), it must be explicit in the registry.
+
+4) Evidence strictness rules (V1)
+
+These are non-negotiable for high-trust modes:
+
+Meeting Minutes:
+- Decisions: MUST have evidence citations.
+- Action Items: MUST have evidence citations.
+- Participant attributions: MUST be conservative; do not name speakers unless mapping/metadata supports it.
+- Overlaps: must be disclosed where relevant.
+
+Journal:
+- Narrative: derived from transcript; does not require per-sentence citations in the printed output by default, but the evidence map still exists behind the scenes.
+- If the user wants citations, the template can enable them.
+
+Incident:
+- Timeline and actions: MUST have evidence citations.
+- Root cause: must not be invented; if not stated, list as unknown or “not determined.”
+
+5) UI: how users select modes/templates in V1
+
+V1 UI should support:
+- Mode dropdown (Meeting / Journal / Incident / General Query)
+- Template dropdown (scoped by the selected mode)
+- Retention selector (or included in template defaults with an explicit override control)
+- Transcript visibility toggle (show/hide transcript in UI; transcript still stored on disk)
+
+Chat commands may also exist (optional), but the UI selection is the source of truth.
+If chat commands request a non-existent mode/template:
+- Stuart refuses and shows valid options.
+
+6) “Re-run without re-upload” (V1 required behavior)
+
+Once a transcript exists, users can:
+- re-run formalization with a different template
+- re-run formalization with different retention
+without re-uploading the original recording.
+
+This is a core usability feature you asked for and is enabled by the artifact-first pipeline.
+
+7) Self-audit (10.2 v2)
+
+Chat-canon alignment checklist:
+- Enumerated modes/templates: V1 lists exactly what exists; no hallucinated mode/template execution. (Maintained.)
+- V1 priorities: Meeting Minutes + Journal are the core supported modes. (Maintained.)
+- Evidence discipline: decisions/actions/timelines are strictly citeable in Meeting/Incident. (Maintained.)
+- Simple chat-first UI: dropdowns + explicit Run; transcript toggle; print-ready outputs. (Maintained.)
+- Re-run without re-upload: transcript reuse supports template experimentation. (Maintained.)
+
+This section is complete.

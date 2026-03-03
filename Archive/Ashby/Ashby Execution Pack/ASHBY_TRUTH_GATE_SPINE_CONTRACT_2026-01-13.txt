@@ -1,0 +1,169 @@
+ASHBY — TRUTH GATE SPINE CONTRACT (BATCH 0)
+Status: Canonical-for-execution (single-purpose contract for Batch 0)
+Date: 2026-01-13
+
+Purpose
+Batch 0 introduces a *platform-level* truth gating “spine” that can later enforce the Codex rule:
+- Ashby does not claim actions happened unless they happened.
+- Language must be constrained by structured truth objects (results + artifacts), not vibes.
+
+This Batch 0 truth spine is a library layer.
+It is NOT a full system rewrite.
+It is NOT wired into the current router flow yet.
+It exists so modules (including future modules) can adopt it cleanly without a later “tear it all down” refactor.
+
+Repo-aware constraint (existing engine reality)
+Your current repo already contains:
+- <repo_root>/ashby/ashby/core/truth_gate.py   (legacy phrase-filter)
+
+Batch 0 MUST NOT delete or rename that file.
+Batch 0 MUST NOT create a directory named “truth_gate” (it would collide/confuse imports).
+Batch 0 MUST create a NEW package:
+- <repo_root>/ashby/ashby/core/truth/
+
+This new package is the future-proof platform truth subsystem.
+
+Non-goals (explicit)
+- “Full Codex Truth Gate” implementation across all modules (out of scope for Batch 0)
+- NLP-level claim extraction (out of scope)
+- Rewriting router.py or safe_chat.py to use this spine (out of scope)
+- Module-specific truth rules (those live in per-module policies later; Batch 0 only provides the hook)
+
+Where this lives in the EXISTING Ashby repo (files to create)
+Create a new package directory:
+
+<repo_root>/ashby/ashby/core/truth/
+  - __init__.py
+  - evidence.py
+  - policy.py
+  - judge.py
+
+Add a smoke test:
+<repo_root>/ashby/tests/test_truth_gate_spine_smoke.py
+
+Contract: Evidence model (evidence.py)
+Truth gating cannot run on chat history.
+It runs on structured evidence.
+
+Define these canonical dataclasses/types:
+
+1) Citation (optional but platform-wide useful)
+Represents a pointer into a durable artifact.
+Required fields:
+- session_id: str
+- artifact_path: str        # relative path under the artifact storage root
+- segment_id: str | None
+- start_ms: int | None
+- end_ms: int | None
+- speaker_id: str | None
+
+Rules:
+- start_ms/end_ms, if present, are integer milliseconds with start_ms <= end_ms.
+- citation objects must be JSON serializable via .to_dict() helper (recommended).
+
+2) EvidenceBundle
+A single object that aggregates all evidence available to constrain a response draft.
+
+Required fields (minimal for Batch 0, expandable later):
+- action_results: list[ActionResult]
+- artifact_results: list[ArtifactResult]
+- errors: list[ErrorResult]
+- citations: list[Citation]
+- notes: list[str]          # freeform, optional
+
+Import the result types from:
+- ashby.core.results (Batch 0C)
+
+Rules:
+- EvidenceBundle is purely descriptive; it must never execute actions.
+- EvidenceBundle is allowed to be empty (chat-only scenario), but judge decisions must reflect that.
+
+3) TruthViolation
+A structured report that a response draft violates policy.
+
+Required fields:
+- code: str                 # stable identifier, e.g. "FORBIDDEN_PHRASE"
+- message: str              # human-readable explanation
+- severity: str             # "block" | "warn"
+- evidence_required: bool   # whether missing evidence caused the violation
+
+Optional fields:
+- meta: dict                # details for debugging/audit
+
+Contract: Policy interface (policy.py)
+A TruthPolicy defines *how to evaluate* a draft response given an EvidenceBundle.
+
+Define a Protocol or ABC with canonical method names:
+
+- policy_id: str            # stable identifier
+- validate(draft: str, evidence: EvidenceBundle) -> list[TruthViolation]
+- rewrite(draft: str, evidence: EvidenceBundle, violations: list[TruthViolation]) -> str | None
+
+Rules:
+- validate() must be deterministic.
+- rewrite() may return a rewritten string OR None.
+- A policy must never claim reality; it only blocks/rewrites language.
+
+Batch 0 MUST include one simple built-in policy to prove the wiring:
+- ForbiddenPhrasesPolicy
+
+ForbiddenPhrasesPolicy requirements:
+- It MUST replicate the existing legacy phrase list in core/truth_gate.py (same strings).
+- It MUST emit TruthViolation(code="FORBIDDEN_PHRASE", severity="block") when triggered.
+- Its rewrite() may return the legacy DEFAULT_REJECT string OR None (judge handles blocking).
+
+This policy is not the final truth gate; it is a compatibility bridge.
+
+Contract: Judge (judge.py)
+TruthGateJudge is the platform “judge” that applies a TruthPolicy to a draft.
+
+Define these canonical types:
+
+1) TruthGateDecision dataclass
+Required fields:
+- allowed: bool
+- blocked: bool
+- rewritten: str | None
+- violations: list[TruthViolation]
+
+Rules:
+- allowed == True implies blocked == False.
+- If rewritten is provided, it must be the string the system should emit.
+- If blocked == True and rewritten is None, caller may emit a safe fallback.
+
+2) TruthGateJudge class
+Required method:
+- evaluate(draft: str, evidence: EvidenceBundle, policy: TruthPolicy) -> TruthGateDecision
+
+Recommended convenience:
+- apply(draft: str, evidence: EvidenceBundle, policy: TruthPolicy, fallback: str | None = None) -> str
+  Returns rewritten text if present; otherwise returns draft if allowed; otherwise returns fallback or a generic block message.
+
+Rules:
+- Judge must not perform NLP or “meaning extraction” beyond calling policy.validate().
+- Judge must be deterministic and side-effect-free.
+
+Integration rule (Batch 0)
+Batch 0 does NOT wire this judge into router.py.
+Batch 0 only provides the primitives + smoke tests.
+Later work will:
+- build module-specific policies (e.g., “lights claims require ActionResult”, “meeting minutes claims require citations”)
+- unify legacy truth_gate phrase filter into policy usage everywhere
+
+Smoke test expectations (test_truth_gate_spine_smoke.py)
+The smoke test MUST:
+- construct an empty EvidenceBundle
+- instantiate ForbiddenPhrasesPolicy
+- instantiate TruthGateJudge
+- verify:
+  - evaluate() returns allowed=True for a benign draft
+  - evaluate() returns blocked=True (or rewritten fallback) for a draft containing a forbidden phrase
+
+Self-audit checklist (Batch 0 acceptance)
+Before declaring “Truth Gate spine done”:
+- New package exists at ashby/ashby/core/truth/ with the four files.
+- No directory named “truth_gate” was created.
+- Existing core/truth_gate.py was not deleted or renamed.
+- API is deterministic, side-effect-free, and generic.
+- Tests pass and do not require network or secrets.
+- No mention of “stuart” or “meetings” exists in these core files.

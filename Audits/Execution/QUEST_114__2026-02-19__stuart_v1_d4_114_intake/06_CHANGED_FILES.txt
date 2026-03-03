@@ -1,0 +1,4 @@
+/home/notsolikely/Ashby_Engine/ashby/modules/meetings/transcript_versions.py
+/home/notsolikely/Ashby_Engine/ashby/modules/meetings/schemas/artifacts_v1.py
+/home/notsolikely/Ashby_Engine/tests/test_meetings_transcript_versions_store.py
+/home/notsolikely/Ashby_Engine/tests/test_meetings_artifact_schemas_v1.py

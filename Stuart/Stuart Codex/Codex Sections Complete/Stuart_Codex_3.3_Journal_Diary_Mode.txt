@@ -1,0 +1,105 @@
+STUART CODEX
+3.3 Journal / Diary Mode (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines Journal/Diary Mode. This is V1-critical alongside Meeting Minutes. It exists because spoken journaling is often easier than written journaling, but raw transcripts are messy. Journal Mode turns a spoken voice note into readable text while preserving meaning and avoiding invention.
+
+Journal/Diary Mode produces:
+- a verbatim transcript (always generated internally), and
+- a journal formalization shaped by a template and retention level, with truth discipline.
+
+1) Inputs and assumptions
+
+Typical input:
+- Single speaker voice note (rambling, reflective, conversational).
+- Background noise may exist.
+- The user may repeat themselves, change topics mid-sentence, or use filler words.
+
+Assumptions:
+- Usually one speaker (but diarization may still run).
+- The goal is readability, not “minutes-style” extraction.
+
+2) Required artifacts (minimum)
+
+Upon execution (transcription + journal run), Stuart must produce at minimum:
+- transcript.json
+- transcript.txt
+- journal.json (machine)
+- journal.md (human)
+- journal.pdf (print-ready)
+- evidence_map.json (for claims that the journal formalization presents as factual; if the journal is purely narrative, evidence mapping can be lighter, but the system must still be able to trace text back to transcript segments)
+
+3) What journal formalization must do
+
+Journal formalization is “clean prose derived from the user’s speech.”
+
+J1) Preserve meaning
+The journal entry must preserve the user’s meaning and intent.
+
+J2) Improve readability
+- remove filler words (“um,” “like”) when appropriate,
+- normalize grammar,
+- group thoughts into paragraphs,
+- preserve the user’s voice (style) according to template.
+
+J3) Avoid invention
+- do not add events that were not stated,
+- do not add “insights” unless explicitly requested under Collaborator stance (and then label them).
+
+J4) Allow structure without forcing it
+Templates may add structure such as:
+- “What happened today”
+- “How I felt”
+- “What I learned”
+- “What I want to do next”
+But structure is template-driven, not forced universally.
+
+4) Retention levels in journal mode
+
+Retention is especially important for journaling because some users want their exact phrasing, and others want a “written diary” feel.
+
+Guidelines:
+- LOW: high-level entry, fewer direct phrases, more consolidation (still not invention)
+- MED: readable paragraphs, keeps key phrases
+- HIGH: keeps much of original phrasing, just cleaned
+- NEAR-VERBATIM: organized transcript with minimal cleanup
+
+5) Optional “clean transcript view”
+
+Journal Mode may include an optional artifact:
+- clean_transcript.txt or clean_transcript.md
+This is still derived; it does not replace the verbatim transcript.
+
+6) Privacy and sensitivity
+
+Journals are personal. In LOCAL_ONLY profile, journaling must run entirely local.
+In HYBRID, remote formalization is allowed only with explicit disclosure/confirmation. Users should be offered redaction options.
+
+7) Re-running journal outputs without re-transcribing
+
+Just like meetings:
+- transcript is ground truth,
+- journal is derived.
+Users can re-run journal with a different template or retention level without re-transcribing.
+
+8) Printing and export
+
+Users should be able to:
+- print the journal formalization immediately (journal.pdf),
+- export it as markdown/text for personal archives.
+
+PDF formatting must be clean and readable (no hard-wrap corruption).
+
+9) Self-audit (3.3)
+
+This section reflects our chat decisions:
+- journaling is a V1-critical mode,
+- transcript always exists internally,
+- formalization improves readability without inventing content,
+- retention knob controls how much phrasing is preserved,
+- optional clean transcript view is allowed but must not replace ground truth,
+- and print-ready export is required.
+
+This section is complete.

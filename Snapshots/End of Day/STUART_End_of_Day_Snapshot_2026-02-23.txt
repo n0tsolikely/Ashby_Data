@@ -1,0 +1,60 @@
+================================================================================
+END OF DAY SNAPSHOT
+================================================================================
+A) Header (required)
+- Subject: STUART
+- Date: 2026-02-23
+- Topic: Stuart SIDE-QUEST_088 upload gating backend truth-path completion (Toronto 2026-02-23)
+- Snapshot Type: End_of_Day
+- World State: Fog Lifted
+- Codex Freeze status: PRESENT (/home/notsolikely/Ashby_Data/Codex/CODEX_FREEZE.md)
+
+B) Work Performed (Quest-by-Quest) (required)
+- Completed SIDE-QUEST_088 backend truth-path fix for upload gating.
+- In `ashby/interfaces/web/app.py` `/api/sessions` now derives upload state from contributions store via `_session_contribution_count(session_id)`.
+- Added per-session response fields:
+  - `contributions_count`
+  - `has_audio`
+- Added regression assertion in `tests/test_meetings_web_upload_preview_no_run.py` to verify `/api/sessions` returns `contributions_count >= 1` and `has_audio=true` after upload.
+- Built governed execution bundle:
+  `/home/notsolikely/Ashby_Data/Audits/Execution/SIDE-QUEST_088__2026-02-23__stuart_webapp_backend_upload_gating_uses_contributions_store`.
+- Recorded Hands manual verification receipt and moved quest card to Completed.
+
+C) Completed Work Summary (required when anything completed)
+- SIDE-QUEST_088 is complete.
+- Backend is now authoritative for upload gating state consumed by the web UI refresh path.
+- Quest board state updated:
+  `/home/notsolikely/Ashby_Data/Quest Board/Completed/SIDE-QUEST_088__Stuart_Webapp_Backend__Upload_Gating_Uses_Contributions_Store__2026-02-23.txt`.
+
+D) Incomplete / Failed / Blocked Work (required when relevant)
+- No remaining blockers for SIDE-QUEST_088.
+- Additional work after this snapshot should append as follow-on EOD updates for Toronto date 2026-02-23.
+
+E) System Verification Performed (required when applicable)
+- Automated verification:
+  - `python -m pytest -q tests/test_meetings_web_api_contract_minimum_v1.py` -> 2 passed.
+  - `python -m pytest -q tests/test_meetings_web_upload_preview_no_run.py` -> 1 passed.
+- Governance verification:
+  - `synapse_governance_guard.py ... validate --quest-id SIDE-QUEST_088 ...` -> PASS.
+- Manual verification receipt from Hands recorded:
+  `06_MANUAL_CHECK_USER_RECEIPT.txt` (test run by operator and confirmed fixed).
+
+F) Bugs / Weirdness / Discoveries
+- Environment constraint observed in this sandbox:
+  local port binding for full `./Stuart` web stack was blocked, so in-session browser-level check could not be reproduced here.
+- This was mitigated by operator manual test confirmation and ASGI-equivalent verification receipts.
+
+G) Raid / Guild Orders status changes
+- Active subject: STUART.
+- Today closed: SIDE-QUEST_088 (webapp upload gating truth-path).
+- Control Sync remains closed/inactive.
+
+H) Talent Tree updates (mandatory when relevant)
+- No talent-tree ledger update recorded in this pass.
+
+I) Resume Instructions (required)
+1) Continue with next accepted Stuart quest(s) after SIDE-QUEST_088.
+2) Keep `/api/sessions` as the single source of truth for upload gating.
+3) If additional work is done today (Toronto date 2026-02-23), append with additional EOD snapshot update(s).
+
+END OF SNAPSHOT

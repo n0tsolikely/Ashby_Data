@@ -1,0 +1,196 @@
+STUART — END OF DAY SNAPSHOT
+Date: 2026-02-09
+Scope: Dungeon 5 COMPLETE (QUEST_061 → QUEST_067)
+
+================================================================================
+0) PURPOSE
+================================================================================
+This snapshot is the authoritative closure record for Dungeon 5 (Doors + Consent).
+It exists so a future rehydration can reconstruct truth from artifacts, not memory.
+
+================================================================================
+1) CANON ROOTS (SINGLE SOURCE OF TRUTH)
+================================================================================
+- Governance: /mnt/data/Synapse_OS_Governance
+- Data:       /mnt/data/Ashby_Data
+- Engine:     /mnt/data/Ashby_Engine
+
+ZIP EXPORT LAW
+- The extracted folders are canon.
+- Zip files are inert exports. Every mutation to Data/Engine ships as a new combined zip.
+
+================================================================================
+2) GOVERNANCE STATE (LOCKED)
+================================================================================
+- Control Sync: CLOSED
+- Execution authority: only from Quest Board/Accepted
+- Truth gate posture: no “done” without receipts (diffs, commands, tests, artifacts)
+- Testing law: never claim tests passed unless executed and captured
+
+NO HEURISTICS — HARD RULE
+- Any reference to Codex / snapshots / audits / code must be verified by direct file inspection.
+- Heuristic guesses are not allowed; verification is mandatory.
+
+================================================================================
+3) DECISION ANCHORS
+================================================================================
+Control Sync snapshot (D5 acceptance + no-heuristics lock):
+- /mnt/data/Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-02-09__D5_ACCEPTED_NO_HEURISTICS_LOCK.txt
+
+Previous phase closure (D3+D4+spine):
+- /mnt/data/Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2026-02-08__Q053-Q060_SQ076_SQ077.txt
+
+================================================================================
+4) QUEST BOARD TRUTH
+================================================================================
+Accepted:
+- EMPTY (D5 is closed)
+
+Completed (D5):
+- QUEST_061 — RunRequest contract unify doors
+- QUEST_062 — Web upload stores contribution (Upload ≠ Run)
+- QUEST_063 — Web confirm triggers run + progress + deterministic downloads
+- QUEST_064 — Web library list + search UI (index-backed)
+- QUEST_065 — Telegram file mode: mode/speakers/confirm gate + return primary PDF
+- QUEST_066 — CLI upload/run surface with --yes confirm rail
+- QUEST_067 — CLI search + export commands
+
+Unaccepted next phase (do not execute without new Control Sync):
+- QUEST_068 → QUEST_072 (Dungeon 6)
+- QUEST_073 → QUEST_075
+
+================================================================================
+5) DUNGEON 5 — WHAT SHIPPED (EVIDENCE-BACKED)
+================================================================================
+5.1 Unified door-facing RunRequest contract (QUEST_061)
+- Canonical schema:
+  - /mnt/data/Ashby_Engine/ashby/modules/meetings/schemas/run_request.py
+- Doors now normalize mode/template/retention/speakers via RunRequest before planning.
+
+Environment constraint (codex-true testing posture):
+- Web tests were made runnable in this environment without external installs:
+  - bytes upload support (no python-multipart)
+  - async httpx ASGITransport (TestClient incompatibility)
+Receipts:
+- /mnt/data/Ashby_Data/Audits/Execution/QUEST_061__2026-02-09__runrequest_contract_unify_doors/
+
+5.2 Web consent rail: Upload ≠ Execute (QUEST_062)
+- /api/upload stores an immutable contribution and returns a deterministic plan preview.
+- Upload alone creates no run and triggers no processing.
+Receipts:
+- /mnt/data/Ashby_Data/Audits/Execution/QUEST_062__2026-02-09__webapp_upload_stores_contribution_not_run/
+
+5.3 Web confirm → run → progress → deterministic downloads (QUEST_063)
+- Confirm triggers the run.
+- /api/runs/{run_id} surfaces progress and downloads.primary.* derived from run.json["primary_outputs"].
+- UI shows Run Status + Primary Outputs without filename guessing.
+Receipts:
+- /mnt/data/Ashby_Data/Audits/Execution/QUEST_063__2026-02-09__webapp_confirm_gate_triggers_run_progress_downloads/
+
+5.4 Web library + search UI (QUEST_064)
+- /api/library is backed by SQLite index list_sessions.
+- UI can list sessions, run search, and pull deterministic outputs for a run.
+Receipts:
+- /mnt/data/Ashby_Data/Audits/Execution/QUEST_064__2026-02-09__webapp_library_list_and_search_ui/
+
+5.5 Telegram door confirm rail + primary PDF return (QUEST_065)
+- Telegram file flow: upload → mode → speakers → explicit confirm → run.
+- Correct PDF returned via run.primary_outputs.pdf.path:
+  - meeting → minutes.pdf
+  - journal → journal.pdf
+- Added subprocess runner smoke test.
+Receipts:
+- /mnt/data/Ashby_Data/Audits/Execution/QUEST_065__2026-02-09__telegram_file_mode_speakers_run_return_pdf/
+
+5.6 CLI upload/run confirm rail (QUEST_066)
+- CLI run requires explicit --yes to execute.
+- CLI mirrors RunRequest fields.
+- Output pointers come from run manifest, not filenames.
+Receipts:
+- /mnt/data/Ashby_Data/Audits/Execution/QUEST_066__2026-02-09__cli_upload_and_run_commands/
+
+5.7 CLI search + export (QUEST_067)
+- stuart search uses SQLite index and does not create runs.
+- stuart export emits a read-only session bundle zip.
+Receipts:
+- /mnt/data/Ashby_Data/Audits/Execution/QUEST_067__2026-02-09__cli_search_and_export_commands/
+
+================================================================================
+6) TEST RECEIPTS (REAL EXECUTION)
+================================================================================
+All commands + results below are taken from the per-quest audit bundle VERIFY files.
+
+QUEST_061:
+- cd /mnt/data/Ashby_Engine
+  PYTHONPATH=/mnt/data/Ashby_Engine python3 -m pytest -q
+  Result: 85 passed
+  Evidence: QUEST_061 audit bundle 06_PYTEST_-q.txt
+
+QUEST_062:
+- cd /mnt/data/Ashby_Engine
+  PYTHONPATH=/mnt/data/Ashby_Engine python3 -m pytest -q
+  Result: exit 0
+  Evidence: QUEST_062 audit bundle 06_PYTEST_-q.txt
+
+QUEST_063:
+- PYTHONPATH=Ashby_Engine python3 -m pytest -q
+  Result: 86 passed (exit 0)
+  Evidence: QUEST_063 audit bundle 06_PYTEST_-q.txt
+
+QUEST_064:
+- cd /mnt/data/Ashby_Engine
+  PYTHONPATH=/mnt/data/Ashby_Engine python3 -m pytest -ra
+  Result: 88 passed, 3 warnings (exit 0)
+  Evidence: QUEST_064 audit bundle 06_PYTEST_full.txt
+
+QUEST_065:
+- cd /mnt/data/Ashby_Engine
+  python -m pytest -q \
+    tests/test_meetings_cli_stuart.py \
+    tests/test_meetings_web_door_scaffold.py \
+    tests/test_meetings_web_upload_run.py \
+    tests/test_telegram_stuart_door_core.py \
+    tests/test_telegram_stuart_runner_smoke.py
+  Result: 10 passed, 3 warnings (exit 0)
+  Evidence: QUEST_065 audit bundle 06_PYTEST_smoke_-q.txt
+
+QUEST_066:
+- cd /mnt/data/Ashby_Engine
+  PYTHONPATH=/mnt/data/Ashby_Engine python -m pytest -q \
+    tests/test_meetings_cli_stuart.py \
+    tests/test_meetings_web_door_scaffold.py \
+    tests/test_meetings_web_upload_run.py \
+    tests/test_telegram_stuart_door_core.py \
+    tests/test_telegram_stuart_runner_smoke.py
+  Result: 10 passed (exit 0)
+  Evidence: QUEST_066 audit bundle 06_PYTEST_smoke_-q.txt
+
+QUEST_067:
+- cd /mnt/data/Ashby_Engine
+  PYTHONPATH=/mnt/data/Ashby_Engine python -m pytest -q \
+    tests/test_meetings_cli_stuart.py \
+    tests/test_meetings_web_door_scaffold.py \
+    tests/test_meetings_web_upload_run.py \
+    tests/test_telegram_stuart_door_core.py \
+    tests/test_meetings_cli_search_export.py
+  Result: exit code 0
+  Evidence: QUEST_067 audit bundle 06_PYTEST_smoke_gate_-q.txt
+
+================================================================================
+7) REHYDRATION UPDATE (THIS EOD)
+================================================================================
+Latest Rehydration Pack updated to 2026-02-09:
+- /mnt/data/Ashby_Data/Latest Rehydration Pack/BOOTSTRAP_PROMPT_2026-02-09.txt
+- /mnt/data/Ashby_Data/Latest Rehydration Pack/CONTINUITY_LOCK_2026-02-09.txt
+- /mnt/data/Ashby_Data/Latest Rehydration Pack/execution pack/00_EXECUTION_PACK_INDEX__2026-02-09.txt
+  - Packs are now REV10 and include Doors + Consent operations.
+
+Archived (history):
+- /mnt/data/Ashby_Data/Archive(IGNORE)/Latest Rehydration Pack History/2026-02-08/
+
+================================================================================
+8) NEXT SAFE MOVE
+================================================================================
+- Start a new Control Sync.
+- If accepting the next closed phase, Dungeon 6 begins at QUEST_068.
+- Do not execute unaccepted quests.

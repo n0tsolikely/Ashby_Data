@@ -1,0 +1,102 @@
+ASHBY — SESSION MODEL CONTRACT (MEETINGS PLACEHOLDER) (BATCH 0)
+Status: Canonical-for-execution (single-purpose contract for Batch 0)
+Date: 2026-01-13
+
+Purpose
+Batch 0 adds a minimal “meetings” session container to Ashby’s existing session system.
+This is platform work.
+It is a placeholder that matches the style of existing sessions (lighting.py, comfort.py) so later router integration for meeting workflows is clean.
+
+Important distinction
+This file is NOT the meeting artifact store.
+Meeting artifacts live in module-controlled storage (later: Stuart’s artifact tree).
+This session container is only for short-lived conversational state (follow-ups, pending confirmations, active meeting selection).
+
+Repo-aware anchor (existing session style)
+Existing sessions live at:
+- <repo_root>/ashby/ashby/brain/sessions/lighting.py
+- <repo_root>/ashby/ashby/brain/sessions/comfort.py
+
+They share these traits:
+- module-level dicts keyed by user_id
+- timeout-based auto-expiry
+- small helper functions (start/get/end)
+
+Batch 0 meetings session MUST follow the same pattern.
+
+Where this lives in the EXISTING Ashby repo (files to create/modify)
+Create:
+- <repo_root>/ashby/ashby/brain/sessions/meetings.py
+
+Modify:
+- <repo_root>/ashby/ashby/brain/sessions/__init__.py
+  to import meetings (so callers can do ashby.brain.sessions.meetings)
+
+Non-goals (explicit)
+- No pipeline logic
+- No transcription/diarization logic
+- No UI state machine
+- No multi-meeting database
+- No persistence (sessions are in-memory like existing ones)
+
+Contract: meetings session data model (meetings.py)
+Define module-level storage:
+
+- _sessions: dict[str, dict]
+  Key: user_id (string)
+
+Define a timeout:
+- SESSION_TIMEOUT = 60  (seconds)  [default; can be adjusted later]
+Rationale:
+- This is a conversational follow-up window, not a meeting duration.
+
+Define required functions (canonical names)
+1) start_session(user_id: str, *, meeting_id: str | None = None, title: str | None = None, mode: str | None = None, data: dict | None = None) -> dict
+Creates/resets a session for the user.
+Stores keys:
+- "meeting_id": str | None
+- "title": str | None
+- "mode": str | None
+- "data": dict (always a dict; empty if None)
+- "updated": float (time.time())
+
+2) end_session(user_id: str) -> None
+Deletes session if present.
+
+3) has_active_session(user_id: str) -> bool
+Returns True if session exists and is not expired.
+If expired: auto-ends and returns False.
+
+4) get_session(user_id: str) -> dict | None
+Returns session dict or None (auto-expiring).
+
+5) touch(user_id: str) -> None   (recommended)
+If session exists, updates "updated" to now.
+
+Rules:
+- The meetings session container must never import any module code.
+- It must not read/write disk.
+- It must be safe to import in router.py without side effects.
+
+__init__.py modification contract (brain/sessions/__init__.py)
+Existing __init__.py currently exports comfort/lighting.
+Modify by adding:
+- from . import meetings
+No other changes are required in Batch 0.
+
+Optional smoke test (recommended but not required)
+If you add a test:
+- <repo_root>/ashby/tests/test_meetings_session_smoke.py
+It should:
+- start a session and get it back
+- simulate expiry by editing updated timestamp
+But Batch 0 may also accept “imports succeed” without this test.
+
+Self-audit checklist (Batch 0 acceptance)
+Before declaring “Meetings session container done”:
+- meetings.py matches the pattern of lighting.py/comfort.py (module dict + timeout)
+- no disk writes
+- no imports from core/router/capabilities
+- __init__.py exports meetings
+- code imports cleanly
+- no mention of “stuart” exists in meetings session code

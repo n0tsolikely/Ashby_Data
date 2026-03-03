@@ -1,0 +1,73 @@
+QUEST ID: QUEST_025
+Title: Stuart v1 — Dungeon 8 (2 of 2): Webapp upload→run + downloads + state sync
+Context: Stuart
+Origin: Guild Orders: GUILD_ORDERS_STUART_V1_2026-01-16_REV3.txt (Dungeon 8)
+Priority: P0
+Links:
+- Guild Orders: Stuart v1 — Dungeon 8
+- Supersedes (decomposition of): QUEST_009
+- Related: QUEST_021 (formalization outputs), QUEST_023 (search results), QUEST_024 (webapp scaffold)
+Status: COMPLETED
+Audit Bundle Path: Quest Board/QUEST DIFF AUDIT FILES/QUEST_025__AUDIT/
+Accepted On: 2026-01-26
+Completed On: 2026-01-26
+
+DESCRIPTION
+────────────────────────────────────────
+Complete the primary web door so users can upload media, confirm a plan when required, run the pipeline, and download outputs. Ensure chat overrides UI and UI reflects overridden state.
+
+SCOPE / OBJECTIVE
+────────────────────────────────────────
+Implement webapp behaviors:
+- Upload flow:
+  - upload stores contribution (intake)
+  - if user message fully specifies plan: proceed
+  - otherwise show plan preview + require confirm
+- Run execution:
+  - trigger pipeline via explicit “go” (confirm button)
+  - poll progress and show status
+- Downloads:
+  - formalization PDF and MD
+  - transcript access (may be toggle-gated but must exist)
+- State sync:
+  - chat commands override UI selection
+  - UI updates to reflect overridden mode/speakers/template
+
+This quest is considered done only when the webapp can complete a minimal end-to-end demo.
+
+OUT OF SCOPE
+────────────────────────────────────────
+Full multi-template editor UI.
+Multi-user accounts/auth.
+Telegram door (Dungeon 9).
+
+DEPENDENCIES
+────────────────────────────────────────
+- QUEST_024
+- QUEST_021
+- QUEST_023
+
+EXECUTION NOTES
+────────────────────────────────────────
+Respect explicit execution gating: upload must not auto-run without confirmation when ambiguous.
+Downloads should not require digging through folders; UI must present them directly.
+
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────
+- [x] User can upload an audio/video file and it is stored as a contribution with manifests/hashes.
+- [x] If required inputs are ambiguous, webapp shows plan preview and requires explicit confirm before heavy work runs.
+- [x] Pipeline runs and progress can be observed in UI (polling).
+- [x] On completion, user can download formalization.pdf and formalization.md directly from the UI.
+- [x] Transcript is accessible (optionally behind a visibility toggle) and remains the ground truth.
+- [x] Chat commands override UI state and the UI updates to match (no divergence).
+- [x] A keyword search query can be issued and returns results from SQLite FTS (via QUEST_023 integration), with citations.
+
+TALENT POINT
+────────────────────────────────────────
+On completion:
+- Talent Point Awarded: YES
+- Talent Spent On: TALENT_STUART_WEB_DOOR_UPLOAD_RUN_DOWNLOADS — Web Door Upload→Run→Downloads + State Sync + Search
+
+FINAL NOTES
+────────────────────────────────────────
+(optional)

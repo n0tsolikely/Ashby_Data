@@ -1,0 +1,56 @@
+STUART CONTROL SYNC SNAPSHOT — 2026-02-04
+Timestamp (local): 2026-02-04 15:57:46 EST (-0500)
+Timestamp (utc):   2026-02-04 20:57:46 UTC (+0000)
+Hands: Peter
+Operator: Ash
+
+CONTROL SYNC STATUS
+- OPEN (planning + governance maintenance; no quest execution)
+
+CANONICAL ROOTS CONFIRMED
+- Data:       /mnt/data/Ashby_Data
+- Engine:     /mnt/data/Ashby_Engine
+- Governance: /mnt/data/Synapse_OS_Governance
+
+RAID INTENT (TODAY)
+- Finish Stuart v1 into a usable end-to-end product loop:
+  - Input: user drops audio (solo or multi-speaker)
+  - Options: user selects mode (Meeting Minutes / Journal) + optional speaker count hint
+  - Pipeline: normalize → diarize → transcribe → (optional: speaker name mapping) → formalize (LLM) → export (MD/PDF + JSON)
+  - Persistence: store run artifacts + allow re-formalize without re-transcribe
+  - Retrieval: list/search past meetings/journals by topic/person/attendee
+  - Doors: usable via Webapp/Telegram/CLI (goal: Web + Telegram primarily)
+
+NON-NEGOTIABLE CONSTRAINTS
+- Stuart Codex is binding. (Meeting Minutes Mode + Journal Mode; truth rules; required artifacts.)
+- Truth Gate: no invented minutes/attendees/decisions; evidence anchors required.
+- Atomic quests only.
+
+WHAT WAS DONE IN THIS CONTROL SYNC (SO FAR)
+- Rehydration Pack archival move:
+  - Created: Ashby_Data/Latest Rehydration Pack/Stuart Rehydration Pack Feb 04/
+  - Moved into that folder: ALL items from Latest Rehydration Pack EXCEPT:
+    - Stuart - The Canonical Vision.txt (left in place as the live vision reference)
+  - Rationale: bootstrap/continuity/execution-pack files were stale for the new Stuart V1 finishing scope; keep for provenance but prevent accidental reuse.
+
+STATE / CONTEXT REHYDRATED (FROM DISCUSSION)
+- Current engine reality: meetings pipeline exists (normalize/diarize/transcribe/align/render/PDF) but “formalization” is currently closer to transcript packaging than Codex-valid minutes/journal.
+- V1 requires adding real formalization output (minutes/journal), retention behavior, and retrieval/library UX.
+- Execution Pack: explicitly deprioritized for now; will be regenerated after we have real accepted+completed quest progress and an accurate resume state.
+
+DECISIONS LOCKED (BINDING)
+- Scope for the next raid segment is the new Stuart V1 quest chain.
+- We will accept a bounded subset as today’s scope (see below) and begin execution under Dailies after acceptance.
+- Rehydration artifacts (bootstrap/continuity/execution pack) are not deleted; they are preserved and inert.
+
+OPEN QUESTIONS / RISKS (CALLED OUT)
+- Quest numbering vs dungeon coverage ambiguity:
+  - Hands requested “accept Dungeons 1–3 (QUEST_042–QUEST_051)”.
+  - In the current quest map on disk, Dungeon 3 quests begin at QUEST_053.
+  - Action: Follow Hands’ explicit quest-number scope (042–051). Dungeon 3 work beyond that remains BOARD unless/until accepted.
+
+NEXT ACTIONS (IMMEDIATE)
+- Accept quests QUEST_042 through QUEST_051 (create audit bundles, mark ACCEPTED, move to Quest Board/Accepted).
+- Create a POST-ACCEPTANCE Control Sync snapshot as a stable resume point.
+
+END OF CONTROL SYNC SNAPSHOT

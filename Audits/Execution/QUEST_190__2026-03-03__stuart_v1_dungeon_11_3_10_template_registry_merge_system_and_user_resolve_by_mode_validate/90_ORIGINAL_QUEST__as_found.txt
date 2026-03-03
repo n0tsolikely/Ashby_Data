@@ -1,0 +1,152 @@
+# QUEST_190 — Stuart v1 — Dungeon 11 (3/10) — Template Registry: Merge System + User, Resolve by Mode, Validate
+
+(Quest template: Synapse OS — Architecture Transcendence Protocol, Stuart v1)
+
+IDENTITY
+- Quest ID: QUEST_190
+- Title: Stuart v1 — Dungeon 11 (3/10) — Template Registry: Merge System + User, Resolve by Mode, Validate
+- Dungeon: 11 (Templates as first-class artifacts)
+- Owner: OpenAI Codex (CLI execution)
+- Priority: P1
+- Risk Class: R2
+- Expected Testing Level: TL2 (unit + API) unless explicitly upgraded in this quest
+- Date Authored: 2026-03-03
+
+CANON LOCKS (sha256)
+- Guild Orders (ACTIVE): Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-25_REV14.txt
+  sha256: d10c278cd45a543c32c27102a912ce6f1c0569401c5ec0e00f6dc1e5c5b9b094
+
+- Guild Orders — Dungeon 11 block (verbatim) sha256: 00aff20ab5689f18747d0931ed6eea4432d0828df6dd180f0994337193b3905b
+
+- Stuart Codex anchors:
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_4.1_Mode_vs_Template_Separation.txt
+    sha256: 3823c6a3fa132e600d2b8b8c3cf825a6dc950c65b1dfa3c62a06a5a319bd7424
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_4.2_Template_Schema_Sections_Required_vs_Optional.txt
+    sha256: 2e6ca9a2caef22ec2eb432254afbe37cd5b53502aec9afe87e3b86f87f439611
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_4.4_Template_Creation_Chat_Guided.txt
+    sha256: c27b38f828095b60d21fc591c664c47ca44f987275ba438b3896220f83c50ca7
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_4.5_Template_Import_Document_or_Image_Based.txt
+    sha256: f10e6c36bd1206efb11d0f2da84b47797d705d31f89f7788d1a142747f96a047
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_4.6_Template_Versioning_and_Compatibility.txt
+    sha256: c359eed7780c19aef3b54fafc50ddc3e941ef25b367c958d8f6b0f3b9fc0b68f
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_2.4_Template_Selection_Scoped_by_Mode.txt
+    sha256: 03d3aa53371845a759f165fe1f542b38e7694829a0618b881316a0802d18c165
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_6.2_Canonical_Artifacts_JSON_Markdown_PDF.txt
+    sha256: aaf3db33935220866ed5f48dc0bf5d0e95a92ea6f690fa008ff47e01bee5bfc0
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_6.3_File_Naming_and_Deterministic_Paths.txt
+    sha256: f551b5e5166d175eac545518cde1a9d9dcea0bae7d43477c298471d42bf6371d
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_1.2_Core_Invariants_Truth_Evidence_Explicit_Execution.txt
+    sha256: 2f15b9014fc6f787986f990020867c177561e268950bafda58d6f0cbe8472953
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_2.2_Explicit_Execution_Gating_Submit_Confirm.txt
+    sha256: 322b838cce234e1c17d36f6a9a4c35a612dba211000b3ee8878be4e5dec6b602
+
+- Monster (Canon16 reference): MONSTER_ASHBY__THE_MONSTER_WORKSPACE__20260303_170000.zip
+  Routes index: MONSTER/repomap/snapshot_repomap_pack_current/WEB_API.md
+  sha256: df6c574135ac970896d89513b3aa87923d50feded9f91d2695a6f04a82f9dd4e
+
+
+SYSTEM CONTEXT STATEMENT
+- Stuart currently supports **system templates** only via:
+  - `ashby/modules/meetings/template_registry.py`:
+    - `_SYSTEM_DIR` points at in-repo templates
+    - `_V1_TEMPLATES_BY_MODE` is hard-coded to default templates
+- Dungeon 11 requires **user templates** to be discoverable and selectable:
+  - Listed per mode
+  - Validated per mode
+  - Resolved by template_id + version
+  - Titles displayed in UI via registry payload
+- We must not fork parsing logic: reuse existing parse_markdown_template + defaults behavior.
+
+REPO / MONSTER ANCHORS
+- Template registry: Ashby_Engine/ashby/modules/meetings/template_registry.py
+  - user_templates_dir(): L59
+  - allowed_templates_for_mode(): L63
+  - allowed_templates(): L261
+  - load_template_spec(): L222
+  - _V1_TEMPLATES_BY_MODE: L10
+- New filesystem store (from QUEST_189):
+  - ashby/modules/meetings/templates/store.py
+
+CONSTRAINT SUMMARY
+- Keep system templates exactly where they are (in-repo).
+- User templates are loaded from TemplateStoreRoot (runtime).
+- Template selection is scoped by mode.
+- Version is respected: if run specifies template_id+version, load exactly that.
+- Backward-compat: existing callers passing only template_id should still work (loads latest version for user templates; loads system template version as defined in front matter).
+
+ANTI-DUP PLAN
+- Confirm there is exactly one source of truth for:
+  - Parsing markdown templates (template_registry.parse_markdown_template)
+  - Filesystem storage (templates/store.py)
+- Do not add another ad-hoc parser in the API layer.
+
+DELIVERABLES
+- Update template_registry.py to:
+  1) Provide a unified descriptor list for a mode (system + user)
+  2) Resolve template specs by:
+     - system templates: existing behavior
+     - user templates: load from TemplateStore, parse markdown, apply defaults
+  3) Upgrade validation to include user templates
+- Add tests verifying:
+  - user templates appear in allowed_templates_for_mode
+  - load_template_spec loads correct version for user templates
+  - validate_template rejects missing template_id per mode
+
+TASK BREAKDOWN
+1) Introduce a descriptor type for templates
+   - In template_registry.py, define a small dataclass or TypedDict:
+     - template_id, template_title, template_version, source ("system"|"user"), mode
+
+2) Replace hard-coded allowed templates mapping
+   - Keep `_V1_TEMPLATES_BY_MODE` only as a fallback for **system defaults**.
+   - Add logic:
+     - system_templates_for_mode(mode): returns descriptors from system folder
+     - user_templates_for_mode(mode): returns descriptors from TemplateStore list_templates(mode)
+     - allowed_templates_for_mode(mode): merge + dedupe by template_id (prefer user if collision, but system "default" must remain stable)
+   - NOTE: system templates already include template_version in front matter; user templates store uses integer version.
+     - Normalize to string for `template_version` if needed.
+
+3) Extend load_template_spec(...)
+   - New optional args:
+     - version: Optional[int|str] (if provided, load exact version)
+   - If template_id resolves to system template: existing path logic
+   - Else: treat as user template:
+     - call templates.store.load_template(template_id, mode, version or latest)
+     - parse_markdown_template(template_text)
+     - apply defaults (include_citations, show_empty_sections)
+     - set TemplateSpec fields:
+       - template_id, template_version, mode, defaults, sections, template_text
+       - ADD: template_title (needed downstream)
+
+4) Update validate_template(...)
+   - Ensure it validates:
+     - mode is known
+     - template_id exists in allowed templates for that mode
+     - if version specified, that version exists (for user templates)
+
+5) Tests
+   - Add: `tests/test_template_registry_merges_system_and_user.py`
+   - Use temp STUART_ROOT + create user template via TemplateStore
+   - Assert:
+     - allowed_templates_for_mode("meeting") includes system default + user template
+     - load_template_spec(user_template_id, "meeting", version=1) succeeds and exposes template_title
+     - validate_template rejects unknown template_id
+
+ACCEPTANCE CRITERIA
+- `allowed_templates_for_mode` is dynamic and includes user templates.
+- `load_template_spec` supports user templates + version selection.
+- `TemplateSpec` carries `template_title` so downstream can record it.
+- Tests pass:
+  - `pytest -q tests/test_template_registry_merges_system_and_user.py`
+
+VERIFICATION PLAN
+- `cd /home/notsolikely/Ashby_Engine`
+- `pytest -q tests/test_template_registry_merges_system_and_user.py`
+
+ROLLBACK PLAN
+- Revert template_registry changes and remove the new tests.
+- Keep TemplateStore module intact (used by later quests).
+
+AUDIT BUNDLE
+- `/home/notsolikely/Ashby_Data/Audit Bundles/QUEST_190/`
+  - diff + pytest output + example output of allowed_templates_for_mode.

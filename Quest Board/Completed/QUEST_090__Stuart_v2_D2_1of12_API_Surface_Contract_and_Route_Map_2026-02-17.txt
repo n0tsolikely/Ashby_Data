@@ -1,0 +1,194 @@
+    QUEST TEMPLATE — SYNAPSE GUILD
+    ================================================
+
+    QUEST ID:
+    QUEST_090
+
+    Created By:
+    Ash (Brains)
+
+    Title:
+    Stuart v2 — D2 (1/12) — API Surface Contract + Route Map (No Fake Processing)
+
+    Context:
+    We are implementing Dungeon 2 from the paused guild orders:
+  Ashby_Data/Guild Orders/PAUSED/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt
+
+Dungeon 2 is the FRONTEND↔BACKEND CONTRACT that makes the Base44-style UI real.
+We already have some web door scaffolding in Ashby_Engine:
+  - ashby/interfaces/web/app.py
+  - /api/registry, /api/upload, /api/run, /api/runs/{run_id}, /api/message (preview/clarify)
+
+BUT the guild orders contract requires additional endpoints and stricter semantics:
+  - session detail + runs list
+  - transcripts list/get (transcript versions)
+  - formalizations index
+  - export bundle endpoint with export_type
+  - chat endpoints (/api/chat + /api/chat/global) (scaffold now, intelligence later)
+
+This quest is the “don’t be dumb” foundation: lock the contract, map existing routes,
+decide file/module boundaries, and write down the exact JSON shapes so later quests
+don’t drift or invent incompatible responses.
+
+    Origin:
+    Guild Orders → Dungeon 2 (API Surface).
+
+    Priority:
+    P0 — This blocks UI parity and any real “product” feeling.
+
+    Links:
+    - GUILD ORDERS: Ashby_Data/Guild Orders/PAUSED/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt (Dungeon 2)
+- CODEX: Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt (Non‑negotiables 3.1–3.5, esp 3.2 Upload≠Run + 3.5 Artifact-first)
+- ENGINE ANCHOR: Ashby_Engine/ashby/interfaces/web/app.py
+- ENGINE ANCHOR: Ashby_Engine/ashby/modules/meetings/export/bundle.py
+- ENGINE ANCHOR: Ashby_Engine/ashby/modules/meetings/index/sqlite_fts.py (library/index)
+- TESTS ANCHOR: Ashby_Engine/tests/test_meetings_web_*
+
+    Status:
+    COMPLETED
+    Audit Bundle Path:
+    Ashby_Data/Audits/Execution/QUEST_090__2026-02-17__Stuart_v2_D2_API_Contract_Route_Map
+
+    Accepted On:
+    2026-02-18
+    Owner:
+    Hands (Peter)
+    Executor:
+    Codex (Brains)
+
+    Completed On:
+    2026-02-18
+
+    Completed By:
+    Codex (Brains)
+    ------------------------------------------------
+    DESCRIPTION
+    ------------------------------------------------
+    Write the canonical API contract for Stuart Web App (v1) and map it onto the current codebase.
+
+This is NOT optional fluff:
+- If we do not lock the contract now, every later dungeon will “kind of” implement stuff and we’ll
+  end up with a UI that constantly breaks and/or the backend that’s impossible to reason about.
+- The contract must explicitly forbid fake transcript/formalize behavior.
+
+Output of this quest is the “API bible” doc + a route map that says:
+- endpoint name
+- request schema
+- response schema
+- where it will live (file/function)
+- how it ties to disk artifacts (sessions/runs/contributions)
+- error envelope and status codes
+
+
+    ------------------------------------------------
+    SCOPE / OBJECTIVE
+    ------------------------------------------------
+    Create/update the following documentation in Ashby_Engine:
+
+A) API Contract Doc (v1)
+   - Add: Ashby_Engine/docs/stuart/web_api_contract_v1.md   (preferred)
+     OR:  Ashby_Engine/docs/stuart/api_contract_v1.md       (acceptable)
+
+   Must include:
+   - Global principles:
+     - Upload ≠ Run (explicit execution gating)
+     - Artifacts are source of truth (JSON/MD/PDF on disk)
+     - No fabricated transcripts. No fabricated formalizations.
+     - “Chat-first” UX: chat controls drive commands; buttons are convenience.
+   - Error envelope spec (a single consistent shape).
+   - Deterministic ordering rules for list endpoints (sessions/runs/transcripts/formalizations).
+   - Endpoint table with request/response examples.
+
+B) Route Map (implementation plan)
+   - Add a short section to the doc OR a separate file:
+     Ashby_Engine/docs/stuart/web_api_route_map_v1.md
+
+   Must map each endpoint to a target module:
+     - ashby/interfaces/web/app.py (FastAPI assembly)
+     - ashby/interfaces/web/sessions.py
+     - ashby/interfaces/web/runs.py
+     - NEW: ashby/interfaces/web/transcripts.py
+     - NEW: ashby/interfaces/web/formalizations.py
+     - NEW: ashby/interfaces/web/export_api.py
+     - NEW: ashby/interfaces/web/chat_api.py
+     - NEW: ashby/interfaces/web/http_envelope.py (or similar shared helpers)
+
+C) Lock “transcript_version_id strategy” (even if implementation is later)
+   - Decide if transcript_version_id == run_id (recommended for v1 scaffolding)
+     OR transcript_version_id is a prefixed run id (e.g., tv__{run_id}).
+   - MUST be stable and reversible (you can map tv_id -> run_id deterministically).
+
+D) Define export_type semantics
+   - export_type=full_bundle
+   - export_type=transcript_only
+   - export_type=formalization_only
+   Define exactly what files are included and what receipts MUST be present.
+   (No guessing; must be deterministic.)
+
+IMPORTANT: This quest is documentation + decisions only.
+It should NOT implement endpoints yet (that’s quests 091+).
+
+    ------------------------------------------------
+    OUT OF SCOPE
+    ------------------------------------------------
+    - Implementing an LLM chat brain (that’s later dungeons: wiring + retrieval + citations).
+- Implementing transcript_version artifact emission from the pipeline (Dungeon 4/5).
+- Implementing auth/multi-user tenancy/cloud storage.
+- Changing the Base44 UI (Dungeon 3).
+
+    ------------------------------------------------
+    DEPENDENCIES
+    ------------------------------------------------
+    - Dungeon 1 must exist (UI boots), but Dungeon 1 completion is not required to write this contract.
+- Must respect Stuart Codex Non‑negotiables:
+  - Upload ≠ Run
+  - Artifact-first, truth-locked
+  - Chat-first simplicity
+
+    ------------------------------------------------
+    EXECUTION NOTES
+    ------------------------------------------------
+    Execution steps:
+1) Read Dungeon 2 text in guild orders and extract required endpoints (no freelancing).
+2) Inspect current endpoints in ashby/interfaces/web/app.py and mark:
+   - already exists (keep, maybe adjust schema)
+   - missing (must be created)
+   - conflicts (must resolve with minimal churn)
+3) Define the standard response envelopes:
+   - success: { ok: true, ... }
+   - failure: { ok: false, error: { code, message, details? }, trace? }
+   Ensure every endpoint can adopt this in later quests.
+4) Explicitly call out:
+   - ordering and pagination plan (limit/offset/search)
+   - where transcript/final outputs are read from on disk
+   - how export endpoints create deterministic zip bundles
+5) Document curl examples for each endpoint (copy/paste ready).
+
+
+    ------------------------------------------------
+    COMPLETION CRITERIA (DONE = PROOF)
+    ------------------------------------------------
+    DONE when the repo contains the contract doc(s) with:
+- A complete endpoint table covering every item in Dungeon 2 "Contract (minimum)"
+- Request/response JSON examples for each endpoint
+- Clear route map: file/module ownership for each endpoint
+- Explicit transcript_version_id strategy and export_type semantics
+- Explicit “NO FABRICATION” rules included in the doc (so future work can’t regress)
+
+Proof:
+- Git diff showing new docs committed (or at minimum staged) under Ashby_Engine/docs/stuart/
+
+
+    ------------------------------------------------
+    TALENT POINT (WHY THIS MATTERS)
+    ------------------------------------------------
+    This locks the system’s external interface so future work is deterministic and doesn’t drift into vibe-driven spaghetti.
+
+    ------------------------------------------------
+    FINAL NOTES / HANDS DECISIONS
+    ------------------------------------------------
+    Hands rules (must be written into the contract doc, not only remembered):
+- Chat is the primary interface; buttons are convenience triggers.
+- Transcript is real ASR output from real audio (never fabricated).
+- Formalization is a structured summarization (no context loss, template-driven).
+- Export is a first-class product control (zip bundles), with deterministic contents.

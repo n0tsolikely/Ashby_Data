@@ -1,0 +1,96 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+
+QUEST ID:
+QUEST_032
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Post-30: Execution Profiles + Adapter Selection Matrix (LOCAL_ONLY default)
+
+Context: Stuart (Ashby module: meetings)
+
+Origin:
+Control Sync — 2026-02-03 (Post-30 plan)
+
+Priority: P0
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-03_REV4.txt (Post-30 Quest Map)
+- Engine: ashby/modules/meetings/config.py (config root)
+- Engine: ashby/modules/meetings/adapters/ (currently empty)
+
+Status: COMPLETED
+
+Audit Bundle Path:
+Audits/Execution/QUEST_032__2026-02-03__stuart_v1_post30_execution_profiles_adapter_selection_2026-02-03
+
+Accepted On:
+2026-02-03
+
+Accepted By:
+Hands (Peter)
+
+Completed On:
+2026-02-03
+
+Completed By:
+Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Introduce a clean, explicit way to choose which local adapters implement each stage (normalize/diarize/asr/pdf)
+without rewriting pipeline code every time. Default profile must be LOCAL_ONLY and CPU-first for V1 stability.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Define adapter interfaces (protocols) + registry for:
+-   - normalize (ffmpeg)
+-   - diarization (pyannote)
+-   - asr (faster-whisper)
+-   - pdf renderer (WeasyPrint)
+- Add execution profile config, with default:
+-   profile = "local_only"
+- Profile selects concrete adapters + model settings (cpu-first).
+- No secrets stored in repo; secrets are only read from environment/config at runtime.
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Implementing the actual adapters (quests 035–041).
+- Any cloud providers (defer).
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_031 (Run input binding) recommended before wiring real stages.
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Keep adapters thin and deterministic; no god files.
+- Must be possible to run with ZERO HF token (diarization adapter should fail gracefully / be optional).
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] Adapter interface stubs exist under meetings/adapters (normalize/asr/diarization/pdf).
+- [ ] Registry can resolve adapters from profile name.
+- [ ] Default profile local_only exists and is used by pipeline.
+- [ ] Config reads optional env vars (HF token, model cache paths) without hardcoding.
+- [ ] `python3 -m pytest -q` PASS.
+
+────────────────────────────────────────────────────────
+TALENT POINT
+────────────────────────────────────────────────────────
+On completion:
+- Talent Point Awarded: YES
+- Talent Spent On: TBD — Execution Profiles + Adapter Registry
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+(optional)

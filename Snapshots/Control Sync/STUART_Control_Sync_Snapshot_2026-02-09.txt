@@ -1,0 +1,96 @@
+CONTROL SYNC SNAPSHOT — STUART (Ashby platform)
+Date: 2026-02-09
+Timezone: America/Toronto
+Status: CONTROL SYNC CLOSED
+
+Participants:
+- Hands: Peter
+- Brains: Ash
+
+────────────────────────────────────────────────────────
+CANON ANCHOR
+────────────────────────────────────────────────────────
+Incoming Canon Zip (inert export):
+- /mnt/data/Ashby_CANON_2026-02-08_v16.zip
+- SHA256: a902a9b04b04fe3994b0ca6550618732fb6db75798ae47df529b81a99872eb2d
+
+Active Canon Working Dirs (single source of truth):
+- /mnt/data/Ashby_Data
+- /mnt/data/Ashby_Engine
+
+Synapse Governance (present in workspace):
+- /mnt/data/Synapse_OS_Governance
+
+────────────────────────────────────────────────────────
+GOVERNANCE LOCKS (BINDING)
+────────────────────────────────────────────────────────
+1) ABSOLUTELY NO HEURISTICS — HARD RULE
+- No guessing/pattern-fill. Any claim about state, codex, quests, or engine behavior must be verified against on-disk canon.
+- If evidence is missing/ambiguous, Brains must stop and request the missing artifact or instruction.
+
+2) Truth Architecture (BUFF):
+- Platform TruthGateJudge = single judge.
+- Module TruthPolicy = specialization.
+- Module-local checks are allowed only for cheap invariants (not truth law).
+
+3) Execution Profile Substrate:
+- Single platform substrate (ashby.core.profile). No parallel profile systems.
+
+4) Router Boundaries:
+- Thin core router routes to modules.
+- Modules own their internal routing.
+
+5) Artifact-first execution:
+- No quest is “done” without: code/data diffs, executed tests, audit bundle filled, quest moved to Completed, and a new combined canon zip shipped.
+
+────────────────────────────────────────────────────────
+CONTROL SYNC OBJECTIVE
+────────────────────────────────────────────────────────
+Accept the next closed-phase package for Stuart v1:
+- Dungeon 5 (Doors + Consent) as one coherent phase: QUEST_061 → QUEST_067
+Then close Control Sync with a snapshot.
+
+────────────────────────────────────────────────────────
+ACCEPTED PACKAGE (DUNGEON 5)
+────────────────────────────────────────────────────────
+Accepted On: 2026-02-09
+Accepted By: Hands (Peter)
+
+Quest Board location:
+- /mnt/data/Ashby_Data/Quest Board/Accepted/
+
+Accepted quests (Status: ACTIVE):
+- QUEST_061 — RunRequest contract unify doors
+  Audit: /mnt/data/Ashby_Data/Audits/Execution/QUEST_061__2026-02-09__runrequest_contract_unify_doors
+- QUEST_062 — Webapp upload stores contribution (no run)
+  Audit: /mnt/data/Ashby_Data/Audits/Execution/QUEST_062__2026-02-09__webapp_upload_stores_contribution_not_run
+- QUEST_063 — Webapp confirm gate triggers run + progress + downloads
+  Audit: /mnt/data/Ashby_Data/Audits/Execution/QUEST_063__2026-02-09__webapp_confirm_gate_triggers_run_progress_downloads
+- QUEST_064 — Webapp library list + search UI
+  Audit: /mnt/data/Ashby_Data/Audits/Execution/QUEST_064__2026-02-09__webapp_library_list_and_search_ui
+- QUEST_065 — Telegram file + mode + speakers + run → return PDF
+  Audit: /mnt/data/Ashby_Data/Audits/Execution/QUEST_065__2026-02-09__telegram_file_mode_speakers_run_return_pdf
+- QUEST_066 — CLI upload + run commands
+  Audit: /mnt/data/Ashby_Data/Audits/Execution/QUEST_066__2026-02-09__cli_upload_and_run_commands
+- QUEST_067 — CLI search + export commands
+  Audit: /mnt/data/Ashby_Data/Audits/Execution/QUEST_067__2026-02-09__cli_search_and_export_commands
+
+Acceptance mechanics performed:
+- Moved QUEST_061–067 from Quest Board root into Accepted/.
+- Updated each quest header:
+  - Status: BOARD → ACTIVE
+  - Audit Bundle Path set
+  - Accepted On / Accepted By filled
+- Created audit bundle directories with placeholder files:
+  - 00_SUMMARY.md, 01_PREQUEST.md, 02_EXECUTION.md, 03_VERIFY.md, 04_OUTCOME.md
+
+────────────────────────────────────────────────────────
+NEXT EXECUTION ORDER
+────────────────────────────────────────────────────────
+- Begin execution at QUEST_061.
+- After each quest:
+  - run real tests (at minimum relevant smoke gate; full suite when appropriate)
+  - fill audit bundle with exact commands + diffs + outputs
+  - move quest to Completed
+  - ship new combined canon zip
+

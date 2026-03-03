@@ -1,0 +1,105 @@
+TALENT LOG — SYNAPSE GUILD (append-only)
+Purpose: Progression history. Records when Talent Points were earned and what they were spent on.
+Rule: Never delete entries. Corrections are appended.
+
+Entry format:
+YYYY-MM-DD
+Quest Completed:
+Talent Point Awarded: YES
+Talent Spent On: (TALENT ID — Name)
+Notes: (optional)
+
+2026-01-19
+Quest Completed: QUEST_002
+Talent Point Awarded: YES
+Talent Spent On: TALENT_STUART_FOUNDATION_MASONRY — Stuart Foundation Masonry (Core Systems)
+Notes: (see quest file for details)
+
+2026-01-19
+Quest Completed: QUEST_011
+Talent Point Awarded: YES
+Talent Spent On: TALENT_STUART_STORAGE_ZONING — Deterministic Storage Zoning (Data Law)
+Notes: (see quest file for details)
+
+2026-01-19
+Quest Completed: QUEST_012
+Talent Point Awarded: YES
+Talent Spent On: TALENT_STUART_MANIFEST_IDS_HASHING — Manifests + IDs + Hashing
+Notes: (see quest file for details)
+
+2026-01-19
+Quest Completed: QUEST_013
+Talent Point Awarded: YES
+Talent Spent On: TALENT_STUART_IMMUTABILITY_DISCIPLINE — Immutability Discipline (Truth Law)
+Notes: (see quest file for details)
+
+2026-01-25
+Quest Completed: QUEST_007
+Talent Point Awarded: YES
+Talent Spent On: TALENT_STUART_SPEAKER_OVERLAY_EXTRACT — Speaker Overlay + Rerender + Extract-Only
+Notes: (see quest file for details)
+
+2026-01-25
+Quest Completed: QUEST_022
+Talent Point Awarded: YES
+Talent Spent On: TALENT_STUART_SQLITE_FTS_INDEX — SQLite FTS Index + Ingestion
+Notes: (see quest file for details)
+
+2026-01-25
+Quest Completed: QUEST_023
+Talent Point Awarded: YES
+Talent Spent On: TALENT_STUART_SEARCH_RANKED_CITATIONS — Ranked Search Results + Citations
+Notes: (see quest file for details)
+
+2026-01-25
+Quest Completed: QUEST_010
+Talent Point Awarded: YES
+Talent Spent On: TALENT_STUART_TELEGRAM_DOOR_MINIMAL — Telegram Door (Buttons + File→PDF)
+Notes: Thin door-only adapter (mode/speakers buttons, file upload, default pipeline, PDF return).
+
+2026-01-26
+Quest Completed: QUEST_024
+Talent Point Awarded: YES
+Talent Spent On: TALENT_STUART_WEB_DOOR_SCAFFOLD — Web Door Scaffold (Session List + Chat + Plan/Clarify Rendering)
+Notes: Web UI shell + engine-integrated plan/clarify rendering; no pipeline execution yet (QUEST_025).
+2026-01-26
+Quest Completed: QUEST_025
+Talent Point Awarded: YES
+Talent Spent On: TALENT_STUART_WEB_DOOR_UPLOAD_RUN_DOWNLOADS — Web Door Upload→Run→Downloads + State Sync + Search
+Notes: Web door now supports upload→contribution, plan preview + explicit Run, async polling, downloads (artifacts+exports), /search with citations, and UI state sync from chat/preview.
+
+[2026-02-04] LOCKED TALENTS
+- Local Speech Understanding (v1)
+  Evidence: Audits/Retro/RETRO_SANITY_2026-02-04_032715
+- Structured Meeting Intelligence Pipeline
+  Evidence: Audits/Retro/RETRO_SANITY_2026-02-04_032715
+- Deterministic Document Formalization
+  Evidence: Audits/Retro/RETRO_SANITY_2026-02-04_032715
+
+2026-02-04
+Quest Completed: RETRO_SANITY_2026-02-04_032715 (Retro Sanity Audit PASS)
+Talent Point Awarded: YES
+Talent Spent On: (Correction / Canonicalization)
+Notes: Prior shorthand "[2026-02-04] LOCKED TALENTS" entry remains for history; canonical per-talent log entries appended below.
+
+2026-02-04
+Quest Completed: RETRO_SANITY_2026-02-04_032715 (Retro Sanity Audit PASS)
+Talent Point Awarded: YES
+Talent Spent On: TALENT_STUART_LOCAL_SPEECH_UNDERSTANDING_V1 — Local Speech Understanding (v1)
+Notes: Evidence bundle Audits/Retro/RETRO_SANITY_2026-02-04_032715
+
+2026-02-04
+Quest Completed: RETRO_SANITY_2026-02-04_032715 (Retro Sanity Audit PASS)
+Talent Point Awarded: YES
+Talent Spent On: TALENT_STUART_STRUCTURED_MEETING_INTELLIGENCE_PIPELINE_V1 — Structured Meeting Intelligence Pipeline (v1)
+Notes: Evidence bundle Audits/Retro/RETRO_SANITY_2026-02-04_032715
+
+2026-02-04
+Quest Completed: RETRO_SANITY_2026-02-04_032715 (Retro Sanity Audit PASS)
+Talent Point Awarded: YES
+Talent Spent On: TALENT_STUART_DETERMINISTIC_DOCUMENT_FORMALIZATION_V1 — Deterministic Document Formalization (v1)
+Notes: Evidence bundle Audits/Retro/RETRO_SANITY_2026-02-04_032715
+
+[2026-02-11] TALENT_STUART_SPEAKER_MAP_OVERLAY_ARTIFACT_AND_RUN_PROVENANCE_V1
+- Source: QUEST_068__Stuart_v1_D6_1of5_Speaker_Map_Overlay_API_and_Manifest_2026-02-04
+- Summary: Speaker-map overlay artifacts are immutable + return full metadata; active overlay is tracked per-session and recorded in run manifests for provenance.

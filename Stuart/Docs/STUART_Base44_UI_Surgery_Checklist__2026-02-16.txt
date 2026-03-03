@@ -1,0 +1,171 @@
+STUART_Base44_UI_Surgery_Checklist__2026-02-16.txt
+===============================================================================
+PURPOSE
+- Deterministic “analysis → surgery” execution plan for the Base44-copied Stuart UI bundle.
+- Designed so a brand-new AI chat can rehydrate instantly and produce the same sanitized frontend ZIP.
+- Requires the actual UI source bundle (e.g., stuart_app.zip) as ground truth.
+
+SCOPE
+- Sanitize/port the Base44-generated UI so it runs standalone without Base44 services.
+- Preserve the UX/layout/components.
+- Replace platform glue with a clean API client contract to the real Stuart backend.
+
+ASSUMPTIONS (LOCKED FOR THIS SURGERY PASS)
+- Frontend stack: KEEP VITE (first pass). Do not port to Next.js in this pass.
+- Goal: produce a runnable sanitized ZIP that boots, renders UI, and calls stubbed/real endpoints.
+- No claims of “works” without smoke test receipts.
+
+INPUTS REQUIRED
+1) stuart_app.zip (Base44-copied UI code bundle)
+2) Screenshots/reference are optional; code is authoritative.
+3) Governance laws in effect (truth-gated, no god files, upload != run, etc.)
+
+OUTPUT ARTIFACTS (REQUIRED)
+- Sanitized frontend ZIP (standalone, Base44-free)
+- Brief CHANGELOG (file-level list of modifications)
+- Smoke test output (commands + results)
+
+===============================================================================
+PHASE 0 — INTAKE (CANONICAL EXTRACTION)
+===============================================================================
+[ ] Extract stuart_app.zip to a single canonical folder (no re-extracting).
+[ ] Generate full tree (depth 6+) and identify:
+    - entrypoints (src/main.jsx, src/App*.jsx, index.html)
+    - config (vite.config.*, package.json, tailwind, tsconfig/jsconfig)
+    - platform glue areas (base44 SDK, InvokeLLM placeholders)
+
+===============================================================================
+PHASE 1 — REMOVE BASE44 PLATFORM DEPENDENCIES
+===============================================================================
+A) package.json
+[ ] Remove Base44 dependencies (examples):
+    - @base44/sdk
+    - @base44/vite-plugin
+    - any base44-* packages
+[ ] Verify remaining deps install cleanly.
+[ ] Ensure scripts exist:
+    - dev
+    - build
+    - preview
+
+B) Vite config
+[ ] Remove Base44 Vite plugin import/use.
+[ ] Add alias for "@/..." imports:
+    - resolve.alias: { "@": path.resolve(__dirname, "src") }
+[ ] Ensure Vite config imports `path` if needed.
+
+===============================================================================
+PHASE 2 — FIX ENTRYPOINT / BOOT BREAKS
+===============================================================================
+[ ] Identify actual root component file:
+    - If src/main.jsx imports "@/App.jsx" but repo has Apps.jsx → fix mismatch.
+[ ] Choose fix pattern (one only):
+    - Rename Apps.jsx → App.jsx
+      OR
+    - Change import in src/main.jsx to match Apps.jsx
+[ ] Ensure index.html points to correct main entry.
+[ ] Run quick boot check locally (later in Phase 6).
+
+===============================================================================
+PHASE 3 — STRIP OR STUB AUTH / NAV TRACKING WRAPPERS
+===============================================================================
+[ ] Identify platform wrappers (common culprits):
+    - src/lib/AuthContext.jsx
+    - src/lib/NavigationTracker.jsx
+    - any “me()”/auth calls tied to base44
+[ ] Strategy:
+    - Replace with local no-op providers, or remove usage entirely.
+[ ] Ensure app renders without needing auth/session from Base44.
+
+===============================================================================
+PHASE 4 — REPLACE BASE44 CLIENT WITH COMPATIBILITY SHIM
+===============================================================================
+Goal: keep UI code stable while swapping backend.
+
+[ ] Create: src/api/base44Client.js (compatibility shim)
+    - Export object `base44` with ONLY the methods the UI calls.
+    - Example shape:
+      - base44.entities.Session.list/create/update
+      - base44.entities.Formalization.filter/create
+      - base44.integrations.Core.InvokeLLM (REMOVE; replace with real endpoints or throw explicit “NOT_IMPLEMENTED”)
+
+[ ] Implement shim as HTTP client to our backend:
+    - use fetch (simple) or axios (optional)
+    - base URL from env: VITE_STUART_API_BASE (default http://localhost:8000)
+    - include JSON parsing + error handling
+
+[ ] Replace any remaining “InvokeLLM simulated transcript” flows:
+    - For now: call endpoints like:
+      - POST /api/sessions/{id}/transcribe
+      - POST /api/sessions/{id}/formalize
+      - POST /api/sessions/{id}/chat
+    - If backend endpoints not ready yet:
+      - return explicit error objects (not fake outputs)
+      - UI must display “Not implemented” instead of hallucinating data
+
+===============================================================================
+PHASE 5 — IDENTIFY AND REMOVE CONTAMINATED LOGIC PATHS
+===============================================================================
+[ ] Grep for contamination markers:
+    - “base44”
+    - “InvokeLLM”
+    - “integrations.Core”
+    - “sdk”
+[ ] Classify files:
+    - SAFE UI: pure components (keep)
+    - NEEDS REWIRE: components calling client methods (keep + rewire)
+    - CONTAMINATED: platform-only features (remove/replace)
+
+[ ] Ensure “Upload != Run” remains enforced:
+    - Upload only stores contribution
+    - Run button triggers explicit run endpoint
+
+===============================================================================
+PHASE 6 — SMOKE TEST (RECEIPTS REQUIRED)
+===============================================================================
+[ ] npm install
+[ ] npm run dev
+[ ] Confirm:
+    - UI renders 3-column layout
+    - Tabs switch (Session/Chat/Outputs)
+    - Run config panel renders dropdowns (Mode/Template/Retention/Profile)
+    - No Base44 imports exist at runtime
+[ ] Confirm API calls:
+    - Requests go to VITE_STUART_API_BASE
+    - Errors are honest if backend not yet implemented
+
+Record terminal output as receipts.
+
+===============================================================================
+PHASE 7 — DELIVERABLE ZIP + CHANGELOG
+===============================================================================
+[ ] Produce sanitized ZIP:
+    - name: stuart_ui_sanitized__YYYY-MM-DD.zip
+[ ] Produce CHANGELOG:
+    - list each modified/added/removed file
+[ ] Include:
+    - how to run
+    - required env vars
+    - known “Not implemented” endpoints if backend not ready
+
+===============================================================================
+API CONTRACT (MINIMUM REQUIRED FOR UI PARITY)
+===============================================================================
+- GET  /api/sessions
+- POST /api/sessions
+- PATCH /api/sessions/{id}
+- POST /api/sessions/{id}/upload
+- POST /api/sessions/{id}/transcribe
+- POST /api/sessions/{id}/formalize
+- POST /api/sessions/{id}/chat
+- GET  /api/formalizations?session_id={id}
+- GET  /api/runs/{run_id} (status polling)
+- GET  /api/sessions/{id}/export.zip
+
+NOTE
+- If endpoints differ in Ashby/Stuart engine, the shim is where we adapt without rewriting UI.
+
+===============================================================================
+END
+===============================================================================
+Generated: 2026-02-16 10:02:12 EST (America/Toronto)

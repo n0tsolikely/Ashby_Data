@@ -1,0 +1,178 @@
+ASHBY CODEX — 15.6
+TARGET RESOLUTION TESTS
+
+Target resolution tests are acceptance tests that prove Ashby resolves targets
+deterministically and safely.
+
+They exist because target resolution is one of the highest-risk components:
+- wrong target selection causes real-world harm
+- ambiguity mishandling causes unsafe guessing
+- drift in resolution rules produces unpredictable behavior
+
+Resolution tests are the harness that prevents silent drift.
+
+──────────────────────────────────────────────────────────────────────────────
+WHAT RESOLUTION TESTS MUST PROVE
+──────────────────────────────────────────────────────────────────────────────
+
+At minimum, tests must prove:
+
+1) SCOPE BINDING
+Resolution never crosses scope boundaries.
+
+2) DETERMINISTIC PRIORITY ORDER
+Given the same inputs, resolution produces the same target_set.
+
+3) AMBIGUITY FORCES CLARIFICATION
+When multiple plausible target sets exist, the system outputs CLARIFY,
+never ACT.
+
+4) SESSION INHERITANCE SAFETY
+Valid, unexpired sessions may anchor pronouns.
+Expired or ambiguous sessions must not.
+
+5) DEFAULTS ARE CONFIGURATION, NOT GUESSING
+Defaults apply only when configured and non-ambiguous.
+Defaults never override explicit user targeting.
+
+6) BLAST RADIUS RULES
+Broad targets trigger confirmation or clarification as policy requires.
+
+7) AUDITABILITY
+Logs and artifacts preserve enough information to reconstruct why a target was chosen.
+
+Resolution tests are not unit tests of string matching.
+They are platform truth tests.
+
+──────────────────────────────────────────────────────────────────────────────
+CANONICAL TEST HARNESS INPUTS
+──────────────────────────────────────────────────────────────────────────────
+
+Resolution tests must exercise the full pipeline inputs that affect resolution:
+
+- raw input text (or transport event normalized as text/intent)
+- current scope_id and scope config
+- device registry snapshot (internal device_keys and labels)
+- session state (active/unexpired/expired)
+- pending clarification state (if present)
+- configured defaults
+- configured “in here” mapping signals (if present)
+- policy parameters (max_targets, confirmation thresholds)
+
+Tests must not depend on live vendor inventories.
+All required inputs must be fixture-defined and reproducible.
+
+──────────────────────────────────────────────────────────────────────────────
+CANONICAL ASSERTIONS (WHAT TO CHECK)
+──────────────────────────────────────────────────────────────────────────────
+
+A resolution test must assert:
+
+- policy outcome:
+  - ACT / CLARIFY / CONFIRM / REFUSE / CHAT
+
+- resolved target_set:
+  - devices list
+  - zone_id/category/role context as applicable
+
+- resolution trace:
+  - which source won (explicit, session, pending answer, default, signal)
+  - any disqualified sources and why
+
+- bounding behavior:
+  - whether max_targets caps triggered
+  - whether confirmation gate was required
+
+- safety invariants:
+  - no cross-scope targets
+  - no invented targets
+  - no silent subset execution
+
+Assertions must be explicit.
+Implicit “looks right” approval is forbidden.
+
+──────────────────────────────────────────────────────────────────────────────
+REPRESENTATIVE TEST CLASSES
+──────────────────────────────────────────────────────────────────────────────
+
+The following test classes are representative, not exhaustive.
+
+A) EXPLICIT TARGET WINS OVER SESSION
+Input: “kitchen lights”
+Session: active lights session anchored to bedroom
+Expected: resolve to kitchen targets; session ignored for targets
+
+B) PRONOUN ANCHOR WITH VALID SESSION
+Input: “turn it off”
+Session: active, unexpired, target_set = [thor, sky]
+Expected: resolve to [thor, sky]
+
+C) PRONOUN WITH EXPIRED SESSION
+Input: “turn it off”
+Session: expired
+Expected: CLARIFY (no target guessing)
+
+D) MULTIPLE MATCHES REQUIRE CLARIFY
+Input: “turn on the lamp”
+Inventory: multiple lamps match
+Expected: CLARIFY with bounded options
+
+E) DEFAULT APPLIES ONLY WHEN CONFIGURED
+Input: “turn on the lights”
+Defaults: user default zone = bedroom
+Expected: resolve to bedroom lights (and disclose default if required)
+
+F) “IN HERE” REQUIRES CONFIGURED SIGNAL
+Input: “turn on the lights in here”
+Signals: none
+Expected: CLARIFY
+Signals: mic mapped to living_room
+Expected: resolve to living_room lights
+
+G) BLAST RADIUS CONFIRMATION
+Input: “turn off all lights”
+Group: declared all_lights
+Policy: confirmation required for >N targets
+Expected: CONFIRM with proposed target_set
+
+These are examples.
+Tests must cover the real policy and configuration profile of the deployment.
+
+──────────────────────────────────────────────────────────────────────────────
+DRIFT DETECTION AND VERSIONING
+──────────────────────────────────────────────────────────────────────────────
+
+Resolution rules evolve.
+
+Tests are the mechanism that makes evolution safe.
+
+Rules:
+- when resolution priority changes, tests must be updated deliberately
+- changes must be reviewed as foundational if they alter user expectations
+- historical behavior changes must be documented and justified
+
+Test failures are not annoyances.
+Test failures are warning sirens.
+
+If resolution tests start failing frequently, the system is drifting.
+
+──────────────────────────────────────────────────────────────────────────────
+ABSOLUTE CONSTRAINTS
+──────────────────────────────────────────────────────────────────────────────
+
+Target resolution tests must:
+- be deterministic and fixture-driven
+- assert policy outcomes and target sets explicitly
+- prove ambiguity leads to clarification, not guessing
+- cover sessions, defaults, “in here,” and blast radius rules
+- remain independent of vendor runtime behavior
+
+Target resolution tests must never:
+- depend on live vendor inventory
+- accept “best guess” target selection
+- hide resolution source decisions in logs only
+- allow silent changes to priority order without test updates
+
+If you cannot test target resolution, you cannot trust it.
+
+END OF 15.6

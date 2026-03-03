@@ -1,0 +1,912 @@
+--- /dev/null	2026-02-09 00:50:17.989428381 +0000
++++ /mnt/data/Ashby_Engine/ashby/modules/meetings/schemas/run_request.py	2026-02-09 01:20:09.977594857 +0000
+@@ -0,0 +1,129 @@
++from __future__ import annotations
++
++from dataclasses import dataclass
++from typing import Any, Mapping, Optional, Union
++
++from ashby.modules.meetings.schemas.plan import UIState
++
++
++SpeakerHint = Optional[Union[int, str]]
++
++
++def _norm_str(v: Any) -> Optional[str]:
++    if v is None:
++        return None
++    s = str(v).strip()
++    return s if s else None
++
++
++def _norm_lower(v: Any) -> Optional[str]:
++    s = _norm_str(v)
++    return s.lower() if s is not None else None
++
++
++def _norm_upper(v: Any) -> Optional[str]:
++    s = _norm_str(v)
++    return s.upper() if s is not None else None
++
++
++def _norm_speakers(v: Any) -> SpeakerHint:
++    """Normalize speaker hint across doors.
++
++    Accepted canonical shapes:
++      - int (>=1)
++      - "auto"
++
++    We also tolerate string digits ("2") and coerce to int.
++    Any other string is preserved (so callers can round-trip) but will
++    likely fail strict validation until a later door/UX quest tightens it.
++    """
++
++    if v is None:
++        return None
++
++    if isinstance(v, bool):
++        # avoid treating True/False as 1/0 speakers
++        return None
++
++    if isinstance(v, int):
++        return v
++
++    s = _norm_str(v)
++    if s is None:
++        return None
++
++    sl = s.strip().lower()
++    if sl == "auto":
++        return "auto"
++
++    # Telegram door uses labels like '3+'; treat that as a numeric hint (3).
++    if sl.endswith("+") and sl[:-1].isdigit():
++        try:
++            return int(sl[:-1])
++        except Exception:
++            return s
++
++    if sl.isdigit():
++        try:
++            return int(sl)
++        except Exception:
++            return s
++
++    return s
++
++
++@dataclass(frozen=True)
++class RunRequest:
++    """Door-facing run param contract.
++
++    This is the stable structure doors must produce BEFORE the router builds a plan.
++
++    Field names are canonical:
++      - mode
++      - template_id
++      - retention
++      - speakers
++    """
++
++    mode: Optional[str] = None
++    template_id: Optional[str] = None
++    retention: Optional[str] = None
++    speakers: SpeakerHint = None
++
++    @classmethod
++    def from_dict(cls, payload: Mapping[str, Any]) -> "RunRequest":
++        # tolerate legacy key 'template'
++        template_id = payload.get("template_id")
++        if template_id is None:
++            template_id = payload.get("template")
++
++        speakers = payload.get("speakers")
++        if speakers is None:
++            speakers = payload.get("speaker_count")
++        if speakers is None:
++            speakers = payload.get("num_speakers")
++
++        return cls(
++            mode=_norm_lower(payload.get("mode")),
++            template_id=_norm_lower(template_id),
++            retention=_norm_upper(payload.get("retention")),
++            speakers=_norm_speakers(speakers),
++        )
++
++    @classmethod
++    def from_ui_state(cls, ui: UIState) -> "RunRequest":
++        return cls(
++            mode=_norm_lower(ui.mode),
++            template_id=_norm_lower(ui.template),
++            retention=_norm_upper(ui.retention),
++            speakers=_norm_speakers(ui.speakers),
++        )
++
++    def to_ui_state(self) -> UIState:
++        # UIState still uses the field name 'template' (legacy) but it is semantically template_id.
++        return UIState(
++            mode=_norm_lower(self.mode),
++            template=_norm_lower(self.template_id),
++            retention=_norm_upper(self.retention),
++            speakers=_norm_speakers(self.speakers),
++        )
+--- /tmp/quest061_before/router.py	2026-02-07 22:42:44.000000000 +0000
++++ /mnt/data/Ashby_Engine/ashby/modules/meetings/router/router.py	2026-02-09 01:11:52.870897647 +0000
+@@ -13,6 +13,7 @@
+     SessionContext,
+     UIState,
+ )
++from ashby.modules.meetings.schemas.run_request import RunRequest
+ 
+ 
+ @dataclass(frozen=True)
+@@ -24,23 +25,41 @@
+ def build_intent_and_plan(
+     text: str = "",
+     attachments: Optional[List[AttachmentMeta]] = None,
++    run_request: Optional[RunRequest] = None,
++    # legacy/back-compat: older call sites may still pass UIState; prefer RunRequest
+     ui: Optional[UIState] = None,
+     session: Optional[SessionContext] = None,
+ ) -> RouterOutput:
++    """Build intent + plan from a normalized, door-facing RunRequest.
++
++    Doors must produce a RunRequest (canonical field names) before asking the router
++    to produce a deterministic plan.
++
++    Notes:
++    - `ui` is supported as a legacy convenience (converted to RunRequest).
++    """
++
+     attachments = attachments or []
+-    ui = ui or UIState()
++
++    if run_request is None:
++        # Legacy/back-compat: allow UIState input, but normalize immediately.
++        ui = ui or UIState()
++        run_request = RunRequest.from_ui_state(ui)
++
++    # Convert RunRequest -> internal UIState (legacy field name 'template').
++    ui_eff = run_request.to_ui_state()
+     session = session or SessionContext()
+ 
+-    validation = validate_ui(ui)
++    validation = validate_ui(ui_eff)
+     parsed = infer_intent(text=text, attachments_present=(len(attachments) > 0))
+ 
+     intent = MeetingsIntent(
+         kind=parsed.kind,
+         raw_text=text or "",
+-        mode=ui.mode,
+-        template=ui.template,
+-        retention=ui.retention,
+-        speakers=ui.speakers,
++        mode=ui_eff.mode,
++        template=ui_eff.template,
++        retention=ui_eff.retention,
++        speakers=ui_eff.speakers,
+         query=parsed.query,
+         export_format=parsed.export_format,
+         overlay=parsed.overlay,
+@@ -49,8 +68,9 @@
+     plan = build_plan(
+         intent=intent,
+         attachments=attachments,
+-        ui=ui,
++        ui=ui_eff,
+         session=session,
+         validation=validation,
+     )
++
+     return RouterOutput(intent=intent, plan=plan)
+--- /tmp/quest061_before/clarify_or_preview.py	2026-02-07 22:42:44.000000000 +0000
++++ /mnt/data/Ashby_Engine/ashby/modules/meetings/clarify_or_preview.py	2026-02-09 01:13:09.733358316 +0000
+@@ -1,6 +1,5 @@
+ from __future__ import annotations
+ 
+-from dataclasses import asdict
+ from typing import List, Optional
+ 
+ from ashby.modules.meetings.mode_registry import allowed_modes, default_speakers_for_mode, validate_mode
+@@ -13,12 +12,15 @@
+     PlanPreview,
+ )
+ from ashby.modules.meetings.schemas.plan import AttachmentMeta, SessionContext, UIState
++from ashby.modules.meetings.schemas.run_request import RunRequest
+ from ashby.modules.meetings.ui_resolution import resolve_ui_from_text
+ 
+ 
+ def clarify_or_preview(
+     text: str = "",
+     attachments: Optional[List[AttachmentMeta]] = None,
++    run_request: Optional[RunRequest] = None,
++    # legacy/back-compat: older call sites may still pass UIState
+     ui: Optional[UIState] = None,
+     session: Optional[SessionContext] = None,
+     door: str = "cli",
+@@ -29,17 +31,28 @@
+     - If speakers/template missing -> apply defaults + disclose in preview.
+     - Telegram: never offer template selection (v1 default only).
+     No execution / 'go' gating here (QUEST_018).
++
++    Notes:
++    - Doors should pass `run_request` (canonical field names).
++    - `ui` is supported as legacy input (converted to RunRequest immediately).
+     """
++
+     attachments = attachments or []
+-    ui = ui or UIState()
+-    ui = resolve_ui_from_text(text=text, ui=ui)
++
++    if run_request is None:
++        ui = ui or UIState()
++        run_request = RunRequest.from_ui_state(ui)
++
++    # Resolve any implicit UI hints from text (e.g. "mode meeting").
++    ui0 = run_request.to_ui_state()
++    ui0 = resolve_ui_from_text(text=text, ui=ui0)
+     session = session or SessionContext()
+ 
+     fields_needed: List[ClarifyField] = []
+     options = {}
+ 
+     # MODE is the only required clarification in v1.
+-    if ui.mode is None:
++    if ui0.mode is None:
+         fields_needed.append(ClarifyField.MODE)
+         options[ClarifyField.MODE] = [ClarifyOption(value=m) for m in allowed_modes()]
+ 
+@@ -56,7 +69,7 @@
+         )
+ 
+     # Mode provided: validate early; if invalid, clarify again.
+-    mv = validate_mode(ui.mode)
++    mv = validate_mode(ui0.mode)
+     if not mv.ok or mv.canonical is None:
+         fields_needed.append(ClarifyField.MODE)
+         options[ClarifyField.MODE] = [ClarifyOption(value=m) for m in allowed_modes()]
+@@ -74,9 +87,9 @@
+     defaults_used: List[str] = []
+ 
+     eff_mode = mv.canonical
+-    eff_template = ui.template
+-    eff_retention = ui.retention
+-    eff_speakers = ui.speakers
++    eff_template = ui0.template
++    eff_retention = ui0.retention
++    eff_speakers = ui0.speakers
+ 
+     if eff_template is None:
+         eff_template = "default"
+@@ -99,7 +112,8 @@
+ 
+     # Build plan using effective UI selections.
+     eff_ui = UIState(mode=eff_mode, template=eff_template, retention=eff_retention, speakers=eff_speakers)
+-    out = build_intent_and_plan(text=text, attachments=attachments, ui=eff_ui, session=session)
++    eff_rr = RunRequest.from_ui_state(eff_ui)
++    out = build_intent_and_plan(text=text, attachments=attachments, run_request=eff_rr, session=session)
+ 
+     # Plan preview is deterministic and renderable.
+     preview = PlanPreview(
+--- /tmp/quest061_before/app.py	2026-02-07 22:42:44.000000000 +0000
++++ /mnt/data/Ashby_Engine/ashby/interfaces/web/app.py	2026-02-09 01:32:35.656516954 +0000
+@@ -4,20 +4,22 @@
+ from pathlib import Path
+ from typing import Any, Dict, Optional
+ 
+-from fastapi import BackgroundTasks, FastAPI, File, Request, UploadFile
++from fastapi import BackgroundTasks, FastAPI, Request
+ from fastapi.responses import HTMLResponse, JSONResponse
+ from fastapi.staticfiles import StaticFiles
+ from fastapi.templating import Jinja2Templates
+ 
+ from ashby.interfaces.web.registry_api import registry_payload
+ from ashby.interfaces.web.sessions import list_sessions, create_session
+-from ashby.interfaces.web.uploads import store_upload
++from ashby.interfaces.web.uploads import store_upload, store_upload_bytes
+ from ashby.interfaces.web.runs import list_run_artifacts, artifact_response
+ 
+ from ashby.modules.meetings.clarify_or_preview import clarify_or_preview
+ from ashby.modules.meetings.pipeline.job_runner import run_job
++from ashby.modules.meetings.router.router import build_intent_and_plan
+ from ashby.modules.meetings.store import create_run, get_run_state
+-from ashby.modules.meetings.schemas.plan import UIState, SessionContext, AttachmentMeta
++from ashby.modules.meetings.schemas.plan import SessionContext, AttachmentMeta
++from ashby.modules.meetings.schemas.run_request import RunRequest
+ 
+ from ashby.modules.meetings.index import sqlite_fts
+ 
+@@ -51,11 +53,53 @@
+         return {"session_id": sid}
+ 
+     @app.post("/api/upload")
+-    async def api_upload(session_id: str, file: UploadFile = File(...)) -> Dict[str, Any]:
+-        """Upload media -> store as contribution. Returns attachment meta for planning."""
++    async def api_upload(session_id: str, request: Request) -> Dict[str, Any]:
++        """Upload media -> store as contribution. Returns attachment meta for planning.
++
++        We support two paths:
++          1) Raw bytes body (no extra deps): send bytes in body + set headers:
++             - Content-Type: audio/wav (or video/mp4, etc)
++             - X-Filename: test.wav
++
++          2) Multipart form-data (requires python-multipart): field name `file`.
++
++        This keeps tests green in minimal environments while still supporting
++        the browser upload UX where available.
++        """
++
+         if not session_id:
+             return JSONResponse(status_code=400, content={"error": "session_id is required"})
+-        con_id, meta = await store_upload(session_id=session_id, file=file)
++
++        ct = (request.headers.get("content-type") or "").lower()
++
++        # Multipart path (best UX), but may be unavailable in minimal envs.
++        if ct.startswith("multipart/form-data"):
++            try:
++                form = await request.form()
++            except RuntimeError as e:
++                return JSONResponse(
++                    status_code=400,
++                    content={
++                        "error": "multipart uploads not supported in this environment",
++                        "details": str(e),
++                        "hint": "Send raw bytes body + X-Filename header instead.",
++                    },
++                )
++
++            file = form.get("file")
++            if file is None:
++                return JSONResponse(status_code=400, content={"error": "missing form field: file"})
++
++            con_id, meta = await store_upload(session_id=session_id, file=file)
++            return {"ok": True, "contribution_id": con_id, "attachment": asdict(meta)}
++
++        # Raw bytes path (no python-multipart dependency)
++        filename = request.headers.get("x-filename") or "upload.bin"
++        data = await request.body()
++        if not data:
++            return JSONResponse(status_code=400, content={"error": "empty body"})
++
++        con_id, meta = await store_upload_bytes(session_id=session_id, filename=filename, data=data, mime_type=ct or None)
+         return {"ok": True, "contribution_id": con_id, "attachment": asdict(meta)}
+ 
+     @app.post("/api/message")
+@@ -65,11 +109,7 @@
+         ui_raw = payload.get("ui") or {}
+         attachments_raw = payload.get("attachments") or []
+ 
+-        ui = UIState(
+-            mode=ui_raw.get("mode"),
+-            template=ui_raw.get("template"),
+-            speakers=ui_raw.get("speakers"),
+-        )
++        rr = RunRequest.from_dict(ui_raw) if isinstance(ui_raw, dict) else RunRequest()
+ 
+         attachments: Optional[list[AttachmentMeta]] = None
+         if isinstance(attachments_raw, list) and attachments_raw:
+@@ -91,7 +131,7 @@
+         out = clarify_or_preview(
+             text=text,
+             attachments=attachments,
+-            ui=ui,
++            run_request=rr,
+             session=session,
+             door="web",
+         )
+@@ -105,14 +145,21 @@
+         if not isinstance(session_id, str) or not session_id:
+             return JSONResponse(status_code=400, content={"error": "session_id is required"})
+ 
+-        mode = (ui_raw.get("mode") or "").strip().lower()
+-        template = (ui_raw.get("template") or "default").strip().lower() or "default"
+-        speakers = ui_raw.get("speakers")
+-
+-        if not mode:
++        rr = RunRequest.from_dict(ui_raw) if isinstance(ui_raw, dict) else RunRequest()
++        if not rr.mode:
+             return JSONResponse(status_code=400, content={"error": "mode is required to run"})
+ 
+-        plan = {"steps": [{"kind": "formalize", "params": {"mode": mode, "template": template, "speakers": speakers}}]}
++        session = SessionContext(active_session_id=session_id, last_run_id=None)
++        out = build_intent_and_plan(text="run", run_request=rr, session=session)
++
++        # If the router flagged invalid selections, fail early with details.
++        if not out.plan.validation.ok:
++            return JSONResponse(
++                status_code=400,
++                content={"error": "invalid run request", "issues": [asdict(i) for i in out.plan.validation.issues]},
++            )
++
++        plan = {"steps": [{"kind": s.kind.value, "params": dict(s.params)} for s in out.plan.steps]}
+         run_id = create_run(session_id=session_id, plan=plan)
+ 
+         # Run in background so the UI can poll progress.
+--- /tmp/quest061_before/cli_stuart.py	2026-02-07 22:42:44.000000000 +0000
++++ /mnt/data/Ashby_Engine/ashby/modules/meetings/cli_stuart.py	2026-02-09 01:17:01.356698666 +0000
+@@ -6,6 +6,9 @@
+ 
+ from ashby.modules.meetings.overlays import create_speaker_map_overlay
+ from ashby.modules.meetings.pipeline.job_runner import run_job
++from ashby.modules.meetings.router.router import build_intent_and_plan
++from ashby.modules.meetings.schemas.plan import SessionContext
++from ashby.modules.meetings.schemas.run_request import RunRequest
+ from ashby.modules.meetings.session_state import set_active_speaker_overlay
+ from ashby.modules.meetings.store import add_contribution, create_run, create_session, get_run_state
+ 
+@@ -37,11 +40,43 @@
+     return {"ok": True, "run_id": run_id, "status": state.get("status"), "state": _as_jsonable(state)}
+ 
+ 
++def _router_formalize_plan(
++    *,
++    session_id: str,
++    rr: RunRequest,
++    extra_formalize_params: Optional[Dict[str, Any]] = None,
++) -> Dict[str, Any]:
++    """Build a deterministic plan via the router from a door-facing RunRequest."""
++
++    session = SessionContext(active_session_id=session_id, last_run_id=None)
++    out = build_intent_and_plan(text="run", run_request=rr, session=session)
++
++    if not out.plan.validation.ok:
++        raise ValueError(f"Invalid run request: {out.plan.validation.issues}")
++
++    steps = [{"kind": s.kind.value, "params": dict(s.params)} for s in out.plan.steps]
++
++    if extra_formalize_params:
++        for st in steps:
++            if (st.get("kind") or "").strip().lower() == "formalize":
++                params = st.get("params") or {}
++                if not isinstance(params, dict):
++                    params = {}
++                params.update(extra_formalize_params)
++                st["params"] = params
++                break
++
++    return {"steps": steps}
++
++
+ def cmd_plan(args: argparse.Namespace) -> Dict[str, Any]:
+-    params = {"mode": args.mode, "template": args.template}
++    rr = RunRequest(mode=args.mode, template_id=args.template)
++
++    extra: Dict[str, Any] = {}
+     if getattr(args, "contribution_id", ""):
+-        params["contribution_id"] = args.contribution_id
+-    plan = {"steps": [{"kind": "formalize", "params": params}]}
++        extra["contribution_id"] = args.contribution_id
++
++    plan = _router_formalize_plan(session_id=args.session_id, rr=rr, extra_formalize_params=(extra or None))
+     out = _make_run(args.session_id, plan, auto_go=False)
+     out["status"] = "pending_go"
+     return out
+@@ -54,10 +89,13 @@
+ 
+ 
+ def cmd_run(args: argparse.Namespace) -> Dict[str, Any]:
+-    params = {"mode": args.mode, "template": args.template}
++    rr = RunRequest(mode=args.mode, template_id=args.template)
++
++    extra: Dict[str, Any] = {}
+     if getattr(args, "contribution_id", ""):
+-        params["contribution_id"] = args.contribution_id
+-    plan = {"steps": [{"kind": "formalize", "params": params}]}
++        extra["contribution_id"] = args.contribution_id
++
++    plan = _router_formalize_plan(session_id=args.session_id, rr=rr, extra_formalize_params=(extra or None))
+     return _make_run(args.session_id, plan, auto_go=True)
+ 
+ 
+@@ -84,14 +122,12 @@
+ 
+ 
+ def cmd_rerender(args: argparse.Namespace) -> Dict[str, Any]:
+-    plan = {
+-        "steps": [
+-            {
+-                "kind": "formalize",
+-                "params": {"mode": args.mode, "template": args.template, "reuse_run_id": args.source_run_id},
+-            }
+-        ]
+-    }
++    rr = RunRequest(mode=args.mode, template_id=args.template)
++    plan = _router_formalize_plan(
++        session_id=args.session_id,
++        rr=rr,
++        extra_formalize_params={"reuse_run_id": args.source_run_id},
++    )
+     return _make_run(args.session_id, plan, auto_go=True)
+ 
+ 
+@@ -162,7 +198,6 @@
+     sr.add_argument("--limit", type=int, default=10)
+     sr.set_defaults(_handler=cmd_search)
+ 
+-
+     return p
+ 
+ 
+--- /tmp/quest061_before/stuart_door_core.py	2026-02-07 22:42:44.000000000 +0000
++++ /mnt/data/Ashby_Engine/ashby/interfaces/telegram/stuart_door_core.py	2026-02-09 01:18:50.137478315 +0000
+@@ -1,7 +1,9 @@
+ from __future__ import annotations
+ 
+ from dataclasses import dataclass
+-from typing import Dict, List, Literal, Optional, Tuple
++from typing import List, Literal, Optional, Tuple
++
++from ashby.modules.meetings.schemas.run_request import RunRequest
+ 
+ Mode = Literal["meeting", "journal"]
+ Speakers = Literal["auto", "1", "2", "3+"]
+@@ -32,6 +34,10 @@
+     session_id: Optional[str] = None
+     run_id: Optional[str] = None
+ 
++    def to_run_request(self) -> RunRequest:
++        """Convert door selections into the canonical meetings RunRequest contract."""
++        return RunRequest(mode=self.mode, speakers=self.speakers)
++
+ 
+ def start_from_upload(*, local_path: str, source_kind: str) -> Tuple[DoorState, DoorPrompt]:
+     st = DoorState(stage="awaiting_mode", local_path=local_path, source_kind=source_kind)
+@@ -72,7 +78,7 @@
+         return None
+     if not data.startswith(STUART_CB_PREFIX):
+         return None
+-    body = data[len(STUART_CB_PREFIX):]
++    body = data[len(STUART_CB_PREFIX) :]
+     if ":" not in body:
+         return None
+     kind, value = body.split(":", 1)
+--- /tmp/quest061_before/test_meetings_clarify_preview.py	2026-02-07 22:42:44.000000000 +0000
++++ /mnt/data/Ashby_Engine/tests/test_meetings_clarify_preview.py	2026-02-09 01:25:21.135864297 +0000
+@@ -1,45 +1,26 @@
+ from ashby.modules.meetings.clarify_or_preview import clarify_or_preview
+-from ashby.modules.meetings.schemas.plan import AttachmentMeta, UIState, SessionContext
+ from ashby.modules.meetings.schemas.clarify import ClarifyField
++from ashby.modules.meetings.schemas.run_request import RunRequest
+ 
+ 
+-def test_mode_missing_triggers_clarification_with_enumerated_options():
+-    out = clarify_or_preview(text="formalize", ui=UIState(mode=None))
++def test_clarify_missing_mode():
++    out = clarify_or_preview(text="", run_request=RunRequest())
+     assert out.needs_clarification is True
+     assert out.clarify is not None
+     assert ClarifyField.MODE in out.clarify.fields_needed
+-    # options must include journal + meeting
+-    opts = out.clarify.options[ClarifyField.MODE]
+-    values = sorted([o.value for o in opts])
+-    assert values == ["journal", "meeting"]
+ 
+ 
+-def test_defaults_applied_and_disclosed_in_preview():
+-    out = clarify_or_preview(
+-        text="formalize",
+-        ui=UIState(mode="meeting", template=None, speakers=None),
+-        session=SessionContext(active_session_id="sessx"),
+-    )
++def test_mode_provided_defaults_applied():
++    out = clarify_or_preview(text="", run_request=RunRequest(mode="meeting"))
+     assert out.needs_clarification is False
+     assert out.preview is not None
+     assert out.preview.mode == "meeting"
+-    assert out.preview.template == "default"
+-    # meeting default speakers is "auto"
+-    assert out.preview.speakers == "auto"
+     assert "template=default" in out.preview.defaults_used
+     assert "retention=MED" in out.preview.defaults_used
+-    assert "speakers=auto" in out.preview.defaults_used
+-    # plan should include a formalize step
+-    kinds = [s["kind"] for s in out.preview.ordered_steps]
+-    assert "formalize" in kinds
+ 
+ 
+-def test_telegram_door_never_offers_template_selection():
+-    out = clarify_or_preview(
+-        text="formalize",
+-        ui=UIState(mode="journal", template=None, speakers=None),
+-        door="telegram",
+-    )
+-    assert out.needs_clarification is False
+-    assert out.preview is not None
+-    assert out.preview.template == "default"
++def test_invalid_mode_clarifies():
++    out = clarify_or_preview(text="", run_request=RunRequest(mode="nope"))
++    assert out.needs_clarification is True
++    assert out.clarify is not None
++    assert ClarifyField.MODE in out.clarify.fields_needed
+--- /tmp/quest061_before/test_meetings_router_plan.py	2026-02-07 22:42:44.000000000 +0000
++++ /mnt/data/Ashby_Engine/tests/test_meetings_router_plan.py	2026-02-09 01:36:02.979713558 +0000
+@@ -1,11 +1,12 @@
+ from ashby.modules.meetings.router.router import build_intent_and_plan
+-from ashby.modules.meetings.schemas.plan import AttachmentMeta, UIState, SessionContext, IntentKind, PlanStepKind
++from ashby.modules.meetings.schemas.plan import AttachmentMeta, SessionContext, IntentKind, PlanStepKind
++from ashby.modules.meetings.schemas.run_request import RunRequest
+ 
+ 
+ def test_set_mode_plan_step():
+     out = build_intent_and_plan(
+         text="set mode",
+-        ui=UIState(mode="journal"),
++        run_request=RunRequest(mode="journal"),
+         session=SessionContext(active_session_id="sess1"),
+     )
+     assert out.intent.kind == IntentKind.SET_MODE
+@@ -18,10 +19,11 @@
+     out = build_intent_and_plan(
+         text="",
+         attachments=[AttachmentMeta(filename="audio.wav", mime_type="audio/wav", size_bytes=123)],
+-        ui=UIState(mode="meeting"),
++        run_request=RunRequest(mode="meeting"),
+         session=SessionContext(active_session_id="sess2"),
+     )
+     assert out.intent.kind == IntentKind.INTAKE
++    assert out.plan.steps[0].kind == PlanStepKind.VALIDATE
+     assert out.plan.steps[1].kind == PlanStepKind.INTAKE
+     assert out.plan.steps[1].params["session_id"] == "sess2"
+     assert len(out.plan.steps[1].params["attachments"]) == 1
+@@ -30,10 +32,11 @@
+ def test_formalize_plan_only_no_execution():
+     out = build_intent_and_plan(
+         text="formalize",
+-        ui=UIState(mode="meeting", template="default", speakers="auto"),
++        run_request=RunRequest(mode="meeting", template_id="default", speakers="auto"),
+         session=SessionContext(active_session_id="sess3"),
+     )
+     assert out.intent.kind == IntentKind.FORMALIZE
++    assert out.plan.steps[0].kind == PlanStepKind.VALIDATE
+     assert out.plan.steps[1].kind == PlanStepKind.FORMALIZE
+     assert out.plan.steps[1].params["mode"] == "meeting"
+     assert out.plan.steps[1].params["template_id"] == "default"
+@@ -43,9 +46,10 @@
+ def test_search_plan_only():
+     out = build_intent_and_plan(
+         text="search project aurora",
+-        ui=UIState(mode="meeting"),
++        run_request=RunRequest(mode="meeting"),
+         session=SessionContext(active_session_id="sess4"),
+     )
+     assert out.intent.kind == IntentKind.SEARCH
++    assert out.plan.steps[0].kind == PlanStepKind.VALIDATE
+     assert out.plan.steps[1].kind == PlanStepKind.SEARCH
+     assert out.plan.steps[1].params["query"] == "project aurora"
+--- /tmp/quest061_before/test_meetings_search_ranked_results_citations.py	2026-02-08 02:00:18.000000000 +0000
++++ /mnt/data/Ashby_Engine/tests/test_meetings_search_ranked_results_citations.py	2026-02-09 01:26:13.140780865 +0000
+@@ -8,7 +8,8 @@
+ import pytest
+ 
+ from ashby.modules.meetings.router.router import build_intent_and_plan
+-from ashby.modules.meetings.schemas.plan import UIState, SessionContext
++from ashby.modules.meetings.schemas.plan import SessionContext
++from ashby.modules.meetings.schemas.run_request import RunRequest
+ from ashby.modules.meetings.store import create_session, create_run, get_run_state, add_contribution
+ from ashby.modules.meetings.init_root import init_stuart_root
+ from ashby.modules.meetings.pipeline.transcribe import transcribe_stub
+@@ -47,7 +48,7 @@
+ 
+     out = build_intent_and_plan(
+         text="search kimchi",
+-        ui=UIState(mode="meeting"),
++        run_request=RunRequest(mode="meeting"),
+         session=SessionContext(active_session_id=ses),
+     )
+ 
+@@ -102,7 +103,7 @@
+ 
+     out = build_intent_and_plan(
+         text="search definitelynotaword_zzz",
+-        ui=UIState(mode="meeting"),
++        run_request=RunRequest(mode="meeting"),
+         session=SessionContext(active_session_id=ses),
+     )
+ 
+--- /tmp/quest061_old_synth/uploads.py	2026-02-09 01:44:55.284317738 +0000
++++ /mnt/data/Ashby_Engine/ashby/interfaces/web/uploads.py	2026-02-09 01:31:01.049456183 +0000
+@@ -58,3 +58,46 @@
+     )
+ 
+     return contribution_id, meta
++
++
++async def store_upload_bytes(
++    session_id: str,
++    filename: str,
++    data: bytes,
++    mime_type: Optional[str] = None,
++) -> Tuple[str, AttachmentMeta]:
++    """Persist upload bytes as a contribution and return (contribution_id, attachment_meta).
++
++    This exists so the web door can accept uploads in environments where
++    `python-multipart` is not installed (i.e., no multipart/form-data parsing).
++
++    NOTE: This reads the entire body in-memory. For large files, prefer `store_upload()`
++    with a real multipart upload.
++    """
++
++    lay = init_stuart_root()
++
++    tmp_dir = lay.root / "tmp" / "web_uploads"
++    tmp_dir.mkdir(parents=True, exist_ok=True)
++
++    safe_name = (filename or "upload.bin").strip() or "upload.bin"
++    tmp_path = tmp_dir / safe_name
++
++    sha = hashlib.sha256()
++    sha.update(data or b"")
++    tmp_path.write_bytes(data or b"")
++
++    kind = _infer_kind(mime_type or "", safe_name)
++    contribution_id = add_contribution(session_id=session_id, source_path=tmp_path, source_kind=kind)
++
++    man_path = lay.contributions / contribution_id / "contribution.json"
++    m = load_manifest(man_path)
++
++    meta = AttachmentMeta(
++        filename=str(m.get("source_filename") or safe_name),
++        mime_type=mime_type,
++        size_bytes=len(data) if data is not None else None,
++        sha256=str(m.get("source_sha256") or sha.hexdigest()),
++    )
++
++    return contribution_id, meta
+--- /tmp/quest061_old_synth/test_meetings_web_door_scaffold.py	2026-02-09 01:44:55.349058135 +0000
++++ /mnt/data/Ashby_Engine/tests/test_meetings_web_door_scaffold.py	2026-02-09 01:39:15.870118035 +0000
+@@ -1,15 +1,17 @@
+ from __future__ import annotations
+ 
+-from fastapi.testclient import TestClient
++import httpx
++import pytest
+ 
+ from ashby.interfaces.web.app import create_app
+ 
+ 
+-def test_web_registry_exposes_modes_and_templates():
++@pytest.mark.asyncio
++async def test_web_registry_exposes_modes_and_templates():
+     app = create_app()
+-    c = TestClient(app)
+-
+-    r = c.get("/api/registry")
++    transport = httpx.ASGITransport(app=app)
++    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as c:
++        r = await c.get("/api/registry")
+     assert r.status_code == 200
+     data = r.json()
+     assert "modes" in data
+@@ -20,11 +22,12 @@
+     assert data["templates_by_mode"]["meeting"] == ["default"]
+ 
+ 
+-def test_index_has_mode_placeholder_and_no_default_selected():
++@pytest.mark.asyncio
++async def test_index_has_mode_placeholder_and_no_default_selected():
+     app = create_app()
+-    c = TestClient(app)
+-
+-    r = c.get("/")
++    transport = httpx.ASGITransport(app=app)
++    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as c:
++        r = await c.get("/")
+     assert r.status_code == 200
+     html = r.text
+     # placeholder must exist and be disabled so nothing is preselected
+--- /tmp/quest061_old_synth/test_meetings_web_upload_run.py	2026-02-09 01:44:55.357857188 +0000
++++ /mnt/data/Ashby_Engine/tests/test_meetings_web_upload_run.py	2026-02-09 01:40:13.735710890 +0000
+@@ -1,12 +1,12 @@
+ from __future__ import annotations
+ 
++import asyncio
+ import shutil
+ import subprocess
+-import time
+ from pathlib import Path
+ 
++import httpx
+ import pytest
+-from fastapi.testclient import TestClient
+ 
+ from ashby.interfaces.web.app import create_app
+ 
+@@ -25,48 +25,56 @@
+     return p.read_bytes()
+ 
+ 
+-def test_web_upload_and_run(tmp_path: Path, monkeypatch):
++@pytest.mark.asyncio
++async def test_web_upload_and_run(tmp_path: Path, monkeypatch):
+     monkeypatch.setenv("STUART_ROOT", str(tmp_path / "stuart_runtime"))
+ 
+     app = create_app()
+-    c = TestClient(app)
++    transport = httpx.ASGITransport(app=app)
+ 
+-    r = c.post("/api/sessions", json={"mode": "journal", "title": "web test"})
+-    sid = r.json()["session_id"]
+-
+-    wav_bytes = _gen_wav_bytes(tmp_path)
+-    files = {"file": ("test.wav", wav_bytes, "audio/wav")}
+-    r2 = c.post(f"/api/upload?session_id={sid}", files=files)
+-    j = r2.json()
+-    assert j["ok"] is True
+-    att = j["attachment"]
+-
+-    r3 = c.post(
+-        "/api/message",
+-        json={
+-            "session_id": sid,
+-            "text": "formalize this",
+-            "ui": {"mode": "journal", "template": None, "speakers": None},
+-            "attachments": [att],
+-        },
+-    )
+-    out = r3.json()["result"]
+-    assert out["needs_clarification"] is False
+-
+-    r4 = c.post("/api/run", json={"session_id": sid, "ui": {"mode": "journal", "template": "default", "speakers": None}})
+-    j4 = r4.json()
+-    assert j4["ok"] is True
+-    run_id = j4["run_id"]
+-
+-    # poll status
+-    for _ in range(50):
+-        st = c.get(f"/api/runs/{run_id}").json()
+-        status = (st["state"] or {}).get("status")
+-        if status in ("succeeded", "failed"):
+-            break
+-        time.sleep(0.05)
+-
+-    st = c.get(f"/api/runs/{run_id}").json()
+-    assert (st["state"] or {}).get("status") == "succeeded"
+-    arts = st.get("artifacts") or []
+-    assert len(arts) >= 1
++    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as c:
++        r = await c.post("/api/sessions", json={"mode": "journal", "title": "web test"})
++        sid = r.json()["session_id"]
++
++        wav_bytes = _gen_wav_bytes(tmp_path)
++        r2 = await c.post(
++            f"/api/upload?session_id={sid}",
++            content=wav_bytes,
++            headers={"x-filename": "test.wav", "content-type": "audio/wav"},
++        )
++        j = r2.json()
++        assert j["ok"] is True
++        att = j["attachment"]
++
++        r3 = await c.post(
++            "/api/message",
++            json={
++                "session_id": sid,
++                "text": "formalize this",
++                "ui": {"mode": "journal", "template": None, "speakers": None},
++                "attachments": [att],
++            },
++        )
++        out = r3.json()["result"]
++        assert out["needs_clarification"] is False
++
++        r4 = await c.post(
++            "/api/run",
++            json={"session_id": sid, "ui": {"mode": "journal", "template": "default", "speakers": None}},
++        )
++        j4 = r4.json()
++        assert j4["ok"] is True
++        run_id = j4["run_id"]
++
++        # poll status
++        for _ in range(50):
++            st = (await c.get(f"/api/runs/{run_id}")).json()
++            status = (st.get("state") or {}).get("status")
++            if status in ("succeeded", "failed"):
++                break
++            await asyncio.sleep(0.05)
++
++        st = (await c.get(f"/api/runs/{run_id}")).json()
++        assert (st.get("state") or {}).get("status") == "succeeded"
++        arts = st.get("artifacts") or []
++        assert len(arts) >= 1

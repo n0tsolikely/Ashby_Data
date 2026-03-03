@@ -1,0 +1,147 @@
+================================================================================
+END OF DAY SNAPSHOT
+================================================================================
+A) Header (required)
+- Subject: STUART
+- Date: 2026-03-02
+- Topic: Auto EOD: Accepted queue drained after validated quest wave
+- Snapshot Type: End_of_Day
+- World State: Fog Lifted
+- Codex Freeze status: PRESENT (/home/notsolikely/Ashby_Data/Codex/CODEX_FREEZE.md)
+
+B) Work Performed (Quest-by-Quest) (required)
+- Quest ID + Title: QUEST_169 — Stuart_v1_D8_1of7 — FormalizationTitles_RunMetadata_and_RenameAPI
+  - Status at end of day: COMPLETED
+  - Preconditions referenced: quest in Accepted + validated bundle gate before move
+  - Actions performed: see /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_169__2026-03-01__stuart_v1_d8_1of7_formalizationtitles_runmetadata_and_renameapi/02_EXECUTION.md
+  - Artifacts changed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_169__2026-03-01__stuart_v1_d8_1of7_formalizationtitles_runmetadata_and_renameapi/06_CHANGED_FILES.txt
+  - Verification performed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_169__2026-03-01__stuart_v1_d8_1of7_formalizationtitles_runmetadata_and_renameapi/03_VERIFY.md + /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_169__2026-03-01__stuart_v1_d8_1of7_formalizationtitles_runmetadata_and_renameapi/06_TESTS.txt
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_169__2026-03-01__stuart_v1_d8_1of7_formalizationtitles_runmetadata_and_renameapi/04_OUTCOME.md
+- Quest ID + Title: QUEST_170 — Stuart_v1_D8_2of7 — UI_FormalizationTitles_Create_and_Rename
+  - Status at end of day: COMPLETED
+  - Preconditions referenced: quest in Accepted + validated bundle gate before move
+  - Actions performed: see /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_170__2026-03-01__stuart_v1_d8_2of7_ui_formalizationtitles_create_and_rename/02_EXECUTION.md
+  - Artifacts changed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_170__2026-03-01__stuart_v1_d8_2of7_ui_formalizationtitles_create_and_rename/06_CHANGED_FILES.txt
+  - Verification performed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_170__2026-03-01__stuart_v1_d8_2of7_ui_formalizationtitles_create_and_rename/03_VERIFY.md + /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_170__2026-03-01__stuart_v1_d8_2of7_ui_formalizationtitles_create_and_rename/06_TESTS.txt
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_170__2026-03-01__stuart_v1_d8_2of7_ui_formalizationtitles_create_and_rename/04_OUTCOME.md
+- Quest ID + Title: QUEST_171 — Stuart_v1_D8_3of7 — ExportAPI_v2_DevBundle_and_FormatSelection
+  - Status at end of day: COMPLETED
+  - Preconditions referenced: quest in Accepted + validated bundle gate before move
+  - Actions performed: see /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_171__2026-03-01__stuart_v1_d8_3of7_exportapi_v2_devbundle_and_formatselection/02_EXECUTION.md
+  - Artifacts changed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_171__2026-03-01__stuart_v1_d8_3of7_exportapi_v2_devbundle_and_formatselection/06_CHANGED_FILES.txt
+  - Verification performed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_171__2026-03-01__stuart_v1_d8_3of7_exportapi_v2_devbundle_and_formatselection/03_VERIFY.md + /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_171__2026-03-01__stuart_v1_d8_3of7_exportapi_v2_devbundle_and_formatselection/06_TESTS.txt
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_171__2026-03-01__stuart_v1_d8_3of7_exportapi_v2_devbundle_and_formatselection/04_OUTCOME.md
+- Quest ID + Title: QUEST_172 — Stuart_v1_D8_4of7 — ExportBuilder_v2_User_vs_Dev_Structure_and_Determinism
+  - Status at end of day: COMPLETED
+  - Preconditions referenced: quest in Accepted + validated bundle gate before move
+  - Actions performed: see /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_172__2026-03-01__stuart_v1_d8_4of7_exportbuilder_v2_user_vs_dev_structure_and_determinism/02_EXECUTION.md
+  - Artifacts changed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_172__2026-03-01__stuart_v1_d8_4of7_exportbuilder_v2_user_vs_dev_structure_and_determinism/06_CHANGED_FILES.txt
+  - Verification performed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_172__2026-03-01__stuart_v1_d8_4of7_exportbuilder_v2_user_vs_dev_structure_and_determinism/03_VERIFY.md + /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_172__2026-03-01__stuart_v1_d8_4of7_exportbuilder_v2_user_vs_dev_structure_and_determinism/06_TESTS.txt
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_172__2026-03-01__stuart_v1_d8_4of7_exportbuilder_v2_user_vs_dev_structure_and_determinism/04_OUTCOME.md
+- Quest ID + Title: QUEST_173 — Stuart_v1_D8_5of7 — PDF_Traceability_Footers_Formalizations_and_Transcripts
+  - Status at end of day: COMPLETED
+  - Preconditions referenced: quest in Accepted + validated bundle gate before move
+  - Actions performed: see /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_173__2026-03-01__stuart_v1_d8_5of7_pdf_traceability_footers_formalizations_and_transcripts/02_EXECUTION.md
+  - Artifacts changed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_173__2026-03-01__stuart_v1_d8_5of7_pdf_traceability_footers_formalizations_and_transcripts/06_CHANGED_FILES.txt
+  - Verification performed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_173__2026-03-01__stuart_v1_d8_5of7_pdf_traceability_footers_formalizations_and_transcripts/03_VERIFY.md + /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_173__2026-03-01__stuart_v1_d8_5of7_pdf_traceability_footers_formalizations_and_transcripts/06_TESTS.txt
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_173__2026-03-01__stuart_v1_d8_5of7_pdf_traceability_footers_formalizations_and_transcripts/04_OUTCOME.md
+- Quest ID + Title: QUEST_174 — Stuart_v1_D8_6of7 — UI_ExportModal_FormatPickers_DevBundle_and_ChatCommands
+  - Status at end of day: COMPLETED
+  - Preconditions referenced: quest in Accepted + validated bundle gate before move
+  - Actions performed: see /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_174__2026-03-01__stuart_v1_d8_6of7_ui_exportmodal_formatpickers_devbundle_and_chatcommands/02_EXECUTION.md
+  - Artifacts changed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_174__2026-03-01__stuart_v1_d8_6of7_ui_exportmodal_formatpickers_devbundle_and_chatcommands/06_CHANGED_FILES.txt
+  - Verification performed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_174__2026-03-01__stuart_v1_d8_6of7_ui_exportmodal_formatpickers_devbundle_and_chatcommands/03_VERIFY.md + /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_174__2026-03-01__stuart_v1_d8_6of7_ui_exportmodal_formatpickers_devbundle_and_chatcommands/06_TESTS.txt
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_174__2026-03-01__stuart_v1_d8_6of7_ui_exportmodal_formatpickers_devbundle_and_chatcommands/04_OUTCOME.md
+- Quest ID + Title: QUEST_175 — Stuart_v1_D8_7of7 — TL4_Proof_ExportBundles_User_vs_Dev_Determinism
+  - Status at end of day: COMPLETED
+  - Preconditions referenced: quest in Accepted + validated bundle gate before move
+  - Actions performed: see /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_175__2026-03-01__stuart_v1_d8_7of7_tl4_proof_exportbundles_user_vs_dev_determinism/02_EXECUTION.md
+  - Artifacts changed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_175__2026-03-01__stuart_v1_d8_7of7_tl4_proof_exportbundles_user_vs_dev_determinism/06_CHANGED_FILES.txt
+  - Verification performed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_175__2026-03-01__stuart_v1_d8_7of7_tl4_proof_exportbundles_user_vs_dev_determinism/03_VERIFY.md + /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_175__2026-03-01__stuart_v1_d8_7of7_tl4_proof_exportbundles_user_vs_dev_determinism/06_TESTS.txt
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_175__2026-03-01__stuart_v1_d8_7of7_tl4_proof_exportbundles_user_vs_dev_determinism/04_OUTCOME.md
+
+C) Completed Work Summary (required when anything completed)
+- QUEST_169 — Stuart_v1_D8_1of7 — FormalizationTitles_RunMetadata_and_RenameAPI
+  - Proof: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_169__2026-03-01__stuart_v1_d8_1of7_formalizationtitles_runmetadata_and_renameapi
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_169__2026-03-01__stuart_v1_d8_1of7_formalizationtitles_runmetadata_and_renameapi/04_OUTCOME.md
+- QUEST_170 — Stuart_v1_D8_2of7 — UI_FormalizationTitles_Create_and_Rename
+  - Proof: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_170__2026-03-01__stuart_v1_d8_2of7_ui_formalizationtitles_create_and_rename
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_170__2026-03-01__stuart_v1_d8_2of7_ui_formalizationtitles_create_and_rename/04_OUTCOME.md
+- QUEST_171 — Stuart_v1_D8_3of7 — ExportAPI_v2_DevBundle_and_FormatSelection
+  - Proof: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_171__2026-03-01__stuart_v1_d8_3of7_exportapi_v2_devbundle_and_formatselection
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_171__2026-03-01__stuart_v1_d8_3of7_exportapi_v2_devbundle_and_formatselection/04_OUTCOME.md
+- QUEST_172 — Stuart_v1_D8_4of7 — ExportBuilder_v2_User_vs_Dev_Structure_and_Determinism
+  - Proof: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_172__2026-03-01__stuart_v1_d8_4of7_exportbuilder_v2_user_vs_dev_structure_and_determinism
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_172__2026-03-01__stuart_v1_d8_4of7_exportbuilder_v2_user_vs_dev_structure_and_determinism/04_OUTCOME.md
+- QUEST_173 — Stuart_v1_D8_5of7 — PDF_Traceability_Footers_Formalizations_and_Transcripts
+  - Proof: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_173__2026-03-01__stuart_v1_d8_5of7_pdf_traceability_footers_formalizations_and_transcripts
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_173__2026-03-01__stuart_v1_d8_5of7_pdf_traceability_footers_formalizations_and_transcripts/04_OUTCOME.md
+- QUEST_174 — Stuart_v1_D8_6of7 — UI_ExportModal_FormatPickers_DevBundle_and_ChatCommands
+  - Proof: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_174__2026-03-01__stuart_v1_d8_6of7_ui_exportmodal_formatpickers_devbundle_and_chatcommands
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_174__2026-03-01__stuart_v1_d8_6of7_ui_exportmodal_formatpickers_devbundle_and_chatcommands/04_OUTCOME.md
+- QUEST_175 — Stuart_v1_D8_7of7 — TL4_Proof_ExportBundles_User_vs_Dev_Determinism
+  - Proof: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_175__2026-03-01__stuart_v1_d8_7of7_tl4_proof_exportbundles_user_vs_dev_determinism
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_175__2026-03-01__stuart_v1_d8_7of7_tl4_proof_exportbundles_user_vs_dev_determinism/04_OUTCOME.md
+
+D) Incomplete / Failed / Blocked Work (required when relevant)
+- (none)
+
+E) System Verification Performed (required when applicable)
+- QUEST_169
+  - Command receipts:
+    CMD: source /home/notsolikely/venvs/ashby-env/bin/activate && cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_formalization_titles_api_v1.py tests/test_meetings_web_upload_run.py tests/test_meetings_run_params_validation.py
+    RC: 0
+    CMD: source /home/notsolikely/venvs/ashby-env/bin/activate && cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_formalization_titles_api_v1.py tests/test_meetings_web_upload_run.py tests/test_meetings_run_params_validation.py
+    RC: 0
+    CMD: source /home/notsolikely/venvs/ashby-env/bin/activate && cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_formalization_titles_api_v1.py tests/test_meetings_web_upload_run.py tests/test_meetings_run_params_validation.py
+    RC: 0
+  - Verify receipt: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_169__2026-03-01__stuart_v1_d8_1of7_formalizationtitles_runmetadata_and_renameapi/03_VERIFY.md
+- QUEST_170
+  - Command receipts:
+    CMD: source /home/notsolikely/venvs/ashby-env/bin/activate && cd /home/notsolikely/Ashby_Engine && npm --prefix webapp/stuart_frontend/stuart_app run build && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_formalization_titles_api_v1.py
+    RC: 0
+  - Verify receipt: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_170__2026-03-01__stuart_v1_d8_2of7_ui_formalizationtitles_create_and_rename/03_VERIFY.md
+- QUEST_171
+  - Command receipts:
+    CMD: source /home/notsolikely/venvs/ashby-env/bin/activate && cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_export_api_v2_params.py tests/test_meetings_export_bundle_export_type_filters.py tests/test_meetings_cli_search_export.py
+    RC: 1
+    CMD: source /home/notsolikely/venvs/ashby-env/bin/activate && cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_export_api_v2_params.py tests/test_meetings_export_bundle_export_type_filters.py tests/test_meetings_cli_search_export.py
+    RC: 0
+  - Verify receipt: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_171__2026-03-01__stuart_v1_d8_3of7_exportapi_v2_devbundle_and_formatselection/03_VERIFY.md
+- QUEST_172
+  - Command receipts:
+    CMD: source /home/notsolikely/venvs/ashby-env/bin/activate && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_export_bundle_export_type_filters.py tests/test_export_api_v2_params.py tests/test_meetings_cli_search_export.py tests/test_pdf_traceability_footers.py
+    RC: 0
+  - Verify receipt: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_172__2026-03-01__stuart_v1_d8_4of7_exportbuilder_v2_user_vs_dev_structure_and_determinism/03_VERIFY.md
+- QUEST_173
+  - Command receipts:
+    CMD: source /home/notsolikely/venvs/ashby-env/bin/activate && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_pdf_traceability_footers.py tests/test_meetings_export_bundle_export_type_filters.py
+    RC: 0
+  - Verify receipt: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_173__2026-03-01__stuart_v1_d8_5of7_pdf_traceability_footers_formalizations_and_transcripts/03_VERIFY.md
+- QUEST_174
+  - Command receipts:
+    CMD: cd /home/notsolikely/Ashby_Engine && npm --prefix webapp/stuart_frontend/stuart_app run build
+    RC: 0
+  - Verify receipt: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_174__2026-03-01__stuart_v1_d8_6of7_ui_exportmodal_formatpickers_devbundle_and_chatcommands/03_VERIFY.md
+- QUEST_175
+  - Command receipts:
+    CMD: source /home/notsolikely/venvs/ashby-env/bin/activate && PYTHONPATH=/home/notsolikely/Ashby_Engine python /tmp/verify_d8_proofs.py
+    RC: 0
+  - Verify receipt: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_175__2026-03-01__stuart_v1_d8_7of7_tl4_proof_exportbundles_user_vs_dev_determinism/03_VERIFY.md
+
+F) Bugs / Weirdness / Discoveries
+- No additional bugs discovered beyond quest-level logs; see execution bundles for details.
+
+G) Raid / Guild Orders status changes
+- (none)
+
+H) Talent Tree updates (mandatory when relevant)
+- (none)
+
+I) Resume Instructions (required)
+- Tomorrow's Control Sync must start by reviewing latest Control Sync + this EOD snapshot.
+- Known blockers: none recorded in completed wave; verify new Accepted queue before execution.
+- Next recommended Quests: accept next board stack per active Guild Orders.
+- Rehydration notes: use Latest Rehydration Pack continuity lock and this EOD for resume anchor.
+
+END OF SNAPSHOT

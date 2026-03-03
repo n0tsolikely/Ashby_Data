@@ -1,0 +1,135 @@
+STUART — END OF DAY SNAPSHOT — 2026-02-15
+
+Canon:
+- Canon root (extracted): /mnt/data/Ashby_Canon
+- Engine: /mnt/data/Ashby_Canon/Ashby_Engine
+- Data:   /mnt/data/Ashby_Canon/Ashby_Data
+
+Scope of this EOD:
+- Capture the operator boot/debug session that started at “how do I boot Stuart up properly now?”
+- Capture the repo hardening changes applied so future operators don’t repeat the dependency mess.
+- Update the Latest Rehydration Pack (bootstrap + continuity lock) to reflect today’s state.
+
+────────────────────────────────────────
+TODAY’S OUTCOME
+────────────────────────────────────────
+Hands achieved a **STRICT preflight PASS** on a real WSL/Ubuntu machine after resolving Python/pip dependency conflicts. The canon repo was then updated to bake those lessons into:
+- pinned Python dependencies (prevent pip backtracking)
+- explicit environment constraints (python 3.10/3.11, numpy<2)
+- upgraded preflight checks (fail fast with actionable instructions)
+- runtime-root unification (no more repo-local StuartRuntime default)
+
+────────────────────────────────────────
+HANDS FIELD BOOT LOG (WHAT HAPPENED ON THE MACHINE)
+────────────────────────────────────────
+Context: Hands had two venvs (ashby-env on Python 3.12 and stuart-env_py310 on Python 3.10) and wanted a clean, repeatable boot sequence.
+
+Key events / errors observed:
+1) `pip install -r requirements-stuart-v1.txt` in the Python 3.12 env tried to build PyAV from source and failed due to missing FFmpeg dev libraries (pkg-config could not find libavformat/libavcodec/etc). This was a symptom of the resolver selecting a source build.
+
+2) In the Python 3.10 env, pip still backtracked into older `faster-whisper` versions that required `av==10.*` / `av==11.*`, triggering a build from source and Cython/noexcept compilation failures. Root cause: the repo requirement pin for `ctranslate2<4` forced pip to avoid `faster-whisper 1.0.x` (which requires ctranslate2>=4).
+
+3) `pyannote.audio` import failed with:
+   `AttributeError: module 'torchaudio' has no attribute 'AudioMetaData'`
+   This happened after installing newer torchaudio builds (2.10.0+cpu) that no longer exposed that attribute used by `pyannote.audio 3.4.0`.
+
+4) Torch + NumPy ABI mismatch warnings appeared when running some newer Torch builds alongside NumPy 2.x.
+
+5) Preflight STRICT fail occurred due to `openai` import failing when dependencies were skipped (installed `openai` with `--no-deps`), specifically missing `sniffio`.
+
+Hands’ final working resolution (strict preflight OK):
+- Use Python 3.10
+- Pin NumPy to `<2` (resolved ABI warnings path)
+- Use torch/torchaudio versions that include `AudioMetaData` (2.2.2 worked)
+- Ensure OpenAI deps are installed (sniffio/distro/jiter)
+
+Result:
+- `python scripts/stuart_preflight.py --strict` returned `RESULT: OK`.
+
+────────────────────────────────────────
+CANON HARDENING CHANGES APPLIED TODAY (IN THIS REPO)
+────────────────────────────────────────
+1) Requirements hardening (pip resolver stabilization)
+- File: `Ashby_Engine/requirements-stuart-v1.txt`
+- Changes:
+  - pin `faster-whisper==1.0.3`
+  - change `ctranslate2` band to `>=4,<5` (matches faster-whisper 1.0.3)
+  - explicitly pin `av>=12.3.0,<13` (avoid source builds)
+  - pin `numpy<2`
+  - pin torch stack to a known compatible set:
+    - `torch==2.2.2`
+    - `torchaudio==2.2.2`
+    - `torchvision==0.17.2`
+  - pin `pyannote.audio==3.4.0`
+
+Why:
+- This removes the exact backtracking path that caused PyAV to compile from source.
+- This avoids the torchaudio API break that prevented pyannote import.
+- This avoids NumPy 2 ABI issues observed in the field.
+
+2) Install docs updated (single source of truth)
+- File: `Ashby_Engine/docs/stuart/INSTALL_STUART_V1.md`
+- Changes:
+  - explicitly recommend Python 3.10/3.11
+  - document “one venv” model
+  - add system deps list (ffmpeg + WeasyPrint libs)
+  - add troubleshooting section for common failures
+
+3) System deps doc updated
+- File: `Ashby_Engine/docs/stuart/SYSTEM_DEPENDENCIES.md`
+- Changes:
+  - expanded WeasyPrint native deps
+  - added optional fallback deps for building PyAV from source (libavformat-dev, libavcodec-dev, etc)
+
+4) Preflight upgraded (fail fast, give fixes)
+- File: `Ashby_Engine/scripts/stuart_preflight.py`
+- Changes:
+  - added STRICT guards:
+    - recommended python range (3.10/3.11)
+    - numpy major version (<2)
+    - torchaudio `AudioMetaData` availability
+    - ctranslate2>=4 guard
+    - explicit `av` import check
+
+5) Runtime-root unification + cleanup
+- File: `Ashby_Engine/io/telegram/ashby_telegram_control.py`
+  - default STUART_ROOT now matches `ashby.modules.meetings.config.get_config().root` (shared with webapp/CLI)
+- Removal: `Ashby_Engine/StuartRuntime/`
+  - removed from canon (runtime artifacts should never ship inside repo)
+
+6) Housekeeping
+- removed repo-local caches (`__pycache__`, `.pytest_cache`) from the engine tree.
+
+────────────────────────────────────────
+NEW SNAPSHOTS CREATED TODAY
+────────────────────────────────────────
+Control Sync snapshot:
+- `Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-02-15__BOOT_ENV_HARDENING.txt`
+
+EOD snapshot:
+- `Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2026-02-15__BOOT_ENV_HARDENING.txt`
+
+────────────────────────────────────────
+REHYDRATION PACK UPDATES (LATEST)
+────────────────────────────────────────
+Updated:
+- BOOTSTRAP_PROMPT -> new dated version for 2026-02-15
+- CONTINUITY_LOCK  -> new dated version for 2026-02-15
+
+Archive behavior:
+- the previous Latest Rehydration Pack contents were archived under:
+  `Ashby_Data/Archive/Latest Rehydration Pack History/2026-02-15/`
+
+────────────────────────────────────────
+OPEN ITEMS / TOMORROW
+────────────────────────────────────────
+1) Fresh-machine rehearsal
+- Do a clean venv install using the updated requirements file and docs.
+- Confirm `stuar_preflight.py --strict` passes with zero warnings.
+
+2) CPU vs GPU baseline
+- CPU is now the default documented path.
+- If Hands wants a GPU “happy path”, we should add a small appendix documenting the CUDA wheel install for the same version numbers.
+
+3) Webapp UX issues (already logged as Side-Quest 079)
+- Progress output + “file uploaded” clarity remains an app-level UX task, separate from install pack hardening.

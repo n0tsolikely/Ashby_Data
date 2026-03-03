@@ -1,0 +1,188 @@
+ASHBY — BATCH 0 ENGINE EXPANSION RUNBOOK (FOR STUART V1)
+Status: Canonical-for-execution (single-purpose runbook)
+Date: 2026-01-13
+
+Purpose
+This runbook exists to drive a clean, deterministic “Batch 0” expansion of the existing Ashby engine so that Stuart can be implemented as a module without hacks.
+Batch 0 is platform work. It is NOT Stuart code.
+Batch 0 creates generic engine primitives that Ashby will use across all modules.
+
+Operating model
+- The assistant is “brains”: outputs commands + file contents + tests.
+- You are “hands”: run commands, paste outputs, apply patches.
+- Work locally first. Do not push to GitHub until Batch 0 passes smoke tests.
+
+Inputs required in the new “Ashby Batch 0” chat
+Upload these, in order:
+1) Ashby Engine.zip  (current codebase)
+2) Ashby Data.zip    (codex + snapshots + current tree)
+
+DO NOT upload Stuart.zip or Stuart contracts to the Batch 0 chat.
+Batch 0 must remain platform-only.
+
+Hard constraints (non-negotiable)
+1) Additive changes preferred
+- Batch 0 should be implemented as new files/directories wherever possible.
+- Modifications to existing files must be minimal and explicitly justified.
+- Do not refactor the router into a new architecture in Batch 0 (out of scope).
+
+2) No Stuart-specific code in core
+- Core engine primitives must not mention “stuart” or “meetings” in names or behavior.
+- Stuart will plug into these primitives later.
+
+3) No secrets in repo or archives
+- Do not create or commit files containing API keys/tokens.
+- Keep all secrets in existing secrets mechanisms (env vars, gitignored files).
+
+4) Determinism + auditability
+- Storage writes must be atomic.
+- No silent overwrite of durable artifacts by default.
+- Every run/action must be representable as a structured Result object.
+
+Repo reality (anchor)
+The Ashby Engine.zip you uploaded has this shape at repo root:
+- ashby/              (repo root)
+  - ashby/            (python package)
+    - core/
+    - brain/
+    - capabilities/
+    - control/
+    - devices/
+  - io/
+  - configs/
+  - runtime/
+  - tests/
+  - secrets/ (gitignored)
+
+Batch 0 will add new packages under ashby/ashby/ (the python package) and add small tests under tests/.
+
+Batch 0 deliverables (what you will implement)
+These are the only platform primitives in scope:
+
+(0) StorageAdapter (platform)
+- ashby/interfaces/storage.py (interface/protocol)
+- ashby/storage/local_fs.py (LocalFS implementation)
+- ashby/storage/paths.py (deterministic path helpers)
+
+(1) Result objects (platform truth units)
+- ashby/core/results.py (ActionResult, ArtifactResult, ErrorResult + helpers)
+
+(2) Execution profiles + consent (platform)
+- ashby/core/profile.py (LOCAL_ONLY/HYBRID/CLOUD + consent record + enforcement helpers)
+
+(3) Truth Gate spine (platform judge)
+- ashby/core/truth/ (new package)
+  - evidence.py (EvidenceBundle types)
+  - policy.py (Policy interface / base)
+  - judge.py (TruthGate judge)
+  - __init__.py
+Note: DO NOT create a directory named “truth_gate” (it would collide with existing core/truth_gate.py).
+Existing core/truth_gate.py remains the legacy chat phrase-filter until later refactor.
+
+(4) Module registry + contract (platform)
+- ashby/core/module_registry.py (registry + module interface)
+Registry can exist without being wired into router yet; tests will validate it.
+
+(5) Session model expansion (platform)
+- ashby/brain/sessions/meetings.py (new session container, empty/minimal)
+- update ashby/brain/sessions/__init__.py to export meetings session accessor
+
+Success criteria (Batch 0 is “done” when…)
+- Repo imports succeed (no syntax/import errors).
+- New primitives pass smoke tests.
+- Existing lights/comfort flow still runs (router import path intact).
+- Nothing in core mentions Stuart.
+
+Out of scope (explicit)
+- Full router rewrite
+- Full Codex Truth Gate enforcement across all modules
+- Stuart module code
+- Web UI
+- Embeddings / heavy retrieval work
+
+Execution format required from the assistant (in the new chat)
+For every step/batch, the assistant must output:
+1) “FILES AFFECTED:” list
+2) Full contents for each new/modified file (verbatim)
+3) Terminal commands you will run (mkdir, cat heredocs, python -m, pytest)
+4) “PASTE BACK:” exact outputs expected (tree snippet, pytest output, etc)
+
+Batch plan (do in this order)
+Batch 0A — Baseline
+Goal: confirm repo state and environment.
+Assistant outputs commands:
+- cd into repo root
+- show python version
+- show existing test baseline (optional)
+Operator pastes back:
+- python --version
+- tree -L 2 (or ls) of repo root
+- pytest output (if tests exist)
+
+Batch 0B — StorageAdapter
+Goal: add storage interface + LocalFS implementation + deterministic path helpers.
+No existing code should need modification.
+Add a small smoke test:
+- tests/test_storage_adapter_smoke.py
+Operator pastes back:
+- pytest output for that file
+
+Batch 0C — Results
+Goal: add structured Results:
+- ActionResult
+- ArtifactResult
+- ErrorResult
+Add smoke test:
+- tests/test_results_smoke.py
+
+Batch 0D — Profiles + Consent
+Goal: define:
+- ExecutionProfile enum
+- ConsentRecord
+- helper to enforce “no network in LOCAL_ONLY”
+Add smoke test:
+- tests/test_profile_smoke.py
+
+Batch 0E — Truth Gate spine (new package)
+Goal: add platform truth gating primitives (judge + evidence + policies).
+This does NOT replace legacy core/truth_gate.py yet.
+Add smoke test:
+- tests/test_truth_gate_spine_smoke.py
+
+Batch 0F — Module registry
+Goal: module contract + registry.
+Register dummy module in test; ensure dispatch works and returns Result.
+Add smoke test:
+- tests/test_module_registry_smoke.py
+
+Batch 0G — Meetings session container (placeholder)
+Goal: add brain/sessions/meetings.py and export it.
+No behavior required beyond a dict-like state container that matches existing session style.
+
+Batch 0H — Consolidated smoke pass
+Goal: verify:
+- python -m py_compile for new modules
+- pytest smoke tests pass
+- optional: run CLI interactive to ensure router still imports
+
+Operator run commands (typical)
+- python -m py_compile <new files>
+- pytest -q
+
+If something fails
+Rules:
+- Do not “work around” failures by weakening contracts.
+- Patch the file(s) in place.
+- Preserve deterministic behavior and immutability rules.
+
+Handoff to Stuart build (after Batch 0 completes)
+When Batch 0 is green:
+1) Create a fresh zip of the updated Ashby Engine (or push to a local branch).
+2) Start a new Stuart chat and upload:
+   - updated Ashby Engine.zip
+   - Ashby Data.zip
+   - stuart.zip
+   - Stuart canon pack (architecture tree + contracts + rehydrate packet)
+3) Then start Stuart Batch A scaffolding.
+
+End of runbook.

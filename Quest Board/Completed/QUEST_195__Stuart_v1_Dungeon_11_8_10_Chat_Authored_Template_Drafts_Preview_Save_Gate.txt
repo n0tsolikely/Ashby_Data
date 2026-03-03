@@ -1,0 +1,169 @@
+# QUEST_195 — Stuart v1 — Dungeon 11 (8/10) — Chat-Authored Template Drafts + Preview/Save Gate
+
+(Quest template: Synapse OS — Architecture Transcendence Protocol, Stuart v1)
+
+IDENTITY
+- Quest ID: QUEST_195
+- Title: Stuart v1 — Dungeon 11 (8/10) — Chat-Authored Template Drafts + Preview/Save Gate
+- Dungeon: 11 (Templates as first-class artifacts)
+- Owner: OpenAI Codex (CLI execution)
+- Priority: P1
+- Risk Class: R2
+- Expected Testing Level: TL2 (unit + API) unless explicitly upgraded in this quest
+- Date Authored: 2026-03-03
+
+CANON LOCKS (sha256)
+- Guild Orders (ACTIVE): Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-25_REV14.txt
+  sha256: d10c278cd45a543c32c27102a912ce6f1c0569401c5ec0e00f6dc1e5c5b9b094
+
+- Guild Orders — Dungeon 11 block (verbatim) sha256: 00aff20ab5689f18747d0931ed6eea4432d0828df6dd180f0994337193b3905b
+
+- Stuart Codex anchors:
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_4.1_Mode_vs_Template_Separation.txt
+    sha256: 3823c6a3fa132e600d2b8b8c3cf825a6dc950c65b1dfa3c62a06a5a319bd7424
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_4.2_Template_Schema_Sections_Required_vs_Optional.txt
+    sha256: 2e6ca9a2caef22ec2eb432254afbe37cd5b53502aec9afe87e3b86f87f439611
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_4.4_Template_Creation_Chat_Guided.txt
+    sha256: c27b38f828095b60d21fc591c664c47ca44f987275ba438b3896220f83c50ca7
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_4.5_Template_Import_Document_or_Image_Based.txt
+    sha256: f10e6c36bd1206efb11d0f2da84b47797d705d31f89f7788d1a142747f96a047
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_4.6_Template_Versioning_and_Compatibility.txt
+    sha256: c359eed7780c19aef3b54fafc50ddc3e941ef25b367c958d8f6b0f3b9fc0b68f
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_2.4_Template_Selection_Scoped_by_Mode.txt
+    sha256: 03d3aa53371845a759f165fe1f542b38e7694829a0618b881316a0802d18c165
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_6.2_Canonical_Artifacts_JSON_Markdown_PDF.txt
+    sha256: aaf3db33935220866ed5f48dc0bf5d0e95a92ea6f690fa008ff47e01bee5bfc0
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_6.3_File_Naming_and_Deterministic_Paths.txt
+    sha256: f551b5e5166d175eac545518cde1a9d9dcea0bae7d43477c298471d42bf6371d
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_1.2_Core_Invariants_Truth_Evidence_Explicit_Execution.txt
+    sha256: 2f15b9014fc6f787986f990020867c177561e268950bafda58d6f0cbe8472953
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_2.2_Explicit_Execution_Gating_Submit_Confirm.txt
+    sha256: 322b838cce234e1c17d36f6a9a4c35a612dba211000b3ee8878be4e5dec6b602
+
+- Monster (Canon16 reference): MONSTER_ASHBY__THE_MONSTER_WORKSPACE__20260303_170000.zip
+  Routes index: MONSTER/repomap/snapshot_repomap_pack_current/WEB_API.md
+  sha256: df6c574135ac970896d89513b3aa87923d50feded9f91d2695a6f04a82f9dd4e
+
+
+SYSTEM CONTEXT STATEMENT
+- Dungeon 11 requires a chat-authored template flow:
+  - User requests a template in chat
+  - Stuart proposes a draft (template.md + metadata)
+  - User previews in UI and explicitly Save/Cancel
+- We already have:
+  - Chat API endpoints: `/api/chat` and `/api/chat/global`
+  - Chat schema with action buttons (open_session, jump_to_segment)
+- We need to extend chat actions to carry a template draft safely and let the user save it via the Templates API.
+
+REPO / MONSTER ANCHORS
+- Backend chat schema:
+  - `ashby/modules/meetings/schemas/chat.py` (ChatActionV1 union)
+- Backend chat commands:
+  - `ashby/modules/meetings/chat/commands.py` (handle_command + /help output)
+- Backend chat endpoints:
+  - `ashby/interfaces/web/app.py` (handlers for /api/chat and /api/chat/global)
+- Frontend chat UI:
+  - `webapp/stuart_frontend/stuart_app/src/components/stuart/ChatInterface.jsx` (action buttons)
+  - `webapp/stuart_frontend/stuart_app/src/pages/Stuart.jsx` (owns chat state + modals)
+- Templates API:
+  - `/api/templates` (QUEST_191)
+
+CONSTRAINT SUMMARY
+- Template draft must NOT be persisted unless user hits Save.
+- Chat should not spam technical backend state; it should feel like an LLM.
+- Keep it deterministic:
+  - Command-based trigger is fine for v1 (no magic NLP required).
+- Avoid breaking existing chat action schema.
+
+ANTI-DUP PLAN
+- `rg -n "ChatActionV1|open_session|jump_to_segment" Ashby_Engine/ashby/modules/meetings/schemas/chat.py`
+- `rg -n "onChatAction" webapp/stuart_frontend/stuart_app/src/pages/Stuart.jsx`
+
+DELIVERABLES
+- Backend:
+  1) New chat action type: `template_draft`
+     - Fields: kind, mode, template_title, template_text, defaults
+  2) New command: `/new_template` (or `/template new`)
+     - Produces a template draft action
+     - MVP: heuristic draft generation from description (LLM upgrade optional later)
+  3) Update `/help` text to include new command
+- Frontend:
+  1) ChatInterface shows a button for template_draft action
+  2) Clicking opens a modal preview (markdown render)
+  3) Modal has Save/Cancel:
+     - Save calls POST /api/templates (persist)
+     - Cancel closes modal and discards draft
+
+TASK BREAKDOWN
+1) Backend: extend chat schema for template_draft actions
+   - Edit: `ashby/modules/meetings/schemas/chat.py`
+   - Add:
+     - `@dataclass class ChatActionTemplateDraftV1:`
+       - kind: Literal["template_draft"]
+       - mode: str
+       - template_title: str
+       - template_text: str
+       - defaults: dict (include_citations, show_empty_sections)
+   - Update ChatActionV1 union + parse_chat_action_v1 + chat_action_to_dict_v1
+
+2) Backend: implement /new_template command
+   - Edit: `ashby/modules/meetings/chat/commands.py`
+   - Add command entry in HELP_TEXT
+   - Command format (deterministic parsing):
+     - `/new_template <mode> | <title> | <description>`
+   - Handler:
+     - validate mode
+     - generate draft template_text:
+       - MVP heuristic: build a markdown template with front matter + headings derived from description
+       - Defaults: include_citations=false, show_empty_sections=false (unless user says otherwise)
+     - return ChatReplyV1(kind="assistant", text=..., actions=[template_draft_action])
+
+3) Frontend: support template_draft action button
+   - Edit: `ChatInterface.jsx`
+   - Update button label logic:
+     - if kind=="template_draft": show `Preview template: <title>`
+   - Ensure button key is stable (use aIdx fallback, don’t assume session_id exists)
+
+4) Frontend: modal preview + save
+   - Edit: `pages/Stuart.jsx`
+   - Add state:
+     - activeTemplateDraft (or null)
+     - showTemplateDraftModal boolean
+   - On onChatAction(template_draft):
+     - set draft state, open modal
+   - Modal contents:
+     - Render markdown preview (reuse ReactMarkdown like FormalizationOutput)
+     - Show metadata (mode, defaults)
+     - Buttons:
+       - Cancel: close
+       - Save: call `stuartClient.templates.create(...)` then toast + close
+
+5) Tests
+   - Backend test:
+     - Add `tests/test_chat_new_template_command_returns_draft_action.py`
+     - Call commands.handle_command on /new_template and assert action kind + fields
+   - Frontend tests optional (if no infra, skip)
+
+ACCEPTANCE CRITERIA
+- `/new_template` produces a ChatReplyV1 with a template_draft action.
+- ChatInterface renders a preview button for it.
+- Save persists the template and it appears in Templates list (QUEST_193) + registry (QUEST_191).
+- Tests pass:
+  - `pytest -q tests/test_chat_new_template_command_returns_draft_action.py`
+
+VERIFICATION PLAN
+- Backend:
+  - `pytest -q tests/test_chat_new_template_command_returns_draft_action.py`
+- Manual:
+  1) Open Stuart page
+  2) In chat: `/new_template meeting | Weekly Minutes | attendees, decisions, action items`
+  3) Click Preview button
+  4) Save
+  5) Confirm new template appears in /templates and dropdown
+
+ROLLBACK PLAN
+- Remove template_draft action type + command handler + UI modal code.
+
+AUDIT BUNDLE
+- `/home/notsolikely/Ashby_Data/Audit Bundles/QUEST_195/`
+  - diff + pytest output + screenshot of template draft preview modal.

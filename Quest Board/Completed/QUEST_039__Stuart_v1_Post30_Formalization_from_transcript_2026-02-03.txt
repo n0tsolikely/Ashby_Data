@@ -1,0 +1,90 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+
+QUEST ID:
+QUEST_039
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Post-30: Stage 4 Formalization (render from transcript/aligned; template-driven)
+
+Context: Stuart render
+
+Origin:
+Control Sync — 2026-02-03 (Post-30 plan)
+
+Priority: P1
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-03_REV4.txt (formalization outputs)
+- Engine: meetings/render/formalize_md.py (current deterministic renderer)
+
+Status: COMPLETED
+
+Audit Bundle Path:
+Audits/Execution/QUEST_039__2026-02-03__stuart_v1_post30_formalization_from_transcript_2026-02-03
+
+Accepted On:
+2026-02-03
+
+Accepted By:
+Hands (Peter)
+
+Completed On:
+2026-02-04
+
+Completed By:
+Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Upgrade the formalization renderer so outputs are useful with real transcripts: structured headings,
+speaker-labeled transcript section, and deterministic meeting/journal formatting driven by template registry.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- For meeting mode: prefer aligned_transcript.json when available.
+- For journal mode: use transcript.json.
+- Render formalized.md deterministically with:
+-   - title/header + mode/template metadata
+-   - transcript section that includes speaker labels (or names via overlay at render time)
+-   - placeholder sections for decisions/actions (may remain deterministic placeholders in v1)
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- LLM summarization quality tuning (optional rail).
+- Template CRUD UI (v2).
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_037 (real transcript artifacts)
+- QUEST_038 (aligned transcript for meeting mode)
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- No hallucinated facts: if you extract decisions/actions, they must cite transcript anchors (via evidence map in QUEST_040).
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] formalized.md uses real transcript artifacts (no stub-only).
+- [ ] Meeting mode includes speaker labels (overlay names applied if set).
+- [ ] `python3 -m pytest -q` PASS.
+
+────────────────────────────────────────────────────────
+TALENT POINT
+────────────────────────────────────────────────────────
+On completion:
+- Talent Point Awarded: YES
+- Talent Spent On: TBD — Formalization Renderer v1.1
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+(optional)

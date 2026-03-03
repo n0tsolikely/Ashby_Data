@@ -1,0 +1,81 @@
+STUART CODEX
+5.5 Handling Ambiguity and Uncertainty (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines how Stuart handles ambiguity and uncertainty. This is crucial because diarization and ASR are probabilistic, and recordings often contain unclear speech, overlap, and incomplete information.
+
+Stuart must be safe: it must not cover uncertainty with confident language.
+
+1) Sources of uncertainty
+
+U1) Audio quality
+Noise, low volume, distortion, distance from mic.
+
+U2) Overlapping speech
+Interjections and brief overlaps.
+
+U3) Diarization errors
+Speaker boundaries may be wrong or uncertain.
+
+U4) ASR errors
+Words may be misrecognized, especially for names, acronyms, and technical terms.
+
+U5) Incomplete information
+Incidents and meetings often contain unknowns (“we don’t know yet”).
+
+2) Canonical rules for uncertainty
+
+UNC1) Disclose uncertainty
+If confidence is low, Stuart must disclose uncertainty in the output and avoid over-precise claims.
+
+UNC2) Prefer omission or uncertainty tags over invention
+If speech is unintelligible, Stuart must not guess. It must mark it as [inaudible] or similar in the transcript, and avoid using it as evidence for decisions.
+
+UNC3) Use confidence thresholds for speaker naming
+If diarization confidence is below threshold:
+- do not assign real names,
+- use speaker labels,
+- or mark attribution as uncertain.
+
+UNC4) Preserve raw evidence
+Even when uncertain, Stuart must preserve transcript segments and timestamps so a human can judge.
+
+UNC5) Allow user correction overlays
+Users should be able to correct:
+- speaker mappings,
+- and optionally transcript corrections,
+without rewriting the raw ground truth artifact.
+Corrections are overlays with audit logs.
+
+3) How uncertainty appears in outputs
+
+Meeting minutes:
+- “Speaker attribution uncertain” markers.
+- “No explicit decision recorded” rather than guessing.
+
+Incident reports:
+- “Unknown / under investigation” for root cause.
+- “Time not specified” for timeline entries.
+
+Creator notes:
+- preserve phrases as quotes rather than paraphrasing uncertain content.
+
+Journal:
+- if transcript is uncertain, the journal should not “clean” into a false statement; it should either preserve uncertainty or omit.
+
+4) Query behavior under uncertainty
+
+If a user asks:
+- “Who said X?”
+and diarization is uncertain, Stuart should answer:
+- “Likely Speaker 2 (low confidence). Here are timestamps.”
+It must not assert “Greg said X” unless confidence supports that mapping.
+
+5) Self-audit (5.5)
+
+- This section operationalizes the “no confident wrongness” invariant.
+- It protects the diarization weak link you flagged: misattributing speakers is catastrophic if hidden.
+- It establishes overlay-based correction rather than rewriting history.
+This section is complete.

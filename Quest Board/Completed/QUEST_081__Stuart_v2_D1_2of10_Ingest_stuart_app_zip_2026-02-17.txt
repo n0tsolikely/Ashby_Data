@@ -1,0 +1,111 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_081
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v2 — D1 2of10: Ingest stuart_app.zip into canonical frontend workspace
+
+Context: (Ashby / Stuart / System / Other)
+Stuart (Ashby) — Webapp Frontend
+
+Origin:
+Stuart Architecture Transcendence Protocol — Control Sync 2026-02-16 (Dungeon 1)
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- Guild Orders: Ashby_Data/Guild Orders/PAUSED/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt — Dungeon 1
+- Codex: Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt (Sections 1.2, 1.4, 2.1, 2.2, 2.5)
+- Docs: Ashby_Data/Stuart/Docs/STUART_Base44_UI_Code_Audit__2026-02-16.txt
+- Docs: Ashby_Data/Stuart/Docs/STUART_Base44_UI_Surgery_Checklist__2026-02-16.txt
+- Input: Ashby_Data/Stuart/Docs/stuart_app.zip (Base44 UI source pack)
+- Engine anchor: Ashby_Engine/ashby/interfaces/web/ (current FastAPI web door + /static + /templates)
+
+Status: BOARD | ACTIVE | COMPLETED | ABANDONED
+COMPLETED
+
+Audit Bundle Path: Quest Board/Quest Diff Audit Files/QUEST_###__AUDIT.txt
+Ashby_Data/Audits/Execution/QUEST_081__2026-02-17__stuart_v2_d1_2of10_ingest_stuart_app_zip_into_canonical_frontend_workspace
+
+Accepted On:
+2026-02-18
+
+Accepted By:
+Codex (GPT-5)
+
+Completed On:
+2026-02-18
+
+Completed By:
+Codex (GPT-5)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Extract the Base44 Stuart UI source pack (stuart_app.zip) into the chosen frontend root exactly once and record provenance so we never re-extract or lose track of source-of-truth.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Confirm the input pack exists at Ashby_Data/Stuart/Docs/stuart_app.zip (if missing, STOP and request from Hands).
+- Extract stuart_app.zip into the chosen frontend root from QUEST_080, in a deterministic folder name (e.g., 'stuart_frontend/').
+- Declare the extracted folder canonical for this UI port (no re-extracting into new folders).
+- Create 00_SOURCE_PROVENANCE.md inside the frontend root containing: source zip path, extraction date, and a statement that the extracted folder is the canonical working copy.
+- Generate and save a directory tree snapshot (depth ~6) into 01_TREE.txt so future AI can rehydrate quickly.
+- Validate presence of key files: package.json, vite.config.*, index.html, src/main.jsx, src/pages/Stuart.jsx (or equivalent).
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Removing Base44 dependencies (Quest 082).
+- Fixing any compile errors (Quests 082+).
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_080 must be completed (frontend root chosen).
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Single-source-of-truth rule: once extracted, do not create parallel copies; all modifications occur only in this extracted workspace.
+- If the zip is not in canon yet, Hands must add it to Ashby_Data/Stuart/Docs/ in the next canon mint.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] Frontend workspace folder exists under the chosen root and contains the extracted Base44 UI source.
+- [x] 00_SOURCE_PROVENANCE.md exists and clearly states source zip + canonical extraction location.
+- [x] 01_TREE.txt exists and reflects the extracted file tree.
+- [x] Key files validated present (or missing items explicitly noted).
+
+────────────────────────────────────────────────────────
+TALENT POINT
+────────────────────────────────────────────────────────
+# On completion:
+# - Talent Point Awarded: YES / NO
+# - Talent Spent On: (TALENT ID — Name in Talent Tree)
+Talent Point Awarded: NO
+Talent Spent On: N/A
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+# Optional closing notes once the quest is completed or abandoned.
+Completed with canonical extraction at:
+- /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app
+
+Artifacts created:
+- /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/00_SOURCE_PROVENANCE.md
+- /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/01_TREE.txt
+
+Key file validation:
+- package.json present
+- vite.config.js present
+- index.html present
+- src/main.jsx present
+- src/pages/Stuart.jsx present

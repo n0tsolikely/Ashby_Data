@@ -1,0 +1,185 @@
+STUART CODEX
+6.1 Session Model (Sessions, Contributions, Sources) (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines Stuart’s session data model at the level required to build, store, and retrieve work reliably. Sessions are not “chat history.” Sessions are containers for inputs + processing configuration + durable artifacts.
+
+If you build Stuart without a strong session model, you will eventually break:
+- re-running templates without re-uploading,
+- indexing/search across history,
+- auditability (what was run, with which settings),
+- and profile enforcement (what data left the machine).
+
+1) Core principles
+
+S1) A session is the unit of durable work
+A session is the canonical container for:
+- user-provided sources (audio/video/text/images),
+- the processing plan and settings,
+- and the generated artifacts (transcripts, formalizations, exports, evidence maps, indexes).
+
+S2) Sessions are artifact-first, not memory-first
+The durable record is the artifact set. The session model exists to organize and reference artifacts. It must not rely on “assistant memory.”
+
+S3) Sessions support multiple contributions
+A single session may contain multiple contributions over time (e.g., creator idea + collaborator feedback). The session model must support this without forcing re-upload of prior materials.
+
+S4) Sessions are profile-bound at execution time
+The profile (LOCAL_ONLY / HYBRID / CLOUD) is part of the execution context. The session must record what profile and adapter set was used for each run so auditability and privacy review are possible.
+
+2) Session object (conceptual fields)
+
+A session MUST have at minimum:
+
+- session_id
+  Stable unique identifier, generated once. Used as folder name anchor.
+
+- created_at, updated_at
+  Timestamps in a machine-readable format (e.g., ISO 8601).
+
+- title (optional but recommended)
+  Human label (e.g., “Knights of Columbus – January Meeting”).
+
+- tags (optional)
+  User-defined tags for retrieval (e.g., “church”, “incident”, “control_sync”).
+
+- profile_context
+  The active profile at the time of each run (LOCAL_ONLY / HYBRID / CLOUD). The session may span multiple runs with different profiles, but each run must record the profile used.
+
+- contributions[]
+  Ordered list of inputs added to the session.
+
+- runs[]
+  Ordered list of execution runs performed on this session (transcribe run, minutes run, etc.).
+
+- status
+  State label such as: draft (inputs only), processed (transcript exists), formalized (one or more formalizations exist), error (failed run), partial (incomplete).
+
+- notes (optional)
+  User-supplied notes about the session (not generated facts).
+
+3) Contribution object (inputs inside a session)
+
+A contribution represents one input source. Contributions exist to handle:
+- one meeting recording,
+- multiple recordings in one session,
+- or a sequence of recordings (creator collaboration over time).
+
+A contribution MUST include:
+
+- contribution_id
+  Stable unique identifier within the session.
+
+- source_type
+  Example values: audio_file, video_file, live_capture (future), text_file, image_template.
+
+- source_path (local)
+  Where the original file is stored in the session folder (or a reference to it if stored elsewhere under user control).
+
+- source_metadata
+  File size, duration, codec, channels, sample rate, capture device (if known), etc.
+
+- added_at
+  Timestamp of when the contribution was added.
+
+- user_label (optional)
+  “Greg meeting recording” or “Peter voice note.”
+
+- content_hash (optional but recommended)
+  Hash of the source file for integrity checks and deduping.
+
+Notes:
+- Contributions are inputs. They do not imply transcription happened.
+- A session may have contributions added without any processing (explicit execution gating still applies).
+
+4) Run object (executions performed)
+
+A run is a single execution action performed within the session. Examples:
+- diarization+transcription run
+- minutes formalization run
+- journal formalization run
+- captions generation run
+- translation run
+- re-run minutes with a different template
+
+A run MUST include:
+
+- run_id
+  Unique identifier for this run.
+
+- run_type
+  Example values: transcribe, diarize, align, formalize_meeting, formalize_journal, formalize_incident, formalize_creator, captions, translate, index, export_pdf.
+
+- started_at, finished_at
+  Timestamps. If a run fails, finished_at may be absent and status must show failure.
+
+- status
+  success / failed / partial / canceled.
+
+- profile_used
+  LOCAL_ONLY / HYBRID / CLOUD.
+
+- adapters_used
+  Explicit identifiers for which adapter implementations were used (ASR adapter, diarization adapter, formalizer adapter, renderer adapter, index adapter). This is required for reproducibility and audit.
+
+- inputs_used
+  Which contributions (and which ranges) were used. Example: contribution A full duration; contribution B only 00:00–05:32.
+
+- outputs_created
+  List of artifact references (filenames/paths) created by the run.
+
+- config_snapshot
+  The exact settings used, including:
+  - mode_id (for formalizations)
+  - template_id + template_version (for formalizations)
+  - retention used (explicit or default)
+  - redaction options (if any)
+  - citation policies (if template-driven)
+  - chunking settings (if applicable)
+
+This config_snapshot is not optional. It is the audit backbone.
+
+5) Multi-contribution sessions (collaboration use case)
+
+A session may contain multiple contributions that arrive over time. Canonical behavior:
+
+MC1) Contributions remain separable
+Each contribution’s transcript segments must remain traceable back to the contribution source (so citations and playback can jump to the correct file/time).
+
+MC2) Combined formalizations may integrate contributions
+A formalization can operate over:
+- one contribution (default), or
+- multiple contributions selected by the user.
+
+MC3) Overrides are chronological and evidence-backed
+If a later contribution supersedes an earlier plan, the output must mark superseded vs current with citations. (See Section 5.4.)
+
+6) Session-level retrieval expectations
+
+The session model must support queries like:
+- “List my last 10 sessions.”
+- “Find sessions tagged ‘incident’.”
+- “Bring up all sessions where Greg attended.”
+- “Show every session containing ‘time off’.”
+
+This requires:
+- session metadata (dates/titles/tags),
+- transcript availability status,
+- and a global index (defined later) that can point back to sessions.
+
+7) Minimum manifest artifacts
+
+To make sessions self-describing, each session SHOULD include a manifest artifact such as:
+- session.json (contains the session object summary)
+- runs.json or embedded runs[] inside session.json
+
+This is the “table of contents” for the session folder.
+
+8) Self-audit (6.1)
+
+- This section encodes our canonical decisions: sessions are durable artifacts, not chat memory; explicit execution gating means a session may exist without processing; runs record profile/adapters/settings for audit.
+- It supports the collaboration/override concept (multi-contribution sessions) we discussed.
+- It sets up the rest of storage/indexing without committing to specific vendor implementations.
+This section is complete.

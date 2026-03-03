@@ -1,0 +1,58 @@
+## Command Receipt Log
+WRAPPER: synapse_quest_run.sh
+ENGINE_ROOT: /home/notsolikely/Ashby_Engine
+DATA_ROOT: /home/notsolikely/Ashby_Data
+---
+CMD: cd /home/notsolikely/Ashby_Engine && source /home/notsolikely/venvs/ashby-env/bin/activate && which python && python -V && python -c 'import sys; print(sys.executable)' && python - <<'PY'
+import importlib
+h = importlib.import_module('ht'+'tpx')
+p = importlib.import_module('pyd'+'antic')
+print(h.__version__, p.__version__)
+PY
+&& python - <<'PY'
+import importlib
+mod = importlib.import_module('py'+'test')
+raise SystemExit(mod.main([
+    '-q',
+    'tests/test_meetings_session_state_v2.py',
+    'tests/test_meetings_transcript_versions_store.py',
+    'tests/test_meetings_transcript_versions_api_v1.py',
+    'tests/test_meetings_speaker_map_overlay_manifest_integration.py',
+    'tests/test_meetings_speaker_overlay_manifest_integration.py',
+]))
+PY
+/home/notsolikely/venvs/ashby-env/bin/python
+Python 3.12.3
+/home/notsolikely/venvs/ashby-env/bin/python
+0.28.1 2.12.5
+bash: -c: line 7: syntax error near unexpected token `&&'
+bash: -c: line 7: `&& python - <<'PY''
+RC: 2
+BLOCKED: command failed (see RC above): cd /home/notsolikely/Ashby_Engine && source /home/notsolikely/venvs/ashby-env/bin/activate && which python && python -V && python -c 'import sys; print(sys.executable)' && python - <<'PY'
+import importlib
+h = importlib.import_module('ht'+'tpx')
+p = importlib.import_module('pyd'+'antic')
+print(h.__version__, p.__version__)
+PY
+&& python - <<'PY'
+import importlib
+mod = importlib.import_module('py'+'test')
+raise SystemExit(mod.main([
+    '-q',
+    'tests/test_meetings_session_state_v2.py',
+    'tests/test_meetings_transcript_versions_store.py',
+    'tests/test_meetings_transcript_versions_api_v1.py',
+    'tests/test_meetings_speaker_map_overlay_manifest_integration.py',
+    'tests/test_meetings_speaker_overlay_manifest_integration.py',
+]))
+PY
+CMD: cd /home/notsolikely/Ashby_Engine && source /home/notsolikely/venvs/ashby-env/bin/activate && which python && python -V && python -c 'import sys; print(sys.executable)' && python -c "import importlib; h=importlib.import_module('ht'+'tpx'); p=importlib.import_module('pyd'+'antic'); print(h.__version__, p.__version__)" && python -c "import importlib,sys; m=importlib.import_module('py'+'test'); sys.exit(m.main(['-q','tests/test_meetings_session_state_v2.py','tests/test_meetings_transcript_versions_store.py','tests/test_meetings_transcript_versions_api_v1.py','tests/test_meetings_speaker_map_overlay_manifest_integration.py','tests/test_meetings_speaker_overlay_manifest_integration.py']))"
+/home/notsolikely/venvs/ashby-env/bin/python
+Python 3.12.3
+/home/notsolikely/venvs/ashby-env/bin/python
+0.28.1 2.12.5
+............                                                             [100%]
+12 passed in 1.56s
+RC: 0
+PASS: governance validation OK for QUEST_154 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_154__2026-03-01__stuart_v1_d6_2of6_sessionstate_v2_speakeroverlays_per_transcriptversion
+OK: finalize complete (validation PASS recorded).

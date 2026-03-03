@@ -1,0 +1,57 @@
+## Command Receipt Log
+WRAPPER: synapse_quest_run.sh
+ENGINE_ROOT: /home/notsolikely/Ashby_Engine
+DATA_ROOT: /home/notsolikely/Ashby_Data
+---
+CMD: PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_chat_integration_*.py
+.F..                                                                     [100%]
+=================================== FAILURES ===================================
+___________________ test_integration_commands_sessions_open ____________________
+
+tmp_path = PosixPath('/tmp/pytest-of-notsolikely/pytest-44/test_integration_commands_sess0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7e590751e210>
+
+    @pytest.mark.asyncio
+    async def test_integration_commands_sessions_open(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        root = tmp_path / "stuart_runtime"
+        monkeypatch.setenv("STUART_ROOT", str(root))
+        seed_chat_index(root)
+    
+        app = create_app()
+        transport = httpx.ASGITransport(app=app)
+        async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
+            r = await client.post("/api/chat/global", json={"text": "/sessions", "ui": {}})
+    
+        assert r.status_code == 200
+        reply = (r.json().get("reply") or {})
+        actions = reply.get("actions") or []
+>       assert any(a.get("kind") == "open_session" for a in actions)
+E       assert False
+E        +  where False = any(<generator object test_integration_commands_sessions_open.<locals>.<genexpr> at 0x7e59073d4790>)
+
+tests/test_meetings_chat_integration_commands_sessions_open.py:26: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_meetings_chat_integration_commands_sessions_open.py::test_integration_commands_sessions_open
+1 failed, 3 passed in 0.78s
+RC: 1
+BLOCKED: command failed (see RC above): PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_chat_integration_*.py
+CMD: PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_chat_integration_*.py
+....                                                                     [100%]
+4 passed in 0.77s
+RC: 0
+CMD: python /home/notsolikely/Ashby_Engine/scripts/dev_chat_smoke.py --help
+usage: dev_chat_smoke.py [-h] [--base-url BASE_URL] [--scope {session,global}]
+                         [--session-id SESSION_ID] --question QUESTION
+
+Local smoke test for Stuart chat endpoints
+
+options:
+  -h, --help            show this help message and exit
+  --base-url BASE_URL   Base web API URL
+  --scope {session,global}
+  --session-id SESSION_ID
+                        Session id for session scope
+  --question QUESTION   Question text
+RC: 0
+PASS: governance validation OK for QUEST_187 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_187__2026-03-03__stuart_v1_dungeon_10_12_12_chat_integration_test_suite_local_smoke_script
+OK: finalize complete (validation PASS recorded).

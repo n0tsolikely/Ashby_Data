@@ -1,0 +1,5 @@
+bash -n /home/notsolikely/Ashby_Engine/Stuart && echo OK
+RESULT=OK
+
+STUART_ROOT=/tmp/stuart_runtime /home/notsolikely/Ashby_Engine/python /home/notsolikely/Ashby_Engine/scripts/stuart_preflight.py --strict --json
+RESULT=ok:true

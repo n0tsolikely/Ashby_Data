@@ -1,0 +1,154 @@
+    QUEST TEMPLATE — SYNAPSE GUILD
+    ================================================
+
+    QUEST ID:
+    QUEST_097
+
+    Created By:
+    Ash (Brains)
+
+    Title:
+    Stuart v2 — D2 (8/12) — FORMALIZATIONS: Index Endpoint (GET /api/sessions/{id}/formalizations)
+
+    Context:
+    Dungeon 2 requires a “formalizations index” so the Outputs tab can list:
+  - which formalizations exist for the session
+  - their template/retention/mode
+  - links to download/view the outputs (md/pdf/json/evidence map)
+
+We already have:
+  - primary_outputs pointers stored in run.json (resolver + endpoint returns downloads)
+  - run artifacts directory structure
+
+This quest creates an explicit endpoint that enumerates formalizations per session,
+derived from runs (v1), with deterministic order and stable identifiers.
+
+    Origin:
+    Guild Orders → Dungeon 2 FORMALIZATIONS (index).
+
+    Priority:
+    P0 — Blocks Outputs tab + export formalization_only path.
+
+    Links:
+    - GUILD ORDERS: Ashby_Data/Guild Orders/PAUSED/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt (Dungeon 2 FORMALIZATIONS contract)
+- CODEX: Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt (3.5 artifact-first + 4.4 Artifact + retention concept)
+- ENGINE ANCHOR: Ashby_Engine/ashby/interfaces/web/runs.py (primary_downloads)
+- ENGINE ANCHOR: Ashby_Engine/ashby/modules/meetings/primary_outputs.py
+
+    Status:
+    BOARD
+
+    Audit Bundle Path:
+    Ashby_Data/Audits/Execution/QUEST_097__2026-02-17__Stuart_v2_D2_Formalizations_Index
+
+    Accepted On:
+    (blank)
+
+    Owner:
+    (blank)
+
+    Executor:
+    (blank)
+
+    ------------------------------------------------
+    DESCRIPTION
+    ------------------------------------------------
+    Implement a formalizations index endpoint for a session.
+
+This endpoint is the “Outputs tab feed”:
+- it shows what outputs exist
+- it provides deterministic download pointers
+- it is grounded in run receipts (run.json) and disk files
+
+
+    ------------------------------------------------
+    SCOPE / OBJECTIVE
+    ------------------------------------------------
+    A) Create endpoints
+
+   1) GET /api/sessions/{session_id}/formalizations?limit=50&offset=0
+      Response:
+        {
+          "ok": true,
+          "session_id": "...",
+          "formalizations": [FormalizationSummaryV1...],
+          "page": {...}
+        }
+
+   FormalizationSummaryV1 minimum:
+     - formalization_id (v1 recommendation: equals run_id OR "form__"+run_id)
+     - run_id
+     - session_id
+     - created_ts
+     - mode
+     - template_id
+     - retention
+     - status (from run.json)
+     - downloads (primary outputs: pdf/md/json/evidence_map)
+     - transcript_version_id consumed (if available) or null
+
+   Derivation rules:
+     - A run counts as a “formalization” if:
+         - its plan includes a "formalize" step AND
+         - its primary_outputs has at least one of (pdf/md/json)
+     - Deterministic ordering: newest first by created_ts, tie by run_id.
+
+   2) Optional: GET /api/formalizations/{formalization_id}
+      - If implemented, it can simply resolve to a run_id and return same data as /api/runs/{run_id}
+        plus primary output rendering pointers.
+
+B) Add module:
+   - ashby/interfaces/web/formalizations.py (recommended)
+
+C) Tests
+   - Create a fake run under tmp STUART_ROOT with run.json + primary_outputs populated.
+   - Assert endpoint returns the run as a formalization and includes downloads.
+   - Assert non-formalize runs are excluded.
+
+D) Docs update
+   - Add examples to contract doc.
+
+
+    ------------------------------------------------
+    OUT OF SCOPE
+    ------------------------------------------------
+    - Rendering formatted HTML in the API (UI should render).
+- LLM chat summarization of outputs (later).
+
+
+    ------------------------------------------------
+    DEPENDENCIES
+    ------------------------------------------------
+    - Runs listing (Quest 094) is helpful.
+- Envelope/models (Quest 091) should exist.
+
+
+    ------------------------------------------------
+    EXECUTION NOTES
+    ------------------------------------------------
+    - Do NOT infer template/retention from filenames. Always derive from run.plan formalize params.
+- If run.plan missing formalize params, treat as unknown and exclude from formalizations list.
+
+
+    ------------------------------------------------
+    COMPLETION CRITERIA (DONE = PROOF)
+    ------------------------------------------------
+    DONE when:
+- GET /api/sessions/{id}/formalizations exists and returns deterministic list of real outputs.
+- Tests cover inclusion/exclusion and downloads presence.
+- Docs updated.
+
+Proof:
+- pytest green
+- curl example
+
+
+    ------------------------------------------------
+    TALENT POINT (WHY THIS MATTERS)
+    ------------------------------------------------
+    Outputs tab needs a single clean feed. This prevents the UI from doing filesystem archaeology.
+
+    ------------------------------------------------
+    FINAL NOTES / HANDS DECISIONS
+    ------------------------------------------------
+    If the formalization_id is a prefixed run_id, document the mapping rule. Keep it reversible.

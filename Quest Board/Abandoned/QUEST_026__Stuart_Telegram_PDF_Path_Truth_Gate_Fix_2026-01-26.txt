@@ -1,0 +1,70 @@
+QUEST_026 — Stuart Telegram PDF Path Truth-Gate Fix
+Date Created: 2026-01-26
+Timestamp: 2026-01-26 22:35:16 UTC
+Context: Synapse Guild / Ashby / Stuart
+Priority: P1
+Status: ABANDONED
+
+Audit Bundle Path:
+Audits/Execution/QUEST_026__2026-01-26__telegram_pdf_path_truth_gate_fix
+
+OBJECTIVE
+Ensure Telegram reliably returns the generated PDF by fixing the return-contract mismatch
+between Stuart execution results and the Telegram door. Completion must be evidence-gated.
+
+PROBLEM STATEMENT
+- Stuart generates a valid PDF artifact at:
+  state.artifacts[kind="formalized_pdf"].path
+- Telegram reports: "ran, but no PDF path returned"
+- Root cause: _extract_pdf_path() does not read rn["state"]["artifacts"]
+
+SCOPE
+IN SCOPE:
+- Update PDF path extraction logic to read state.artifacts
+- Ensure run_default_pipeline() returns a valid pdf_path
+- Preserve existing Telegram door behavior
+- Maintain canon-only execution and auditability
+
+OUT OF SCOPE:
+- Real ASR/Whisper wiring
+- UI changes
+- Sandbox / execution profiles
+- Truth Gate v2 (separate quest)
+
+REQUIRED CHANGES
+1) Update _extract_pdf_path(rn):
+   - Prefer artifact where kind == "formalized_pdf"
+   - Fallback to any *.pdf artifact path
+2) Verify run_default_pipeline() returns pdf_path from extractor
+3) (Optional safety) Telegram-side fallback scan of run_dir/exports/*.pdf
+
+COMPLETION CRITERIA (ALL REQUIRED)
+- Telegram successfully sends the PDF produced by Stuart
+- pdf_path returned is non-null and exists on disk
+- No regression to Web or CLI flows
+- Evidence:
+  - Terminal log showing extracted pdf_path
+  - Telegram message delivering PDF
+  - File exists at reported path
+
+EVIDENCE ARTIFACTS
+- Updated code diff (stuart_runner.py)
+- Terminal output showing rn["state"]["artifacts"]
+- Screenshot or log of Telegram PDF delivery
+
+RESUME ANCHOR
+- Start at: ashby/interfaces/telegram/stuart_runner.py
+- Function: _extract_pdf_path
+- Use Control Sync Snapshot:
+  Stuart_Telegram_PDF_Control_Sync_2026-01-26.txt
+
+NOTES
+This quest restores truth-gated behavior for document generation and unblocks
+end-to-end Telegram usability for Stuart.
+
+
+ABANDON NOTE (TRUTH)
+Abandoned On: 2026-02-03
+Reason: Redundant / superseded. The Telegram PDF path truth-gate fix was implemented and verified under:
+  /mnt/data/Ashby_Data/Quest Board/Completed/PRE-QUEST_026__Stuart_v1_Telegram_PDF_Path_Truth_Gate_Fix_2026-01-27.txt
+Engine reality: ashby/interfaces/telegram/stuart_runner.py now extracts PDF via state.artifacts + fallback scan.

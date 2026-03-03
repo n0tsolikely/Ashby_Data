@@ -1,0 +1,206 @@
+ASHBY CODEX — 15.5
+USER CONFIRMATION GATES
+
+Confirmation gates are the mechanism that prevents high-impact actions
+from executing without explicit user consent.
+
+A confirmation gate is not a “helpful prompt.”
+A confirmation gate is a safety boundary.
+
+It exists because some actions are:
+- broad
+- irreversible
+- safety-sensitive
+- disruptive
+- easy to misunderstand
+
+Ashby must treat these actions differently.
+
+──────────────────────────────────────────────────────────────────────────────
+WHEN CONFIRMATION IS REQUIRED
+──────────────────────────────────────────────────────────────────────────────
+
+Confirmation is required when policy classifies the planned action as requiring it.
+
+Typical triggers (representative, non-exhaustive):
+- blast radius exceeds a configured threshold
+- the action affects critical systems (security, safety, access)
+- the action is unusual relative to recent behavior
+- the action crosses a safety boundary (temperature extremes, long irrigation runs)
+- the action is ambiguous in consequence even if targets are unambiguous
+- the user invoked “all” or an explicit broad group
+- an action is being triggered by automation rather than direct command
+
+Confirmation gates are policy-driven.
+They must not be ad-hoc.
+
+──────────────────────────────────────────────────────────────────────────────
+CONFIRMATION IS NOT CLARIFICATION
+──────────────────────────────────────────────────────────────────────────────
+
+Clarification resolves ambiguity.
+
+Confirmation resolves consent.
+
+A user may specify targets unambiguously and still require confirmation.
+
+Examples:
+- “Turn off all lights.” (clear, but broad)
+- “Set the thermostat to 28°C.” (clear, but extreme)
+- “Start irrigation for 2 hours.” (clear, but risky)
+
+In these cases:
+- targets are resolved
+- intent is clear
+- execution is still gated by consent
+
+Ashby must not treat these as clarification problems.
+They are consent problems.
+
+──────────────────────────────────────────────────────────────────────────────
+CANONICAL CONFIRMATION GATE STRUCTURE (REPRESENTATIVE)
+──────────────────────────────────────────────────────────────────────────────
+
+A confirmation gate must be structured and auditable.
+
+Representative structure:
+
+{
+  "gate_type": "confirmation",
+  "scope_id": "<scope_id>",
+  "correlation_id": "<correlation_id>",
+
+  "proposed_action": {
+    "action_type": "<stable_action_label>",
+    "target_set": { "devices": ["<device_key>", "..."], "zone_id": "<zone_id>" | null },
+    "parameters": { ... },
+    "constraints": { ... }
+  },
+
+  "reason": "<policy_reason_label>",
+  "prompt": "<user_prompt>",
+  "options": ["confirm", "cancel", "..."] | [],
+  "expires_at": "<ISO8601>"
+}
+
+Rules:
+- the proposed_action must match the planned ActionRequest deterministically
+- no vendor identifiers or secrets may appear
+- the gate must expire quickly
+- the gate is scope-bound
+
+A confirmation gate is a paused execution decision, not a conversation.
+
+──────────────────────────────────────────────────────────────────────────────
+WHAT A CONFIRMATION PROMPT MUST DO
+──────────────────────────────────────────────────────────────────────────────
+
+A confirmation prompt must be:
+
+1) SPECIFIC
+It must name:
+- what will happen
+- to which targets
+- with what magnitude or parameters
+- for how long if time-bound
+
+2) BOUNDED
+It must not present unlimited options.
+The user must be able to choose clearly:
+- confirm
+- cancel
+Optionally:
+- narrow
+- adjust magnitude
+depending on module affordances.
+
+3) NON-LEADING
+It must not presume confirmation.
+It must not phrase the question as a formality.
+
+4) CONSISTENT WITH TRUTH POSTURE
+The prompt describes a proposed future action.
+It must not imply the action has occurred.
+
+A confirmation prompt is a contract request.
+
+──────────────────────────────────────────────────────────────────────────────
+CONFIRMATION RESPONSE INTERPRETATION
+──────────────────────────────────────────────────────────────────────────────
+
+When the user responds under an active confirmation gate:
+
+- “yes / confirm / do it” → proceed with the proposed action
+- “no / cancel / stop” → cancel the proposed action
+- “change it to X” → treat as a modification request:
+  - either adjust within safe bounds
+  - or re-run planning and produce a new confirmation gate
+- unrelated new commands → treated as new input; the gate remains pending
+  only if policy allows parallel pending states; otherwise it is cancelled or expires
+
+Rules:
+- confirmation acceptance must not be inferred from silence
+- confirmation must be explicit
+- confirmation must be scoped to the proposed action only
+
+Consent is not guesswork.
+
+──────────────────────────────────────────────────────────────────────────────
+EXPIRY, RESTART, AND SAFETY
+──────────────────────────────────────────────────────────────────────────────
+
+Confirmation gates must expire.
+
+Rules:
+- if expired, the proposed action must not execute
+- after expiry, a “yes” must not retroactively confirm the old gate
+- the system must restate the proposal or treat the input as new
+
+Restart behavior:
+- confirmation gates must not survive restart as active authority
+- on restart, any pending confirmation must be treated as expired/inactive
+
+Consent does not survive uncertainty events.
+
+──────────────────────────────────────────────────────────────────────────────
+LOGGING AND AUDITABILITY
+──────────────────────────────────────────────────────────────────────────────
+
+Confirmation gating must be auditable.
+
+Rules:
+- log gate creation with correlation_id
+- log the proposed action summary (without secrets)
+- log user confirmation/cancellation
+- log expiry and restart invalidation
+
+This is required to reconstruct:
+- what was proposed
+- why it was gated
+- what the user consented to
+
+A system that cannot prove consent cannot be trusted.
+
+──────────────────────────────────────────────────────────────────────────────
+ABSOLUTE CONSTRAINTS
+──────────────────────────────────────────────────────────────────────────────
+
+Confirmation gates must:
+- be policy-driven and structured
+- remain scope-bound
+- require explicit user consent
+- describe the proposed action precisely
+- expire quickly
+- never execute on silence
+- remain auditable
+
+Confirmation gates must never:
+- be treated as clarification
+- be bypassed “because the user probably meant it”
+- imply execution occurred
+- survive restart as active authority
+- allow consent to leak across actions
+
+Confirmation is the boundary between intent and acceptable risk.
+
+END OF 15.5

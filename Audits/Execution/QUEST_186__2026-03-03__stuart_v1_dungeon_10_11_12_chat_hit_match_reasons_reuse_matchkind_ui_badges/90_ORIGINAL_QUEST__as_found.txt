@@ -1,0 +1,131 @@
+QUEST TEMPLATE — SYNAPSE OS [v1.5]
+
+========================================
+IDENTITY
+========================================
+QUEST ID: QUEST_186
+TITLE: Stuart v1 — Dungeon 10 (11/12) — Chat Hit Match Reasons (Reuse MatchKind) + UI Badges
+GUILD / DUNGEON: STUART v1 / DUNGEON 10 (11 of 12)
+PRIORITY: P1
+OWNER: OpenAI Codex (CLI execution) under Synapse OS governance
+STATE: ACCEPTED (place this file into Ashby_Data/Quest Board/Accepted)
+CREATED: 2026-03-03
+LAST UPDATED: 2026-03-03
+SOURCE SEED: Guild Orders Rev14 — Dungeon 10
+RISK CLASS: R1
+TESTING LEVEL (TL0–TL4): TL2
+DOOR IMPACT: schemas/search MatchKind reuse; chat hit rendering in UI
+PERMISSION: N/A (standard Stuart dev permissions)
+
+========================================
+CANON LOCKS
+========================================
+SOURCE OF TRUTH (LOCKS):
+- Guild Orders (ACTIVE): /home/notsolikely/Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-25_REV14.txt
+  - sha256: d10c278cd45a543c32c27102a912ce6f1c0569401c5ec0e00f6dc1e5c5b9b094
+  - Dungeon 10 block sha256: a1336566007c90e0ff8518545d0381e78dc8d237ed1a9d1cc0572b7d754a7656
+- Codex Anchors (Stuart):
+  - /home/notsolikely/Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_2.1_Chat_First_Interface.txt
+    - sha256: 465d0c0b31ac581d67f8307d9d932021e770e07708a653ac47951cde13bffb71
+  - /home/notsolikely/Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_2.2_Explicit_Execution_Gating_Submit_Confirm.txt
+    - sha256: 322b838cce234e1c17d36f6a9a4c35a612dba211000b3ee8878be4e5dec6b602
+  - /home/notsolikely/Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_5.3_Evidence_and_Citation_Requirements.txt
+    - sha256: 95d2237444f12df57b3a81d166b521e40e24032aca0fa5d13497d9b33870c799
+  - /home/notsolikely/Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_6.1_Session_Model_Sessions_Contributions_Sources.txt
+    - sha256: 55a95019ca3d7b56ba1acfbb248d2583e93c9a00f4baeb3dd2631ed1a4e9eef9
+  - /home/notsolikely/Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_6.2_Canonical_Artifacts_JSON_Markdown_PDF.txt
+    - sha256: aaf3db33935220866ed5f48dc0bf5d0e95a92ea6f690fa008ff47e01bee5bfc0
+  - /home/notsolikely/Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_6.5_Artifact_Indexing_for_Recall_and_Search.txt
+    - sha256: 7167ab663b883f0210edd02538df832b4ff076aeb47f3276683259be0a4b5e17
+  - /home/notsolikely/Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_7.7_Stage_6_Indexing_and_Retrieval.txt
+    - sha256: 172cb662c787d6b65f9e9be4bfa18e4866cf9109188cf1d50d95664d052f863c
+- Monster (Canon 15 reference): MONSTER_ASHBY__THE_MONSTER_WORKSPACE__20260303_050600.zip
+  - routes index sha256: 5bd87ac821c3ef2a5479af94196d2ffa31855d56103e78f0da84361c0c73c47b
+
+========================================
+SYSTEM CONTEXT STATEMENT
+========================================
+Dungeon 10 requires that chat results are explainable: users must see WHY something matched.
+
+We already have MatchKind used in search results:
+- TITLE_MATCH, ID_MATCH, ATTENDEE_MATCH, MENTION_MATCH
+
+Chat hits must reuse the same taxonomy so the UI doesn't grow two competing badge systems.
+
+========================================
+CONSTRAINT SUMMARY
+========================================
+- No duplicate taxonomy. One MatchKind used everywhere.
+
+========================================
+ANTI-DUP PLAN
+========================================
+Before writing new code, run a repo-wide scan to confirm what already exists and extend it instead of cloning it.
+Required scans:
+- rg -n "@app\.post\(\"/api/chat" ashby/interfaces/web/app.py
+- rg -n "chat" ashby/modules/meetings -S
+- rg -n "scope\s*===\s*'global'" webapp/stuart_frontend/stuart_app/src -S
+- rg -n "Global \(Not Implemented\)" webapp/stuart_frontend/stuart_app/src -S
+- rg -n "segments_fts|sqlite_fts\.search" ashby/modules/meetings -S
+
+========================================
+PLACEMENT INTENT
+========================================
+New code should be modular and placed close to the domain it serves:
+- Chat domain logic: ashby/modules/meetings/chat/ (new package)
+- Shared meeting schemas: ashby/modules/meetings/schemas/
+- Web door remains thin: ashby/interfaces/web/app.py calls into modules, not vice versa
+- Frontend wiring: webapp/stuart_frontend/stuart_app/src/components/stuart/ and src/pages/Stuart.jsx
+
+========================================
+ATOMICITY STATEMENT
+========================================
+This quest is complete when its acceptance criteria pass and it does not require uncommitted follow-up work to avoid breaking the build.
+
+========================================
+DEPENDENCIES
+========================================
+- QUEST_177 retrieval (match_kind tagging) and QUEST_182 UI rendering.
+
+========================================
+DELIVERABLES
+========================================
+- Chat hits include match_kind using existing MatchKind enum from schemas/search.py.
+- Chat UI renders match reason badges consistently with the Search UI (reuse same badge component/styles).
+- Tests (or snapshot tests) verifying match_kind presence in chat responses for known scenarios.
+
+========================================
+TASK BREAKDOWN
+========================================
+- Backend:
+  - Ensure chat retrieval returns hits with match_kind populated.
+  - Ensure ChatResponseV1.hits carries match_kind through to the web response.
+- Frontend:
+  - In ChatInterface, when rendering hits, show match_kind badge(s).
+  - Reuse the same badge rendering logic used by the Session Search view (avoid duplicating CSS/classes).
+- Tests:
+  - If frontend tests exist, add minimal tests for hit badge render.
+  - Backend unit test: chat retrieval returns expected match_kind for attendee vs fts query.
+
+========================================
+ACCEPTANCE CRITERIA
+========================================
+- Chat hit objects always include match_kind.
+- No new MatchKind enum/type created; reuse the existing one.
+- UI hit badges are consistent with Search UI.
+
+========================================
+VERIFICATION PLAN
+========================================
+- pytest -q tests/test_meetings_chat_retrieval.py (should include match_kind asserts)
+- Manual smoke: chat response shows hit badges for attendee and mention queries.
+
+========================================
+ROLLBACK PLAN
+========================================
+- git restore --staged --worktree ashby/modules/meetings/chat/* ashby/modules/meetings/schemas/chat*.py webapp/stuart_frontend/stuart_app/src/components/stuart/ChatInterface.jsx tests/*chat*retrieval*
+
+========================================
+AUDIT BUNDLE FOLDER PATH
+========================================
+/home/notsolikely/Ashby_Data/Audits/Execution/QUEST_186__<Codex fills on completion>/

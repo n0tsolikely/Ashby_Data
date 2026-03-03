@@ -1,0 +1,72 @@
+from __future__ import annotations
+
+from dataclasses import asdict
+from pathlib import Path
+from typing import Any, Dict
+
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+
+from ashby.interfaces.web.registry_api import registry_payload
+from ashby.interfaces.web.sessions import list_sessions, create_session
+from ashby.modules.meetings.clarify_or_preview import clarify_or_preview
+from ashby.modules.meetings.schemas.plan import UIState, SessionContext
+
+
+def create_app() -> FastAPI:
+    app = FastAPI(title="Stuart Web Door", version="0.1")
+
+    base_dir = Path(__file__).resolve().parent
+    templates = Jinja2Templates(directory=str(base_dir / "templates"))
+    app.mount("/static", StaticFiles(directory=str(base_dir / "static")), name="static")
+
+    @app.get("/", response_class=HTMLResponse)
+    def index(request: Request) -> Any:
+        # No default mode selection: UI starts empty and fetches allowed values from engine.
+        return templates.TemplateResponse("index.html", {"request": request})
+
+    @app.get("/api/registry")
+    def api_registry() -> Dict[str, Any]:
+        return registry_payload()
+
+    @app.get("/api/sessions")
+    def api_sessions(limit: int = 50) -> Dict[str, Any]:
+        return {"sessions": list_sessions(limit=limit)}
+
+    @app.post("/api/sessions")
+    async def api_create_session(payload: Dict[str, Any]) -> Dict[str, Any]:
+        mode = (payload.get("mode") or "").strip().lower()
+        title = payload.get("title") or None
+        if not mode:
+            return JSONResponse(status_code=400, content={"error": "mode is required"})
+        sid = create_session(mode=mode, title=title)
+        return {"session_id": sid}
+
+    @app.post("/api/message")
+    async def api_message(payload: Dict[str, Any]) -> Dict[str, Any]:
+        text = (payload.get("text") or "")
+        session_id = payload.get("session_id")
+        ui_raw = payload.get("ui") or {}
+
+        ui = UIState(
+            mode=ui_raw.get("mode"),
+            template=ui_raw.get("template"),
+            speakers=ui_raw.get("speakers"),
+        )
+        session = SessionContext(active_session_id=session_id, last_run_id=None)
+
+        out = clarify_or_preview(
+            text=text,
+            attachments=None,
+            ui=ui,
+            session=session,
+            door="web",
+        )
+        return {"result": asdict(out)}
+
+    return app
+
+
+app = create_app()

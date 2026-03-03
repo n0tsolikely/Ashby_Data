@@ -1,0 +1,223 @@
+
+ASHBY MEMORY HANDOFF — CANONICAL STATE (CONTROL SYNC SUMMARY)
+Date: 2025-12-25
+Purpose: This document is a complete memory handoff describing the CURRENT LOCKED
+vision, structure, decisions, and future direction of Ashby, as established during
+the latest Control Sync. This file is intended to be pasted into a new chat so that
+Ashby (or another AI) can immediately resume with full context, without re‑debate.
+
+──────────────────────────────────────────────────────────────────────────────
+1) WHAT ASHBY IS (LOCKED)
+──────────────────────────────────────────────────────────────────────────────
+Ashby is NOT a chatbot, assistant, or single-purpose product.
+
+Ashby is an AGENTIC PLATFORM — an operating layer whose job is to:
+- turn intelligence (NLU + reasoning) into reliable, stateful action
+- coordinate many systems, devices, services, and agents
+- remember context and preferences
+- enforce truth (never lie about actions or state)
+- scale without collapsing into a god-file
+
+Smart home control is ONE product profile of Ashby, not its definition.
+Meetings (Stuart), inventory (Tori), media generation, and future agents are modules
+built on the same skeleton.
+
+Ashby is the brain. Plumbing is replaceable.
+
+──────────────────────────────────────────────────────────────────────────────
+2) NON‑NEGOTIABLE PRINCIPLES (LOCKED)
+──────────────────────────────────────────────────────────────────────────────
+These principles are immutable unless a future Control Sync explicitly changes them:
+
+- Engine is sacred: no vendor logic, no optional features, no products.
+- WHAT vs HOW is absolute:
+    WHAT → modules
+    HOW  → adapters / bridges / native_vendor / connectors
+- Modules are fully removable.
+- Scopes/zones are universal and Ashby-owned.
+- Action‑Gated Truth is mandatory:
+    Ashby never claims an action occurred unless execution confirms it.
+- HouseState confidence (VERIFIED / LAST_KNOWN / UNKNOWN) is authoritative.
+- Control Sync governs structural change.
+- Products are profiles + feature flags, not code forks.
+
+──────────────────────────────────────────────────────────────────────────────
+3) ARCHITECTURE STATUS
+──────────────────────────────────────────────────────────────────────────────
+Ashby’s architecture is fully defined and preserved via:
+
+- Platform Principles (constitution)
+- Architecture / Vision Tree (map + zoning + growth)
+- Preservation Packs (behavioral guarantees)
+- Core Meaning / Pipeline Spec (rebuild-from-scratch guide)
+
+Architecture phase is CLOSED.
+Future work is execution unless reality forces a new Control Sync.
+
+──────────────────────────────────────────────────────────────────────────────
+4) HOME ASSISTANT, ZIGBEE, MATTER — FINAL DECISIONS
+──────────────────────────────────────────────────────────────────────────────
+Home Assistant:
+- Is a TEMPORARY INTEGRATION BRIDGE.
+- Legal to bundle and ship inside Ashby hardware.
+- Invisible to end users.
+- Absorbs vendor OAuth, discovery, and protocol pain.
+- NOT Ashby’s identity.
+- Intended to be gradually replaced over time.
+
+Zigbee and Matter:
+- Are PROTOCOLS, not brands.
+- Reduce vendor friction.
+- Can be supported via Home Assistant first.
+- Later supported natively by Ashby.
+- Helpful accelerators, not defining features.
+
+Long‑term vision:
+Ashby will progressively supersede:
+- Home Assistant
+- Zigbee bridges
+- Matter controllers
+by implementing native vendor and protocol integrations over time.
+
+Bridges are strangler layers, not permanent dependencies.
+
+──────────────────────────────────────────────────────────────────────────────
+5) NATIVE VENDOR STRATEGY (LOCKED)
+──────────────────────────────────────────────────────────────────────────────
+Ashby will build native integrations over time under a generic native_vendor system.
+
+No single vendor defines Ashby.
+
+Examples (not exhaustive):
+- Tuya
+- NOMA iQ / Ayla
+- Nest / Google SDM
+- Reolink
+- Brand #4, Brand #5, Brand #6, etc.
+
+Native ownership is EARNED, not rushed.
+Infrastructure is not rebuilt for ego.
+
+──────────────────────────────────────────────────────────────────────────────
+6) MODULES & AGENTS (LOCKED)
+──────────────────────────────────────────────────────────────────────────────
+Modules are WHAT Ashby does. They are removable.
+
+Key modules:
+- Lights
+- Comfort (thermostat)
+- Cameras
+- Image Generation (ComfyUI)
+- Stuart (Meetings)
+- Tori (Inventory)
+
+Stuart:
+- Is a module, not a platform.
+- Handles recording, diarization, transcription, summarization, search.
+- Inherits Ashby’s truth, state, logging, and security.
+- May later include built-in recording (no phone required).
+- Never bypasses Ashby core.
+
+Tori:
+- Is a module.
+- Handles inventory, ordering, tracking, reconciliation.
+- Leverages connectors (commerce, docs, etc.).
+
+Multi-agent coexistence is solved:
+Ashby is the body. Agents are organs. Truth is the nervous system.
+
+──────────────────────────────────────────────────────────────────────────────
+7) ZONES / SCOPES (LOCKED)
+──────────────────────────────────────────────────────────────────────────────
+Scopes (zones) are canonical and Ashby-owned.
+
+- Devices attach to zones.
+- Rooms are human labels mapped to zones.
+- Zones stack (bedroom → upstairs → house).
+- No adapter or vendor defines zones.
+
+Ashby can say:
+“Turn off upstairs lights”
+and resolve correctly regardless of backend.
+
+──────────────────────────────────────────────────────────────────────────────
+8) PRODUCTIZATION (LOCKED)
+──────────────────────────────────────────────────────────────────────────────
+Ashby ships as a BOX / DEVICE / PLATFORM.
+
+- Raspberry Pi (or equivalent)
+- SSD
+- Mic + speaker
+- Network
+- Ashby engine preinstalled
+- Home Assistant bundled as a bridge
+
+Products are defined by:
+- packaging/profiles
+- feature flags
+- entitlements
+
+Examples:
+- Ashby Home
+- Ashby Meetings
+- Ashby Creator Rig
+- Ashby Business Ops
+
+One engine. Many products.
+
+OTA updates, rollback, and safe migration are part of the platform.
+
+──────────────────────────────────────────────────────────────────────────────
+9) CURRENT PROJECT STATE (END OF CONTROL SYNC)
+──────────────────────────────────────────────────────────────────────────────
+Completed:
+- Major architectural lock-in
+- Structural realignment (mostly done)
+- Vision fully preserved
+- Emotional / cognitive clarity achieved
+
+Still open (ACTIVE RAID):
+- Router thinning (router is still too thick)
+- Finish current Guild Orders
+- Preserve behavior while thinning
+
+──────────────────────────────────────────────────────────────────────────────
+10) TOMORROW’S EXECUTION PLAN
+──────────────────────────────────────────────────────────────────────────────
+Priority 0:
+- Do NOT reopen architecture.
+- Do NOT add new abstractions.
+
+Priority 1:
+- Finish router thinning.
+- Complete current Guild Orders.
+- Ensure:
+    - Truth Gate intact
+    - HouseState intact
+    - Sessions intact
+    - Acceptance tests still pass
+
+Priority 2 (small morale win):
+- Implement minimal ComfyUI image generation:
+    Ashby → ComfyUI → image returned
+- Static workflow, static prompt is fine.
+- No over-engineering.
+
+Priority 3 (begin, not finish):
+- Start Home Assistant bridge insertion:
+    - Basic HA entity discovery
+    - Import entities into Ashby registry
+- Lights only initially.
+- No vendor replacement yet.
+
+──────────────────────────────────────────────────────────────────────────────
+11) IMPORTANT CLOSING NOTES
+──────────────────────────────────────────────────────────────────────────────
+- This Control Sync closed the architecture phase.
+- The feeling of “something is off” was correct and resolved.
+- Future success depends on execution, not more vision work.
+- Control Sync is used ONLY when reality forces it.
+
+Ashby is now safe to build.
+
+END OF MEMORY HANDOFF

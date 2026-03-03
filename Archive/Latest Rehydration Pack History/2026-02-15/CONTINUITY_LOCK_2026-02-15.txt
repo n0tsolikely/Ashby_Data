@@ -1,0 +1,86 @@
+CONTINUITY LOCK — STUART (ASHBY) — 2026-02-15
+
+This file is the single-source “do not drift” continuity anchor.
+
+────────────────────────────────────────
+CANON & WORKING DIRECTORIES
+────────────────────────────────────────
+- Canon root (this zip layout):
+  - Ashby_Canon/Ashby_Engine
+  - Ashby_Canon/Ashby_Data
+
+- Canon working trees (when extracted):
+  - Engine: Ashby_Engine/
+  - Data:   Ashby_Data/
+
+- Rule: once a canon zip is extracted, the extracted directory becomes canonical.
+  Do not maintain parallel extracts.
+
+────────────────────────────────────────
+SYSTEM STATE
+────────────────────────────────────────
+- D6 Phase work is COMPLETE through:
+  - QUEST_068 … QUEST_075 (Completed)
+  - SIDE-QUEST_078 … SIDE-QUEST_079 (Completed)
+
+- Latest operational focus (Hands):
+  - Boot Stuart locally (WSL2/Ubuntu) and validate a reproducible install.
+  - Reduce “new machine” dependency roulette.
+
+- Latest snapshots:
+  - Control Sync:
+    - Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-02-15__BOOT_ENV_HARDENING.txt
+  - End of Day:
+    - Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2026-02-15__BOOT_ENV_HARDENING.txt
+
+────────────────────────────────────────
+RUNTIME ROOTS (DO NOT DRIFT)
+────────────────────────────────────────
+- Canonical Stuart runtime root (default):
+  - ~/ashby_runtime/stuart
+  - Overridable via env var: STUART_ROOT
+
+- Important fix (2026-02-15):
+  - Telegram control entrypoint previously defaulted STUART_ROOT to in-repo "./StuartRuntime".
+  - This caused confusion and risk of shipping runtime artifacts inside the repo.
+  - Now unified: Telegram control default runtime root == get_config().root (same as the rest of Stuart).
+  - In-repo Ashby_Engine/StuartRuntime/ was removed from canon (runtime data must not ship).
+
+────────────────────────────────────────
+KNOWN-GOOD BOOT BASELINE (WSL2/Ubuntu)
+────────────────────────────────────────
+- Python:
+  - Recommended: 3.10.x (3.11.x acceptable)
+  - Avoid: 3.12+ for Stuart v1 baseline (ecosystem churn; wheel availability)
+
+- Key Python package pins (see: Ashby_Engine/requirements-stuart-v1.txt):
+  - numpy < 2
+  - faster-whisper == 1.0.3
+  - ctranslate2 >= 4,<5
+  - av >= 12.3,<13
+  - pyannote.audio == 3.4.0
+  - torch == 2.2.2
+  - torchaudio == 2.2.2
+
+- Verification command:
+  - python scripts/stuart_preflight.py --strict
+
+- System deps:
+  - ffmpeg required
+  - WeasyPrint native deps recommended
+  - ffmpeg dev libs optional fallback if av is forced to build from source
+
+────────────────────────────────────────
+WHAT’S NEXT (HIGH LEVEL)
+────────────────────────────────────────
+- Hands plans:
+  - Run a fresh boot test tomorrow (CPU baseline first, then GPU path).
+  - Control Sync, then update Guild Orders.
+
+────────────────────────────────────────
+OPEN RISKS / WATCHLIST
+────────────────────────────────────────
+- GPU installs are NOT yet “one-command” documented end-to-end (CPU baseline is documented).
+- If pip installs numpy>=2 by accident, torch/ctranslate2 wheels may emit ABI warnings or break.
+- pyannote.audio compatibility is sensitive to torchaudio API drift; torchaudio is now pinned.
+

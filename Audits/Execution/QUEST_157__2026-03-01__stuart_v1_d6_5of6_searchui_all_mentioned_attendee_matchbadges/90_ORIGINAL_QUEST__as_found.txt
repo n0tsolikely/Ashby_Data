@@ -1,0 +1,185 @@
+QUEST TEMPLATE — SYNAPSE OS [v1.5]
+(duplicate this file for each new Quest)
+
+================================================================================
+QUEST ID: QUEST_157
+QUEST TITLE: Stuart v1 — Dungeon 6 (5/6): Sessions Search UI + Match Badges (All / Mentioned / Attendee)
+QUEST SUBTITLE: Replace broken local search; wire All+Mentioned+Attendee to APIs; show Title/ID/Attendee/Mentioned match reasons
+PRIORITY: P0
+OWNER: OpenAI Codex (CLI Execution)
+STATUS: ACCEPTED (Ready for execution)
+CREATED: 2026-03-01
+LAST UPDATED: 2026-03-01
+================================================================================
+
+SUBJECT: ASHBY / STUART (WebApp Sessions Search)
+ORIGIN: Guild Orders REV14 — Dungeon 6 (Search semantics: All = union; Mentioned = transcript keyword; Attendee = overlay-only)
+LINKS:
+- /mnt/data/Ashby_Canon12_EXTRACTED/Ashby_Canon(12)/Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-25_REV14.txt  (sha256: d10c278cd45a543c32c27102a912ce6f1c0569401c5ec0e00f6dc1e5c5b9b094)
+- Dungeon 6 excerpt sha256: 6d0a02ce22d961dd4eb1fbb4bf0cab4be8d5f3f42bf4c577ceee5b4012af3816
+- /mnt/data/ANALYSIS__D6__MONSTER_ASHBY__2026-03-01.md  (sha256: a086f46d5bf54c4cf3267139f9d8d581f1ecb719dc4f6bceda80ff9a627ef5a9)
+- UI reference screenshots (existing app):
+  - /mnt/data/Screenshot 2026-02-27 230803.png
+  - /mnt/data/Screenshot 2026-02-27 230948.png
+  - /mnt/data/Screenshot 2026-02-27 231015.png
+
+================================================================================
+CODEX ANCHORS
+- Guild Orders REV14 — DUNGEON 6 (Search semantics + “Spoke → Attendee” rename)
+- Ashby_Data/Codex/Stuart/Stuart_Codex_7.7_Stage_6_Indexing_and_Retrieval.txt
+- Ashby_Data/Codex/Stuart/Stuart_Codex_6.5_Artifact_Indexing.txt
+
+================================================================================
+CONSTRAINTS (hard rules)
+- “Attendee” is overlay-backed speaker presence ONLY (speaker_maps index). It must not match transcript mentions.
+- “Mentioned” is transcript keyword search (FTS on transcript segments).
+- “All” is a union:
+  - Title match (session title)
+  - ID match (session_id, run_id, transcript_version_id)
+  - Attendee match (overlay-backed)
+  - Mentioned match (transcript keyword)
+- UI must clearly label why a session matched (match badges).
+- Don’t keep dead code: remove the current local-search logic that assumes sessions include transcript text.
+
+================================================================================
+CHANGE CLASS: Modification (frontend search UX + small API enhancements if needed)
+RISK CLASS: R2 (touches user-facing search behavior)
+
+VISION DELTA
+- Current SessionSearch.jsx attempts local searching against fields not present in /api/sessions response, so it’s effectively broken / misleading.
+- This quest wires it to the backend truth sources and matches the Guild Orders semantics.
+
+================================================================================
+SYSTEM CONTEXT (repo truth)
+Frontend:
+- Search UI component:
+  - Ashby_Engine/webapp/stuart_frontend/stuart_app/src/components/stuart/SessionSearch.jsx
+- Sessions metadata comes from:
+  - stuartClient.sessions.list() → GET /api/sessions
+Backend:
+- Mentioned search endpoint exists:
+  - GET /api/search?q=...
+- Attendee filter is added in QUEST_156:
+  - GET /api/sessions?attendee=...
+
+Potential enhancement needed for “ID match”:
+- Current /api/sessions?q=... matches only title + session_id.
+- D6 requires ID match across run_id + transcript_version_id as well.
+  - Implement either in API (preferred) or via a dedicated endpoint, but don’t hack it in UI with extra filesystem calls.
+
+================================================================================
+ANTI-DUPLICATION PLAN
+- Confirm existing search UI is only SessionSearch.jsx:
+  - rg -n "All\b.*Mentioned\b.*Spoke\b" Ashby_Engine/webapp/stuart_frontend/stuart_app/src
+  - rg -n "SessionSearch" Ashby_Engine/webapp/stuart_frontend/stuart_app/src
+- Confirm backend already has:
+  - /api/search
+  - /api/sessions (q param)
+  - /api/sessions (attendee param after QUEST_156)
+
+================================================================================
+PLACEMENT INTENT
+Frontend:
+- Replace SessionSearch.jsx implementation (keep same file; don’t add a second search component).
+- Update stuartClient.js only as needed (add helpers for search + attendee calls).
+
+Backend (small, if required):
+- Extend /api/sessions?q= behavior to detect ID matches for:
+  - run_id
+  - transcript_version_id
+- Add an OPTIONAL response field match_kinds when q is provided (additive field, safe).
+
+================================================================================
+ATOMICITY STATEMENT
+This quest is atomic when:
+- Search tabs reflect the true semantics via backend sources.
+- “Spoke” is removed/renamed to “Attendee” everywhere.
+- All search produces correct union results and shows match badges.
+
+================================================================================
+SCOPE
+1) UI tabs:
+   - Rename “Spoke” → “Attendee”
+   - Tabs are: All | Mentioned | Attendee
+2) Mentioned search wiring:
+   - Call /api/search?q=... when user searches in Mentioned or All mode.
+   - Group hits by session_id.
+   - In UI results, add badge: “Mentioned Match”.
+3) Attendee search wiring:
+   - Call /api/sessions?attendee=... when user searches in Attendee or All mode.
+   - In UI results, add badge: “Attendee Match”.
+4) Title/ID match wiring:
+   - Call /api/sessions?q=... in All mode.
+   - Show badges:
+     - “Title Match” if match_kinds includes TITLE (or if q is substring of title, if you compute client-side)
+     - “ID Match” if match_kinds includes any of: SESSION_ID, RUN_ID, TRANSCRIPT_VERSION_ID
+   - If API is extended to supply match_kinds, use it. Don’t guess.
+5) All mode union:
+   - Merge results from (title/id), (mentioned), (attendee) by session_id.
+   - Each session result shows all applicable badges.
+6) Remove dead logic:
+   - Delete local transcript keyword scanning in SessionSearch.jsx (it currently assumes transcript_json_str exists in session objects).
+
+Backend enhancement (if required for ID match completeness):
+7) Extend /api/sessions?q=... matching to include:
+   - run_id substring match (any run for that session)
+   - transcript_version_id substring match (any transcript version for that session)
+   - Provide match_kinds in response objects when q is used.
+
+OUT OF SCOPE
+- Chat global/session routing (D10).
+- Speaker map editor behavior (QUEST_155).
+- Export/bundling changes (D8).
+
+================================================================================
+DEPENDENCIES
+- Requires QUEST_156 for /api/sessions?attendee support.
+- Mentioned search uses existing /api/search.
+
+================================================================================
+DOOR IMPACT
+- WebApp search panel behavior.
+
+================================================================================
+TESTING LEVEL
+- TL2 (manual verification + build/lint)
+
+================================================================================
+VERIFICATION PLAN
+- npm run build (or npm run lint)
+- Manual UI tests:
+  1) Create a session where transcript mentions “Greg” but Greg is NOT in speaker map:
+     - Mentioned tab: searching “Greg” returns it (Mentioned Match)
+     - Attendee tab: searching “Greg” does NOT return it
+  2) Create a session where Greg IS in active speaker map:
+     - Attendee tab: searching “Greg” returns it (Attendee Match)
+  3) All tab:
+     - Searching “Greg” returns union with badges:
+       - Mentioned Match (if mentioned)
+       - Attendee Match (if attendee)
+       - Title/ID Match if relevant
+  4) Search by session_id:
+     - Session appears and shows “ID Match”
+  5) Search by run_id or transcript_version_id:
+     - Session appears and shows “ID Match”
+
+================================================================================
+ACCEPTANCE CRITERIA
+- “Spoke” tab no longer exists; replaced by “Attendee”.
+- Mentioned search is driven by /api/search (FTS), not local heuristics.
+- Attendee search is driven by /api/sessions?attendee and does not match transcript mentions.
+- All tab correctly unions results and shows accurate match badges.
+- Searching by session_id, run_id, or transcript_version_id returns the correct session with “ID Match”.
+
+================================================================================
+RECEIPTS REQUIRED
+- Diff patch (frontend + any backend enhancements).
+- npm build/lint output showing PASS.
+- Screenshots showing match badges in action for:
+  - Mentioned-only case
+  - Attendee-only case
+  - Both badges on same session via All
+
+================================================================================
+NOTES
+- This is user-facing trust. If search lies or is confusing, people stop using the damn product.

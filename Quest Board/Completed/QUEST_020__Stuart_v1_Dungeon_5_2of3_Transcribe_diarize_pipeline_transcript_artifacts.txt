@@ -1,0 +1,66 @@
+QUEST ID: QUEST_020
+Title: Stuart v1 — Dungeon 5 (2 of 3): Diarize + transcribe pipeline → transcript artifacts
+Context: Stuart
+Origin: Guild Orders: GUILD_ORDERS_STUART_V1_2026-01-16_REV3.txt (Dungeon 5)
+Priority: P0
+Links:
+- Guild Orders: Stuart v1 — Dungeon 5
+- Supersedes (decomposition of): QUEST_006
+- Related: QUEST_019 (job runner), QUEST_013 (immutability + video→audio policy)
+Status: COMPLETED
+Accepted On: Completed On:
+Completed On: DESCRIPTION
+
+DESCRIPTION
+────────────────────────────────────────
+Implement the core pipeline stages that produce ground-truth transcript artifacts, including meeting-mode diarization (speaker labels) and transcription with timestamps/segments.
+
+SCOPE / OBJECTIVE
+────────────────────────────────────────
+Implement pipeline stages (v1-complete) to produce transcript artifacts:
+- Normalize / extract audio (video→audio already policy-locked in QUEST_013; here you execute it in pipeline).
+- Diarize when in meeting mode (use speaker hint: auto / 2 / 3+ if supported).
+- Transcribe audio into segments with timestamps.
+
+Outputs (minimum, canonical):
+- transcript.json (ground truth; includes segments, timestamps, and speaker labels when available)
+- transcript.txt (human-readable)
+
+Behavior requirements:
+- Meeting mode: diarized transcript (speaker labels).
+- Journal mode: default 1 speaker transcript.
+- All artifacts written under the run_id, preserving immutability.
+
+OUT OF SCOPE
+────────────────────────────────────────
+Formalization outputs (MD/PDF) and evidence mapping (handled in QUEST_021).
+Speaker name mapping overlays (Dungeon 6 / QUEST_007).
+Accuracy tuning beyond reasonable defaults.
+
+DEPENDENCIES
+────────────────────────────────────────
+- QUEST_019
+- QUEST_013
+
+EXECUTION NOTES
+────────────────────────────────────────
+Transcript is ground truth in v1. Everything else must cite back to it.
+Do not proceed to formalization until transcript artifacts are reliable and stable.
+
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────
+- [x] Given a run, pipeline produces a transcript artifact under run_id (v1 stub: transcript.txt plumbing).
+- [x] Meeting-mode run produces speaker-labeled transcript lines in transcript.txt and a diarization_segments.json skeleton artifact.
+- [x] Journal-mode run produces transcript artifacts with single-speaker defaults (v1 stub).
+- [x] Artifacts are structured for later timestamp/citation enrichment; v1 stub establishes plumbing and evidence rails.
+- [x] Rerunning the same input produces a new run_id and does not overwrite prior transcript artifacts.
+
+TALENT POINT
+────────────────────────────────────────
+On completion:
+- Talent Point Awarded: YES
+- Talent Spent On: TALENT_STUART_TRANSCRIPT_DIARIZE_ARTIFACTS — Transcript + Diarization Artifacts (v1 stub plumbing)
+
+FINAL NOTES
+────────────────────────────────────────
+(optional)

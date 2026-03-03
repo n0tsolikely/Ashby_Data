@@ -1,0 +1,204 @@
+STUART CODEX
+7.9 Failure Modes and Graceful Degradation (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines how Stuart fails without lying, without corrupting artifacts, and without pretending features worked when they didn’t.
+
+Chat-canon constraints enforced here:
+- Truth and auditability beat convenience.
+- No hallucination: if a stage fails, Stuart must not fabricate its outputs.
+- Explicit execution gating remains: failures do not trigger hidden retries that change what data leaves the machine.
+- Users must be able to recover (resume/retry) and still print/export what did succeed, clearly labeled.
+
+1) Failure taxonomy (types of failure)
+
+A) Input failures
+- unreadable file
+- corrupted file
+- unsupported format/codec
+- missing permissions
+
+B) Processing failures
+- normalization failure (ffmpeg error, decode failure)
+- diarization failure (model unavailable, OOM, too noisy)
+- transcription failure (adapter crash, OOM, language mismatch)
+- alignment failure (incompatible segment timelines, adapter crash)
+- formalization failure (adapter error, chunk merge conflict)
+- indexing failure (database locked/corrupt)
+
+C) Environment failures
+- disk full
+- CPU/GPU out of memory
+- power loss
+- OS permission failures
+- missing dependency
+
+D) Profile/policy failures
+- LOCAL_ONLY prohibits remote stage, user requested remote action
+- user denied confirmation for remote processing
+- redaction required but not possible under current adapter constraints
+
+2) Canonical failure handling rules (LOCKED)
+
+FAIL-1) Never claim a stage succeeded if it did not
+If diarization failed, Stuart cannot claim speaker attribution exists.
+If indexing failed, Stuart cannot return “results” that were not found.
+
+FAIL-2) Preserve artifacts and mark status
+When a run fails, the system must:
+- preserve all completed artifacts
+- write a run record marked failed/partial
+- include error details and recovery suggestions
+
+FAIL-3) Prefer “degraded mode” over “fabrication”
+If diarization is unavailable, Stuart may proceed in degraded mode (speaker unknown), but must:
+- warn clearly
+- label outputs as degraded
+- restrict features that depend on diarization (attendance/spoke queries)
+
+FAIL-4) Partial outputs must be labeled as partial
+If only 70% of chunks transcribed, the transcript is partial.
+Formalizations must not be produced as if complete unless the user explicitly requests “partial” output and it is clearly labeled.
+
+FAIL-5) Recovery must be explicit
+Auto-retry is allowed only for safe local operations and must be logged.
+Any retry that changes:
+- adapter selection
+- profile (local vs remote)
+- data sent off-machine
+requires explicit user confirmation again.
+
+FAIL-6) Corrections never rewrite ground truth silently
+If a user corrects transcript text or speaker labels, it must be stored as an overlay and auditable.
+
+3) Stage-by-stage failure behavior
+
+Stage 0 (Session Initialization)
+Common failures:
+- cannot create session folder
+- cannot copy source file
+- permission denied
+Behavior:
+- do not create a half-session without marking error
+- report the failure
+- allow retry or choose new storage root
+
+Stage 1 (Normalization)
+Common failures:
+- unsupported codec
+- ffmpeg missing
+- decode errors
+Behavior:
+- mark run failed
+- keep original source file
+- suggest re-export audio or install required dependency
+- do not proceed to diarization/transcription
+
+Stage 2 (Diarization)
+Common failures:
+- diarizer model unavailable
+- OOM
+- heavy noise/overlap makes diarization low-confidence
+Behavior:
+- if diarization fails: offer degraded mode (speaker unknown)
+- mark that speaker-based features are unavailable
+- never assign real names without mapping + confidence
+
+Stage 3 (Transcription)
+Common failures:
+- ASR adapter crash
+- OOM
+- wrong language setting / detection failure
+Behavior:
+- store partial chunk outputs if any
+- allow resume/retry with:
+  - smaller chunks
+  - different adapter
+  - explicit language hint
+- do not run formalization without a transcript
+
+Stage 4 (Alignment)
+Common failures:
+- diarization timeline mismatch
+- alignment adapter crash
+Behavior:
+- transcript remains valid ground truth
+- allow proceeding without speaker attribution (explicitly labeled)
+- mark alignment failed; do not pretend “who said what” is known
+
+Stage 5 (Formalization)
+Common failures:
+- formalizer adapter failure
+- chunk merge conflict
+- renderer (PDF) failure
+Behavior:
+- transcript and alignment remain unchanged
+- if formalization fails, do not create output.pdf claiming success
+- if output.json exists but PDF rendering fails, the run is partial:
+  - output.json and output.md may exist
+  - output.pdf missing; label as partial and allow “retry render” stage
+- allow re-run with different retention/template or chunking settings
+
+Stage 6 (Indexing)
+Common failures:
+- index database locked/corrupt
+- index out of date
+Behavior:
+- retrieval must disclose index status
+- allow rebuild/reindex commands
+- do not fabricate search results
+
+4) Graceful degradation matrix (what features are allowed)
+
+This is the core “don’t lie” matrix:
+
+- If transcript exists but diarization does not:
+  - allowed: topic search, “Greg mentioned” text search, minutes without speaker attribution
+  - not allowed: “Greg attended” as speaker, “what did Greg say” by speaker identity
+
+- If transcript is partial:
+  - allowed: partial search within available segments (must be labeled partial)
+  - not allowed: “complete minutes” unless explicitly requested as partial and labeled
+
+- If alignment is missing:
+  - allowed: transcript-based evidence and timestamps
+  - not allowed: confident speaker attribution
+
+- If PDF render failed:
+  - allowed: provide MD/JSON and allow re-render
+  - not allowed: “Print Now” until PDF exists (or print MD via external tools, clearly labeled as fallback)
+
+5) User messaging requirements
+
+Stuart must communicate failures in a way that preserves trust:
+- short “what failed”
+- what artifacts exist (what succeeded)
+- what is missing
+- how to recover (retry/resume/change adapter/settings)
+
+Never bury the user in stack traces by default.
+But a “show details” option should exist for power users.
+
+6) Canonical recovery actions
+
+At minimum, Stuart must support:
+- retry stage
+- resume run
+- re-run with different adapter
+- re-run with different chunk size
+- rebuild index
+- “re-render PDF” if only rendering failed
+- “re-run formalization with different template/retention” (transcript reuse)
+
+7) Self-audit (7.9)
+
+Chat-canon alignment checklist:
+- No hallucination on failure: failures restrict downstream claims rather than fabricating outputs. (Maintained.)
+- Explicit execution gating: retries that change profile/adapter scope require user confirmation and are logged. (Maintained.)
+- Truth-first degradations: speaker identity features are disabled when diarization/mapping is unavailable; attendance vs mention semantics remain honest. (Maintained.)
+- Artifact integrity: partial outputs are preserved and labeled; nothing is silently overwritten. (Maintained.)
+- Printing reality: PDF render failures are handled as partial runs with recovery, not “pretend print worked.” (Maintained.)
+
+This section is complete.

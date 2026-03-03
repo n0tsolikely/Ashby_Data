@@ -1,0 +1,79 @@
+# QUEST_ID: QUEST_170
+# TITLE: Stuart v1 — Dungeon 8 (2/7): UI Formalization Titles (Set at Run + Rename Later)
+# DATE: 2026-03-01
+# STATUS: ACCEPTED
+# PRIORITY: P0
+# OWNER: OpenAI Codex (CLI)
+# RISK_CLASS: R1
+
+## EXECUTIVE SUMMARY
+Dungeon 8 requires user-visible formalization titles that **never replace** the stable formalization_id. Backend support is added in QUEST_169; this quest wires the Base44 React UI to:
+- set an optional title when starting a formalization run
+- display titles in the outputs list
+- allow renaming a formalization after the fact
+
+## DEPENDS ON
+- QUEST_169 (backend run title support + rename API)
+
+## FILES OF INTEREST (EXISTING)
+- Run controls: `Ashby_Engine/webapp/stuart_frontend/stuart_app/src/components/stuart/RunControls.jsx`
+- Formalization card: `Ashby_Engine/webapp/stuart_frontend/stuart_app/src/components/stuart/FormalizationOutput.jsx`
+- Main page orchestration: `Ashby_Engine/webapp/stuart_frontend/stuart_app/src/pages/Stuart.jsx`
+- API client: `Ashby_Engine/webapp/stuart_frontend/stuart_app/src/api/stuartClient.js`
+
+## SCOPE
+### IN SCOPE
+1) Add a "Formalization Title (optional)" input to RunControls.
+2) Include the title in the run request payload.
+3) Show formalization titles in UI (outputs list) while still showing/storing the formalization_id (run_id) for traceability.
+4) Add rename UX on each formalization output card.
+
+### OUT OF SCOPE
+- Export bundles themselves (QUEST_171+).
+- Template authoring (Dungeon 11).
+
+## IMPLEMENTATION NOTES
+### A) RunControls: title input + payload
+- Add state `formalizationTitle` in `RunControls.jsx`.
+- Show an input (or collapsible advanced field) labeled:
+  - "Formalization Title (optional)"
+- When `onRun` is called, include `formalization_title: formalizationTitle` **only if non-empty**.
+  - Keep request shape consistent with backend expectation from QUEST_169 (recommended: inside the `ui` payload).
+
+### B) API client: runs.update
+- Add a `runs.update(run_id, payload)` method in `stuartClient.js`:
+  - `PATCH /runs/{run_id}` with JSON `{ formalization_title: "..." }`.
+
+### C) FormalizationOutput: rename UX
+- Add a small rename affordance (pencil icon, or "Rename") near the title.
+- Interaction:
+  - click → inline input
+  - enter/blur → call `stuartClient.runs.update(formalization_id, { formalization_title: newTitle })`
+  - optimistic update local state on success
+
+### D) Display rules
+- Always display:
+  - Title (if present), else fallback title from backend
+  - Small/secondary text: `ID: <formalization_id>`
+
+## TESTING LEVEL
+TL2 (UI + API smoke)
+
+## ACCEPTANCE CRITERIA
+- User can set an optional title before running a formalization.
+- After completion, the outputs list shows the title.
+- User can rename an existing formalization.
+- Formalization ID remains visible and unchanged.
+
+## VERIFICATION (MANUAL)
+- Run a formalization with a title.
+- Confirm `GET /api/sessions/{id}/formalizations` shows `title`.
+- Rename via UI; reload page; confirm title persists.
+
+## RECEIPTS REQUIRED
+- Screenshot or GIF showing:
+  - title field before run
+  - title shown after run
+  - rename flow
+- Diff of frontend files touched.
+

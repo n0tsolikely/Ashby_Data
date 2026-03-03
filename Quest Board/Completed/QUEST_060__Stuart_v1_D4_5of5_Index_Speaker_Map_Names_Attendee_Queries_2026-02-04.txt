@@ -1,0 +1,69 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_060
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 4 (5/5): index speaker names for attendee queries
+
+Context: Stuart retrieval/attendees
+
+Origin:
+Control Sync — 2026-02-04 (Stuart v1 finish-line: REV5)
+
+Priority: P1
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV5.txt (Dungeon 4)
+- Stuart Codex: attendee queries require speaker overlay grounding
+
+Status: DONE
+
+Audit Bundle Path:
+  /mnt/data/Ashby_Data/Audits/Execution/QUEST_060__2026-02-07__index_speaker_map_names_attendee_queries
+
+Accepted On:
+2026-02-07
+Accepted By:
+Hands (Peter)
+Completed On:
+2026-02-08
+
+Completed By:
+Ash (Brains)
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Support queries like 'meetings where Greg attended' by indexing speaker overlay names (when mappings exist) and exposing an attendee filter query.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Store speaker label→name mapping snapshot per session/run
+- Expose attendee filter query (e.g., attendee:Greg or helper fn)
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Identity resolution across sessions
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_056
+- QUEST_068
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Never assume name mapping unless user provided overlay mapping.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] Attendee query returns sessions where mapped name appears
+- [x] No false positives when no mapping exists
+- [x] `python3 -m pytest -q` passes
+

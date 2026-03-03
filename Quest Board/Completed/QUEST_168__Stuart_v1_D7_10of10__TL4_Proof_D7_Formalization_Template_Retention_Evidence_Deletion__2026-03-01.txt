@@ -1,0 +1,92 @@
+QUEST_ID: QUEST_168
+TITLE: Stuart v1 — D7 10/10 — TL4 Proof Pack (Formalization template+retention+evidence+deletion)
+DATE: 2026-03-01
+STATUS: ACCEPTED (Ready for Codex execution)
+RISK_CLASS: R2 (Proof only; no production logic changes unless needed to pass)
+OWNER: OpenAI Codex (local CLI)
+
+PURPOSE
+This quest is the “prove it” gate for Dungeon 7.
+It must produce hard receipts that:
+- Formalization uses annotated segments + template shaping inputs
+- Output JSON contains required metadata fields
+- Renderers obey defaults: omit empty sections + hide citations
+- TXT output exists
+- Delete run + delete transcript (cascade) behave correctly and leave no zombie index rows
+
+CANON ANCHORS
+- Guild Orders D7 (ACTIVE): the entire Dungeon 7 section
+- Synapse governance: proof artifacts, deterministic receipts, no “trust me”
+- Stuart Codex: retention knob + templates
+
+SCOPE LOCK
+IN SCOPE
+- Add/extend tests and/or proof scripts ONLY as needed to demonstrate Dungeon 7 is done.
+- Produce an audit artifact bundle under Ashby_Data/Audits/Proofs/ (or the canonical audits folder used by your governance).
+
+OUT OF SCOPE
+- New product features not required by D7
+- Any D8/D10/D11 work
+
+PROOF REQUIREMENTS (must be satisfied)
+A) Unit Tests (TL2/TL3)
+1) Gateway request includes transcript_segments + template_text + template_sections
+   - assert payload contains segment_id values and template text snippet
+2) minutes.json/journal.json metadata fields exist:
+   - template_id, template_version, retention, include_citations, show_empty_sections, transcript_version_id
+3) Render defaults:
+   - include_citations=false ⇒ rendered md has NO “[@”
+   - show_empty_sections=false ⇒ rendered md omits empty headings entirely
+   - include_citations=true ⇒ md contains “[@”
+   - show_empty_sections=true ⇒ md includes headings + placeholders
+4) TXT output:
+   - created for formalizations, non-empty, and contains no markdown artifacts (“##”, “**”, etc.)
+5) Delete run:
+   - deletes run dir + deletes sqlite rows
+6) Delete transcript (cascade):
+   - 409 without cascade when dependents exist
+   - cascade deletes dependent runs + transcript version file + sqlite rows
+   - transcript list no longer resolves deleted id
+
+B) End-to-End Smoke (TL4)
+- Using the existing fixtures (tests/fixtures) or a tiny synthetic session created in tests:
+  - create a session
+  - create a transcript version
+  - run formalize (cloud mocked or local fallback) to produce artifacts
+  - verify outputs exist in the run artifacts dir:
+    - minutes.md/pdf/txt/json
+    - evidence_map.json
+  - run deletions and verify filesystem + sqlite state
+
+DELIVERABLES
+1) Proof Log File
+- Create a deterministic proof file:
+  - Ashby_Data/Audits/Proofs/D7__Formalization_MVP__TL4__YYYY-MM-DD.md (or governance canonical path)
+  - Include:
+    - commands run
+    - key outputs (short excerpts)
+    - test results summary
+    - PASS/FAIL table per requirement above
+
+2) Test Suite Evidence
+- Attach pytest output (full or targeted with clear coverage)
+
+IMPLEMENTATION NOTES
+- Prefer tests over ad-hoc scripts unless governance explicitly prefers scripts.
+- If you write a script, place it under Ashby_Engine/tools/ or Ashby_Engine/scripts/ with clear usage.
+- Ensure tests do not require network access; use mocks/fakes.
+
+ACCEPTANCE CRITERIA
+- All proof requirements A+B are satisfied with receipts.
+- Proof log artifact exists in the canonical audits folder.
+- pytest passes.
+
+RECEIPTS REQUIRED
+- Link/path to the proof log artifact
+- pytest output
+- Any additional logs produced by delete ops tests
+
+FAIL CONDITIONS
+- “Proof” is just prose with no commands/tests
+- Any required D7 behavior cannot be demonstrated deterministically
+- Zombie index rows remain after deletions (search ghosts)

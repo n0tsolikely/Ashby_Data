@@ -1,0 +1,87 @@
+STUART CODEX
+4.5 Template Import (Document / Image-Based) (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines importing templates from existing documents or images. We explicitly discussed this: a user may upload a photo of a form or a document template and want Stuart to replicate it.
+
+In V1, import can be limited but must follow the same safety and registration rules as chat-guided creation.
+
+1) Purpose
+
+Many organizations already have:
+- incident report forms,
+- meeting minutes formats,
+- postmortem templates,
+- journal styles,
+in Word/PDF or even screenshots/photos.
+
+Template import exists to:
+- reduce friction,
+- and preserve existing workflows.
+
+2) Supported inputs
+
+Templates may be imported from:
+- text documents (plain text, markdown)
+- structured documents (Word/PDF) if parsable
+- images/screenshots/photos of templates (when clear enough)
+
+V1 can start with:
+- text-based imports,
+- and basic image-to-structure extraction if available,
+without promising perfect layout replication.
+
+3) Import flow (recommended)
+
+Step 1: User uploads template file/image.
+Step 2: Stuart asks: “Which mode should this template belong to?”
+Step 3: Stuart extracts:
+- headings,
+- fields,
+- ordering cues,
+- required vs optional hints (if inferable),
+and proposes a structured template.
+
+Step 4: Stuart shows a preview and asks the user to confirm/correct.
+Step 5: User confirms.
+Step 6: Template is saved locally and registered (with version 1).
+
+4) Import safety rules
+
+IMP1) Imported template is not trusted until confirmed
+Stuart must not auto-save a template without user confirmation.
+
+IMP2) Mode must be explicit
+Same as chat-guided: templates are mode-scoped.
+
+IMP3) No automatic sharing
+Imported templates remain local unless the user explicitly shares them (future feature).
+
+IMP4) PII concerns
+Templates may contain personal identifiers in headers/footers.
+Stuart should warn the user and encourage scrubbing before sharing.
+If future sharing is implemented, a scrubber/review step is required.
+
+5) “Perfect visual replication” is not required in V1
+
+A template is a structure contract, not a pixel-perfect layout.
+V1 should focus on:
+- sections,
+- fields,
+- ordering,
+- evidence rules,
+and render to clean markdown/PDF.
+
+Later versions may improve visual themeing.
+
+6) Self-audit (4.5)
+
+This section reflects our chat decisions:
+- template import from photos/docs is a desired capability,
+- but it must be confirm-before-save,
+- local-only by default,
+- and designed to avoid PII leakage if sharing is added later.
+
+This section is complete.

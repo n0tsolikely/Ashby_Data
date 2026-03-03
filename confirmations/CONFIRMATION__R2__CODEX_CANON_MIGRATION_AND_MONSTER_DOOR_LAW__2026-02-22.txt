@@ -1,0 +1,32 @@
+CONFIRMATION (R2) — Code + Data edits authorized
+
+CONFIRM: YES
+
+Scope executed:
+- Stuart Codex canon migration (create canonical path under Ashby_Data/Codex/Stuart/)
+- Monster law update: UI-first -> Door Reachability + UI-intent subset
+
+Operations performed:
+1) Created canonical Stuart Codex structure:
+   - Ashby_Data/Codex/Stuart/TOC.md
+   - Ashby_Data/Codex/Stuart/Sections/ (copied from legacy Stuart Codex sections)
+   - Ashby_Data/Codex/Stuart/Stuart_Codex_Full.txt (copied from legacy full)
+   - Ashby_Data/Codex/Stuart/README.md
+
+2) Kept legacy compatibility paths intact (no deletions):
+   - Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/
+   - Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt
+
+3) Patched Codex freeze marker to reference new canonical Stuart codex files:
+   - Ashby_Data/Codex/CODEX_FREEZE.md
+
+4) Updated Monster documentation + audit wording:
+   - MONSTER/docs/ARCHITECTURE_SPINE.md
+   - MONSTER/docs/MONSTER_PURPOSE.md
+   - MONSTER/docs/QUEST_AUTHORING_RULES.md
+   - MONSTER/docs/WORKFLOW.md
+   - MONSTER/tools/ui_surface_audit.py (clarified audit meaning; UI-intended only)
+
+5) Ran Monster updater after applying the above changes (see MONSTER update receipts/logs).
+
+Timestamp (UTC): 2026-02-22T16:37:56Z

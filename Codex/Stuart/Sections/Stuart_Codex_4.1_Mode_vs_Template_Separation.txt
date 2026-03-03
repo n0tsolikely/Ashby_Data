@@ -1,0 +1,94 @@
+STUART CODEX
+4.1 Mode vs Template Separation (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section locks the separation between “mode” and “template.” This separation is foundational: it enables personalization at scale without turning Stuart into a pile of one-off prompts or requiring users to reinvent instructions every time.
+
+We explicitly decided in this chat:
+- Modes are few and stable.
+- Templates can grow and vary widely within a mode.
+- Users can try different templates on the same transcript without re-uploading audio.
+- Modes/templates must be enumerated (no hallucinated capabilities).
+
+1) Why this separation exists
+
+Without mode/template separation, Stuart collapses into one of two bad extremes:
+- Too generic: every output looks the same and requires manual prompting.
+- Too hardcoded: every new workflow becomes a new “mode,” exploding complexity.
+
+Mode/template separation solves this:
+- Mode defines the kind of artifact (meeting minutes, journal entry, incident report, creator notes, captions).
+- Template defines the specific structure and formatting of that artifact for a person or organization.
+
+2) Canonical definitions
+
+Mode (recap)
+A mode is a stable interpretation contract that determines what categories of output exist.
+Examples:
+- Meeting Minutes mode includes concepts like topics, decisions, action items.
+- Incident Report mode includes timeline, impact, root cause (if stated), follow-ups.
+- Journal mode includes narrative paragraphs, optional sections like feelings/lessons.
+
+Template
+A template is a specific structure and formatting configuration within a mode.
+Examples:
+- Meeting Minutes templates: “Detailed”, “Quick”, “Control Sync”.
+- Incident templates: “SEV Report”, “Postmortem Lite”.
+- Journal templates: “Diary”, “Professional Reflection”.
+- Creator templates: “Idea Clusters”, “Production Plan”.
+
+3) Design constraints (non-negotiables)
+
+M/T1) Templates are mode-scoped
+A template belongs to exactly one mode.
+
+M/T2) Templates are enumerated
+A user request must resolve to a real template ID in the registry, or be refused.
+
+M/T3) Templates are data, not code
+Templates must be representable as configuration (JSON/YAML) rather than requiring code changes to define new templates.
+This is essential for:
+- local creation,
+- sharing later,
+- and avoiding refactors.
+
+M/T4) Templates are re-runnable
+After transcription exists, the user can run multiple templates and compare outputs without re-uploading or re-transcribing.
+
+4) How the user experiences this (the “simple, not cockpit” rule)
+
+The UI should make it obvious:
+- choose mode (what you want)
+- choose template (how you want it structured)
+- then run
+
+But it must also support the chat-driven version:
+- “Use Meeting Minutes mode with template ‘Control Sync’.”
+
+Stuart must not require the user to understand prompt engineering.
+
+5) Implications for future expansion
+
+Modes can expand over time (doctor, chef, student), but mode addition is heavier:
+- it introduces new categories and truth rules
+- it must be implemented and tested
+
+Templates expand more easily:
+- they are structured configurations inside a mode
+- they can be created by users and orgs
+
+Therefore:
+- v1 should ship with few modes and few templates,
+- but the architecture must allow templates to grow to many per mode without UI collapse.
+
+6) Self-audit (4.1)
+
+This section reflects our chat decisions:
+- templates solve “generic outputs” without exploding modes,
+- templates can be many, but modes must remain few and stable,
+- templates must be enumerated to prevent hallucinated structures,
+- and re-running templates on the same transcript is a core capability.
+
+This section is complete.

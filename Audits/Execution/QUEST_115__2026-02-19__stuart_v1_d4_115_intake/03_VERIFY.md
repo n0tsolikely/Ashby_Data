@@ -1,0 +1,7 @@
+Verification
+
+Command:
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/home/notsolikely/Ashby_Engine python3 -B -m pytest -q -p no:cacheprovider tests/test_meetings_router_plan.py tests/test_meetings_run_params_validation.py
+
+Result:
+10 passed in 0.04s

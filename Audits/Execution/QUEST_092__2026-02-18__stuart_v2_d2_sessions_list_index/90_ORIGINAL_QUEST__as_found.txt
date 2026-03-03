@@ -1,0 +1,173 @@
+    QUEST TEMPLATE — SYNAPSE GUILD
+    ================================================
+
+    QUEST ID:
+    QUEST_092
+
+    Created By:
+    Ash (Brains)
+
+    Title:
+    Stuart v2 — D2 (3/12) — SESSIONS: List/Index (GET /api/sessions) — Real Data, Deterministic Order
+
+    Context:
+    Dungeon 2 requires GET /api/sessions as a minimum contract endpoint.
+
+Current web door has /api/sessions but it is filesystem-scan based and reads session.json,
+which is immutable and does NOT track runs/contributions (by design). That means the UI
+can’t reliably show “status” or “has outputs” without additional derived data.
+
+We already have a SQLite index path (sqlite_fts) used by /api/library, which is designed to
+list sessions + latest runs WITHOUT scanning all artifacts each time.
+
+This quest makes /api/sessions the canonical list endpoint for the UI and aligns it with
+deterministic sorting + optional search/pagination.
+
+    Origin:
+    Guild Orders → Dungeon 2 Contract: SESSIONS GET /api/sessions
+
+    Priority:
+    P0 — Blocks UI session list + search.
+
+    Links:
+    - GUILD ORDERS: Ashby_Data/Guild Orders/PAUSED/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt (Dungeon 2 SESSIONS contract)
+- CODEX: Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt (3.5 Artifact-first + 4.1 Session mental model)
+- ENGINE ANCHOR: Ashby_Engine/ashby/interfaces/web/app.py (/api/sessions + /api/library)
+- ENGINE ANCHOR: Ashby_Engine/ashby/modules/meetings/index/sqlite_fts.py
+- TESTS ANCHOR: Ashby_Engine/tests/test_meetings_web_door_scaffold.py (library endpoint)
+
+    Status:
+    BOARD
+
+    Audit Bundle Path:
+    Ashby_Data/Audits/Execution/QUEST_092__2026-02-17__Stuart_v2_D2_Sessions_List
+
+    Accepted On:
+    (blank)
+
+    Owner:
+    (blank)
+
+    Executor:
+    (blank)
+
+    ------------------------------------------------
+    DESCRIPTION
+    ------------------------------------------------
+    Implement a production-grade GET /api/sessions endpoint that returns:
+- deterministic ordering
+- optional search
+- enough metadata for UI list badges (latest run status, has transcript/formalization, etc)
+- without violating immutability rules
+
+Key point:
+- We do NOT mutate session.json.
+- We derive list metadata from the index and/or run manifests.
+
+    ------------------------------------------------
+    SCOPE / OBJECTIVE
+    ------------------------------------------------
+    Implement GET /api/sessions with the following behavior:
+
+Endpoint:
+  GET /api/sessions?limit=50&offset=0&q=<optional search>&mode=<optional>
+
+Response envelope (per Quest 091):
+  {
+    "ok": true,
+    "sessions": [SessionSummaryV1...],
+    "page": {"limit": 50, "offset": 0, "returned": N, "total": optional}
+  }
+
+SessionSummaryV1 minimum fields (example):
+  {
+    "session_id": "ses_...",
+    "created_ts": 1739...,
+    "mode": "meeting|journal|...",
+    "title": "optional",
+    "latest_run": {
+      "run_id": "run_...",
+      "status": "queued|running|succeeded|failed",
+      "stage": "transcribe|formalize|...",
+      "progress": 0-100,
+      "created_ts": ...
+    } | null,
+    "has_transcript": true|false,
+    "has_formalization": true|false
+  }
+
+Implementation guidance:
+- Prefer using sqlite_fts.list_sessions(...) if it gives enough metadata.
+- If sqlite index is empty:
+    - return ok=true, sessions=[]
+    - DO NOT create sessions as a side effect.
+- Deterministic order: newest first (created_ts desc), ties by session_id.
+- Search behavior:
+    - v1: q matches title OR session_id prefix OR indexed transcript tokens if available.
+    - If full-text search is too heavy now, implement q for title/session_id only but document it.
+
+Update /api/library:
+- Either:
+    - Keep /api/library as a legacy alias to /api/sessions with slightly different response,
+      OR
+    - Deprecate it but keep endpoint to not break tests, redirect internally.
+
+Tests:
+- Add/extend tests to validate:
+    - returns ok=true even when empty
+    - respects limit/offset
+    - deterministic sorting
+    - q filtering at least on title/session_id
+
+Docs:
+- Ensure contract doc updated with exact request/response example for GET /api/sessions.
+
+
+    ------------------------------------------------
+    OUT OF SCOPE
+    ------------------------------------------------
+    - Session detail endpoint (/api/sessions/{id}) → Quest 093
+- Runs list endpoint (/api/sessions/{id}/runs) → Quest 094
+- Transcript endpoints → Quest 095/096
+- UI wiring (Dungeon 3)
+
+
+    ------------------------------------------------
+    DEPENDENCIES
+    ------------------------------------------------
+    - Quest 090 contract doc must be followed.
+- Quest 091 envelope/models should exist (or you must implement minimal in this quest).
+
+
+    ------------------------------------------------
+    EXECUTION NOTES
+    ------------------------------------------------
+    - Do NOT rely on session.json['runs'] or ['contributions'] being populated; those are empty by immutability.
+- Derive has_transcript/has_formalization from:
+    - sqlite index session rows (preferred), OR
+    - scanning for run manifests for that session (acceptable for v1 local).
+- If you add scanning, keep it bounded by limit to avoid O(N) blowups.
+
+
+    ------------------------------------------------
+    COMPLETION CRITERIA (DONE = PROOF)
+    ------------------------------------------------
+    DONE when:
+- GET /api/sessions exists and matches the contract (envelope + fields).
+- Tests prove deterministic behavior and non-crashy empty index behavior.
+- Docs updated with example.
+
+Proof:
+- curl output example committed to docs OR pasted into audit bundle
+- pytest green for relevant web tests
+
+
+    ------------------------------------------------
+    TALENT POINT (WHY THIS MATTERS)
+    ------------------------------------------------
+    The session list is the first thing users see. If this is flaky or fake, the whole product feels like bullshit.
+
+    ------------------------------------------------
+    FINAL NOTES / HANDS DECISIONS
+    ------------------------------------------------
+    If we can’t get reliable data from sqlite index yet, document that it is 'title/session_id only' search in v1 and defer full-text to later.

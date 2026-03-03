@@ -1,0 +1,334 @@
+================================================================================
+CONTROL SYNC SNAPSHOT
+================================================================================
+A) Header (required)
+- Subject: STUART (Ashby Meetings Module)
+- Date: 2026-02-25
+- Topic: Guild Orders REV6 Lock-In — Single UI Surface + Real Chat Q&A Contract
+- Snapshot Type: Control_Sync
+- World State: Active Raid (post-D9 focus)
+- Codex Freeze status: UNKNOWN (not checked in this environment)
+
+B) Rehydration Review (scoped)
+- Reviewed for this Control Sync:
+  - Active Guild Orders: GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-23_REV5.txt
+  - Control Sync discussion: UI surface consolidation + chat Q&A expectations + dungeon tightening
+- Explicitly NOT touched (out-of-scope guardrail):
+  - Rehydration pack index path normalization
+  - .governance_runtime/control_sync_state.json
+  - Any Codex runtime plumbing
+
+C) Binding Decisions (now locked)
+1) Single UI Surface (No Duplicate Webapps)
+- Canonical frontend root: Ashby_Engine/webapp/stuart_frontend/
+- Canonical app source:  Ashby_Engine/webapp/stuart_frontend/stuart_app/
+- Canonical served web door remains: Ashby_Engine/ashby/interfaces/web/app.py
+- Legacy migration UIs must be removed/disabled after React cutover:
+  - Ashby_Engine/ashby/interfaces/web/templates/index.html + ashby/interfaces/web/static/app.js (+css)
+  - Ashby_Engine/webapp/main.py + webapp/templates/index.html + webapp/static/js/app.js (+css)
+
+2) Dungeon 10 is explicitly “Real Stuart Chat Q&A”
+- /api/chat (session) + /api/chat/global (global) must be LLM-backed Q&A over artifacts.
+- Meeting facts require citations (segment_id + timestamps).
+- Global scope must work from cold start (no selected session).
+- Responses must support session jump actions (open_session).
+
+3) Session listing + index consolidation
+- /api/sessions is canonical.
+- /api/library may exist only as TEMP alias/redirect to /api/sessions (no drift), then removed once legacy UI is gone.
+
+D) Artifacts produced / updates
+- New Guild Orders revision (to become ACTIVE):
+  - Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-25_REV6.txt
+- Superseded Guild Orders (to move to PAUSED/SUPERSEDED once Hands applies):
+  - Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-23_REV5.txt
+- Patch file produced:
+  - PATCH__GUILD_ORDERS__REV5_to_REV6__2026-02-25.patch
+
+E) Next phase
+- Proceed to deterministic quest chain authoring for:
+  - D10 (real chat Q&A + global scope + session jump actions)
+  - D7 evidence anchoring via annotated transcript segments (segment_id/timestamps/speaker)
+  - D3 UI cutover (serve React build; retire legacy UIs)
+
+================================================================================
+END CONTROL SYNC SNAPSHOT
+================================================================================
+
+
+================================================================================
+DRAFTSHOT UPDATE — REV2 (APPEND-ONLY)
+================================================================================
+Status: CONSUMED
+Date (session anchor): 2026-02-25
+Revision: REV2
+Session context: CONTROL_SYNC
+Subject: STUART (Ashby Meetings Module)
+Canonical Draftshot Location (when installed in repo): <Subject>_Data/Snapshots/Draft Shots/
+Base artifact preserved verbatim above:
+- STUART_Control_Sync_Snapshot_2026-02-25__GuildOrders_REV6.txt (treated as Draftshot REV1 body)
+
+UPDATED_AT (America/Toronto): 2026-02-26 00:47:50 EST (-0500)
+
+================================================================================
+CAPTURE INDEX (STABLE IDS — DO NOT RENUMBER)
+================================================================================
+DECISION_001 — Single UI Surface (React canonical; legacy UIs removed after cutover)
+DECISION_002 — Dungeon 10 = Real Stuart Chat Q&A (session/global; citations; jump actions)
+DECISION_003 — Session listing + index consolidation (/api/sessions canonical; /api/library TEMP alias)
+
+DECISION_004 — Dungeon 6 lock: speaker mapping overlay semantics + search semantics
+DECISION_005 — UI label rename: “Spoke” → “Attendee”
+DECISION_006 — Session title vs session_id: rename edits metadata title only; folder stays session_id; print-stamping deferred to D7/D8
+
+FINDING_001 — Codex Freeze proven (Fog Lifted)
+CORRECTION_001 — Freeze status was marked UNKNOWN in base; now verified YES
+
+================================================================================
+STRUCTURED SECTIONS (REV2 DELTA ONLY)
+================================================================================
+
+DECISIONS (BINDING)
+- DECISION_004 (Dungeon 6 locked):
+  - Internal diarization IDs remain SPEAKER_01, SPEAKER_02, ... (stable anchors).
+  - UI displays Speaker-01, Speaker-02 when unmapped (purely presentation).
+  - Mapping is an overlay (does NOT rewrite transcript truth).
+  - Overlay scope/lifecycle:
+    - Stored per transcript_version_id.
+    - New transcript versions within the SAME session auto-seed from most recent mapping.
+    - Older transcript versions remain unchanged by default.
+    - Searches use ACTIVE overlay only (prevents mixed-run false positives).
+  - Rerender definition:
+    - Rerender = regenerate derived views/exports with overlay applied.
+    - NOT a re-transcribe.
+  - Search semantics locked (Sessions UI):
+    - Mentioned = transcript keyword match ONLY.
+    - Attendee = overlay-backed speaker presence ONLY (ACTIVE overlay only).
+    - All = union of:
+      - session title
+      - session_id
+      - run_id and transcript_version_id
+      - transcript keyword matches
+      - attendee overlay matches
+  - Explicitly out-of-scope for D6:
+    - semantic/embedding “subject match” (e.g., wages vs pay) — later dungeon.
+
+- DECISION_005 (UI label clarity):
+  - Rename UI filter label from “Spoke” to “Attendee” to avoid ambiguity.
+
+- DECISION_006 (Session naming discipline):
+  - Backend storage folders remain keyed by session_id (never renamed).
+  - Session “title” is a separate metadata field; UI rename edits title only.
+  - Title stamping into exports/formalizations is explicitly deferred to D7/D8.
+
+- Draftshot governance decision (session discipline):
+  - The base Control Sync Snapshot generated early is treated as Draftshot REV1 body.
+  - This REV2 update is append-only and becomes the active continuity anchor until Control Sync closeout.
+
+FINDINGS / OBSERVATIONS
+- FINDING_001 (Codex Freeze verified):
+  - CODEX_FREEZE.md exists in Ashby_Data/Codex and contains Hands declaration + timestamps.
+  - Therefore Fog Lifted is PROVEN for Ashby/STUART subject on this canon.
+
+CORRECTIONS
+- CORRECTION_001:
+  - Base artifact line: “Codex Freeze status: UNKNOWN (not checked in this environment)”
+  - Updated truth: VERIFIED YES (Fog Lifted proven via CODEX_FREEZE.md).
+
+ARTIFACTS PRODUCED / UPDATED (ON THIS EXECUTION SURFACE)
+- Updated Guild Orders reflecting D6 lock-in:
+  - GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-25_REV9.txt
+  - PATCH__GUILD_ORDERS__REV8_to_REV9__2026-02-25.patch
+
+TODO / FOLLOW-UPS
+- Proceed to Dungeon 7 verbatim review + disambiguation (same process as D6).
+- Continue through remaining dungeons one at a time: 7, 8, 10, 11, 12.
+- When Control Sync is explicitly closed by Hands:
+  - Consume this Draftshot into a formal Control Sync Snapshot per Snapshot law.
+  - Snapshot MUST reference this Draftshot filename + REV.
+
+RISKS / BLOCKERS
+- Risk: UI consolidation (legacy UI removal) can create route/serve confusion if not executed deterministically.
+  - Mitigation: “single UI surface” is binding; removal work must be bounded + verified.
+
+OPEN QUESTIONS
+- Serve strategy for React UI (needs Hands decision before execution):
+  - Serve built React bundle from FastAPI web door (SERVE_BUILD)
+  - OR run separate dev server in development (DEV_SERVER)
+
+================================================================================
+RUNNING LOG (APPEND-ONLY)
+================================================================================
+[REV1] 2026-02-25 — Early Control Sync Snapshot generated (Guild Orders REV6 lock-in). Now treated as Draftshot base body.
+[REV2] 2026-02-26 00:47:50 EST — Appended D6 lock-in + session naming/search semantics + freeze verification + artifact refs.
+
+================================================================================
+END DRAFTSHOT UPDATE — REV2
+================================================================================
+
+================================================================================
+DRAFTSHOT UPDATE — REV3
+================================================================================
+[REV3] 2026-02-27 — Appended D7 lock-in decisions and updated Guild Orders reference.
+
+D7 — Formalization MVP Lock-Ins (Binding for this Control Sync):
+- Section rendering default: content-driven sections only (no empty sections). Added control:
+  - show_empty_sections = TEMPLATE DEFAULT + UI OVERRIDE (1C). Default: false.
+- Citations in rendered documents are optional (not tied to retention). Added control:
+  - include_citations = TEMPLATE DEFAULT + UI OVERRIDE (2C). Default: false.
+- Transcript input to LLM must be annotated speaker-turn segments (segment_id, timestamps, speaker_label, mapped_name when available).
+- Template must shape prompt (D3): schema derived from template + raw template text provided to LLM.
+- Evidence map always generated for each formalization run (1A), but hidden from normal users by default and excluded from USER_EXPORT.
+- Export modes to support (contract for D7/D8): USER_EXPORT vs DEV_EXPORT.
+  - USER_EXPORT includes user-facing docs only; DEV_EXPORT includes evidence_map + usage receipts.
+  - User must be able to select output format: PDF / MD / TXT.
+- PDF output is REQUIRED for meeting + journal in D7.
+- Deletion model (tiered):
+  - Delete formalization run: deletes run outputs/receipts/evidence; preserves transcripts.
+  - Delete transcript version: BLOCK if dependent formalizations exist; show warning modal listing impacted formalizations; offer explicit cascade delete option.
+  - Delete session: deletes all session artifacts.
+- Retention knob applies to formalization only (chat verbosity is separate; tune later).
+
+Artifacts updated during this Control Sync (spec-only; no engine execution):
+- Guild Orders updated: GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-25_REV10.txt (D7 tightened).
+- Patch: PATCH__GUILD_ORDERS__REV9_to_REV10__2026-02-27.patch.
+
+================================================================================
+END DRAFTSHOT UPDATE — REV3
+================================================================================
+
+================================================================================
+DRAFTSHOT UPDATE — REV4 (append-only delta since REV3)
+Date: 2026-02-27
+Context: Dungeon 8 tightened (exports + traceability + naming)
+================================================================================
+
+New binding decisions captured:
+- Dungeon 8 export model tightened:
+  - USER_EXPORT vs DEV_EXPORT separation.
+  - USER_EXPORT allows format selection (PDF/MD/TXT); JSON excluded (DEV only).
+  - Add dev_bundle export_type for DEV_EXPORT.
+  - Deterministic zip structure (session.json, audio/, transcripts/<transcript_version_id>/, formalizations/<formalization_id>/, overlays/, dev/ only in DEV).
+- Formalization naming:
+  - A1 chosen: formalization title is optional at creation (auto-generated default), rename later; stable formalization_id always retained.
+- PDF traceability footer:
+  - B1 chosen: PDFs include small footer/watermark with session_id + formalization_id (+ generated_at).
+- Search requirement:
+  - System must support searching by IDs AND names; UI should show an explicit “ID Match” category when session_id/formalization_id matches.
+- Transcript deletion UX refinement:
+  - Deleting a transcript_version with dependent formalizations triggers warning modal listing impacted formalization titles/IDs and offers explicit cascade delete.
+
+Artifacts updated during this Control Sync (spec-only; no engine execution):
+- Guild Orders updated: GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-25_REV11.txt (Dungeon 8 tightened).
+- Patch: PATCH__GUILD_ORDERS__REV10_to_REV11__2026-02-27.patch.
+
+================================================================================
+END DRAFTSHOT UPDATE — REV4
+================================================================================
+
+================================================================================
+DRAFTSHOT UPDATE — REV5 (append-only delta since REV4)
+Date: 2026-02-27
+Context: Dungeon 10 tightened (Chat persistence + UI awareness + Session hard lock + Global soft focus)
+================================================================================
+
+New binding decisions captured:
+- Dungeon 10 scope model finalized:
+  - SESSION = hard lock to left-panel selected_session_id; no cross-session retrieval; instruct user to switch to GLOBAL for archive queries.
+  - GLOBAL = archive scope with soft focus to a session when user references a session title/date/id or clicks a session in the UI while GLOBAL is active.
+  - If answer not in focused session, Stuart expands globally and responds “not in <focused>; found in <other>” with citations + open_session action.
+- Stuart must receive UI-state injection every turn (not shown to user):
+  - scope toggle (SESSION|GLOBAL), selected_session_id/title, active transcript_version_id, active overlay, active mode/template/retention/profile, and last user action/run status when available.
+  - Purpose: Stuart acts like it is “beside the user” (truth-gated), not a void box.
+- Persistent chat thread model:
+  - Single continuous chat history (not per-session).
+  - Scoped memory: meeting facts are bound to cited sessions; no session blending.
+  - No spammy “system switched” messages required; Stuart may naturally acknowledge meeting names when helpful.
+- Search/hits improvements:
+  - Global hits must include match_reasons categories including ID_MATCH and ATTENDEE_MATCH.
+  - UI displays user-facing titles; IDs remain searchable (ID Match badges).
+
+Artifacts to update next (not executed here):
+- Guild Orders should be patched after this decision set to reflect D10 behavior (session hard lock; global soft focus; ui_state injection; match reasons).
+- Draftshot remains ACTIVE until Control Sync closeout and formal snapshot formalization.
+
+================================================================================
+END DRAFTSHOT UPDATE — REV5
+================================================================================
+
+================================================================================
+DRAFTSHOT UPDATE — REV6 (append-only delta since REV5)
+Date: 2026-02-28
+Context: Dungeon 11 hardened (templates: local-first runtime store + reuse discovery + staged import)
+================================================================================
+
+New binding decisions captured:
+
+DECISION_007 — Dungeon 11 (Template Management) hardened:
+- Local-first runtime store (11.1 A):
+  - User templates live in PRODUCT runtime storage on the user’s machine (NOT Ashby_Data governance).
+  - System templates remain committed under Ashby_Engine/ashby/modules/meetings/templates/system/.
+- Import staging (11.2 B):
+  - Ship TEXT + PDF template import now.
+  - Image-based template import is deferred unless a low-risk “structure-only” extraction path can be added without refactor; pixel-perfect layout cloning remains future scope.
+- Approval flow (11.3 C):
+  - Chat can generate template drafts; UI previews and saves (action gate). No forced download clutter.
+- Template format (11.4 A):
+  - Markdown-first template_text + small JSON metadata; versioned.
+
+DECISION_008 — No-zombie / no-drift Quest authoring protocol (binding):
+- Before writing ANY Quest, Brains must perform a full repo discovery pass (Monster-assisted when available) to locate existing plumbing.
+- Quests must explicitly state REUSE/MODIFY/DELETE for discovered codepaths. No parallel stores, no duplicate endpoints, no dead buttons.
+- Architecture rule: keep template logic modular (TemplateStore/Registry/Import/Render services); avoid god-files (e.g., runner.py growth).
+
+DECISION_009 — Template store migration rail (no-refactor intent):
+- User template storage begins co-located with the existing session/runtime store root.
+- TemplateStoreRoot is controlled by ONE resolver/config seam so migration to OS appdata later is a single change + optional migration tool (not a refactor).
+
+Artifacts updated during this Control Sync (spec-only; no engine execution):
+- Guild Orders updated: GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-25_REV13.txt (Dungeon 11 hardened).
+- Patch: PATCH__GUILD_ORDERS__REV12_to_REV13__2026-02-28.patch.
+
+================================================================================
+END DRAFTSHOT UPDATE — REV6
+================================================================================
+
+================================================================================
+DRAFTSHOT UPDATE — REV7 (append-only delta since REV6)
+Date: 2026-02-28
+Context: Dungeon 12 hardened (Full System Smoke Test Pack)
+================================================================================
+
+New binding decisions captured:
+
+- Dungeon 12 is a SYSTEM-LEVEL proof pack (not unit tests). It validates the full user-facing flow end-to-end.
+- Deliverables (binding):
+  - scripts/full_system_smoke_test.sh
+  - docs/full_system_smoke_test.md
+  - docs/smoke_outputs/<YYYY-MM-DD>/ (recorded terminal outputs + listings)
+- Fixture inputs (binding):
+  - Commit two tiny fixture audios (meeting 2–3 speakers; journal 1 speaker) for deterministic runs.
+- Verification scope hardened (YES):
+  - Explicitly assert: transcript_versioning, speaker_map persistence, formalization metadata, evidence_map internal presence,
+    PDF traceability footer, session/global scope behavior, global cold-start, single UI surface at /, and export integrity.
+- Output capture:
+  - Both: docs/smoke_outputs/ logs AND referenced from Execution Audits when invoked under a Quest.
+- Network/LLM policy:
+  - Default baseline must PASS in LOCAL_ONLY with no remote calls.
+  - Optional HYBRID/CLOUD steps allowed only when explicitly enabled (env var) AND permitted by governance consent (R2 confirmation artifact).
+
+Artifacts updated during this Control Sync (spec-only; no engine execution):
+- Guild Orders to update next: GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-25_REV14.txt
+- Patch: PATCH__GUILD_ORDERS__REV13_to_REV14__2026-02-28.patch
+
+================================================================================
+END DRAFTSHOT UPDATE — REV7
+================================================================================
+
+================================================================================
+DRAFTSHOT CONSUMPTION MARKER (AI11)
+- Consumed At: 2026-03-01T23:33:42.881900-05:00
+- Consumed By Snapshot: STUART_Control_Sync_Snapshot__02_2026-03-01.txt
+- Rule: Draftshot ACTIVE → CONSUMED on Snapshot mint
+================================================================================
+

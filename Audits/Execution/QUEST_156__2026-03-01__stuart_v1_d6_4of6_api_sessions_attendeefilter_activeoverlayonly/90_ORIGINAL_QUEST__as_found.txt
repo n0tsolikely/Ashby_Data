@@ -1,0 +1,131 @@
+QUEST TEMPLATE — SYNAPSE OS [v1.5]
+(duplicate this file for each new Quest)
+
+================================================================================
+QUEST ID: QUEST_156
+QUEST TITLE: Stuart v1 — Dungeon 6 (4/6): Attendee Filter API (active overlay only, speaker_maps-indexed)
+QUEST SUBTITLE: /api/sessions?attendee=Name returns sessions where Name is present in the ACTIVE speaker map (not transcript mentions)
+PRIORITY: P0
+OWNER: OpenAI Codex (CLI Execution)
+STATUS: ACCEPTED (Ready for execution)
+CREATED: 2026-03-01
+LAST UPDATED: 2026-03-01
+================================================================================
+
+SUBJECT: ASHBY / STUART (Meetings Module)
+ORIGIN: Guild Orders REV14 — Dungeon 6 (Attendee truth via speaker map overlay)
+LINKS:
+- /mnt/data/Ashby_Canon12_EXTRACTED/Ashby_Canon(12)/Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-25_REV14.txt  (sha256: d10c278cd45a543c32c27102a912ce6f1c0569401c5ec0e00f6dc1e5c5b9b094)
+- Dungeon 6 excerpt sha256: 6d0a02ce22d961dd4eb1fbb4bf0cab4be8d5f3f42bf4c577ceee5b4012af3816
+- /mnt/data/ANALYSIS__D6__MONSTER_ASHBY__2026-03-01.md  (sha256: a086f46d5bf54c4cf3267139f9d8d581f1ecb719dc4f6bceda80ff9a627ef5a9)
+
+================================================================================
+CODEX ANCHORS
+- Ashby_Data/Codex/Stuart/Stuart_Codex_6.5_Artifact_Indexing.txt
+- Ashby_Data/Codex/Stuart/Stuart_Codex_7.7_Stage_6_Indexing_and_Retrieval.txt
+- Guild Orders REV14 — DUNGEON 6 (Attendee search must query speaker_maps, not transcript keyword matches)
+
+================================================================================
+CONSTRAINTS (hard rules)
+- Attendee == “speaker presence” proven by ACTIVE speaker_map overlay.
+- Attendee filter MUST NOT match transcript mentions (keyword search).
+- Must be backed by sqlite_fts speaker_maps index (not brute-force scanning transcript text).
+- Respect the “active overlay only” rule:
+  - If a session has historical mappings, but the ACTIVE transcript overlay is cleared/redacted, attendee filter must NOT return it.
+
+================================================================================
+CHANGE CLASS: Modification (API behavior)
+RISK CLASS: R1 (new query param + filtering logic)
+
+VISION DELTA
+- Current API supports /api/sessions?q=... for title/session_id matching.
+- This quest adds /api/sessions?attendee=... for attendee search semantics (overlay-backed truth).
+
+================================================================================
+SYSTEM CONTEXT (repo truth)
+- Sessions endpoint:
+  - Ashby_Engine/ashby/interfaces/web/app.py  → GET /api/sessions
+- Attendee query helper already exists in sqlite_fts:
+  - Ashby_Engine/ashby/modules/meetings/index/sqlite_fts.py  → list_sessions_by_attendee(conn, attendee)
+- Existing tests already enforce the semantics (must be updated as needed):
+  - Ashby_Engine/tests/test_meetings_attendee_query_speaker_maps.py
+
+================================================================================
+ANTI-DUPLICATION PLAN
+- Confirm existing attendee query helper:
+  - rg -n "def list_sessions_by_attendee" Ashby_Engine/ashby/modules/meetings/index/sqlite_fts.py
+- Confirm /api/sessions supports only q today:
+  - rg -n "def api_sessions" Ashby_Engine/ashby/interfaces/web/app.py
+- Confirm no attendee query param already exists:
+  - rg -n "attendee=" Ashby_Engine/ashby/interfaces/web/app.py
+
+================================================================================
+PLACEMENT INTENT
+- Implement attendee filtering inside the existing /api/sessions endpoint.
+- Avoid creating a second sessions listing endpoint unless absolutely required.
+
+================================================================================
+ATOMICITY STATEMENT
+This quest is atomic when:
+- /api/sessions supports attendee= filter and returns correct sessions.
+- The behavior is proven by tests: attendee filter returns only overlay-backed speaker presence.
+
+================================================================================
+SCOPE
+1) Extend GET /api/sessions to accept query param:
+   - attendee: str | None
+2) Behavior (deterministic):
+   - If attendee is provided:
+     - Use sqlite_fts.speaker_maps (list_sessions_by_attendee) to get candidate session_ids.
+     - Filter candidates down to ACTIVE overlay only:
+       - For each candidate session_id:
+         - Load session_state to identify active_transcript_version_id
+         - Resolve that transcript version’s run_id (canonical)
+         - Confirm speaker_maps contains attendee for (session_id, run_id) (ACTIVE transcript mapping)
+       - Return only sessions that pass.
+   - Normalize attendee for comparison (case-insensitive, trim whitespace).
+3) Keep existing q param behavior intact (title + session_id match). If both q and attendee are provided:
+   - Return intersection (q-filtered subset of attendee matches).
+4) Return schema remains the same as /api/sessions today (list of sessions dicts), but now filtered.
+
+OUT OF SCOPE
+- UI wiring (QUEST_157).
+- Mentioned search (already /api/search).
+- Any LLM/chat behavior (D10).
+
+================================================================================
+DEPENDENCIES
+- Requires QUEST_155 (speaker map saves refresh speaker_maps index) so attendee search sees updates promptly.
+- Requires QUEST_154 session_state v2 active overlay pointer semantics.
+
+================================================================================
+DOOR IMPACT
+- Backend API (/api/sessions)
+- SQLite index query
+
+================================================================================
+TESTING LEVEL
+- TL3 (tests must prove semantics)
+
+================================================================================
+VERIFICATION PLAN
+- pytest -q
+- Add/adjust tests to cover API behavior:
+  - Create session with transcript mentioning “Greg” but no speaker_map overlay → attendee filter must NOT return it.
+  - Create session with active speaker_map containing “Greg” → attendee filter must return it.
+  - Clear active overlay → attendee filter no longer returns it.
+
+================================================================================
+ACCEPTANCE CRITERIA
+- /api/sessions?attendee=Greg returns sessions where Greg is in ACTIVE speaker_map overlay.
+- /api/sessions?attendee=Greg does NOT return sessions where Greg is only mentioned in transcript text.
+- If mapping cleared/redacted for active transcript, the session is not returned.
+
+================================================================================
+RECEIPTS REQUIRED
+- Diff patch (API + tests).
+- pytest output showing PASS.
+
+================================================================================
+NOTES
+- This is the “spoke/attendee truth” backbone. If we fuck this up, global retrieval later will lie.

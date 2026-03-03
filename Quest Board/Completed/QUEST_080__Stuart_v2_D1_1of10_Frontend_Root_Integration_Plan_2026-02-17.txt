@@ -1,0 +1,103 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_080
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v2 — D1 1of10: Select frontend root + non-destructive integration plan
+
+Context: (Ashby / Stuart / System / Other)
+Stuart (Ashby) — Webapp Frontend
+
+Origin:
+Stuart Architecture Transcendence Protocol — Control Sync 2026-02-16 (Dungeon 1) + Hands decision: no Base44 compatibility shim
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- Guild Orders: Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt — Dungeon 1
+- Codex: Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt (Sections 1.2, 1.4, 2.1, 2.2, 2.5)
+- Docs: Ashby_Data/Stuart/Docs/STUART_Base44_UI_Code_Audit__2026-02-16.txt
+- Docs: Ashby_Data/Stuart/Docs/STUART_Base44_UI_Surgery_Checklist__2026-02-16.txt
+- Input: Ashby_Data/Stuart/Docs/stuart_app.zip (Base44 UI source pack)
+- Engine anchor: Ashby_Engine/ashby/interfaces/web/ (current FastAPI web door + /static + /templates)
+
+Status: BOARD | ACTIVE | COMPLETED | ABANDONED
+COMPLETED
+
+Audit Bundle Path: Quest Board/Quest Diff Audit Files/QUEST_###__AUDIT.txt
+Ashby_Data/Audits/Execution/QUEST_080__2026-02-17__stuart_v2_d1_1of10_select_frontend_root_non_destructive_integration_plan
+
+Accepted On:
+2026-02-18
+
+Accepted By:
+Ash (Brains)
+
+Completed On:
+2026-02-18
+
+Completed By:
+Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Choose the canonical location for the new Vite+React Stuart frontend inside Ashby_Engine and write the non-destructive integration plan so we do not break the existing FastAPI web door while we port the Base44 UI.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Inspect current web door layout: Ashby_Engine/ashby/interfaces/web/ (app.py + static/app.js + templates/index.html).
+- Select and standardize the new Vite+React frontend root path inside Ashby_Engine (must be deterministic and recorded).
+- Document how the frontend is run in dev (pnpm/npm) and how it will later be served by the FastAPI door (build output -> static mount) WITHOUT implementing that wiring yet.
+- Document dev API routing strategy: Vite proxy '/api' -> backend (preferred) OR explicit VITE_STUART_API_BASE override (avoid CORS foot-guns).
+- Create a small FRONTEND_ROOT.md (or similar) in the chosen frontend root documenting the above and explicitly stating: NO Base44 shim allowed; canonical naming from day 1.
+- Ensure this quest does NOT overwrite or delete existing ashby/interfaces/web/static/app.js or templates/index.html.
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Extracting / modifying the Base44 UI source pack (that is Quest 081).
+- Implementing backend endpoints (Dungeon 2).
+- Serving built Vite assets from FastAPI (later Dungeon/Quest).
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- Quest execution order: must be completed before ingesting stuart_app.zip so we don’t extract into the wrong place.
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Treat this as the ‘folder contract’ for future work: once chosen, do not keep moving the frontend root around.
+- Keep existing web door intact until the new frontend is proven bootable.
+- Codex alignment: do not accidentally create implicit execution (upload != run) while designing dev wiring.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] Chosen frontend root path exists and is recorded (FRONTEND_ROOT.md created).
+- [x] FRONTEND_ROOT.md includes: dev run commands, dev API routing strategy, and later integration approach (build -> static).
+- [x] No files removed or overwritten under Ashby_Engine/ashby/interfaces/web/static/ or templates/.
+
+────────────────────────────────────────────────────────
+TALENT POINT
+────────────────────────────────────────────────────────
+# On completion:
+# - Talent Point Awarded: YES / NO
+# - Talent Spent On: (TALENT ID — Name in Talent Tree)
+Talent Point Awarded: NO
+Talent Spent On: N/A
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+- Canonical frontend root selected: `Ashby_Engine/webapp/stuart_frontend`
+- Contract file created: `Ashby_Engine/webapp/stuart_frontend/FRONTEND_ROOT.md`
+- Preservation receipt:
+  - `Ashby_Engine/webapp/static/js/app.js` sha256 unchanged
+  - `Ashby_Engine/webapp/templates/index.html` sha256 unchanged

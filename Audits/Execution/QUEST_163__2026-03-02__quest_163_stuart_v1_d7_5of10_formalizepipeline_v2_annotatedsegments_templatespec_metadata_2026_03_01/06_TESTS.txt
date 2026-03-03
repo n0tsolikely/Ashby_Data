@@ -1,0 +1,6 @@
+## Command Receipt Log
+CMD: source /home/notsolikely/venvs/ashby-env/bin/activate && cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_minutes_gateway_call_cloud_only.py tests/test_meetings_journal_gateway_call_cloud_only.py tests/test_meetings_formalize_minutes_json_profile_gated.py tests/test_meetings_formalize_journal_json_profile_gated.py tests/test_llm_gateway_evidence_map_persisted.py tests/test_llm_usage_receipt_no_leak.py tests/test_llm_minutes_text_sanitizer.py
+.............                                                            [100%]
+13 passed in 0.24s
+RC: 0
+PASS: governance validation OK for QUEST_163 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_163__2026-03-02__quest_163_stuart_v1_d7_5of10_formalizepipeline_v2_annotatedsegments_templatespec_metadata_2026_03_01

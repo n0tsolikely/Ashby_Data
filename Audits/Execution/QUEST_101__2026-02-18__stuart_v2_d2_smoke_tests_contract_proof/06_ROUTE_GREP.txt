@@ -1,0 +1,8 @@
+60:    @app.get("/api/sessions")
+281:    @app.get("/api/transcripts/{transcript_version_id}")
+445:    @app.get("/api/sessions/{session_id}")
+526:    @app.patch("/api/sessions/{session_id}")
+743:    @app.post("/api/chat")
+798:    @app.post("/api/chat/global")
+1136:    @app.get("/api/sessions/{session_id}/export")
+1183:    @app.get("/api/exports/{filename}")

@@ -1,0 +1,174 @@
+let REGISTRY = null;
+let ACTIVE_SESSION = null;
+
+const el = (id) => document.getElementById(id);
+
+function addBubble(kind, text){
+  const node = document.createElement('div');
+  node.className = `msg ${kind}`;
+  node.textContent = text;
+  el('chat').appendChild(node);
+  el('chat').scrollTop = el('chat').scrollHeight;
+}
+
+function addCard(title, lines){
+  const card = document.createElement('div');
+  card.className = 'card';
+  const h = document.createElement('h3');
+  h.textContent = title;
+  card.appendChild(h);
+
+  for(const [k,v] of lines){
+    const row = document.createElement('div');
+    row.className = 'kv';
+    row.innerHTML = `<span class="k">${k}</span>${v}`;
+    card.appendChild(row);
+  }
+
+  el('chat').appendChild(card);
+  el('chat').scrollTop = el('chat').scrollHeight;
+}
+
+function renderClarify(clarify){
+  addCard('Clarify', [['Message:', clarify.message]]);
+  const optsWrap = document.createElement('div');
+  optsWrap.className = 'options';
+
+  const fields = clarify.fields_needed || [];
+  if(fields.includes('mode')){
+    (clarify.options.mode || []).forEach((opt) => {
+      const b = document.createElement('button');
+      b.className = 'pill primary';
+      b.textContent = opt.value;
+      b.onclick = () => setMode(opt.value);
+      optsWrap.appendChild(b);
+    });
+  }
+
+  el('chat').appendChild(optsWrap);
+  el('chat').scrollTop = el('chat').scrollHeight;
+}
+
+function renderPreview(preview){
+  addCard('Plan Preview', [
+    ['mode:', preview.mode],
+    ['template:', preview.template],
+    ['speakers:', preview.speakers],
+    ['defaults:', (preview.defaults_used || []).join(', ') || 'none'],
+    ['steps:', (preview.ordered_steps || []).map(s => s.kind).join(' → ') || 'none'],
+  ]);
+}
+
+async function fetchRegistry(){
+  const r = await fetch('/api/registry');
+  REGISTRY = await r.json();
+
+  const modeSel = el('modeSelect');
+  REGISTRY.modes.forEach(m => {
+    const o = document.createElement('option');
+    o.value = m;
+    o.textContent = m;
+    modeSel.appendChild(o);
+  });
+}
+
+function setMode(mode){
+  el('modeSelect').value = mode;
+  // template list depends on mode; do not preselect.
+  const templSel = el('templateSelect');
+  templSel.innerHTML = '<option value="" selected disabled>Template</option>';
+  templSel.disabled = false;
+
+  const allowed = (REGISTRY.templates_by_mode || {})[mode] || [];
+  allowed.forEach(t => {
+    const o = document.createElement('option');
+    o.value = t;
+    o.textContent = t;
+    templSel.appendChild(o);
+  });
+}
+
+async function fetchSessions(){
+  const r = await fetch('/api/sessions');
+  const data = await r.json();
+  const host = el('sessions');
+  host.innerHTML = '';
+
+  (data.sessions || []).forEach(s => {
+    const item = document.createElement('div');
+    item.className = 'session-item' + (s.session_id === ACTIVE_SESSION ? ' active' : '');
+    const title = s.title || s.session_id;
+    item.textContent = `${title} (${s.mode || 'unknown'})`;
+    item.onclick = () => {
+      ACTIVE_SESSION = s.session_id;
+      localStorage.setItem('stuart_active_session', ACTIVE_SESSION);
+      fetchSessions();
+      addBubble('assistant', `Switched to session ${ACTIVE_SESSION}`);
+    };
+    host.appendChild(item);
+  });
+}
+
+async function ensureSession(){
+  if(ACTIVE_SESSION) return ACTIVE_SESSION;
+  const mode = el('modeSelect').value;
+  if(!mode) return null;
+
+  const res = await fetch('/api/sessions', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({mode: mode, title: null})
+  });
+  const data = await res.json();
+  ACTIVE_SESSION = data.session_id;
+  localStorage.setItem('stuart_active_session', ACTIVE_SESSION);
+  await fetchSessions();
+  return ACTIVE_SESSION;
+}
+
+async function sendMessage(){
+  const text = el('msgInput').value.trim();
+  if(!text) return;
+
+  addBubble('user', text);
+  el('msgInput').value = '';
+
+  const sid = await ensureSession();
+  const ui = {
+    mode: el('modeSelect').value || null,
+    template: el('templateSelect').value || null,
+    speakers: null,
+  };
+
+  const r = await fetch('/api/message', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({session_id: sid, text: text, ui: ui})
+  });
+  const data = await r.json();
+  const result = (data || {}).result || {};
+
+  if(result.needs_clarification){
+    renderClarify(result.clarify);
+  } else {
+    renderPreview(result.preview);
+  }
+}
+
+window.addEventListener('load', async () => {
+  ACTIVE_SESSION = localStorage.getItem('stuart_active_session') || null;
+
+  await fetchRegistry();
+  await fetchSessions();
+
+  el('modeSelect').addEventListener('change', (e) => {
+    setMode(e.target.value);
+  });
+
+  el('sendBtn').addEventListener('click', sendMessage);
+  el('msgInput').addEventListener('keydown', (e) => {
+    if(e.key === 'Enter') sendMessage();
+  });
+
+  addBubble('assistant', 'Select a mode to begin. No mode is preselected.');
+});

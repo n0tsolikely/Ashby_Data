@@ -1,0 +1,80 @@
+# STUART — END OF DAY SNAPSHOT (MERGED)
+
+**Date:** 2026-01-27
+**Session Type:** Batched PRE-Quest + Quest + Side-Quest execution
+
+---
+
+## Executed Work
+
+### PRE-Quests
+
+* **PRE-QUEST_026**
+* **PRE-QUEST_027**
+* **PRE-QUEST_028**
+
+### Quests
+
+* **QUEST_029 — Engine Runtime Import Parity (Telegram / Webapp)**
+
+### Side-Quests
+
+* **SIDE-QUEST_030 — Stuart Runner Subprocess PYTHONPATH Import Fix**
+
+---
+
+## Key Changes (Consolidated)
+
+* Telegram runner now extracts `formalized_pdf` and any `.pdf` artifacts from `state.artifacts`.
+* Webapp scaffold reproduced and stabilized (BASE mounts + JS send/upload flow).
+* Webapp wired end-to-end:
+
+  * Upload saves into `STUART_ROOT` inbox
+  * Pipeline executes
+  * `pdf_url` returned
+  * `/download` endpoint serves generated PDF
+* Removed stdlib shadowing by renaming `repo_root/secrets` → `repo_root/secrets_store`.
+* Updated all imports and file path references to `secrets_store`.
+* Injected canonical repo root into subprocess `PYTHONPATH` via `_env()` in `stuart_runner`.
+* Eliminated `ModuleNotFoundError` when subprocess imports Ashby modules.
+
+---
+
+## Evidence Bundles
+
+### PRE-Quests
+
+* PRE-QUEST_026: `Ashby_Data/Quest Board/QUEST DIFF AUDIT FILES/PRE-QUEST_026__AUDIT`
+* PRE-QUEST_027: `Ashby_Data/Quest Board/QUEST DIFF AUDIT FILES/PRE-QUEST_027__AUDIT`
+* PRE-QUEST_028: `Ashby_Data/Quest Board/QUEST DIFF AUDIT FILES/PRE-QUEST_028__AUDIT`
+
+### QUEST_029
+
+* Audit bundle: `Ashby_Data/Quest Board/QUEST DIFF AUDIT FILES/QUEST_029__AUDIT`
+* Completed quest file: `Quest Board/Completed/QUEST_029__Engine_Runtime_Import_Parity_Telegram_Webapp.txt`
+
+### SIDE-QUEST_030
+
+* Audit bundle: `Ashby_Data/Quest Board/QUEST DIFF AUDIT FILES/SIDE-QUEST_030__AUDIT`
+* Completed quest file: `Quest Board/Completed/SIDE-QUEST_030__Stuart_Runner_Subprocess_PYTHONPATH_Import_Fix_2026-01-27.txt`
+
+---
+
+## Import Smoke Tests (Final State)
+
+* stdlib `secrets`: `/usr/lib/python3.11/secrets.py` — OK
+* `token_hex`: OK
+* `webapp_import`: OK
+* `ashby_import`: OK
+* Subprocess `PYTHONPATH` injection: OK (explicitly set via runner)
+
+---
+
+## Resume Anchor
+
+1. Verify Telegram door sends PDF end-to-end.
+2. Verify webapp upload → pipeline → PDF download end-to-end.
+
+---
+
+**Status:** System stable. No unresolved import errors. Canonical runtime paths enforced.

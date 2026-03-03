@@ -1,0 +1,133 @@
+STUART CODEX
+8.6 Indexing Adapters (SQLite FTS vs Embeddings) (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines indexing adapters: the components that build and query the search index used for recall across sessions.
+
+Why this matters:
+- Recall is one of Stuart’s core V1 requirements.
+- LOCAL_ONLY requires local indexing.
+- Different deployments may prefer simple full-text search (fast, deterministic) vs semantic embeddings (better recall, more compute).
+- The system must remain adapter-swappable without refactors.
+
+Chat-canon constraints enforced here:
+- No hallucinated retrieval: results must come from the index or raw scan with evidence.
+- LOCAL_ONLY means local index only.
+- “Attendance vs mention vs spoke” semantics must remain correct regardless of index type.
+- Retrieval results must include jump-to-evidence (timestamps/segments).
+
+1) What an indexing adapter is responsible for
+
+An indexing adapter is responsible for:
+- storing searchable representations of session metadata and content,
+- updating the index when new artifacts are created,
+- executing queries and returning matches with evidence pointers.
+
+An indexing adapter is NOT responsible for:
+- generating transcripts,
+- generating formalizations,
+- printing,
+- or deciding truth rules (those are pipeline-level invariants).
+
+2) Indexing adapter interface (conceptual)
+
+Minimal interface:
+- upsert_session(session_manifest) -> ok
+- upsert_transcript_segments(session_id, segments[]) -> ok
+- upsert_formalization_items(session_id, items[]) -> ok
+- upsert_speaker_overlay(session_id, speaker_map) -> ok
+- query(query_spec) -> results
+- rebuild(all_sessions) -> ok
+- status() -> index_status
+
+query_spec must allow:
+- text search
+- filters (date range, tags, mode)
+- speaker overlay lookup (name -> segments)
+- and structured item search (decisions/actions)
+
+3) Index types (canonical options)
+
+IDX-A) Full-text index (SQLite FTS or similar)
+Pros:
+- deterministic
+- easy to host locally
+- fast for keyword search (“time off”, “donuts”)
+- good baseline for V1
+
+Cons:
+- semantic paraphrase recall is weaker (e.g., “vacation” vs “time off”)
+
+IDX-B) Embedding-based semantic index
+Pros:
+- better semantic recall
+- handles paraphrases and concept similarity
+
+Cons:
+- requires embedding model
+- more compute/storage
+- must be local in LOCAL_ONLY (bigger footprint)
+- introduces additional uncertainty; must still return evidence
+
+IDX-C) Hybrid index
+Combine FTS + embeddings.
+Recommended long-term, but V1 can ship with FTS-only and add embeddings later.
+
+4) LOCAL_ONLY baseline recommendation (v1)
+
+In LOCAL_ONLY:
+- default indexing adapter should be SQLite FTS (or equivalent).
+- embeddings are optional and may be offered as an advanced setting.
+
+Reason:
+- V1 must be reliable, lightweight, and explainable.
+- Keyword search already satisfies many core queries.
+
+5) Evidence requirements for all index types
+
+Regardless of index type:
+- results must point to transcript segment IDs and timestamps.
+- semantic similarity matches must still show exact evidence excerpts.
+- no “LLM answers” without evidence.
+
+6) Profile behavior
+
+LOCAL_ONLY:
+- indexing is local (FTS and/or local embeddings).
+- no network calls.
+
+HYBRID:
+- local indexing by default.
+- remote indexing enhancements only with explicit disclosure + confirmation + logging.
+
+CLOUD:
+- remote indexing allowed; still must preserve audit logs and evidence pointers.
+
+7) Query semantics enforcement (not delegated to the index)
+
+The “attendance vs mention vs spoke” semantic rules cannot be delegated to the index alone.
+Stuart must enforce semantics at query interpretation time:
+- “Greg mentioned” = text mention query
+- “Greg attended/spoke” = requires speaker map overlay or participant metadata
+Index helps retrieve, but semantics are enforced in the Stuart layer.
+
+8) Failure behavior
+
+If index is unavailable or corrupted:
+- Stuart must disclose reduced recall capability
+- allow rebuild
+- allow scanning a specific session transcript directly as fallback (slower but honest)
+- never fabricate results
+
+9) Self-audit (8.6)
+
+Chat-canon alignment checklist:
+- Recall is core: indexing supports chat queries across sessions. (Maintained.)
+- LOCAL_ONLY integrity: local index baseline (SQLite FTS); embeddings optional local-only. (Maintained.)
+- No hallucinated retrieval: results must map to evidence segments/timestamps. (Maintained.)
+- Semantics enforced: attendance vs mention vs spoke stays correct independent of index implementation. (Maintained.)
+- Recovery exists: rebuild and fallback scan instead of fake results. (Maintained.)
+
+This section is complete.

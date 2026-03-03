@@ -1,0 +1,186 @@
+STUART — CONTROL SYNC SNAPSHOT — 2026-02-15
+
+Canonical:
+- Canon zip in scope:
+  Ashby_Canon.zip
+- Canon working trees (inside extracted canon root):
+  - /mnt/data/Ashby_Canon/Ashby_Data
+  - /mnt/data/Ashby_Canon/Ashby_Engine
+
+────────────────────────────────────────
+PURPOSE OF THIS CONTROL SYNC
+────────────────────────────────────────
+This sync documents the operator boot/installation incident starting from the question:
+  “how do i boot stuart up properly now?”
+
+Goal:
+- turn the observed real-world install failures into **repeatable, documented, preflight-verified** boot steps
+- harden the install pack so a new user does NOT need to:
+  - guess python version compatibility
+  - fight pip backtracking
+  - discover torchaudio/pyannote breakage the hard way
+  - trip over NumPy 2 ABI warnings mid-run
+
+No quest execution occurred in this sync.
+This was environment hardening + install pack patching + documentation.
+
+────────────────────────────────────────
+FIELD CONTEXT (WHERE WE WERE BEFORE THIS SYNC)
+────────────────────────────────────────
+- Dungeon 6 (QUEST_068 → QUEST_075): COMPLETE
+- Side Quests (SQ_078 → SQ_079): COMPLETE
+- Latest rehydration artifacts existed as of 2026-02-12.
+
+Hands began real boot testing on the engine in a local Ubuntu/WSL2 environment.
+
+────────────────────────────────────────
+HANDS BOOT / INSTALL FIELD LOG (SUMMARY)
+────────────────────────────────────────
+1) Repo placement + venv
+- Hands unzipped canon and moved:
+  - Ashby_Data
+  - Ashby_Engine
+  into ~/
+- Hands activated an existing venv (ashby-env) and attempted install from Ashby_Engine.
+
+2) Failure class: PyAV / FFmpeg libraries missing (source build)
+- During `pip install -r requirements-stuart-v1.txt` pip attempted to build `av` from source.
+- The build failed with missing FFmpeg dev libraries:
+  - libavformat, libavcodec, libavdevice, libavutil, libavfilter, libswscale, libswresample
+  - pkg-config could not find these.
+
+3) Failure class: pip resolver backtracking into older faster-whisper
+Root cause (discovered by behavior + dependency graph):
+- requirements-stuart-v1.txt constrained `ctranslate2<4.0`.
+- faster-whisper 1.0.3 requires `ctranslate2>=4.0`.
+- pip responded by downgrading faster-whisper to older releases (0.10.x / 1.0.0 range) that pin older `av==10.*` / `av==11.*`.
+- This forced `av` to compile from source (and/or compile incompatible versions), triggering the FFmpeg-dev error.
+
+4) Failure class: pyannote.audio import crash via torchaudio
+- pyannote.audio 3.4.0 expects `torchaudio.AudioMetaData`.
+- Some newer torchaudio builds do NOT expose AudioMetaData.
+- Result was:
+  AttributeError: module 'torchaudio' has no attribute 'AudioMetaData'
+
+5) Failure class: NumPy 2 ABI warning + torch interaction
+- With newer stacks, torch emitted “module compiled with NumPy 1.x cannot be run in NumPy 2.x”.
+- Even when imports succeeded, this is a red flag for stability.
+
+6) Final known-good field resolution achieved by Hands
+Hands reached a STRICT-pass preflight by converging on:
+- Python 3.10.x
+- torch/torchaudio ~= 2.2.2 (CPU)
+- numpy < 2 (Hands pinned to 1.26.4)
+- openai + deps (sniffio/distro/jiter) installed
+- faster-whisper import OK
+- pyannote.audio import OK
+
+Result:
+- `python scripts/stuart_preflight.py --strict` returned RESULT: OK.
+
+────────────────────────────────────────
+RUNTIME DIRECTORIES CLARIFICATION (OPERATOR CONFUSION RESOLVED)
+────────────────────────────────────────
+Hands noticed multiple “runtime” looking locations and asked if this was accidental drift:
+- `~/ashby_runtime/stuart` (outside the repo)
+- `Ashby_Engine/StuartRuntime` (inside the repo)
+- `Ashby_Engine/runtime` (inside the repo)
+
+Root cause:
+- Stuart’s *meetings* module uses `ashby.modules.meetings.config.get_config()` which defaults STUART_ROOT to:
+  `~/ashby_runtime/stuart` (override via `STUART_ROOT`).
+- A legacy Telegram control script was defaulting to `Path.cwd() / "StuartRuntime"`, creating an alternate runtime root.
+- The repo also contained real run artifacts under `Ashby_Engine/StuartRuntime/`, which can present as “random sessions”
+  if any runner points at that directory.
+
+Decision:
+- Canon runtime artifacts MUST live outside the repo under `~/ashby_runtime/stuart`.
+- In-repo runtime folders should NOT ship with sessions/runs.
+
+Patch applied:
+- `io/telegram/ashby_telegram_control.py` now defaults to the shared `get_config().root` runtime.
+- Repo-local `Ashby_Engine/StuartRuntime/` was removed from canon (no more baked-in sessions).
+
+────────────────────────────────────────
+DECISIONS LOCKED (WHAT WE’RE CHANGING SO THIS DOESN’T HAPPEN AGAIN)
+────────────────────────────────────────
+1) Requirements hardening
+- We will stop allowing pip to “choose” older faster-whisper to satisfy an incompatible ctranslate2 pin.
+- We will pin:
+  - faster-whisper==1.0.3
+  - ctranslate2>=4,<5
+  - av>=12.3,<13
+
+2) Torch / torchaudio pinning
+- We will explicitly pin torch/torchaudio to a known compatible set for pyannote.audio:
+  - torch==2.2.2
+  - torchaudio==2.2.2
+  (and torchvision==0.17.2 as the matching triple)
+
+3) NumPy pin
+- We will pin numpy<2 for Stuart v1 to avoid ABI instability.
+
+4) Preflight improvements
+- Preflight will explicitly check and surface the exact failure modes seen in the wild:
+  - recommended python window (3.10/3.11)
+  - numpy<2 guard
+  - torchaudio.AudioMetaData presence guard
+  - ctranslate2 minimum version guard
+  - av import check
+  …with direct fix commands.
+
+5) Documentation update
+- INSTALL_STUART_V1.md and SYSTEM_DEPENDENCIES.md must match the real world.
+- “one venv” is the default guidance; multiple venvs are only for deliberate isolation.
+
+────────────────────────────────────────
+PATCHES APPLIED IN CANON (THIS SYNC)
+────────────────────────────────────────
+Engine:
+- /mnt/data/Ashby_Canon/Ashby_Engine/requirements-stuart-v1.txt
+  - pinned faster-whisper / ctranslate2 / av
+  - pinned torch/torchaudio/torchvision
+  - pinned numpy<2
+
+- /mnt/data/Ashby_Canon/Ashby_Engine/docs/stuart/INSTALL_STUART_V1.md
+  - now reflects the known-good boot path
+  - includes CPU-first default + optional GPU guidance
+  - includes troubleshooting for NumPy 2 + torchaudio AudioMetaData issues
+
+- /mnt/data/Ashby_Canon/Ashby_Engine/docs/stuart/SYSTEM_DEPENDENCIES.md
+  - added explicit FFmpeg dev libs + build-essential/pkg-config as fallback for source builds
+
+- /mnt/data/Ashby_Canon/Ashby_Engine/scripts/stuart_preflight.py
+  - added explicit guards for python recommendation, numpy<2, torchaudio metadata, ctranslate2>=4, av import
+
+- /mnt/data/Ashby_Canon/Ashby_Engine/io/telegram/ashby_telegram_control.py
+  - unified default runtime root to the shared meetings config (no repo-local StuartRuntime default)
+
+- /mnt/data/Ashby_Canon/Ashby_Engine/StuartRuntime/
+  - removed from canon (runtime data must never ship inside the repo)
+
+Housekeeping:
+- removed local caches (__pycache__, .pytest_cache) from the engine working tree.
+
+────────────────────────────────────────
+OPEN QUESTIONS / RISKS
+────────────────────────────────────────
+- GPU matrix:
+  - the pins are version-based; CUDA wheels with local version tags (e.g. +cu121) should still satisfy ==2.2.2.
+  - we still need an operator-confirmed GPU install path (tomorrow’s testing).
+
+- Torch/torchaudio forward compatibility:
+  - if future torchaudio reintroduces AudioMetaData or pyannote updates its interface, we can loosen pins.
+  - for now we prioritize “boots reliably” over “latest everything”.
+
+────────────────────────────────────────
+NEXT SAFE MOVE
+────────────────────────────────────────
+1) Confirm a clean-room boot using ONLY the updated install docs + requirements.
+   - run preflight --strict on a fresh venv.
+2) Run a real audio session end-to-end (normalize → transcribe → diarize → align → truth gate → formalize → export).
+3) Open next Control Sync (tomorrow) to set new Guild Orders based on field test results.
+
+────────────────────────────────────────
+END OF CONTROL SYNC SNAPSHOT
+────────────────────────────────────────

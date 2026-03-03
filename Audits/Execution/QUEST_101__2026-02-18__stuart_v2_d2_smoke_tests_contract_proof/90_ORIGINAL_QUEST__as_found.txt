@@ -1,0 +1,165 @@
+    QUEST TEMPLATE — SYNAPSE GUILD
+    ================================================
+
+    QUEST ID:
+    QUEST_101
+
+    Created By:
+    Ash (Brains)
+
+    Title:
+    Stuart v2 — D2 (12/12) — API Smoke Tests + Curl Proof Pack + Doc Sync
+
+    Context:
+    Dungeon 2 deliverables explicitly require:
+  - endpoints implemented + smoke-tested with curl/httpie
+  - UI wired to endpoints (UI wiring is Dungeon 3, but API must be provable now)
+
+This quest produces:
+  - a repeatable smoke test script
+  - a contract compliance test (pytest)
+  - copy/paste curl recipes
+  - ensures docs match reality
+
+This is the “no excuses” proof layer so we can trust the API surface and move to Dungeon 3 UI wiring.
+
+
+    Origin:
+    Guild Orders → Dungeon 2 Deliverables/Proof requirements.
+
+    Priority:
+    P0 — Without proof, you don’t actually have an API.
+
+    Links:
+    - GUILD ORDERS: Ashby_Data/Guild Orders/PAUSED/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt (Dungeon 2 deliverables/proof)
+- CODEX: Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt (3.1 truth-locked + auditability)
+- ENGINE ANCHOR: Ashby_Engine/tests/test_meetings_web_*
+- ENGINE ANCHOR: Ashby_Engine/ashby/interfaces/web/app.py
+
+    Status:
+    BOARD
+
+    Audit Bundle Path:
+    Ashby_Data/Audits/Execution/QUEST_101__2026-02-17__Stuart_v2_D2_Smoke_Tests_Proof
+
+    Accepted On:
+    (blank)
+
+    Owner:
+    (blank)
+
+    Executor:
+    (blank)
+
+    ------------------------------------------------
+    DESCRIPTION
+    ------------------------------------------------
+    Create the proof harness for the Dungeon 2 API surface.
+
+We want deterministic “push button, see contract working” proof:
+- create session
+- upload file
+- list sessions/runs/transcripts/formalizations
+- export bundle
+
+This quest is allowed to add tooling/docs so future work doesn’t regress.
+
+
+    ------------------------------------------------
+    SCOPE / OBJECTIVE
+    ------------------------------------------------
+    A) Add a smoke test script (shell or python)
+
+   Recommended location:
+     Ashby_Engine/scripts/smoke_stuart_web_api_v1.sh
+   OR:
+     Ashby_Engine/scripts/smoke_stuart_web_api_v1.py
+
+   Script must:
+     - start from a fresh STUART_ROOT (tmp dir) OR accept STUART_ROOT as env var
+     - call endpoints in this order (minimal):
+         1) POST /api/sessions
+         2) POST /api/upload (bytes path)
+         3) POST /api/run (or minimal run)
+         4) GET  /api/sessions
+         5) GET  /api/sessions/{id}
+         6) GET  /api/sessions/{id}/runs
+         7) GET  /api/sessions/{id}/transcripts
+         8) GET  /api/sessions/{id}/formalizations
+         9) GET  /api/sessions/{id}/export?export_type=full_bundle
+     - print outputs clearly
+     - exit non-zero on failure
+
+   NOTE:
+     Running the full ASR pipeline may require ffmpeg/model deps.
+     So the smoke script should support:
+       - a “fast” mode that only creates fake minimal artifacts for endpoints tests
+         OR
+       - uses existing tests harness patterns with generated sine wav.
+
+   Keep it honest: never fabricate transcript outputs in the production path.
+
+B) Add “API contract compliance” pytest
+   Suggested file:
+     Ashby_Engine/tests/test_meetings_web_api_contract_minimum_v1.py
+
+   This test should validate:
+     - each Dungeon 2 contract endpoint exists (200/4xx expected)
+     - responses match envelope schema
+     - list endpoints return deterministic ordering for fixed fixtures
+
+C) Curl/httpie examples in docs
+   - Update web_api_contract_v1.md with copy/paste curl examples.
+   - Ensure each endpoint in Dungeon 2 has at least one example.
+
+D) Audit output
+   - Create an audit note under the Audit Bundle Path showing:
+       - command run logs
+       - sample JSON responses
+       - any known limitations (truth disclosures)
+
+
+    ------------------------------------------------
+    OUT OF SCOPE
+    ------------------------------------------------
+    - UI parity work (Dungeon 3)
+- LLM wiring (later)
+
+
+    ------------------------------------------------
+    DEPENDENCIES
+    ------------------------------------------------
+    - All prior Dungeon 2 quests implemented (091–100).
+
+
+    ------------------------------------------------
+    EXECUTION NOTES
+    ------------------------------------------------
+    - “Smoke test” means repeatable, not “I clicked a button once”.
+- If running the full pipeline is flaky on CI, split:
+    - contract tests: use fixtures, always run
+    - e2e pipeline tests: optional / skipped if deps missing
+
+
+    ------------------------------------------------
+    COMPLETION CRITERIA (DONE = PROOF)
+    ------------------------------------------------
+    DONE when:
+- Smoke script exists and can run end-to-end (at least contract-level).
+- Contract compliance tests exist and pass.
+- Docs include curl recipes for every contract endpoint.
+
+Proof:
+- script output pasted into audit bundle
+- pytest run green
+
+
+    ------------------------------------------------
+    TALENT POINT (WHY THIS MATTERS)
+    ------------------------------------------------
+    This is the difference between ‘we think it works’ and ‘it fucking works’. Proof is the product.
+
+    ------------------------------------------------
+    FINAL NOTES / HANDS DECISIONS
+    ------------------------------------------------
+    If any endpoint deviates from contract, fix docs or fix code — no silent drift.

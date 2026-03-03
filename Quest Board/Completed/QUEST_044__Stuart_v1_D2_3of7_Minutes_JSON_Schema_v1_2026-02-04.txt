@@ -1,0 +1,67 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_044
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 2 (3/7): minutes.json schema v1 (machine contract)
+
+Context: Stuart minutes schema
+
+Origin:
+Control Sync — 2026-02-04 (Stuart v1 finish-line: REV7)
+
+Priority: P0
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV7.txt (Dungeon 2)
+- Stuart Codex 3.2: minutes.json required
+
+Status: COMPLETED
+Audit Bundle Path:
+Audits/Execution/QUEST_044__2026-02-04__stuart_v1_dungeon_2_3_7_minutes_json_schema_v1_machine_contract_2026-02-04
+Accepted On:
+2026-02-04
+
+Accepted By:
+Hands (Peter)
+
+Completed On:
+2026-02-06
+Completed By:
+Ash (Brains)
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Define the v1 JSON schema for meeting minutes. This is the machine artifact that renderers and evidence maps will use.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Create a minutes.json v1 schema (file + validator)
+- Schema includes: header, participants, topics, decisions, action_items, notes, open_questions
+- Each decision/action/topic must carry citations (segment_id anchors)
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- LLM prompting and generation (next quest)
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_042
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Prefer stable IDs for claims (decision_id/action_id/topic_id).
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] Schema file exists and is used for validation
+- [ ] Example minutes.json can validate
+- [ ] `python3 -m pytest -q` passes
+

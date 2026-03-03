@@ -1,0 +1,35 @@
+........................................................................ [ 84%]
+.............                                                            [100%]
+=============================== warnings summary ===============================
+tests/test_meetings_auto_fts_ingest_on_formalize.py: 2 warnings
+tests/test_meetings_cli_stuart.py: 2 warnings
+tests/test_meetings_diarization_policy.py: 4 warnings
+tests/test_meetings_evidence_map_anchors.py: 2 warnings
+tests/test_meetings_fts_auto_ingest.py: 2 warnings
+tests/test_meetings_pdf_adapter_never_crashes.py: 2 warnings
+tests/test_meetings_pipeline_transcribe_diarize.py: 2 warnings
+tests/test_meetings_primary_outputs_resolver.py: 4 warnings
+tests/test_meetings_render_journal_md_pdf_evidence.py: 2 warnings
+tests/test_meetings_render_md_pdf_evidence.py: 2 warnings
+tests/test_meetings_truth_gate_integration.py: 2 warnings
+tests/test_meetings_web_upload_run.py: 2 warnings
+  /usr/local/lib/python3.11/site-packages/pydyf/__init__.py:404: DeprecationWarning: transform is deprecated, use set_matrix instead.
+    warn(Stream.transform.__doc__, DeprecationWarning)
+
+tests/test_meetings_auto_fts_ingest_on_formalize.py: 30 warnings
+tests/test_meetings_cli_stuart.py: 30 warnings
+tests/test_meetings_diarization_policy.py: 51 warnings
+tests/test_meetings_evidence_map_anchors.py: 30 warnings
+tests/test_meetings_fts_auto_ingest.py: 30 warnings
+tests/test_meetings_pdf_adapter_never_crashes.py: 2 warnings
+tests/test_meetings_pipeline_transcribe_diarize.py: 30 warnings
+tests/test_meetings_primary_outputs_resolver.py: 51 warnings
+tests/test_meetings_render_journal_md_pdf_evidence.py: 21 warnings
+tests/test_meetings_render_md_pdf_evidence.py: 30 warnings
+tests/test_meetings_truth_gate_integration.py: 30 warnings
+tests/test_meetings_web_upload_run.py: 21 warnings
+  /usr/local/lib/python3.11/site-packages/pydyf/__init__.py:399: DeprecationWarning: text_matrix is deprecated, use set_text_matrix instead.
+    warn(Stream.text_matrix.__doc__, DeprecationWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+85 passed, 384 warnings in 22.26s

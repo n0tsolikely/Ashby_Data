@@ -1,0 +1,45 @@
+STUART CONTROL SYNC SNAPSHOT — 2026-01-26
+Timestamp: 2026-01-26 06:58:22 UTC
+Hands: Peter
+Operator: Ash
+
+WHY THIS SNAPSHOT EXISTS
+- Control Sync snapshot was not produced at session start; this captures the binding decisions + scope order for continuity.
+
+STATE OF THE WORLD (INPUTS INGESTED)
+- Synapse Governance ZIP loaded (governance is active law).
+- Ashby_Data + Ashby_Engine canon established.
+- Rehydration Pack is the resume focus (duplicates elsewhere are convenience, not parallel truth).
+- Runbook present: STUART_Runbook__Env_and_Smoke_Test_2026-01-25__DRAFT.txt (to be explained next session).
+
+BINDING DECISIONS (TODAY)
+- Scope order shift (for demo readiness):
+  1) Telegram Door first (QUEST_010) so Stuart is usable remotely for Peter immediately.
+  2) Web Door next (QUEST_024 → QUEST_025) for “real app” UX + showcase.
+- Web Door UI spec is locked to the screenshot vibe:
+  - Top bar: Mode dropdown + Template dropdown (Default for now)
+  - Sidebar: prior sessions/runs/history
+  - Main: chat bubbles (blue for user), scroll area, composer with attach (+) and send (➤)
+  - Implementation is CSS + inline/SVG icons (no PNG required).
+- Telegram integration rule:
+  - Reuse existing Ashby Telegram bot/token (no second bot).
+  - Telegram is a thin door; Stuart remains a hosted module under Ashby (meetings).
+  - No big refactors; small files, adapter-style changes only.
+
+OPERATIONAL REALITY NOTES (IMPORTANT)
+- WSL/Windows “Zone.Identifier” junk files may appear as: *:Zone.Identifier
+  - Cleanup command (repo root):
+    find . -type f -name '*:Zone.Identifier' -print -delete
+- Telegram run invocation (WSL) currently works via PYTHONPATH (because io/ is not a Python package and conflicts with stdlib “io”):
+  - cd repo root
+  - PYTHONPATH="$PWD" python3 io/telegram/ashby_telegram_control.py
+  - Long-term fix is explicitly deferred to tomorrow as a new quest: “Telegram entrypoint hygiene” (avoid io/, provide a clean module/script launcher).
+
+NEXT SESSION (CONTROL SYNC INPUTS)
+- Explain the Runbook doc (what it is, what it’s for, and whether it becomes official docs).
+- Create + execute quest: Telegram entrypoint hygiene (remove PYTHONPATH requirement; avoid io conflict).
+- Full end-to-end local demo validation:
+  - Telegram upload → buttons → PDF return
+  - Web door upload → plan preview/confirm → run → downloads + search
+
+End of Control Sync snapshot.

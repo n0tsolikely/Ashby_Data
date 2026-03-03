@@ -1,0 +1,179 @@
+CONTROL SYNC SNAPSHOT — STUART (Ashby platform)
+Date: 2026-02-07
+Topic: Post-Q052 alignment — lock platform truth architecture + accept next phase package (D3+D4) + add side quests for platform spine wiring
+
+Attendees:
+- Hands (Peter)
+- Ash (Brains)
+
+────────────────────────────────────────────────────────
+0) CONTROL SYNC STATE
+────────────────────────────────────────────────────────
+- Control Sync opened in prior discussion and remained open through architecture alignment, quest/package selection, and canon prep.
+- Control Sync ended by Hands on: 2026-02-07.
+- NOTE: This snapshot is the ONLY artifact created by ending Control Sync.
+  - This is NOT an End-of-Day Snapshot.
+  - No quests were executed in this sync.
+
+────────────────────────────────────────────────────────
+1) CONTEXT (WHY THIS SYNC HAPPENED)
+────────────────────────────────────────────────────────
+Hands asked for a deep alignment check:
+- Confirm we are still building Stuart the way the Stuart Codex envisioned.
+- Confirm Stuart remains a removable module on top of Ashby’s platform spine (no platform contamination).
+- Verify whether the remaining Stuart quests (especially D3/D4+) actually cover “platform spine wiring” (truth gating + profiles/consent) or whether drift exists.
+
+Hands also locked additional process requirements:
+- “Tests” MUST mean real, executed tests in the environment (no reasoning tests / no mock claims).
+- Avoid god files; keep capability separation to reduce future refactors as Stuart evolves.
+- Snapshots are for Control Sync end and End-of-Day only (no “grok snapshots” during Control Sync).
+- Archive(Ignore) exists specifically to prevent time-wasting reading unless explicitly instructed.
+
+────────────────────────────────────────────────────────
+2) KEY AUDIT FINDINGS
+────────────────────────────────────────────────────────
+A) PLATFORM SPINE EXISTS (BATCH 0) — BUT STUART IS NOT USING IT YET
+- Ashby platform truth spine exists in engine:
+  - ashby/core/truth/evidence.py
+  - ashby/core/truth/policy.py
+  - ashby/core/truth/judge.py
+- Ashby platform execution profile / consent substrate exists in engine:
+  - ashby/core/profile.py
+
+However, Stuart currently uses a parallel profile helper:
+- ashby/core/execution_profiles.py
+and the meetings module does NOT currently import/use ashby.core.truth.*
+
+B) BOARD QUESTS (053–075) DO NOT AUTOMATICALLY “FIX THIS”
+- Dungeon 3 (QUEST_053–055) hardens truth discipline and evidence inside Stuart.
+- Dungeon 4 (QUEST_056–060) builds retrieval/index capabilities.
+- None of the remaining board quests explicitly unify Stuart with the platform truth spine or unify execution profile substrate.
+
+Conclusion:
+- Continuing the existing quest chain would improve Stuart, but would NOT automatically converge onto the platform spine.
+- Alignment requires deliberate bridge work.
+
+C) PROFILE CLARIFICATION (CRITICAL CONFUSION RESOLVED)
+- “Execution profile” ≠ personality.
+- Execution profile = runtime constraint and egress allowance (LOCAL_ONLY / HYBRID / CLOUD).
+- Personality/tone is separate per agent/module (Ashby vs Stuart) and belongs to templates/prompts/UX policy.
+
+D) ROUTING ARCHITECTURE IS STILL ON THE CORRECT PATH
+- Core router should stay thin (high-level dispatch only).
+- Modules own internal intent routing.
+- Stuart meeting-domain logic must remain inside the meetings module so it stays removable.
+
+────────────────────────────────────────────────────────
+3) DECISIONS LOCKED (BINDING)
+────────────────────────────────────────────────────────
+Decision 1 — Truth Architecture (Product-grade, scalable)
+- PLATFORM TruthGateJudge is the single reusable judge.
+- Modules provide domain TruthPolicy implementations (MeetingsTruthPolicy for Stuart).
+- Module-local “truth rules” are restricted to internal data validation invariants only.
+  If the rule is about reality (decisions, actions, attendance, factual assertions), it belongs in:
+  platform judge + module policy.
+
+Decision 2 — Execution Profiles / Consent
+- ONE execution profile substrate across the platform.
+- No parallel profile systems per module.
+- Clarifier: execution profiles are NOT personality/tone.
+
+Decision 3 — Routing + Removability
+- Core router remains thin.
+- Module routers handle module intent.
+- Removing a module must not leave dead module-specific logic in core.
+
+Decision 4 — File Discipline
+- Big files are OK when cohesive.
+- God files are banned.
+- Prefer separated capabilities that call each other; keep together only when separation is worse.
+
+Decision 5 — Test Discipline
+- “Tests passed” claims require real execution in the environment.
+- No “reasoning tests” or “looks fine” substitutes.
+
+Decision 6 — Canon Export Rule (Process)
+- Every change to Ashby_Data or Ashby_Engine must ship as an updated combined zip.
+- Each delivered zip is treated as the new canonical state going forward.
+
+────────────────────────────────────────────────────────
+4) ACCEPTED PHASE PACKAGE (WHAT HANDS APPROVED)
+────────────────────────────────────────────────────────
+Hands accepted the following as a single coherent chunk:
+
+Phase Package A — Dungeon 3 + Dungeon 4
+- QUEST_053 → QUEST_060
+
+Side Quest Package — Platform spine alignment
+- SIDE-QUEST_076 — unify execution profile substrate (remove parallel profile systems)
+- SIDE-QUEST_077 — meetings module integrates platform TruthGateJudge via MeetingsTruthPolicy
+
+Ordering (binding intent):
+- Execute QUEST_053 → QUEST_055 first (D3 foundations).
+- Execute SIDE-QUEST_076 between QUEST_055 and QUEST_056 (unify profile substrate before D4 retrieval/index work expands it).
+- Execute QUEST_056 → QUEST_060 (D4 retrieval/index).
+- Execute SIDE-QUEST_077 after QUEST_060 (platform TruthGateJudge integration after D3+D4 foundations exist).
+
+────────────────────────────────────────────────────────
+5) ARTIFACTS CREATED / CHANGED DURING THIS CONTROL SYNC
+────────────────────────────────────────────────────────
+A) Quest Acceptance
+- Moved into: Ashby_Data/Quest Board/Accepted/
+  - QUEST_053 .. QUEST_060
+  - SIDE-QUEST_076
+  - SIDE-QUEST_077
+- Updated each quest file with:
+  - Status: ACTIVE
+  - Accepted On: 2026-02-07
+  - Accepted By: Hands (Peter)
+  - Audit Bundle Path (canonical)
+
+B) Side Quests Created (new quest files)
+- Ashby_Data/Quest Board/Accepted/SIDE-QUEST_076__Platform_Unify_Execution_Profile_Substrate_2026-02-07.txt
+- Ashby_Data/Quest Board/Accepted/SIDE-QUEST_077__Meetings_TruthGateJudge_Policy_Integration_2026-02-07.txt
+
+C) Audit Bundles Prepared (placeholders)
+- Created audit bundle folders + skeleton audit files for each accepted quest:
+  - Ashby_Data/Audits/Execution/QUEST_053__2026-02-07__evidence_map_v2_schema_builder/
+  - ...
+  - Ashby_Data/Audits/Execution/SIDE-QUEST_077__2026-02-07__meetings_truth_policy_truth_gate_judge/
+  Each contains:
+  - 00_SUMMARY.md
+  - 01_PREQUEST.md
+  - 02_EXECUTION.md
+  - 03_VERIFY.md
+  - 04_OUTCOME.md
+
+D) Buff Lock Added (Binding architecture law)
+- Added:
+  - Ashby_Data/Buffs/ASHBY_PLATFORM_TRUTH_AND_PROFILE_LOCK.txt
+  This buff formally locks the Decisions in Section 3 above as binding guidance for future work.
+
+E) Canon Extraction (local working tree)
+- Canonical working directories are extracted into /mnt/data:
+  - /mnt/data/Ashby_Data
+  - /mnt/data/Ashby_Engine
+  - /mnt/data/Synapse_OS_Governance
+- Zip archives are treated as inert exports unless Hands explicitly orders a re-extract.
+
+────────────────────────────────────────────────────────
+6) WHAT WAS EXPLICITLY NOT DONE
+────────────────────────────────────────────────────────
+- No quests were executed.
+- No code changes were made in Ashby_Engine.
+- No End-of-Day snapshot was created.
+- No rehydration pack was modified.
+
+────────────────────────────────────────────────────────
+7) NEXT EXECUTION STEP (POST CONTROL SYNC)
+────────────────────────────────────────────────────────
+Begin governed execution using the accepted quest chain:
+- Start with QUEST_053 Pre-Flight audit (01_PREQUEST.md) + validate current test baseline.
+- Continue sequentially per Ordering in Section 4.
+- Ensure every quest completion includes:
+  - real executed tests (command + stdout/stderr + exit code) recorded in the audit bundle
+  - move quest file to Completed when done (with completion fields filled)
+
+────────────────────────────────────────────────────────
+END OF CONTROL SYNC SNAPSHOT
+────────────────────────────────────────────────────────

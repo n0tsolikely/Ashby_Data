@@ -1,0 +1,103 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+================================================
+
+QUEST ID:
+QUEST_109
+
+Created By:
+Codex (Brains)
+
+Title:
+Stuart v2 — D3 (8/11) — Download Actions (MD/PDF) + Header Export ZIP Wiring
+
+Subject:
+Stuart
+
+Context: (Ashby / Stuart / System / Other)
+Ashby / Stuart
+
+Origin:
+Guild Orders ACTIVE REV4 -> Dungeon 3 header export and outputs download requirements.
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- API: GET /api/sessions/{id}/export
+- Export artifact generation from Dungeon 2/8 trajectory
+
+Status: BOARD | ACTIVE | COMPLETED | ABANDONED
+COMPLETED
+
+Audit Bundle Folder Path:
+Ashby_Data/Audits/Execution/QUEST_109__2026-02-18__stuart_v2_d3_downloads_and_header_export_zip
+
+Accepted On:
+2026-02-18
+
+Accepted By:
+Hands (Peter) via Codex (Brains)
+
+Completed On:
+2026-02-18
+
+Completed By:
+Codex (Brains)
+
+Change Class: (TRIVIAL / FEATURE / STRUCTURAL)
+FEATURE
+
+Vision Delta: (ALIGNED / VARIATION / SHIFT)
+ALIGNED
+
+System Context Statement:
+Product parity requires direct artifact download actions and a per-session export ZIP from header.
+
+Anti-Duplication Plan:
+Use canonical export/download endpoints; do not create shadow file routes.
+
+Placement Intent:
+Header actions and outputs action bar components.
+
+Codex Anchors (DRAFT):
+- Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_6.4_Printing_and_Export_Requirements.txt
+- Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_8.5_Rendering_Adapters_MD_to_PDF_Print_Parity.txt
+- Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_1.4_Trust_Auditability_Anti_Hallucination_Rules.txt
+
+Codex Constraint Summary:
+- Export/print claims must only reflect completed artifacts.
+- PDF is canonical print artifact.
+- Export ZIP should bundle session artifacts without fake placeholders.
+
+Door Impact:
+Stuart web door (UI)
+
+Testing Level (TL):
+TL2
+
+Talent Point Awarded: (YES / NO)
+YES
+
+DESCRIPTION
+Wire download buttons for markdown/pdf and header export zip action for selected session.
+
+SCOPE / OBJECTIVE
+- Outputs tab exposes md/pdf download actions.
+- Header exposes export zip action for active session.
+- Downloads use canonical backend endpoints.
+
+OUT OF SCOPE
+- Global multi-session export.
+- New export bundle schema.
+
+DEPENDENCIES
+- QUEST_108
+- Dungeon 2 export endpoint implementation
+
+EXECUTION NOTES
+If endpoint unavailable, show disclosed disabled state rather than silent failure.
+
+COMPLETION CRITERIA (REQUIRED)
+- [ ] MD download works for selected formalization.
+- [ ] PDF download works for selected formalization.
+- [ ] Header Export ZIP downloads selected session bundle.

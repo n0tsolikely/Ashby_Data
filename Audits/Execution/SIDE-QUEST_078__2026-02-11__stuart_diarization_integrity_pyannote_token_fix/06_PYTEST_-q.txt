@@ -1,0 +1,47 @@
+PYTEST RUN (SEGMENTED)
+Reason: single-run pytest exceeds execution time budget; ran full suite in 4 deterministic file slices (sorted tests/test_*.py).
+
+========================
+GROUP 1
+========================
+/opt/pyvenv/lib/python3.11/site-packages/ddtrace/vendor/psutil/_pslinux.py:527: RuntimeWarning: 'sin' and 'sout' swap memory stats couldn't be determined and were set to 0 ([Errno 2] No such file or directory: '/proc/vmstat')
+  warnings.warn(msg, RuntimeWarning)
+................................                                         [100%]
+32 passed in 9.01s
+
+========================
+GROUP 2
+========================
+/opt/pyvenv/lib/python3.11/site-packages/ddtrace/vendor/psutil/_pslinux.py:527: RuntimeWarning: 'sin' and 'sout' swap memory stats couldn't be determined and were set to 0 ([Errno 2] No such file or directory: '/proc/vmstat')
+  warnings.warn(msg, RuntimeWarning)
+...........................                                              [100%]
+27 passed in 6.11s
+
+========================
+GROUP 3
+========================
+/opt/pyvenv/lib/python3.11/site-packages/ddtrace/vendor/psutil/_pslinux.py:527: RuntimeWarning: 'sin' and 'sout' swap memory stats couldn't be determined and were set to 0 ([Errno 2] No such file or directory: '/proc/vmstat')
+  warnings.warn(msg, RuntimeWarning)
+............................                                             [100%]
+28 passed in 8.85s
+
+========================
+GROUP 4
+========================
+/opt/pyvenv/lib/python3.11/site-packages/ddtrace/vendor/psutil/_pslinux.py:527: RuntimeWarning: 'sin' and 'sout' swap memory stats couldn't be determined and were set to 0 ([Errno 2] No such file or directory: '/proc/vmstat')
+  warnings.warn(msg, RuntimeWarning)
+...................                                                      [100%]
+=============================== warnings summary ===============================
+../../../opt/pyvenv/lib/python3.11/site-packages/ddtrace/internal/module.py:220
+  /opt/pyvenv/lib/python3.11/site-packages/ddtrace/internal/module.py:220: PendingDeprecationWarning: Please use `import python_multipart` instead.
+    self.loader.exec_module(module)
+
+tests/test_meetings_web_door_scaffold.py::test_index_has_mode_placeholder_and_no_default_selected
+tests/test_meetings_web_door_scaffold.py::test_index_has_library_and_search_controls
+  /opt/pyvenv/lib/python3.11/site-packages/starlette/templating.py:178: DeprecationWarning: The `name` is not the first parameter anymore. The first parameter should be the `Request` instance.
+  Replace `TemplateResponse(name, {"request": request})` by `TemplateResponse(request, name)`.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+19 passed, 3 warnings in 17.00s
+

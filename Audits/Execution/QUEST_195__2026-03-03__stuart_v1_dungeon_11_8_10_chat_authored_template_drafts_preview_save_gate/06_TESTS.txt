@@ -1,0 +1,26 @@
+## Command Receipt Log
+WRAPPER: synapse_quest_run.sh
+ENGINE_ROOT: /home/notsolikely/Ashby_Engine
+DATA_ROOT: /home/notsolikely/Ashby_Data
+---
+CMD: cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_chat_new_template_command_returns_draft_action.py
+.                                                                        [100%]
+1 passed in 0.20s
+RC: 0
+CMD: cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_chat_commands_parse.py tests/test_meetings_chat_commands_sessions_open.py tests/test_meetings_chat_action_schema.py
+ERROR: file or directory not found: tests/test_meetings_chat_action_schema.py
+
+
+no tests ran in 0.00s
+RC: 4
+BLOCKED: command failed (see RC above): cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_chat_commands_parse.py tests/test_meetings_chat_commands_sessions_open.py tests/test_meetings_chat_action_schema.py
+CMD: cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_chat_commands_parse.py tests/test_meetings_chat_commands_sessions_open.py tests/test_meetings_chat_schema_contract.py
+........                                                                 [100%]
+8 passed in 0.18s
+RC: 0
+CMD: cd /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app && npx eslint src/components/stuart/ChatInterface.jsx src/pages/Stuart.jsx --quiet
+RC: 0
+PASS: governance validation OK for QUEST_195 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_195__2026-03-03__stuart_v1_dungeon_11_8_10_chat_authored_template_drafts_preview_save_gate
+OK: finalize complete (validation PASS recorded).
+PASS: governance validation OK for QUEST_195 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_195__2026-03-03__stuart_v1_dungeon_11_8_10_chat_authored_template_drafts_preview_save_gate
+OK: finalize complete (validation PASS recorded).

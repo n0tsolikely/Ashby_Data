@@ -1,0 +1,65 @@
+QUEST ID: QUEST_021
+Title: Stuart v1 — Dungeon 5 (3 of 3): Formalize + render (MD/PDF) + evidence_map
+Context: Stuart
+Origin: Guild Orders: GUILD_ORDERS_STUART_V1_2026-01-16_REV3.txt (Dungeon 5)
+Priority: P0
+Links:
+- Guild Orders: Stuart v1 — Dungeon 5
+- Stuart Execution Pack: truth/evidence contract + evidence mapping discipline
+- Supersedes (decomposition of): QUEST_006
+- Related: QUEST_020 (transcription pipeline), QUEST_015 (template registry)
+Status: COMPLETED
+Accepted On: Completed On:
+Completed On: DESCRIPTION
+
+DESCRIPTION
+────────────────────────────────────────
+Implement the formalization stage and rendering outputs so Stuart can produce a structured meeting/journal deliverable (MD + PDF) and a strict evidence_map.json linking claims back to transcript segments.
+
+SCOPE / OBJECTIVE
+────────────────────────────────────────
+Implement pipeline stages:
+- formalize (template-driven; v1 uses default template only)
+- render outputs:
+  - formalization.md
+  - formalization.pdf
+- evidence_map.json mapping formalization statements/sections to transcript anchors (segment IDs / timestamps)
+
+Rules:
+- Transcript remains ground truth.
+- Formalization output must be auditable via evidence_map.
+- Outputs are written under run_id and must not overwrite prior runs.
+
+OUT OF SCOPE
+────────────────────────────────────────
+Multiple templates shipped in v1 beyond default.
+Template editing UI / CRUD.
+Advanced formatting polish beyond a clean, readable v1 PDF/MD.
+
+DEPENDENCIES
+────────────────────────────────────────
+- QUEST_020
+- QUEST_015
+
+EXECUTION NOTES
+────────────────────────────────────────
+Evidence mapping is non-negotiable. If a statement can’t cite transcript anchors, it must not be asserted as fact.
+Keep v1 template simple but structurally stable so v2 can add templates additively.
+
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────
+- [x] Given transcript artifact, pipeline produces formalized.md and exports/formalized.pdf under run_id (v1 stub renderer).
+- [x] evidence_map.json is generated and links each output claim/section to transcript segments/timestamps.
+- [x] Outputs use the enumerated default template from the template registry (no hard-coded hallucinated template IDs).
+- [x] Rerun produces a new run_id and preserves prior formalizations and evidence maps.
+- [x] A manual spot-check shows evidence_map anchors resolve to transcript segments for at least several key points.
+
+TALENT POINT
+────────────────────────────────────────
+On completion:
+- Talent Point Awarded: YES
+- Talent Spent On: TALENT_STUART_FORMALIZE_RENDER_EVIDENCE — Formalize + Render (MD/PDF) + Evidence Map (v1 stub)
+
+FINAL NOTES
+────────────────────────────────────────
+(optional)

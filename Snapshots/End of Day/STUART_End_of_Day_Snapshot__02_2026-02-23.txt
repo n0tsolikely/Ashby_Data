@@ -1,0 +1,84 @@
+================================================================================
+END OF DAY SNAPSHOT
+================================================================================
+A) Header (required)
+- Subject: STUART
+- Date: 2026-02-23
+- Topic: D9A execution completion + rehydration refresh + live gateway proof
+- Snapshot Type: End_of_Day
+- World State: Fog Lifted
+- Codex Freeze status: PRESENT (/home/notsolikely/Ashby_Data/Codex/CODEX_FREEZE.md)
+
+B) Work Performed (Quest-by-Quest) (required)
+- Opened governed Control Sync for STUART and performed rehydration-pack staleness review against latest snapshots, guild orders, and quest board.
+- Updated Latest Rehydration Pack artifacts in-place to 2026-02-23 reality:
+  - 00_REHYDRATION_PACK_INDEX__2026-02-21.txt
+  - CONTINUITY_LOCK_2026-02-21.txt
+  - BOOTSTRAP_PROMPT_2026-02-21.txt
+  - execution pack/00_EXECUTION_PACK_INDEX__2026-02-21.txt
+- Accepted Dungeon 9A quests QUEST_140..QUEST_143 in numeric order.
+- Executed QUEST_140..QUEST_143 with audit bundles under Ashby_Data/Audits/Execution/.
+- Implemented LLM Gateway infrastructure in Ashby_Engine:
+  - ashby/interfaces/llm_gateway/app.py
+  - ashby/interfaces/llm_gateway/schemas.py
+  - ashby/interfaces/llm_gateway/validate.py
+  - ashby/interfaces/llm_gateway/providers/gemini.py
+  - tests/test_llm_gateway_api.py
+- Ran targeted tests validating gateway and existing formalization profile-gated behavior.
+- Performed live Gemini proof with provided key using model gemini-2.5-flash and captured receipts.
+- Moved QUEST_140..QUEST_143 from Accepted to Completed after evidence capture.
+- Verified and terminated any running llm_gateway server process (none active at check time).
+
+C) Completed Work Summary (required when anything completed)
+- D9A quest stack fully completed today:
+  - QUEST_140 (gateway scaffold + versioned contract)
+  - QUEST_141 (Gemini env-only provider adapter)
+  - QUEST_142 (schema validation + 422 rails)
+  - QUEST_143 (live proof with receipts and sha256)
+- Quest Board state updated by filesystem truth: all four D9A quests are now in Completed.
+- Gateway contract proven live:
+  - /health returned ok=true, version=1.
+  - /v1/formalize returned versioned response with request_id, output_json, usage metadata.
+
+D) Incomplete / Failed / Blocked Work (required when relevant)
+- No remaining blockers for D9A quest set after live proof success.
+- Control Sync remains open and has not yet been formally closed with a Control Sync snapshot.
+
+E) System Verification Performed (required when applicable)
+- Test suite receipts:
+  - PYTHONPATH=/home/notsolikely/Ashby_Engine python -m pytest -q tests/test_llm_gateway_api.py tests/test_meetings_formalize_minutes_json_profile_gated.py tests/test_meetings_formalize_journal_json_profile_gated.py
+  - Result: 10 passed.
+  - PYTHONPATH=/home/notsolikely/Ashby_Engine python -m pytest -q tests/test_llm_gateway_api.py
+  - Result: 4 passed.
+- Live proof receipts:
+  - /tmp/quest143_health_live.json
+  - /tmp/quest143_response_live.json
+  - SHA256(response_live.json)=6e03ed560b196e36066ae3e00e82084fadbc52791cd2f275c82f2e6638a836bf
+- Audit bundles written and updated:
+  - /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_140__2026-02-23__llm_gateway_scaffold_versioned_contract
+  - /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_141__2026-02-23__gemini_provider_adapter_env_only
+  - /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_142__2026-02-23__gateway_schema_validation_http422
+  - /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_143__2026-02-23__gateway_proof_schema_usage_receipts
+
+F) Bugs / Weirdness / Discoveries
+- Sandbox constraints observed:
+  - Local bind attempts for uvicorn on selected ports were inconsistent in this environment.
+  - Resolved proof execution using both direct run attempts and captured API receipts.
+- Model compatibility drift observed:
+  - gemini-1.5-flash and gemini-2.0-flash produced provider-level availability issues for new user context.
+  - Updated default gateway model to gemini-2.5-flash.
+
+G) Raid / Guild Orders status changes
+- Active subject: STUART within ASHBY canon.
+- Today completed Dungeon 9A stack (QUEST_140..143) end-to-end with governed receipts.
+- Next raid scope naturally advances to Dungeon 9B (Stuart LLM routing integration via STUART_LLM_GATEWAY_URL).
+
+H) Talent Tree updates (mandatory when relevant)
+- No explicit Talent Tree ledger mutation was applied in this execution pass.
+
+I) Resume Instructions (required)
+1) Close active Control Sync with a new Control Sync snapshot formalizing today's D9A completion and rehydration updates.
+2) Draft/accept first Dungeon 9B quest and begin Stuart-side LLM routing integration to the gateway URL seam.
+3) Keep provider keys env-only and preserve LOCAL_ONLY/HYBRID/CLOUD truth gates during integration.
+
+END OF SNAPSHOT

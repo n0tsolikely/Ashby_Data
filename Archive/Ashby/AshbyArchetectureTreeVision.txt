@@ -1,0 +1,803 @@
+ashby/
+├── engine/                                # Ashby Core Engine (sacred, stable)
+│   ├── router/                            # Thin orchestrator only
+│   │   ├── router.py
+│   │   └── dispatch.py
+│   │
+│   ├── cognition/                         # Intelligence (agent-agnostic)
+│   │   ├── intent/
+│   │   │   ├── nlu_manager.py
+│   │   │   ├── local_nlu.py
+│   │   │   ├── gpt_nlu.py
+│   │   │   └── intent_schema.py
+│   │   │
+│   │   ├── policy/                        # act/clarify/confirm + reply style
+│   │   │   ├── action_policy.py
+│   │   │   ├── confirmation_policy.py
+│   │   │   └── response_style.py
+│   │   │
+│   │   ├── sessions/                      # state machines (follow-ups)
+│   │   │   ├── lighting.py
+│   │   │   ├── comfort.py
+│   │   │   ├── image_gen.py
+│   │   │   ├── meetings.py                # Stuart sessions
+│   │   │   └── inventory.py               # Tori sessions
+│   │   │
+│   │   └── memory/
+│   │       ├── memory_store.py
+│   │       ├── preference_store.py
+│   │       └── action_log.py
+│   │
+│   ├── truth/                             # Action-gated truth (no lying)
+│   │   ├── truth_gate.py
+│   │   └── verification.py
+│   │
+│   ├── context/
+│   │   └── context_snapshot.py
+│   │
+│   ├── tools/                             # Tool runtime (timeouts/retries/trace)
+│   │   ├── registry.py
+│   │   ├── runtime.py
+│   │   └── schemas.py
+│   │
+│   ├── eventing/                           # “when X happens do Y”
+│   │   ├── event_bus.py
+│   │   ├── rules_engine.py
+│   │   ├── triggers.py
+│   │   └── actions.py
+│   │
+│   ├── runtime/                            # long-running subsystems
+│   │   ├── scheduler.py
+│   │   ├── job_queue.py
+│   │   └── watchers/
+│   │       ├── entity_watcher.py            # new devices / state changes
+│   │       ├── camera_watchers.py
+│   │       └── (placeholder)_watcher.py
+│   │
+│   ├── identity/                           # multi-user + permissions
+│   │   ├── auth.py
+│   │   ├── roles.py
+│   │   ├── permissions.py
+│   │   └── audit_log.py
+│   │
+│   ├── observability/                      # debugging + trust
+│   │   ├── logger.py
+│   │   ├── trace.py
+│   │   ├── diagnostics_bundle.py
+│   │   └── decision_explain.py              # “why did you do that”
+│   │
+│   ├── models/                             # “AI managing AI”
+│   │   ├── model_registry.py                # OpenAI / local / etc
+│   │   ├── routing_policy.py                # cost/latency/privacy
+│   │   ├── prompt_templates.py
+│   │   └── eval_harness/
+│   │       ├── golden_prompts/
+│   │       └── scoring.py
+│   │
+│   └── updates/                            # OTA updates (product-grade)
+│       ├── update_client.py
+│       ├── release_channels.py              # stable/beta/dev
+│       ├── rollback.py
+│       └── migrations.py
+│
+├── scopes/                                 # Universal zone system (Ashby-owned)
+│   ├── scope_graph.py
+│   ├── alias_resolver.py
+│   └── capability_map.py                   # scope → enabled capabilities
+│
+├── domain/                                 # Abstract models (no vendors)
+│   ├── models/
+│   │   ├── scope.py
+│   │   ├── entity.py
+│   │   ├── device.py
+│   │   ├── capability.py
+│   │   ├── state.py
+│   │   └── job.py
+│   │
+│   ├── registry/
+│   │   ├── entity_registry.py              # Ashby internal IDs + metadata
+│   │   ├── external_id_map.py              # HA entity_id / vendor ids → internal
+│   │   └── asset_registry.py               # docs/media/assets
+│   │
+│   └── resolution/
+│       ├── target_resolver.py              # “upstairs lights”
+│       ├── adapter_resolver.py             # choose bridge vs native
+│       └── capability_matcher.py
+│
+├── bridges/                                # Temporary subsystems (strangler targets)
+│   ├── home_assistant/
+│   │   ├── ha_client.py
+│   │   ├── ha_provider.py                  # IntegrationProvider impl
+│   │   ├── entity_sync.py                  # import entities → Ashby registry
+│   │   └── ha_events.py                    # websocket/event stream
+│   │
+│   ├── zigbee/                             # bridge path (early)
+│   │   ├── coordinator_client.py
+│   │   └── zigbee_bridge.py
+│   │
+│   └── matter/                              # bridge path (early)
+│       ├── controller_client.py
+│       └── matter_bridge.py
+│
+├── native_vendor/                          # Our long-term replacement path
+│   ├── tuya/
+│   │   ├── oauth.py
+│   │   ├── discovery.py
+│   │   ├── normalizer.py
+│   │   └── provider.py
+│   │
+│   ├── noma_iq_ayla/
+│   │   ├── oauth.py
+│   │   ├── discovery.py
+│   │   ├── normalizer.py
+│   │   └── provider.py
+│   │
+│   ├── nest_google_sdm/
+│   │   ├── oauth.py
+│   │   ├── devices.py
+│   │   └── provider.py
+│   │
+│   ├── reolink/
+│   │   ├── client.py
+│   │   ├── discovery.py
+│   │   └── provider.py
+│   │
+│   ├── brand_4/
+│   │   ├── oauth.py
+│   │   └── provider.py
+│   ├── brand_5/
+│   │   ├── oauth.py
+│   │   └── provider.py
+│   └── brand_6/
+│       ├── oauth.py
+│       └── provider.py
+│
+├── connectors/                             # Non-smart-home integrations
+│   ├── email/
+│   │   ├── gmail.py
+│   │   ├── outlook.py
+│   │   └── (placeholder)_imap.py
+│   │
+│   ├── chat/
+│   │   ├── discord.py
+│   │   ├── slack.py
+│   │   └── (placeholder)_teams.py
+│   │
+│   ├── commerce/
+│   │   ├── shopify.py
+│   │   ├── square.py
+│   │   └── (placeholder)_stripe.py
+│   │
+│   ├── docs_storage/
+│   │   ├── google_drive.py
+│   │   ├── dropbox.py
+│   │   └── (placeholder)_notion.py
+│   │
+│   ├── devtools/
+│   │   ├── github.py
+│   │   ├── gitlab.py
+│   │   └── (placeholder)_jira.py
+│   │
+│   └── brand_4_connector/
+│       └── connector.py
+│
+├── modules/                                # WHAT Ashby does (removable features)
+│   ├── lights/
+│   │   ├── handler.py
+│   │   ├── service.py
+│   │   ├── tools.py
+│   │   └── schemas.py
+│   │
+│   ├── comfort/
+│   │   ├── handler.py
+│   │   └── service.py
+│   │
+│   ├── cameras/
+│   │   ├── handler.py
+│   │   ├── service.py
+│   │   └── tools.py
+│   │
+│   ├── image_gen/                          # ComfyUI / media rendering
+│   │   ├── handler.py
+│   │   ├── service.py                      # workflow selection + params
+│   │   ├── tools.py
+│   │   ├── schemas.py
+│   │   └── workflows/
+│   │       ├── flux_default.json
+│   │       └── workflow_2.json
+│   │
+│   ├── stuart_meetings/                    # Stuart as a removable module
+│   │   ├── handler.py
+│   │   ├── service.py                      # orchestration: record→diarize→ASR→summarize
+│   │   ├── tools.py
+│   │   ├── schemas.py
+│   │   ├── pipelines/                      # “pytorch heavy” pipelines live here
+│   │   │   ├── recorder.py                 # built-in recording (future)
+│   │   │   ├── diarization.py
+│   │   │   ├── transcription.py
+│   │   │   ├── summarization.py
+│   │   │   └── search_index.py             # “jump to phrase/topic”
+│   │   └── models/                         # local diarization/ASR models
+│   │       ├── (placeholder)_whisper/
+│   │       ├── (placeholder)_pyannote/
+│   │       └── (placeholder)_model_3/
+│   │
+│   ├── tori_inventory/                     # Tori as a removable module
+│   │   ├── handler.py
+│   │   ├── service.py
+│   │   ├── tools.py
+│   │   ├── schemas.py
+│   │   └── connectors/                     # uses connectors/ but can have helpers
+│   │       ├── shopify_helpers.py
+│   │       └── quickbooks_helpers.py
+│   │
+│   └── (placeholder)_module_4/
+│       ├── handler.py
+│       └── service.py
+│
+├── adapters/                               # Capability-layer adapters (HOW)
+│   ├── lights/
+│   │   ├── ha_adapter.py
+│   │   ├── native_vendor_router.py         # routes to tuya/noma/etc providers
+│   │   └── (placeholder)_adapter.py
+│   │
+│   ├── comfort/
+│   │   ├── ha_adapter.py
+│   │   └── nest_adapter.py
+│   │
+│   ├── cameras/
+│   │   ├── reolink_adapter.py
+│   │   └── (placeholder)_camera_adapter.py
+│   │
+│   └── media/
+│       ├── comfyui_adapter.py
+│       └── (placeholder)_video_gen_adapter.py
+│
+├── plugins/                                # Third-party extension ecosystem
+│   ├── sdk/
+│   │   ├── plugin_api.py
+│   │   └── examples/
+│   ├── manifests/
+│   ├── signing/
+│   └── marketplace/
+│
+├── setup/                                  # Installer + homeowner onboarding UX
+│   ├── wizard_server.py                    # captive portal / local web UI
+│   ├── provisioning.py                     # wifi, adoption, basic setup
+│   ├── pairing_flows/
+│   │   ├── ha_adopt_entity.py              # “found new entity, name it”
+│   │   ├── tuya_connect.py                 # oauth connect flow
+│   │   └── (placeholder)_flow.py
+│   └── factory_reset.py
+│
+├── io/                                     # Interfaces (never contain business logic)
+│   ├── telegram/
+│   │   ├── bot.py
+│   │   └── handlers/
+│   ├── voice/
+│   │   ├── listener.py
+│   │   └── tts.py
+│   └── web/
+│       └── app.py
+│
+├── storage/                                # Data & blobs
+│   ├── kv/
+│   │   ├── json_store.py
+│   │   └── sqlite_store.py
+│   ├── blobs/
+│   │   ├── images/
+│   │   ├── audio/
+│   │   └── video/
+│   └── encryption/
+│       ├── at_rest.py
+│       └── keyring.py
+│
+├── packaging/                              # “products” built on the engine
+│   ├── profiles/                           # what ships/enabled
+│   │   ├── ashby_home.json                 # lights+comfort+cameras + HA bridge
+│   │   ├── ashby_creator_rig.json           # creator ops + image gen
+│   │   ├── ashby_business_ops.json          # tori + connectors
+│   │   └── ashby_meetings.json              # stuart
+│   │
+│   ├── feature_flags/
+│   │   ├── defaults.json
+│   │   ├── beta_flags.json
+│   │   └── per_customer_overrides.json
+│   │
+│   └── licensing/
+│       ├── entitlements.py
+│       └── license_store.py
+│
+├── support/                                # “keep it alive” layer
+│   ├── healthcheck.py
+│   ├── remote_support_tunnel.py            # optional + permissioned
+│   ├── log_export.py
+│   └── crash_reports.py
+│
+└── tests/
+    ├── golden_intents/
+    ├── test_dispatch.py
+    ├── test_scopes.py
+    ├── test_modules_enabled.py
+    └── test_migrations.py
+
+
+
+
+Below is the **canonical Vision Document** that *goes with* the tree ABOVE.
+This is the **rulebook**. This is the thing you read when tired, confused, or tempted to “just stick it here real quick.”
+
+This doc is **not marketing**.
+This is **engineering law + product reality**.
+
+
+```
+**only change it during a Control Sync**.
+
+---
+
+# **ASHBY PLATFORM ARCHITECTURE VISION**
+
+### *Rules, Responsibilities, and Boundaries*
+
+---
+
+## 0. Purpose of This Document
+
+This document exists to prevent Ashby from collapsing under its own ambition.
+
+Ashby is a **platform**, not a single product.
+This means:
+
+* many modules
+* many integrations
+* many use-cases
+* many future contributors (including future-you)
+
+Without hard boundaries, everything becomes a god-system.
+
+This document defines:
+
+* **what belongs where**
+* **what is forbidden**
+* **how Ashby grows without refactors**
+* **how Ashby stays shippable**
+
+---
+
+## 1. Core Principles (Non-Negotiable)
+
+### 1.1 Engine vs Everything Else
+
+* `engine/` is **sacred**
+* Nothing vendor-specific lives in the engine
+* Nothing product-specific lives in the engine
+* Nothing optional lives in the engine
+
+If a feature can be disabled, it **does not** belong in `engine/`.
+
+---
+
+### 1.2 WHAT vs HOW
+
+* **WHAT** Ashby does → `modules/`
+* **HOW** it executes → `adapters/`, `bridges/`, `native_vendor/`, `connectors/`
+
+Violations of this rule are the fastest way to destroy the platform.
+
+Modules:
+
+* reason
+* plan
+* decide
+* describe intent
+
+Adapters / Providers:
+
+* execute
+* translate
+* talk to APIs
+* never reason
+
+---
+
+### 1.3 Scopes Are Universal
+
+Scopes replace “rooms,” “zones,” “projects,” “accounts,” “clients.”
+
+Everything Ashby touches happens **inside a scope**.
+
+* Physical spaces are *one* kind of scope
+* Business domains are another
+* Media pipelines are another
+
+Nothing bypasses scopes.
+
+---
+
+### 1.4 Ashby Never Lies
+
+Ashby only claims actions that were:
+
+* executed
+* verified
+* confirmed
+
+This is enforced by:
+
+* `engine/truth/`
+* tool verification
+* state snapshots
+
+---
+
+## 2. Folder-by-Folder Rules
+
+Below are **rules**, not suggestions.
+
+---
+
+## `engine/` — The Core Brain
+
+### What belongs here
+
+* routing
+* cognition
+* intent parsing
+* policy
+* memory
+* truth enforcement
+* eventing
+* updates
+* identity
+* observability
+
+### What is forbidden
+
+* vendor APIs
+* brand names
+* device drivers
+* hardcoded integrations
+* feature logic
+
+If you feel tempted to import something from `native_vendor/` or `bridges/` into `engine/`, **stop**.
+
+---
+
+## `engine/cognition/`
+
+Pure intelligence.
+
+* Intent → meaning
+* Meaning → plan
+* Plan → tools
+
+No execution happens here.
+
+---
+
+## `engine/eventing/`
+
+This is the “when X happens, do Y” layer.
+
+Used by:
+
+* smart home automations
+* business rules
+* alerts
+* future third-party logic
+
+No device logic here. Only events.
+
+---
+
+## `engine/models/`
+
+This is **AI managing AI**.
+
+* model registry
+* routing policy
+* evaluation
+* fallback
+
+This is how Ashby stays future-proof when models change.
+
+---
+
+## `scopes/` — Ashby’s World Model
+
+Scopes define:
+
+* containment
+* hierarchy
+* permissions
+* capabilities
+
+Ashby’s zone logic **lives here**, not in modules.
+
+---
+
+## `domain/` — Abstract Reality
+
+### Purpose
+
+This layer describes *what exists* without caring *how it’s controlled*.
+
+Examples:
+
+* devices
+* entities
+* jobs
+* assets
+* capabilities
+
+### Forbidden
+
+* API calls
+* OAuth
+* SDKs
+
+If you see HTTP here, something is wrong.
+
+---
+
+## `bridges/` — Temporary Integration Engines
+
+This is where **Home Assistant**, **Matter**, **Zigbee** live.
+
+### Rules
+
+* Bridges are **replaceable**
+* Bridges are **not depended on by engine**
+* Bridges feed Ashby via providers
+
+These folders are expected to shrink over time.
+
+They are **strangler targets**.
+
+---
+
+## `native_vendor/` — Long-Term Ownership Path
+
+This is where **Ashby’s own integrations** live.
+
+Examples:
+
+* tuya
+* noma_iq_ayla
+* nest_google_sdm
+* reolink
+* brand_4 / brand_5 / brand_6
+
+### Rules
+
+* Each vendor gets its own folder
+* Each vendor implements the provider interface
+* No cross-vendor logic
+
+This is how Ashby eventually replaces bridges.
+
+---
+
+## `connectors/` — Non-Smart-Home Integrations
+
+These are **business and productivity systems**, not devices.
+
+Examples:
+
+* email (gmail, outlook)
+* chat (discord, slack)
+* commerce (shopify, square)
+* docs (drive, dropbox, notion)
+* dev tools (github, jira)
+
+### Rule
+
+If it’s not a physical device, it probably belongs here.
+
+---
+
+## `modules/` — WHAT Ashby Does
+
+Modules are **features**, not infrastructure.
+
+Examples:
+
+* lights
+* comfort
+* cameras
+* image_gen
+* stuart_meetings
+* tori_inventory
+
+### Rules
+
+* Modules can be added/removed without breaking Ashby
+* Modules never talk directly to vendors
+* Modules register tools
+* Modules own their own pipelines if needed
+
+---
+
+### Stuart (`modules/stuart_meetings/`)
+
+Stuart is a **heavy module**:
+
+* recording
+* diarization
+* transcription
+* summarization
+* search
+
+That’s okay.
+
+Heavy compute belongs **inside modules**, not the engine.
+
+If someone doesn’t want Stuart:
+
+* disable the module
+* Ashby still runs
+
+---
+
+### Tori (`modules/tori_inventory/`)
+
+Tori is also a module.
+
+* inventory
+* ordering
+* tracking
+* reconciliation
+
+Uses `connectors/` heavily.
+
+---
+
+## `adapters/` — Capability Execution
+
+Adapters translate Ashby intent into actions.
+
+Grouped by **capability**, not brand.
+
+Examples:
+
+* lights
+* comfort
+* cameras
+* media
+
+Adapters:
+
+* never reason
+* never store memory
+* never make decisions
+
+---
+
+## `plugins/` — Third-Party Ecosystem
+
+This folder exists because **someone else will want to build on Ashby**.
+
+Includes:
+
+* SDK
+* manifests
+* signing
+* marketplace metadata
+
+Even if unused today, it must exist.
+
+---
+
+## `setup/` — Onboarding & Pairing
+
+This is where:
+
+* first-run experience lives
+* pairing flows live
+* adoption of new entities happens
+
+This is how Ashby becomes shippable.
+
+---
+
+## `packaging/` — Products, Not Code Forks
+
+This is how **one engine** becomes many products.
+
+### `profiles/`
+
+Defines what modules and integrations are enabled.
+
+Examples:
+
+* ashby_home
+* ashby_creator_rig
+* ashby_business_ops
+* ashby_meetings
+
+### `feature_flags/`
+
+* gradual rollout
+* beta features
+* per-customer overrides
+
+### `licensing/`
+
+* entitlements
+* SKUs
+* future monetization
+
+This folder **exists on the shipped device**.
+
+---
+
+## `support/` — Keeping It Alive
+
+If Ashby is real, support is real.
+
+Includes:
+
+* health checks
+* diagnostics
+* log export
+* remote support tunnel (permissioned)
+
+---
+
+## 3. Growth Rules
+
+### Adding a new vendor
+
+→ `native_vendor/brand_x/`
+
+### Adding a temporary integration engine
+
+→ `bridges/`
+
+### Adding a new capability
+
+→ new module in `modules/`
+
+### Adding a new product
+
+→ new profile in `packaging/profiles/`
+
+### Adding intelligence
+
+→ `engine/` (rare, deliberate)
+
+---
+
+## 4. Control Sync Rule
+
+This document and the Vision Tree:
+
+* are updated **together**
+* only during Control Sync
+* never during implementation panic
+
+If something doesn’t fit:
+
+* the design is wrong
+* not the folder
+
+---
+
+## 5. Final Statement
+
+Ashby is not:
+
+* a hub
+* a protocol
+* an app
+* a script
+* a chatbot
+
+Ashby is:
+
+> **An agentic platform that coordinates systems, remembers context, enforces truth, and evolves without collapse.**
+
+This document exists so Ashby can survive its own success.
+
+--

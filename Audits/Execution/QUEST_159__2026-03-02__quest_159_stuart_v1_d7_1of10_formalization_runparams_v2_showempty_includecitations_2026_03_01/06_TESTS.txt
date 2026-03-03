@@ -1,0 +1,10 @@
+## Command Receipt Log
+CMD: cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_router_plan.py tests/test_meetings_run_params_validation.py
+............                                                             [100%]
+12 passed in 0.07s
+RC: 0
+FAIL: governance validation errors:
+- 03_VERIFY.md is placeholder-only; it must contain real verification content
+- 04_OUTCOME.md is placeholder-only; it must state what is now true + artifacts/paths
+BLOCKED: governance validate failed
+PASS: governance validation OK for QUEST_159 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_159__2026-03-02__quest_159_stuart_v1_d7_1of10_formalization_runparams_v2_showempty_includecitations_2026_03_01

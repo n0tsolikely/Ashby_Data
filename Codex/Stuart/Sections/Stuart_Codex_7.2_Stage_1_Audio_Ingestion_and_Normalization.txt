@@ -1,0 +1,159 @@
+STUART CODEX
+7.2 Stage 1: Audio Ingestion and Normalization (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+Stage 1 converts raw user sources into a standardized audio form that later stages can reliably consume, without changing the meaning or timing of the recording.
+
+This stage exists because Stuart must accept messy real-world inputs:
+- phone recordings,
+- Teams/Zoom exports (mp4/m4a),
+- voice memos,
+- different sample rates/codecs/channels,
+and still produce reliable diarization/transcription.
+
+Stage 1 is part of “processing.” It MUST NOT run automatically on file drop. It runs only after explicit user execution (Submit/Confirm), typically as the first step inside a pipeline run.
+
+1) Inputs
+
+Stage 1 operates on one or more session contributions (Section 6.1):
+- source_type: audio_file or video_file (most common)
+- source_path: stored in contributions/<contribution_id>/source.<ext> (Stage 0)
+- source_metadata.json: created in Stage 0 (duration, codec, etc.)
+
+Optional user-supplied settings:
+- target language hint (for transcription later)
+- “single speaker” hint (may allow diarization skip later)
+- “keep non-speech events” preference (affects captions later, not normalization)
+
+2) Outputs (minimum required)
+
+For each contribution processed, Stage 1 MUST produce:
+
+A) normalized audio
+- normalized_audio.wav (or another canonical format)
+- stored under the contribution folder (recommended):
+  contributions/<contribution_id>/normalized_audio.wav
+or stored under a run folder if versioning is enabled.
+
+B) audio_manifest.json
+A machine-readable manifest that describes:
+- which file(s) represent the canonical audio for downstream stages
+- sample rate, channels, bit depth
+- duration
+- timeline mapping rules (see below)
+- checksum/content hash (recommended)
+
+C) stage run record
+Stage 1 MUST produce a run record entry (Section 6.1 “run object”) noting:
+- run_type: normalize_audio
+- profile_used (LOCAL_ONLY / HYBRID / CLOUD)
+- adapters_used (AudioNormalizer adapter)
+- inputs_used (contribution_id)
+- outputs_created (paths above)
+- config_snapshot (normalization settings)
+
+3) Canonical normalization rules (locked)
+
+N1) Preserve timeline
+Normalization MUST preserve timing relative to the original source.
+- No silence trimming by default.
+- No time-compression.
+- If any optional operation changes timing (future), it must produce a time-map table that allows exact mapping back to original timestamps.
+
+Reason: evidence and citations depend on timestamps.
+
+N2) Preserve original source
+The original file is never modified or overwritten.
+Normalization produces a derived audio artifact.
+
+N3) Downstream-friendly audio format
+The canonical normalized audio should be:
+- PCM WAV
+- mono or stereo depending on configuration
+- with a stable target sample rate
+
+Recommended target sample rate:
+- 16 kHz mono for speech models (fast and compatible)
+OR
+- 48 kHz when necessary for certain diarizers or when preserving high fidelity matters
+This is adapter-configurable, but must be stable per run and recorded in config_snapshot.
+
+N4) Loudness normalization is allowed (carefully)
+Amplitude/loudness normalization may be applied to improve ASR reliability, but it must:
+- not clip,
+- not distort,
+- not alter timing,
+and must be recorded in config_snapshot.
+
+N5) No “enhancement” that changes meaning in v1
+Noise reduction, dereverb, source separation, etc. are not required in v1.
+If added later, they must be optional, must preserve timing, and must be recorded.
+
+4) Audio extraction from video
+
+If a contribution is a video file:
+- Stage 1 must extract the audio track locally (ffmpeg or equivalent) into normalized_audio.wav.
+The extracted audio becomes the canonical downstream input.
+
+Stage 1 should store:
+- source video as-is,
+- extracted audio as derived artifact.
+
+5) Channel handling
+
+If the input is multi-channel:
+- Stage 1 may downmix to mono for ASR speed and compatibility.
+- Stage 1 may optionally preserve a stereo normalized track if the diarizer benefits from channel separation.
+
+Channel decisions must be recorded in audio_manifest.json and config_snapshot.
+
+6) Chunk planning (preparation for long sessions)
+
+Stage 1 MAY compute a chunk plan without producing text:
+- chunk boundaries by time (e.g., 5–10 minute chunks),
+- optional VAD-based “speech segments” boundaries (if VAD is used).
+
+If created, this is stored as:
+- chunk_plan.json and/or speech_segments.json
+
+Critical requirement:
+Any chunking must maintain a deterministic mapping to original timestamps (offsets and ranges). No chunking is allowed that destroys traceability.
+
+7) Profile behavior
+
+LOCAL_ONLY:
+- Stage 1 runs entirely local.
+- No network calls.
+
+HYBRID / CLOUD:
+- Stage 1 still runs local by default.
+Even if later stages run remotely, Stage 1 should be performed locally so the system can reliably store canonical audio and maintain control over inputs.
+
+8) CPU/GPU expectations
+
+Stage 1 is primarily CPU-bound (ffmpeg decode/encode).
+It must work on:
+- CPU-only systems (slower is fine, correctness is mandatory).
+GPU acceleration is not required here.
+
+9) Failure behavior
+
+If Stage 1 fails:
+- the session still exists (Stage 0 artifacts remain),
+- the run is marked failed,
+- and Stuart must present a clear error and recovery path:
+  - “Try a different normalization adapter”
+  - “Install ffmpeg”
+  - “Re-export audio to a supported format”
+
+Stage 1 failure must never silently proceed to diarization/transcription.
+
+10) Self-audit (7.2)
+
+- This section matches our explicit execution gating: normalization does not run on file drop; it runs only after submit/confirm.
+- It preserves the audit chain: run record + config snapshot + deterministic artifacts.
+- It protects evidence integrity by locking “preserve timeline” and avoiding silence trimming by default.
+- It supports real-world inputs (mp4/m4a/phone recordings) and CPU-only baseline operation.
+This section is complete.

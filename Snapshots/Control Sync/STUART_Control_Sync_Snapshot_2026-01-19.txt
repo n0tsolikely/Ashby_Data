@@ -1,0 +1,413 @@
+STUART CONTROL SYNC — 2026-01-19
+MERGED CONTROL SYNC SNAPSHOT (MID-RAID + CONTROL SYNC SNAPSHOT)
+
+This document is a verbatim merge of TWO control sync snapshots from 2026-01-19.
+No truncation. No summarization. Original contents are preserved exactly.
+
+
+================================================================================
+BEGIN CONTROL SYNC A
+SOURCE FILE: STUART_MID_RAID_CONTROL_SYNC_2026-01-19__ENGINE_TO_FORMALIZATION.txt
+BEGIN CONTENT
+
+================================================================================
+STUART_MID_RAID_CONTROL_SYNC_2026-01-19__ENGINE_TO_FORMALIZATION
+
+Timestamp: 2026-01-19 23:02:54
+Snapshot Type: MID-RAID CONTROL SYNC (AUTHORITATIVE)
+Project: Ashby Platform / Stuart Module
+Scope Status: OPTION A COMPLETE → NEXT SCOPE ACCEPTANCE (ENGINE → FORMALIZATION)
+
+================================================================================
+PURPOSE OF THIS DOCUMENT
+================================================================================
+This document exists to allow FULL REHYDRATION of context in a new chat with
+ZERO LOSS of intent, decisions, architecture, constraints, or execution logic.
+
+This is NOT:
+- an End-of-Day Snapshot
+- an Execution Snapshot
+- a partial note
+
+This IS:
+- the authoritative mid-raid Control Sync snapshot
+- the binding record of architectural intent, routing model, scope, and quest
+  acceptance following completion of Option A (Foundation)
+
+If this document is loaded, the new chat MUST resume exactly from this state.
+
+================================================================================
+ROLES
+================================================================================
+Hands (Executor / Environment Authority):
+- Peter (notsolikely)
+
+Brains (Architecture / System Design Authority):
+- Ash
+
+================================================================================
+CURRENT VERIFIED REALITY (FILESYSTEM & ENVIRONMENT)
+================================================================================
+
+Repository Root:
+- /home/notsolikely/ashby
+
+Ashby Platform venv (existing, untouched):
+- ~/venvs/ashby-env
+- Python 3.12.x
+- Used for Ashby platform / home brain work only
+
+Stuart Runtime venv (NEW, CANONICAL):
+- ~/venvs/stuart-env_py310
+- Python 3.10.19
+- Activated via:
+  source ~/venvs/stuart-env_py310/bin/activate
+
+This venv was created during this raid after discovering the previously
+referenced Stuart venv path no longer existed on disk.
+This path is now CANONICAL and supersedes all earlier references.
+
+================================================================================
+ARCHITECTURE MODEL (LOCKED)
+================================================================================
+
+Ashby is a PLATFORM.
+Ashby ALWAYS ships with the Home Brain (lights, plugs, cameras, etc.).
+
+Stuart is a MODULE inside Ashby.
+Users purchase Stuart; Ashby Home Brain is included automatically.
+
+---------------------------
+ROUTING MODEL (CRITICAL)
+---------------------------
+
+There are TWO routing layers. This is intentional and locked.
+
+1) Ashby Platform Router
+- Owns top-level routing across ALL modules.
+- Decides:
+  - lights.*
+  - comfort.*
+  - meetings.*  → routed to Stuart module
+- This router is platform-level and is NOT modified in this raid.
+
+2) Stuart Module Router (INTERNAL)
+- Exists INSIDE ashby/modules/meetings/
+- Routes ONLY meetings-domain intent, such as:
+  - intake (upload media)
+  - plan / preview
+  - execute run
+  - edit templates
+  - search / retrieve artifacts
+  - speaker mapping overlays
+  - extract-only outputs (“only what X said”)
+
+This is NOT a second platform router.
+This is module-level dispatch only.
+
+================================================================================
+MEMORY MODEL (LOCKED)
+================================================================================
+
+Stuart does NOT use chat memory as truth.
+
+Durable truth consists of:
+- Source media (immutable)
+- Transcript artifacts (ground truth text)
+- Derived artifacts (formalizations) that cite transcript anchors
+- Overlays (speaker naming, corrections) that NEVER mutate ground truth
+- Index (later) for deterministic recall
+
+Claims like:
+- “Greg attended”
+- “Greg said X”
+are ONLY allowed when backed by diarization + overlays.
+
+Otherwise, Stuart MUST refuse or downgrade claims.
+
+================================================================================
+OPTION A (FOUNDATION) — COMPLETED
+================================================================================
+
+Option A Goal:
+Pour the concrete layer for Stuart v1 with ZERO hacks and ZERO Ashby core changes.
+
+Completed Quests:
+- QUEST_002 — Meetings module scaffold
+- QUEST_011 — STUART_ROOT + deterministic layout
+- QUEST_012 — IDs + hashing + write-once manifests
+- QUEST_013 — Immutability + rerun semantics + video→audio policy rails
+
+Verified Runtime Structure:
+~/ashby_runtime/stuart/
+  ├── sessions/
+  ├── contributions/
+  ├── runs/
+  ├── overlays/
+  └── exports/
+
+All artifacts are:
+- immutable
+- write-once
+- reruns create new run directories
+- manifests refuse overwrite
+
+Option A is COMPLETE and SNAPSHOTTED separately.
+
+================================================================================
+PRODUCT INTENT (NON-NEGOTIABLE)
+================================================================================
+
+Stuart is NOT a transcription tool.
+Transcription is the LEGAL SUBSTRATE, not the product.
+
+The PRODUCT is FORMALIZATION.
+
+Every run MUST produce:
+1) Verbatim transcript (truth object)
+2) Formalization output (value)
+
+---------------------------
+MODES (v1)
+---------------------------
+Locked for this raid:
+- Journal (alias: diary)
+- Meeting
+
+Journal Mode:
+- Single speaker by default
+- Input is messy, spoken, scatterbrained
+- Formalization cleans grammar, removes filler, deduplicates thoughts
+- NO heavy summarization; preserves intent and narrative
+
+Meeting Mode:
+- Multi-speaker
+- Requires diarization
+- Produces minutes-style formalization:
+  - decisions
+  - actions
+  - topics
+  - notes
+  - speaker attribution
+- All claims cite transcript anchors
+
+Templates:
+- Default templates exist for v1
+- Users may upload/edit templates later
+- Templates are enumerated, not ad-hoc
+
+================================================================================
+DEMO & ROADMAP INTENT (LOCKED)
+================================================================================
+
+“Wow #1”:
+- Single-speaker journal
+- Upload audio → transcript + formalization → MD + PDF
+
+“Wow #2” (parents demo):
+- Multi-speaker MEETING mode (not journal)
+- Diarization for 2–3 speakers
+- Speaker naming overlays (Mom, Dad, Peter)
+- Formalized meeting minutes with attribution
+
+Multi-speaker journal is DEFERRED.
+Meeting mode is the correct semantic container.
+
+================================================================================
+NEXT SCOPE BLOCK (TO ACCEPT NOW)
+================================================================================
+
+Goal:
+Build the FULL engine path from intake → formalization → PDF/MD,
+WITHOUT drift, and WITHOUT skipping guardrails.
+
+Quests to ACCEPT (ACTIVE):
+
+FOUNDATION VALIDATION
+- QUEST_002 (re-accepted for acceptance-criteria verification)
+
+GUARDRAILS
+- QUEST_014 — Mode registry (journal/meeting only)
+- QUEST_015 — Template registry (default templates)
+
+PLAN + GATING
+- QUEST_016 — Intent → Plan object
+- QUEST_017 — Clarification + Plan Preview
+- QUEST_018 — Execution gating (upload ≠ run)
+
+PIPELINE
+- QUEST_019 — Job runner + lifecycle
+- QUEST_020 — Transcription + diarization hooks → transcript artifacts
+- QUEST_021 — Formalization + render (MD + PDF) + evidence_map.json
+
+DO NOT ACCEPT YET:
+- QUEST_010 (Telegram door)
+- QUEST_022–023 (Search/index)
+- QUEST_024–025 (Webapp)
+- QUEST_007 (Speaker overlay / rerender)
+
+================================================================================
+EXECUTION RULES (ABSOLUTE)
+================================================================================
+- No Ashby core router refactors
+- No hacks “just to demo”
+- All adapters swappable
+- All artifacts immutable
+- All decisions recorded in snapshots
+- If this document conflicts with memory, THIS DOCUMENT WINS
+
+================================================================================
+RESUME INSTRUCTIONS (FOR NEW CHAT)
+================================================================================
+
+1) Load this snapshot.
+2) Activate Stuart venv:
+   source ~/venvs/stuart-env_py310/bin/activate
+3) Verify repo root: ~/ashby
+4) Confirm Option A files exist.
+5) Begin execution at QUEST_002 verification, then QUEST_014.
+
+END OF MID-RAID CONTROL SYNC
+
+================================================================================
+END CONTENT
+END CONTROL SYNC A
+
+================================================================================
+BEGIN CONTROL SYNC B
+SOURCE FILE: STUART_CONTROL_SYNC_SNAPSHOT_2026-01-19.txt
+BEGIN CONTENT
+
+================================================================================
+STUART_CONTROL_SYNC_SNAPSHOT_2026-01-19
+
+Date: 2026-01-19
+Project: Ashby → Stuart v1
+Snapshot Type: Control Sync Snapshot (Authoritative)
+Status: Control Sync complete, scope locked, ready for execution
+
+ATTENDEES / ROLES
+- Hands: Peter
+- Brains: Ash
+
+CONTEXT
+This Control Sync was held to determine how to begin Stuart v1 execution cleanly, without drift, and with the fastest path to a working system while preserving Ashby platform law. The discussion reviewed the full Stuart rehydration pack, Ashby Codex, Stuart Codex, Ashby Engine state, prior snapshots, and environment constraints.
+
+PRIMARY GOAL
+Deliver Stuart v1 as a working, testable system as quickly as possible while remaining canonical, modular, and swappable. Early testing will be performed via Telegram as a dumb transport door, but no logic or state may live in Telegram handlers.
+
+DECISIONS LOCKED
+
+1. Scope Strategy
+- We will begin with Option A (Foundation).
+- Option A must be fully completed and snapshotted before any expansion.
+- If Option A completes quickly, a new short Control Sync will be held to accept additional scope (Option B or beyond).
+
+2. Product Surfaces
+- Telegram will be used later as a temporary, dumb transport door for fast testing.
+- Telegram must call the same backend entrypoints as future web and CLI surfaces.
+- Telegram must not contain brain logic, pipeline logic, or state.
+- The web app remains the canonical primary surface for Stuart v1, but is explicitly out of scope for Option A.
+
+3. ASR Decision (Forward-Locked)
+- Default ASR choice for Stuart v1 will be Whisper-based via faster-whisper.
+- ASR must be adapter-based and fully swappable.
+- All ASR runs must record model, version, parameters, and environment metadata.
+- ASR is not implemented during Option A; this is a forward decision only.
+
+4. Environment Discipline
+- Stuart v1 will use the previously established Stuart runtime environment:
+  Path: ~/ashby/.venv_py310
+  Python Version: 3.10.19
+- Ashby platform .venv (Python 3.12.x) remains separate and untouched.
+- Even though Option A work is mostly filesystem and schema scaffolding, all work will be executed under the Stuart venv to prevent later environment drift.
+
+5. Non-Negotiable Laws Reaffirmed
+- Stuart is a module inside Ashby, not a parallel platform.
+- No hacks, no shortcuts, no special cases.
+- If Stuart requires new functionality, it must be added to Ashby canonically and remain useful even if Stuart is removed.
+- Upload does not equal execution (future gating rule reaffirmed).
+- Artifacts are memory; chat history is not memory.
+- Transcripts are ground truth; reruns create new artifacts; overwrites are forbidden.
+
+OPTION A – FOUNDATION SCOPE (LOCKED)
+
+Option A exists to pour the concrete that all later Stuart functionality will stand on. Nothing beyond this foundation is permitted during this scope.
+
+Deliverables:
+- Canonical Stuart module scaffold inside Ashby
+- Deterministic on-disk world model (STUART_ROOT)
+- Stable ID generation and hashing
+- Write-once manifests and immutability rules
+- Rerun semantics (new run per execution)
+- Video ingestion policy rails (definition only, no execution)
+
+QUESTS TO ACCEPT (ACTIVE)
+
+The following quests must be accepted into Active to complete Option A:
+
+- QUEST_002
+  Dungeon 1
+  Create the canonical Stuart module scaffold at ashby/modules/meetings/
+
+- QUEST_011
+  Dungeon 2 (1/3)
+  Define STUART_ROOT configuration and deterministic directory layout
+
+- QUEST_012
+  Dungeon 2 (2/3)
+  Implement ID generation, hashing utilities, and manifest schemas
+
+- QUEST_013
+  Dungeon 2 (3/3)
+  Enforce immutability, rerun semantics, and video-to-audio policy rails
+
+NO OTHER QUESTS ARE ACCEPTED AT THIS TIME.
+
+EXPLICITLY OUT OF SCOPE FOR OPTION A
+
+The following are explicitly NOT allowed during this scope:
+
+- Mode registry or template registry (QUEST_014–015)
+- Plan objects, clarification flows, or execution gating (QUEST_016–018)
+- Job runner, diarization, transcription, or rendering (QUEST_019–021)
+- Search and indexing (QUEST_022–023)
+- Web application (QUEST_024–025)
+- Telegram door (QUEST_010)
+- Speaker overlays or rerendering (QUEST_007)
+
+SUCCESS CRITERIA FOR OPTION A
+
+Option A is considered complete only when all of the following are true:
+
+- ashby/modules/meetings/ exists and is treated as Stuart’s canonical home
+- STUART_ROOT is configurable and produces deterministic subdirectories
+- Session, contribution, and run manifests are written once and never overwritten
+- Stable IDs and sha256 hashes are generated and recorded
+- New runs always create new run directories
+- A smoke test can create:
+  session → contribution → run
+  resulting in correct on-disk structure under STUART_ROOT
+- No Ashby core router changes were made
+
+CURRENT STATE
+
+- Control Sync is complete.
+- Scope is locked.
+- No quests have been accepted yet.
+- No execution has begun.
+
+NEXT ACTIONS
+
+1. Hands will accept the listed Option A quests into Active.
+2. Brains will produce and execute the Option A Execution Pack.
+3. Upon completion, a new snapshot will be generated.
+4. A follow-up Control Sync may be held to extend scope if desired.
+
+END OF SNAPSHOT
+
+================================================================================
+END CONTENT
+END CONTROL SYNC B
+
+================================================================================

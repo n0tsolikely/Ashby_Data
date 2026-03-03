@@ -1,0 +1,99 @@
+## Command Receipt Log
+CMD: source /home/notsolikely/venvs/ashby-env/bin/activate && cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_minutes_truth_guards_empty_sections.py tests/test_meetings_render_minutes_journal_md_deterministic.py tests/test_meetings_e2e_golden_harness.py tests/test_meetings_render_md_pdf_evidence.py tests/test_meetings_render_journal_md_pdf_evidence.py
+........F...                                                             [100%]
+=================================== FAILURES ===================================
+___________________ test_truth_gate_blocks_uncited_decision ____________________
+
+tmp_path = PosixPath('/tmp/pytest-of-notsolikely/pytest-14/test_truth_gate_blocks_uncited0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7d5ae7cd28a0>
+
+    def test_truth_gate_blocks_uncited_decision(tmp_path: Path, monkeypatch) -> None:
+        """Negative truth test: any decision/action item MUST have non-empty citations."""
+        import ashby.modules.meetings.pipeline.job_runner as job_runner
+        from ashby.modules.meetings.hashing import sha256_file
+    
+        root = tmp_path / "stuart_runtime"
+        monkeypatch.setenv("STUART_ROOT", str(root))
+    
+        ses = create_session(mode="meeting", title="t")
+    
+        src = tmp_path / "src.wav"
+        _gen_wav(src)
+        add_contribution(session_id=ses, source_path=src, source_kind="audio")
+    
+        run_id = create_run(session_id=ses, plan={"steps": [{"name": "formalize", "params": {"mode": "meeting"}}]})
+    
+        def _bad_minutes(run_dir: Path, template_id: str, retention: str):
+            artifacts = run_dir / "artifacts"
+            artifacts.mkdir(parents=True, exist_ok=True)
+            out_path = artifacts / "minutes.json"
+            payload = {
+                "version": 1,
+                "session_id": "",
+                "run_id": run_dir.name,
+                "header": {
+                    "title": "Meeting Minutes",
+                    "mode": "meeting",
+                    "retention": retention,
+                    "template_id": template_id,
+                    "created_ts": time.time(),
+                    "engine": "test_bad_minutes_uncited",
+                },
+                "participants": [{"speaker_label": "SPEAKER_00"}],
+                "topics": [],
+                "decisions": [
+                    {
+                        "decision_id": "d1",
+                        "title": "We decided a thing",
+                        "summary": "",
+                        "citations": [],  # invalid: must be non-empty
+                    }
+                ],
+                "action_items": [],
+                "notes": [],
+                "open_questions": [],
+            }
+            out_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+            return {
+                "kind": "minutes_json",
+                "path": str(out_path),
+                "sha256": sha256_file(out_path),
+                "created_ts": time.time(),
+                "engine": "test_bad_minutes_uncited",
+            }
+    
+        monkeypatch.setattr(job_runner, "formalize_meeting_to_minutes_json", _bad_minutes)
+    
+        res = job_runner.run_job(run_id)
+        assert res.ok is False
+        assert res.status == "failed"
+    
+        run_dir = root / "runs" / run_id
+        report_path = run_dir / "artifacts" / "truth_gate_report.json"
+>       assert report_path.exists()
+E       AssertionError: assert False
+E        +  where False = exists()
+E        +    where exists = PosixPath('/tmp/pytest-of-notsolikely/pytest-14/test_truth_gate_blocks_uncited0/stuart_runtime/runs/run_01KJRP0WZXQ05JHBM9J4FFT35W/artifacts/truth_gate_report.json').exists
+
+tests/test_meetings_e2e_golden_harness.py:206: AssertionError
+=============================== warnings summary ===============================
+tests/test_meetings_e2e_golden_harness.py::test_e2e_meeting_outputs_exist_and_match_golden
+  /home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/pyannote/core/notebook.py:134: MatplotlibDeprecationWarning: The get_cmap function was deprecated in Matplotlib 3.7 and will be removed in 3.11. Use ``matplotlib.colormaps[name]`` or ``matplotlib.colormaps.get_cmap()`` or ``pyplot.get_cmap()`` instead.
+    cm = get_cmap("Set1")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_meetings_e2e_golden_harness.py::test_truth_gate_blocks_uncited_decision
+1 failed, 11 passed, 1 warning in 7.85s
+RC: 1
+CMD: source /home/notsolikely/venvs/ashby-env/bin/activate && cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_minutes_truth_guards_empty_sections.py tests/test_meetings_render_minutes_journal_md_deterministic.py tests/test_meetings_e2e_golden_harness.py tests/test_meetings_render_md_pdf_evidence.py tests/test_meetings_render_journal_md_pdf_evidence.py tests/test_meetings_truth_gate_integration.py
+..............                                                           [100%]
+=============================== warnings summary ===============================
+tests/test_meetings_e2e_golden_harness.py::test_e2e_meeting_outputs_exist_and_match_golden
+  /home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/pyannote/core/notebook.py:134: MatplotlibDeprecationWarning: The get_cmap function was deprecated in Matplotlib 3.7 and will be removed in 3.11. Use ``matplotlib.colormaps[name]`` or ``matplotlib.colormaps.get_cmap()`` or ``pyplot.get_cmap()`` instead.
+    cm = get_cmap("Set1")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+14 passed, 1 warning in 5.57s
+RC: 0
+PASS: governance validation OK for QUEST_164 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_164__2026-03-02__quest_164_stuart_v1_d7_6of10_renderers_v2_showemptysections_includecitations_2026_03_01

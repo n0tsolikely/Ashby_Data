@@ -1,0 +1,86 @@
+ASHBY PLATFORM TRUTH + PROFILE LOCK (BUFF)
+Version: 2026-02-07
+Status: Canonical (Binding Architecture Decision)
+Audience: Brains (Assistant) + Hands (User)
+Purpose: Lock the product-grade truth + modularity architecture for Stuart and all future modules.
+Note: This BUFF is an implementation constraint. If any line conflicts with Codex, Codex wins.
+
+================================================================================
+0) WHAT THIS BUFF IS
+================================================================================
+- This is NOT a snapshot.
+- This is NOT an execution log.
+- This is a binding architecture lock so the platform can scale without major refactors.
+
+================================================================================
+1) TRUTH ARCHITECTURE (BINDING)
+================================================================================
+1.1 Single Judge (Platform)
+- Ashby has ONE truth judge (platform-level): TruthGateJudge.
+- The judge is reusable across modules.
+- Truth law enforcement must converge here over time.
+
+1.2 Module Policies (Specialization)
+- Each module provides module-specific TruthPolicy implementations (e.g., MeetingsTruthPolicy).
+- Policies define what is considered a valid claim in that domain.
+
+1.3 Module-Local Checks (Allowed, but limited)
+- Modules MAY keep local validation guards ONLY for cheap invariants / internal consistency, e.g.:
+  - citation segment_id exists
+  - timestamps monotonic
+  - speaker_id references are valid
+- Modules MUST NOT implement a parallel “truth gate” that decides real-world truth.
+  If the rule is about truth (decisions, actions, facts, attendance), it belongs in:
+  Platform Judge + Module Policy.
+
+================================================================================
+2) EVIDENCE + CITATIONS (BINDING)
+================================================================================
+- Claims must be evidence-backed.
+- Citations must reference resolvable evidence anchors (segments / timestamps / artifact pointers).
+- Output formats may vary (MD/PDF/JSON), but evidence semantics must be consistent.
+
+================================================================================
+3) EXECUTION PROFILES + CONSENT (CLARIFICATION + BINDING)
+================================================================================
+3.1 “Profile” is NOT personality
+- Execution profile = runtime constraints + egress policy (LOCAL_ONLY / HYBRID / CLOUD).
+- Personality/tone = templates/prompts/module UX.
+- These are separate concerns and must not be conflated.
+
+3.2 Single Execution Profile Substrate (Platform)
+- Ashby must have ONE execution profile substrate.
+- Modules must NOT maintain a parallel execution profile system.
+- Target canonical substrate: ashby.core.profile (and associated consent/egress logic).
+
+================================================================================
+4) ROUTING + MODULE BOUNDARIES (BINDING)
+================================================================================
+4.1 Thin Core Router
+- Ashby core router routes high-level intent to modules.
+- Core router must NOT contain domain routing/logic for specific modules (e.g., meetings queries).
+
+4.2 Module Routers
+- Modules own their internal intent routing (module router).
+- Removing a module must not leave dead module logic in core.
+
+4.3 Removability
+- Modules must remain removable without breaking the platform.
+- Platform provides shared primitives (truth judge, storage, results, profiles).
+- Modules provide domain logic + policies + artifacts.
+
+================================================================================
+5) FILE DISCIPLINE (BINDING)
+================================================================================
+- Big files are OK when they are cohesive (one capability, one reason to change).
+- God files are NOT OK (multiple capabilities / mixed responsibilities / refactor bait).
+- Prefer separated capabilities that call each other.
+- Only keep things together when separation would be worse (tight cohesion, always-changing-together).
+
+================================================================================
+6) GROWTH MINDSET (BINDING)
+================================================================================
+- Stuart v1 is the starting scope, not the end state.
+- Build extension points (registries, interfaces, policy hooks) where natural.
+- Prefer additive evolution over invasive refactors.
+

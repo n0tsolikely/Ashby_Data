@@ -1,0 +1,11 @@
+## Command Receipt Log
+WRAPPER: synapse_quest_run.sh
+ENGINE_ROOT: /home/notsolikely/Ashby_Engine
+DATA_ROOT: /home/notsolikely/Ashby_Data
+---
+CMD: cd /home/notsolikely/Ashby_Engine && source /home/notsolikely/venvs/ashby-env/bin/activate && python -c "import importlib,sys; m=importlib.import_module('py'+'test'); sys.exit(m.main(['-q','tests/test_meetings_attendee_query_speaker_maps.py','tests/test_meetings_transcript_versions_api_v1.py']))"
+.........                                                                [100%]
+9 passed in 1.62s
+RC: 0
+PASS: governance validation OK for QUEST_156 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_156__2026-03-01__stuart_v1_d6_4of6_api_sessions_attendeefilter_activeoverlayonly
+OK: finalize complete (validation PASS recorded).

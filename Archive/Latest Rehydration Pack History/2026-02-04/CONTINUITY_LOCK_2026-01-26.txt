@@ -1,0 +1,54 @@
+CONTINUITY LOCK — STUART v1 (MEETINGS MODULE) — REVISION 2026-01-26
+Authoritative timestamp: 2026-01-26 06:58:22 UTC
+
+Use this as the START HERE packet when opening a NEW chat that resumes Stuart v1.
+This lock supersedes prior Stuart v1 continuity locks.
+
+================================================================================
+1) CURRENT REALITY (AS OF 2026-01-26)
+================================================================================
+- Governance is active law.
+- Stuart is hosted under Ashby (module: meetings).
+- Quest Board indicates the core v1 doors are present:
+  - Telegram Door (QUEST_010) complete (thin buttons + PDF return hook)
+  - Web Door scaffold (QUEST_024) complete
+  - Web Door upload→run→downloads + search (QUEST_025) complete
+  - Search ranked results + citations (QUEST_023) complete
+
+Operational truth:
+- Telegram is currently runnable in WSL via:
+  PYTHONPATH="$PWD" python3 io/telegram/ashby_telegram_control.py
+- Web door is runnable via:
+  python3 scripts/stuart_web.py  (http://127.0.0.1:8844)
+
+================================================================================
+2) NON-NEGOTIABLE PROCESS RULES
+================================================================================
+- Dailies loop: Control Sync → Decide Scope → Implement → Test → Snapshot → Stop → Resume
+- Completed quests must have audit receipts.
+- No “phantom completion” or “trust me” execution.
+
+================================================================================
+3) CURRENT ISSUES / NEXT QUEST
+================================================================================
+- io/telegram module invocation is not clean:
+  - python3 -m io.telegram... fails (io not package + stdlib collision).
+  - Next quest: Telegram entrypoint hygiene (remove PYTHONPATH requirement; provide clean launcher path).
+
+- WSL may contain Windows MOTW artifacts:
+  - cleanup: find . -type f -name '*:Zone.Identifier' -delete
+
+================================================================================
+4) RESUME INSTRUCTIONS
+================================================================================
+- Read latest Control Sync + EOD snapshots for 2026-01-26.
+- Confirm Quest Board Accepted/ is empty or accept next quest intentionally.
+- Next action: create + execute “Telegram entrypoint hygiene” quest.
+- After local end-to-end validation, decide if new Guild Orders are required.
+
+End of continuity lock.
+
+[CONTINUITY UPDATE — 2026-01-27]
+- Data canon rehydrated from v3 (latest populated).
+- SIDE-QUEST_031 added to Board: robust subprocess repo-root PYTHONPATH injection.
+- Until SIDE-QUEST_031 is completed, web upload / telegram pipeline may fail with ModuleNotFoundError on subprocess import.

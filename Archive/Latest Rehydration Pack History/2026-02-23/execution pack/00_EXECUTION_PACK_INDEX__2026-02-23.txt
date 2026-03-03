@@ -1,0 +1,30 @@
+STUART EXECUTION PACK INDEX — V2 REV2
+Date (local): 2026-02-23 (America/Toronto)
+
+Purpose:
+- Deterministic runbook stack for governed execution and verification.
+- D3 + D4 stacks are complete historical references.
+
+Read order:
+1) STUART_EXECUTION_PACK__V2_REV2__RAID_GUARDRAILS__2026-02-23.txt
+2) STUART_EXECUTION_PACK__V2_REV2__SESSION_START_SCRIPT__2026-02-23.txt
+3) STUART_INSTALL_PACK__V2_REV2__FULLSTACK_DEPENDENCIES_PREFLIGHT__2026-02-23.txt
+4) STUART_EXECUTION_PACK__V2_REV2__SMOKE_TEST_GATES__2026-02-23.txt
+5) STUART_EXECUTION_PACK__V2_REV2__DUNGEON3_RUNBOOK__2026-02-23.txt
+6) STUART_EXECUTION_PACK__V2_REV2__DUNGEON3_QUEST_INTAKE_AND_EXECUTION__2026-02-23.txt
+7) STUART_EXECUTION_PACK__V2_REV2__DUNGEON4_RUNBOOK__2026-02-23.txt
+8) STUART_EXECUTION_PACK__V2_REV2__DUNGEON4_QUEST_INTAKE_AND_EXECUTION__2026-02-23.txt
+
+Continuity references:
+- Continuity Lock:
+  /home/notsolikely/Ashby_Data/Latest Rehydration Pack/CONTINUITY_LOCK_2026-02-23.txt
+
+- Latest Control Sync snapshot(s):
+  - /home/notsolikely/Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-02-23.txt
+  - /home/notsolikely/Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot__02_2026-02-23.txt
+
+- Latest End-of-Day snapshot(s):
+  - /home/notsolikely/Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2026-02-23.txt
+  - /home/notsolikely/Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot__02_2026-02-23.txt
+
+END OF FILE

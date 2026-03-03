@@ -1,0 +1,127 @@
+AshPi Project Notes – File 1.5 (Beginning)
+==========================================
+This file contains ONLY the important AshPi-related setup, logic, ideas, and programming details
+from THIS chat session. No extra conversations are included.
+
+------------------------------------------
+1. Google Nest / SDM Authentication Flow
+------------------------------------------
+• Successfully completed the Google OAuth2 flow needed for Nest SDM API.
+• Generated an authorization code via the Device Access Console.
+• Exchanged the authorization code for:
+    - access_token
+    - refresh_token (critical for long-term use)
+• Verified that the refresh token works and can generate new access tokens anytime.
+
+What we learned / confirmed:
+• The redirect URI does NOT need to be functional. It just needs to match what is in Google's console.
+• Using https://www.google.com as redirect_uri is acceptable for server-side flows.
+• Test users MUST be added manually for unverified OAuth clients.
+• Authorization codes expire quickly and can be used ONCE.
+• The refresh_token is the permanent key to automated Nest access.
+
+------------------------------------------------
+2. Environment File Created on the Raspberry Pi
+------------------------------------------------
+Created: ~/ashpi_nest.env
+
+Stored values:
+• NEST_REFRESH_TOKEN="(actual token)"
+• NEST_CLIENT_ID="21965826000-2omlmh584m43i7fd62tav7f4d8aaft7i.apps.googleusercontent.com"
+• NEST_CLIENT_SECRET="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"
+• NEST_REDIRECT_URI="https://www.google.com"
+• NEST_SCOPE="https://www.googleapis.com/auth/sdm.service"
+
+Purpose:
+• Allows scripts to automatically authenticate and retrieve new access tokens.
+• Prevents exposing sensitive values in code.
+
+------------------------------------------
+3. Generating Access Tokens Automatically
+------------------------------------------
+Tested the refresh-token exchange flow:
+
+curl POST https://oauth2.googleapis.com/token
+→ produced working access_token and expiration time.
+
+This confirmed our environment variables are correct and the whole authentication flow is working.
+
+------------------------------------------
+4. Accessing the Nest Device Through SDM API
+------------------------------------------
+Entered correct enterprise ID:
+    a773a0bb-fd52-4526-a32a-ee9f559ed902
+
+Successfully retrieved device list:
+• Contained the Hallway thermostat.
+• Verified traits:
+    - Temperature
+    - Humidity
+    - HVAC status
+    - Setpoint
+    - Mode
+    - Connectivity
+    - Eco mode
+    - Fan timer
+
+This confirms full read-access to Nest.
+
+------------------------------------------
+5. First Real Hardware Control Success
+------------------------------------------
+Executed:
+ThermostatTemperatureSetpoint.SetHeat
+
+Commands tested:
+• SetHeat to 22.0°C → SUCCESS
+• SetHeat to 24.0°C → SUCCESS
+
+Device responded instantly.
+This marks the FIRST successful AshPi real-world hardware integration.
+
+------------------------------------------
+6. Architecture Concepts Confirmed During Chat
+------------------------------------------
+• AshPi will eventually support:
+    - Nest (thermostat)
+    - Tuya (lights & plugs)
+    - NOMA iQ / Ayla devices
+    - Digital signage (Raspberry Pi signage OS)
+    - Cameras with RTSP
+• Telegram is the preferred command interface.
+• Future commands will be natural-language:
+      “Set heat to 22”
+      “Turn off the lights”
+      “Show me the front door camera”
+      etc.
+
+• Python modules will be split into:
+    - brand-specific modules (nest/, tuya/, noma/, neewer/)
+    - device-type modules (thermostat/, lights/, plugs/, cameras/)
+    - ashpi_core/ for logic & token handling
+
+• AshPi will eventually support:
+    - Photo capture via camera streams
+    - Uploads to cloud (Google Photos, Facebook API, etc.)
+    - DoorDash automation (workarounds possible)
+    - Digital sign control
+    - Full smart-home consolidation
+
+------------------------------------------
+7. Next Steps (Tomorrow’s Work)
+------------------------------------------
+• Build ashpi_nest.py:
+    - Auto-refresh access token
+    - Functions:
+         get_temperature()
+         set_heat(value)
+         set_mode(mode)
+    - Error handling for expired tokens
+
+• Integrate Nest module into AshPi core command system.
+
+------------------------------------------
+End of File 1.5 – Beginning of AshPi Project
+------------------------------------------
+Generated: 2025-12-09 00:54:44
+

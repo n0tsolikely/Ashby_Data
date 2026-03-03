@@ -1,0 +1,9 @@
+ashby/interfaces/web/__init__.py
+ashby/interfaces/web/app.py
+ashby/interfaces/web/registry_api.py
+ashby/interfaces/web/sessions.py
+ashby/interfaces/web/templates/index.html
+ashby/interfaces/web/static/app.css
+ashby/interfaces/web/static/app.js
+scripts/stuart_web.py
+tests/test_meetings_web_door_scaffold.py

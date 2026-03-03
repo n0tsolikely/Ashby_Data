@@ -1,0 +1,176 @@
+STUART CODEX
+8.2 ASR Adapters (Local vs Remote, Capabilities) (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines ASR (Automatic Speech Recognition) adapters: the components that convert audio into transcript artifacts (Stage 3).
+
+Why this matters:
+- Stuart must support LOCAL_ONLY environments (elder care incidents, private org meetings).
+- Stuart must also support “best horsepower” workflows where privacy is less constrained (HYBRID/CLOUD).
+- Stuart must avoid refactors when swapping between faster/cheaper vs more accurate ASR backends.
+
+Chat-canon constraints enforced here:
+- Transcript is ground truth (best-effort verbatim), stored as artifacts, never trapped in chat output.
+- Nothing runs automatically on upload; user must explicitly execute.
+- If an ASR adapter is remote, Stuart must disclose and confirm before audio/text leaves the machine.
+- Long sessions must be handled via chunking + on-disk artifacts (no truncation).
+- Uncertainty must be disclosed; no confident guesswork for unintelligible audio.
+
+1) What an ASR adapter is responsible for
+
+An ASR adapter is responsible for:
+- consuming normalized audio (Stage 1),
+- producing transcript segments with timestamps (Stage 3),
+- optionally producing word-level timestamps,
+- optionally detecting language (if supported),
+- optionally reporting confidence / warnings.
+
+An ASR adapter is NOT responsible for:
+- diarization (“who spoke when”),
+- speaker naming,
+- formalization,
+- templates/modes,
+- indexing,
+- printing/rendering.
+
+2) ASR adapter interface (conceptual)
+
+A minimal ASR adapter interface must support:
+
+- transcribe(audio_manifest, audio_path, config) -> transcript_result
+Where transcript_result includes:
+- transcript.json structure (segments with timestamps)
+- optional: words[] (word-level timestamps)
+- optional: confidence metrics
+- warnings / errors
+
+Optional but recommended adapter capabilities:
+- transcribe_chunk(audio_path, start_time, end_time, config) -> chunk_transcript
+- supports_resume (true/false)
+- supports_language_detection (true/false)
+- supports_word_timestamps (true/false)
+- supports_streaming (true/false; vNext)
+
+3) Capability declarations (adapter must self-describe)
+
+Every ASR adapter MUST declare its capabilities so Stuart can:
+- choose correct downstream behavior (captions, evidence precision),
+- and avoid pretending features exist.
+
+Required capability flags:
+- provides_segment_timestamps (must be true; otherwise adapter is not usable)
+- provides_word_timestamps (true/false)
+- provides_confidence (true/false)
+- supports_language_detection (true/false)
+- supports_custom_vocabulary (true/false; optional)
+
+If provides_word_timestamps is false:
+- captions mode must disclose reduced precision and may be degraded.
+
+4) Local vs remote ASR (profile-driven)
+
+LOCAL_ONLY:
+- ASR must run locally.
+- No network calls.
+- If user attempts to select a remote ASR adapter, Stuart must refuse or require an explicit profile change.
+
+HYBRID:
+- ASR may run locally or remote.
+- Remote ASR requires:
+  - explicit disclosure (what is sent: audio? metadata?)
+  - explicit user confirmation
+  - run record logging provider/adapter id + data scope
+
+CLOUD:
+- Remote ASR is allowed (often default), but explicit execution still applies.
+- The run record must still capture adapter and data scope.
+
+Key rule:
+Remote vs local is not just “performance.”
+It is a privacy boundary, and it must be logged.
+
+5) Data scope disclosure (remote ASR)
+
+Before running a remote ASR adapter, Stuart must disclose:
+- whether raw audio leaves the machine,
+- whether any transcript text leaves the machine,
+- whether metadata (duration, file name) leaves the machine,
+- and whether any content is stored by the provider (if known; at minimum Stuart records what it knows and what it does not).
+
+Stuart must also record this in run.json so audits can answer:
+- “Did this meeting audio ever leave the computer?”
+
+6) Verbatim discipline and the “no mistakes” reality
+
+Chat-canon user requirement: “no mistakes.”
+
+Reality:
+ASR is probabilistic. Stuart cannot guarantee zero transcription errors across all audio conditions.
+
+Therefore Stuart’s correctness promise is:
+- produce the most faithful verbatim transcript the adapter can produce,
+- disclose low-confidence regions,
+- preserve evidence (audio + timestamps),
+- allow correction overlays,
+- and never rewrite history silently.
+
+Canonical transcript behavior when audio is unclear:
+- mark content as [inaudible] / [unclear] when the adapter cannot reliably decode,
+- do not invent plausible words,
+- preserve timestamps for review.
+
+7) Long audio: chunking and resumability requirements
+
+ASR adapters must support chunking (either natively or via wrapper) so that:
+- hour-long meetings transcribe completely,
+- progress is written to disk after each chunk,
+- runs can resume after interruption.
+
+Even if the adapter only supports whole-file transcription, Stuart must wrap it:
+- by chunking audio prior to calling ASR,
+- merging results into transcript.json deterministically,
+- and preserving timestamps.
+
+8) Language support
+
+ASR adapters may support:
+- user-specified language (preferred when known),
+- automatic language detection.
+
+Stuart must record:
+- language chosen/detected,
+- detection confidence if available.
+
+Translation is not ASR. Translation is a post-transcript step (Section 3.7).
+
+9) Performance tiers (accuracy vs speed)
+
+Stuart may expose multiple ASR adapters or multiple “profiles” of an ASR adapter:
+- Fast mode (lower compute, lower accuracy)
+- Accurate mode (higher compute, better accuracy)
+
+But the interface contract is the same:
+- transcript artifacts and evidence mapping still exist
+- uncertainty disclosure still applies
+
+10) Run record requirements
+
+Every transcription run MUST record:
+- ASR adapter identifier + version
+- config snapshot (language hints, chunk size, accuracy setting)
+- data scope (local/remote, audio sent?)
+- outputs created (paths to transcript artifacts)
+This is required for reproducibility and privacy audit.
+
+11) Self-audit (8.2)
+
+Chat-canon alignment checklist:
+- Transcript as ground truth artifacts: ASR outputs transcript.json/txt stored on disk; no chat-size limits. (Maintained.)
+- Explicit execution gating: ASR never runs on upload; user confirms run. (Maintained.)
+- Local vs remote privacy boundary: profile-gated; remote requires disclosure + confirmation + logging. (Maintained.)
+- Long sessions: chunking/resume is required; no truncation-by-design. (Maintained.)
+- Uncertainty discipline: unclear audio is marked, not guessed. (Maintained.)
+
+This section is complete.

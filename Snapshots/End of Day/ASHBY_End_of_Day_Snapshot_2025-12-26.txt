@@ -1,0 +1,108 @@
+ASHBY — END OF DAY SNAPSHOT
+DATE: 2025-12-27
+TIMEZONE: America/Toronto
+RAID: Ashby Structural Realignment (Emergency) — ACTIVE (NOT COMPLETE)
+
+OPERATOR: notsolikely
+ENV: ashby-env
+REPO ROOT: ~/ashby
+
+================================================================================
+SUMMARY (HONEST)
+================================================================================
+
+We did NOT complete today’s intended raid scope.
+
+This is logged intentionally and explicitly to preserve continuity and prevent
+future confusion or false assumptions about completion.
+
+The system remains WORKING and STABLE.
+The raid remains ACTIVE.
+
+================================================================================
+WHAT WAS COMPLETED TODAY
+================================================================================
+
+1) Control Sync alignment (retroactively documented)
+   - Emergency Structural Realignment reaffirmed as the sole priority.
+   - One Router Doctrine locked (single canonical router; Stuart is a module).
+   - Step-by-step surgical workflow locked (no multi-step tangents).
+
+2) Capability scaffolding created
+   - ashby/capabilities/
+   - ashby/capabilities/lights/
+   - ashby/capabilities/comfort/
+   - __init__.py files created
+
+3) Lights capability handler created
+   - File created: ashby/capabilities/lights/handler.py
+   - Existing lights logic copied from router into handler
+   - No behavior changes introduced
+
+4) Router dispatch wired to lights handler
+   - Router now calls lights handler for lights.* intents
+   - Legacy lights logic still present in router (temporary redundancy)
+   - This was a deliberate safety step
+
+5) Sanity verification
+   - python3 -m py_compile ashby/core/router.py → PASS
+   - CLI harness tested:
+     - turn on/off lights
+     - brightness adjustments
+     - behavior confirmed identical to pre-refactor state
+
+================================================================================
+WHAT WAS NOT COMPLETED (FAILED SCOPE)
+================================================================================
+
+The following items were explicitly intended for today but were NOT completed:
+
+- Removal of legacy lights ON/OFF/ADJUST blocks from ashby/core/router.py
+- Comfort capability handler creation and extraction
+- Import migration (CLI + Telegram → canonical router)
+- Compatibility wrapper removal
+- Runtime/ and configs/ scaffolding
+- AshPi → Ashby naming cleanup
+- Full end-to-end sanity pass after cleanup
+
+These items remain outstanding and block raid completion.
+
+================================================================================
+CURRENT STATE (IMPORTANT)
+================================================================================
+
+- Router is FUNCTIONALLY CORRECT but TEMPORARILY DUPLICATED
+  (lights logic exists both in router and handler)
+- No deletions have occurred yet
+- No wrappers have been removed yet
+- No behavior regressions observed
+
+This is a SAFE stopping point.
+
+================================================================================
+EXACT RESUME POINT (NEXT SESSION)
+================================================================================
+
+NEXT ACTION — DO NOT SKIP:
+
+1) Remove legacy lights ON/OFF/ADJUST blocks from:
+   ashby/core/router.py
+
+   - Keep the lights handler wired
+   - After removal:
+       - Compile router
+       - Run CLI sanity (lights only)
+
+ONLY after this passes:
+2) Begin comfort capability extraction using the same pattern.
+
+================================================================================
+STOP CONDITION
+================================================================================
+
+Work was stopped intentionally at a clean, verified boundary to avoid
+late-night errors.
+
+No further changes should be made without resuming from the resume point above.
+
+END OF DAY SNAPSHOT

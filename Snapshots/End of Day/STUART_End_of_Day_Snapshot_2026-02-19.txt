@@ -1,0 +1,209 @@
+================================================================================
+END OF DAY SNAPSHOT
+================================================================================
+A) Header (required)
+- Subject: STUART
+- Date: 2026-02-19
+- Topic: STUART D4 QUEST_114 completion + runtime stabilization + environment hardening
+- Snapshot Type: End_of_Day
+- World State: Fog Lifted
+- Codex Freeze status: PRESENT (/home/notsolikely/Ashby_Data/Codex/CODEX_FREEZE.md)
+
+B) Work Performed (Quest-by-Quest) (required)
+Session scope: Stuart D4 execution closeout with governance-compliant quest closure, runtime stabilization, and reproducible environment hardening.
+
+1) Governance + state operations executed
+- Ran Synapse doctor gate:
+  `python3 /home/notsolikely/Synapse_OS/runtime/synapse.py doctor --governance-root /home/notsolikely/Synapse_OS/governance`
+  Result: PASS.
+- Confirmed Control Sync state through canonical writer:
+  `python3 .../synapse_snapshot_writer.py --data-root /home/notsolikely/Ashby_Data --subject STUART status`
+  Result: inactive control sync, last close snapshot at:
+  `/home/notsolikely/Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot__02_2026-02-18.txt`.
+
+2) QUEST_114 implementation closure (what was built)
+- Canonical TranscriptVersion runtime + schema surface completed under Ashby Engine:
+  - `ashby/modules/meetings/transcript_versions.py`
+  - `ashby/modules/meetings/schemas/artifacts_v1.py`
+  - `tests/test_meetings_transcript_versions_store.py`
+  - `tests/test_meetings_artifact_schemas_v1.py`
+- TranscriptVersion store architecture delivered:
+  - Session-local append-only index:
+    `sessions/{session_id}/transcripts/index.jsonl`
+  - Write-once full version artifacts:
+    `sessions/{session_id}/transcripts/versions/{transcript_version_id}.json`
+  - Global lookup index:
+    `transcript_versions/lookup.jsonl`
+- Determinism + truth rules implemented:
+  - write-once JSON artifacts
+  - sorted JSONL rows
+  - STUART_ROOT-safe audio references (reject unsafe absolute paths)
+  - transcript version IDs with `trv_` prefix.
+
+3) Runtime/test stabilization completed during closeout (why this work happened)
+- After quest implementation, full verification surfaced API/ASGI deadlock-path behavior in this environment.
+- To ensure end-to-end testability and truthful runtime behavior (not fake pass), the following stabilization updates were applied:
+  - citation source/fallback alignment for deterministic golden parity:
+    `ashby/modules/meetings/render/citations.py`
+  - deterministic substrate alignment for formalization/truth path:
+    `ashby/modules/meetings/formalize/minutes_json.py`
+    `ashby/modules/meetings/truth/evidence_bundle.py`
+  - explicit ASR enable rail in transcribe adapter for local/stub determinism:
+    `ashby/modules/meetings/adapters/transcribe_faster_whisper.py`
+  - web API handler async normalization to avoid sync/threadpool deadlocks under ASGI test transport:
+    `ashby/interfaces/web/app.py`
+  - artifact download response path hardened for test transport:
+    `ashby/interfaces/web/runs.py`
+  - web tests adjusted to deterministic client lifecycle (no hanging context-manager pattern in this environment):
+    `tests/test_meetings_web_api_envelope_consistency.py`
+    `tests/test_meetings_web_reformalize_controls.py`
+    `tests/test_meetings_web_upload_run.py`
+
+4) Data/governance artifacts updated
+- QUEST_114 execution audit bundle finalized:
+  `/home/notsolikely/Ashby_Data/Audits/Execution/QUEST_114__2026-02-19__stuart_v1_d4_114_intake/`
+  with summary/execution/verify/outcome and command receipts.
+- QUEST_114 quest card moved from Accepted to Completed and marked completed:
+  `/home/notsolikely/Ashby_Data/Quest Board/Completed/QUEST_114__Stuart_v1_D4_1of15__TranscriptVersion_artifact_schema_runtime_store__2026-02-19.txt`.
+
+5) Dependency/environment hardening performed
+- Stuart dependency install confirmed from requirements in venv:
+  `/home/notsolikely/Ashby_Engine/.venv`.
+- Network-enabled remediation performed for pyannote runtime compatibility:
+  - initial `torch/torchaudio 2.10.0` and `2.9.1` failed pyannote import (`AudioMetaData` missing)
+  - resolved by pinning compatible pair:
+    `torch==2.7.1+cu126`
+    `torchaudio==2.7.1+cu126`
+  - post-fix import check: `pyannote.audio` import PASS.
+
+C) Completed Work Summary (required when anything completed)
+Completed outcomes for this session:
+
+A) Governance state
+- Boot gate/doctor PASS.
+- Control Sync is closed/inactive; no open control state left dangling.
+
+B) QUEST_114 completed to governance standards
+- Quest status set to COMPLETED and moved into Completed lane.
+- Audit outcome upgraded to COMPLETE PASS.
+- Implementation + tests + receipts present in QUEST_114 execution bundle.
+
+C) Engine/runtime deliverables materially completed
+- TranscriptVersion storage/schema implementation finished.
+- Web/API runtime deadlock-paths resolved for deterministic test behavior in this environment.
+- Citation/evidence deterministic parity issues addressed.
+
+D) Verification and environment readiness achieved
+- Targeted and broad validation runs executed with receipts.
+- Web-test dependency stack installed and verified.
+- pyannote import compatibility restored under current venv via torch/torchaudio version alignment.
+
+D) Incomplete / Failed / Blocked Work (required when relevant)
+Open/incomplete items (not blockers for QUEST_114 closeout):
+
+1) D4 chain progression beyond QUEST_114
+- QUEST_115..QUEST_128 remain as future execution work (prepared/accepted flow already established earlier).
+
+2) Minor non-blocking warning debt
+- Starlette template response deprecation warning observed in web door tests
+  (parameter order style warning only; does not block runtime correctness).
+
+3) Operational token posture
+- If remote diarization/model pulls are used in future sessions, ensure runtime token policy (HF/OpenAI) is explicitly set per mode/profile and governance rail.
+
+E) System Verification Performed (required when applicable)
+Verification receipts summary:
+
+1) Governance doctor gate
+- Command:
+  `python3 /home/notsolikely/Synapse_OS/runtime/synapse.py doctor --governance-root /home/notsolikely/Synapse_OS/governance`
+- Result: PASS.
+
+2) Control sync state receipt
+- Command:
+  `python3 .../synapse_snapshot_writer.py --data-root /home/notsolikely/Ashby_Data --subject STUART status`
+- Result: inactive (`active:false`), with last close snapshot path recorded.
+
+3) QUEST_114 audit verification files
+- `06_PYCOMPILE.txt`
+- `06_PYTEST_TARGETED.txt`
+- `06_PYTEST_FULL.txt`
+- `06_CHANGED_FILES.txt`
+
+4) Additional runtime validation executed during closeout
+- Isolated failing clusters to web API transport and fixed root causes.
+- Re-ran web clusters to green (`10 passed` web set including reformalize/upload).
+- Re-ran test tail sweep including telegram + smoke files to green:
+  `TAIL_TESTS_PASSED`.
+
+5) Dependency/runtime verification
+- Requirements install in venv completed.
+- Import checks PASS for:
+  fastapi, uvicorn, jinja2, multipart, openai, faster_whisper, pyannote.audio,
+  huggingface_hub, weasyprint, pytest.
+
+F) Bugs / Weirdness / Discoveries
+Bugs/weirdness discovered and how they were handled:
+
+1) Golden citation mismatch during QUEST_114 closeout
+- Symptom: citation token mismatch (`[S3]` vs timestamp form).
+- Fix: citation segment source selection aligned with deterministic stub transcript path.
+
+2) ASGI/web endpoint test hangs in local environment
+- Symptom: async web tests stalled on specific request paths.
+- Root class: sync handler + threadpool/transport behavior under test runtime.
+- Fixes:
+  - normalized API route handlers to async where needed
+  - detached run execution spawn for `/api/run` and `/reformalize`
+  - adjusted artifact download response behavior for test transport
+  - updated specific web tests to explicit AsyncClient lifecycle.
+
+3) pyannote runtime import incompatibility
+- Symptom: `AttributeError: module 'torchaudio' has no attribute 'AudioMetaData'`.
+- Attempted remediations:
+  - torch/torchaudio 2.9.1 still failed
+- Successful remediation:
+  - torch/torchaudio 2.7.1 pair restored required API and pyannote import success.
+
+G) Raid / Guild Orders status changes
+Raid / Dungeon status snapshot:
+
+- Subject: STUART
+- Current dungeon lane: D4 execution chain
+- D3 quests: completed previously and retained; no D3 rollback performed in this session.
+- This session completion:
+  - QUEST_114 (D4 1/15) moved to COMPLETED with implementation + governance receipts.
+- Remaining D4 chain work:
+  - QUEST_115..QUEST_128 pending future execution (accepted/planned state managed in Quest Board).
+
+H) Talent Tree updates (mandatory when relevant)
+Talent updates in this session:
+- No new talent log entry written in this pass.
+- Capability impact (implicit): strengthened runtime reliability around governed verification,
+  deterministic transcript-version backbone, and web door truth-path stability.
+
+I) Resume Instructions (required)
+Resume anchor for next session:
+
+1) Rehydrate quickly
+- Open latest EOD + latest Control Sync snapshot under:
+  `/home/notsolikely/Ashby_Data/Snapshots/End of Day/`
+  `/home/notsolikely/Ashby_Data/Snapshots/Control Sync/`
+- Confirm QUEST_114 remains in Completed lane.
+
+2) Environment
+- Use existing venv:
+  `cd /home/notsolikely/Ashby_Engine`
+  `source .venv/bin/activate`
+- Current known-good torch stack for pyannote:
+  torch 2.7.1 / torchaudio 2.7.1.
+
+3) Next execution starting point
+- Continue D4 chain at QUEST_115 unless Hands reprioritizes.
+- Keep Control Sync closed unless a new alignment/change set is required.
+
+4) Truth rails
+- Keep write-once artifact behavior for transcript versions.
+- Preserve engine/data separation and governed snapshot writer usage for any new continuity events.
+
+END OF SNAPSHOT

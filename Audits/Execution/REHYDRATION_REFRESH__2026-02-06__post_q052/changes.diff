@@ -1,0 +1,599 @@
+--- a/ASHBY_DATA_DIRECTORY_MAP.txt
++++ b/ASHBY_DATA_DIRECTORY_MAP.txt
+@@ -1,5 +1,5 @@
+ ASHBY DATA DIRECTORY MAP (BUFF)
+-Version: 2026-01-25
++Version: 2026-02-06
+ Status: Canonical (Orientation + Review Tiers)
+ Purpose: Tell Brains exactly where to look, what is canonical vs reference, and what to edit vs never touch.
+ Scope: Ashby_Data + Ashby_Engine + zip quarantine (mnt/data).
+@@ -9,7 +9,7 @@
+ ================================================================================
+ - Canonical governance artifacts live in: /mnt/data/Ashby_Data/
+ - Canonical codebase lives in: /mnt/data/Ashby_Engine/
+-- Rehydration packs are RESUME REFERENCE ONLY unless Hands explicitly orders edits.
++- Rehydration packs are OPTIONAL resume artifacts; treat as authoritative when present; update ONLY when Hands explicitly orders.
+ - Archive folders are superseded unless Hands explicitly orders reopening them.
+ - If a directory is “Reference Only,” do not edit it. Edit the canonical source instead.
+ 
+@@ -170,28 +170,36 @@
+ - Treat any tokens/keys inside as secrets; do not paste them into chat.
+ 
+ ================================================================================
+-5) REHYDRATION PACKS (REFERENCE ONLY)
+-================================================================================
+-Common location:
++5) REHYDRATION PACKS (OPTIONAL RESUME KIT)
++================================================================================
++Canonical location:
+ - /mnt/data/Ashby_Data/Latest Rehydration Pack/
+ 
+-Contents usually include:
++Optional Pack Rule (binding):
++- Rehydration Packs + Execution Packs are ONLY present when there is a current active one.
++- If the folder exists but is empty (or missing continuity/bootstrap), that is NOT an error.
++  It means there is no active rehydration pack for the session.
++- If Hands expects a pack for this session and it is missing, STOP and ask.
++
++Contents usually include (when active):
+ - Continuity Lock
+ - Bootstrap Prompt
+-- Execution Pack
+-- Snapshots
+-- Quest copies
+-- Guild order copies
+-
+-Review tier:
+-- Tier 0 (Continuity + Bootstrap if this pack is the session resume authority)
+-- Tier 1 (Execution Pack when relevant)
+-
+-Edit policy:
+-- NO (do not edit inside the pack; edit canonical Ashby_Data instead)
+-
+-================================================================================
+-6) ARCHIVE (IGNORE UNLESS ORDERED)
++- Execution Pack (current runbook)
++- Pointers to latest snapshots / guild orders / quest stack
++
++Review tier:
++- Tier 0 (Continuity + Bootstrap if provided for the session)
++- Tier 1 (Execution Pack when you are executing an accepted stack)
++
++Edit policy:
++- Default: NO (treat as read-only)
++- Allowed: YES ONLY when Hands explicitly orders a rehydration refresh
++  (example: end of accepted quest stack; preparing for a new chat)
++- Old packs should be archived under:
++  - /mnt/data/Ashby_Data/Archive(IGNORE)/Stuart Rehydration Pack <Month Day>/
++
++================================================================================
++6) ARCHIVE (IGNORE UNLESS ORDERED) (IGNORE UNLESS ORDERED)
+ ================================================================================
+ Paths:
+ - /mnt/data/Ashby_Data/Archive/
+
+--- a/ASHBY_EXECUTION_PROTOCOL.txt
++++ b/ASHBY_EXECUTION_PROTOCOL.txt
+@@ -1,5 +1,5 @@
+ ASHBY EXECUTION PROTOCOL (BUFF)
+-Version: 2026-01-25
++Version: 2026-02-06
+ Status: Canonical (Session Operating Law)
+ Audience: Brains (Assistant) + Hands (User)
+ Purpose: Prevent drift, enforce truth, and make each Raid deterministic and auditable.
+@@ -12,7 +12,7 @@
+ - No silent assumptions. If something isn’t certain, STOP and ask Hands.
+ - No stealth scope. Do only what is ordered by Guild Orders + Accepted Quests.
+ - One canonical engine repo. No re-unzipping old engines to “continue work” on a fork.
+-- Governance artifacts live in Ashby_Data. Rehydration packs are reference only.
++- Governance artifacts live in Ashby_Data. Rehydration packs are optional resume artifacts (update only by explicit Hands order).
+ 
+ ================================================================================
+ 1) CANONICAL AUTHORITY STACK (WHAT WINS WHEN CONFLICT EXISTS)
+@@ -20,7 +20,7 @@
+ When two sources conflict, resolve in this order (top wins):
+ 1) Codex (Ashby Codex + Stuart Codex) — constitutional law
+ 2) Active Guild Orders — current raid scope + definition of done
+-3) Continuity Lock + Bootstrap Prompt — session resume law (where we left off)
++3) Continuity Lock + Bootstrap Prompt — session resume law (if provided for this session)
+ 4) Quest Template — required quest structure + fields
+ 5) Quest Board state (folder placement) — actual commitment state machine
+ 6) Snapshots — receipts (what we claimed happened and when)
+@@ -73,11 +73,28 @@
+   - /mnt/data/Ashby_Data/Docs/   (Ashby canonical vision + blueprint)
+   - /mnt/data/Ashby_Data/Stuart/Docs/ (Stuart canonical vision)
+ 
+-2.3 Rehydration Packs: Reference only (Do NOT edit)
+-- Example pattern:
++2.3 Rehydration Packs: Optional resume artifacts (edit ONLY by explicit Hands order)
++- Canonical location:
+   - /mnt/data/Ashby_Data/Latest Rehydration Pack/
+-- Contains continuity lock, bootstrap prompt, snapshots, execution pack copies.
+-- Use for reading/resume only. Canonical edits happen in Ashby_Data (not inside pack).
++
++Optional Pack Rule (binding):
++- Rehydration Packs + Execution Packs are ONLY present when there is a current active one.
++- If the folder exists but is empty (or missing continuity/bootstrap), that is NOT an error.
++  It means there is no active rehydration pack for the session.
++- If Hands expects a pack for this session and it is missing, STOP and ask.
++
++Authority:
++- When present, the Continuity Lock + Bootstrap Prompt inside the pack are authoritative resume law.
++- Historical module-level packs (e.g., under /mnt/data/Ashby_Data/Stuart/Docs/...) are NOT resume authority.
++
++Update policy:
++- Default: treat packs as read-only.
++- Allowed: update packs ONLY when Hands explicitly orders a rehydration refresh
++  (example: end of accepted quest stack; preparing to start a new chat).
++
++Note:
++- Canonical edits to Quest Board / Guild Orders / Snapshots still happen in their canonical roots.
++  The rehydration pack is a bundled resume kit, not the source-of-truth location for those artifacts.
+ 
+ 2.4 Engine Repo (Canonical codebase)
+ All code changes must be made in the ONE canonical engine repo:
+@@ -174,6 +191,10 @@
+ - and terminal output showing:
+   - the command you ran
+   - the result
++
++Additional Truth Gate (binding):
++- NEVER claim pytest/tests passed or failed without actually running them.
++- Always capture the full output (or store it in the audit bundle).
+ 
+ 6.3 No side-work rule
+ Do not “also fix” unrelated issues unless:
+
+--- a/ASHBY_SESSION_START_CHECK.txt
++++ b/ASHBY_SESSION_START_CHECK.txt
+@@ -1,5 +1,5 @@
+ ASHBY SESSION START CHECK (BUFF)
+-Version: 2026-02-05
++Version: 2026-02-06
+ Status: Canonical (60-second Buff-Up / Ignition Key)
+ Purpose: Deterministic, auditable session start. Always Buff before a Raid.
+ NOTE: This is a Buff / ignition checklist. It follows Governance law and does not redefine it.
+@@ -17,12 +17,19 @@
+ ================================================================================
+ 1) Review Synapse Governance (governance law)
+ 2) Confirm canonical folders are present (Ashby_Data + Ashby_Engine)
+-3) 
++3) Confirm session resume artifacts (Rehydration Pack) IF present
++
+ NOTE (Rehydration Pack Location):
+ - Rehydration packs are subject-level.
+ - Canonical location:
+   /mnt/data/Ashby_Data/Latest Rehydration Pack/
+ - Module-level packs may exist historically but are not used for new sessions.
++
++IMPORTANT (Optional Pack Rule):
++- Rehydration Packs + Execution Packs are ONLY present when there is a current active one.
++- If the folder exists but is empty (or missing continuity/bootstrap files), that is NOT an error.
++  It means there is no active rehydration pack for the session.
++- If Hands expects a pack for this session and it is missing, STOP and ask.
+ 
+ Confirm Continuity Lock + Bootstrap Prompt (resume law)
+ 4) Confirm Active Guild Orders (current raid scope)
+@@ -63,13 +70,20 @@
+ # Confirm the two required files exist (names may vary, list them):
+ ls -la "/mnt/data/Ashby_Data/Latest Rehydration Pack" | grep -i "continuity\|bootstrap" || true
+ 
++# If multiple versions exist, choose the newest files by filename date:
++ls -1 "/mnt/data/Ashby_Data/Latest Rehydration Pack" | grep -i "CONTINUITY_LOCK" | sort | tail -n 1 || true
++ls -1 "/mnt/data/Ashby_Data/Latest Rehydration Pack" | grep -i "BOOTSTRAP_PROMPT" | sort | tail -n 1 || true
++
++# Execution Pack folder (optional; may be empty by design):
++ls -la "/mnt/data/Ashby_Data/Latest Rehydration Pack/execution pack" || true
++
+ # Read them:
+ # Replace filenames with exact names on disk.
+ # cat "/mnt/data/Ashby_Data/Latest Rehydration Pack/CONTINUITY_LOCK_YYYY-MM-DD.txt"
+ # cat "/mnt/data/Ashby_Data/Latest Rehydration Pack/BOOTSTRAP_PROMPT_YYYY-MM-DD.txt"
+ 
+ # NOTE: Historical module-level packs may exist under:
+-#   /mnt/data/Ashby_Data/Stuart/Docs/Latest Rehyration Pack
++#   /mnt/data/Ashby_Data/Stuart/Docs/Latest Rehydration Pack
+ # Do NOT use those for new sessions; canonical resume authority is:
+ #   /mnt/data/Ashby_Data/Latest Rehydration Pack/
+ 
+@@ -95,7 +109,7 @@
+ 
+ 2.10 Confirm tests runnable (minimum)
+ cd "/mnt/data/Ashby_Engine"
+-python -m pytest -q tests
++PYTHONPATH="/mnt/data/Ashby_Engine" python3 -m pytest -q
+ 
+ ================================================================================
+ 3) ACCEPT QUESTS (ONLY AFTER BUFF-UP)
+@@ -121,7 +135,7 @@
+ ================================================================================
+ Stop immediately and ask Hands if:
+ - Canonical folders are missing
+-- Continuity lock/bootstrap prompt cannot be found or names differ from expectation
++- Continuity lock/bootstrap prompt cannot be found AND Hands expects a current rehydration pack
+ - Active Guild Orders not found
+ - Tests cannot run
+ - Quest definitions are ambiguous
+
+--- a/BOOTSTRAP_PROMPT_2026-02-05.txt
++++ b/BOOTSTRAP_PROMPT_2026-02-06.txt
+@@ -1,7 +1,7 @@
+ STUART — BOOTSTRAP PROMPT (NEW CHAT)
+-Date: 2026-02-05
++Date: 2026-02-06
+ Owner: Hands (Peter) / Brains (Ash)
+-Scope: Stuart v1 (Meetings + Journal) — REV7 finish-line
++Scope: Stuart v1 (Meetings + Journal) — REV7 post-stack rehydrate
+ 
+ PURPOSE
+ - Rehydrate a brand new chat into the exact governed state of the Stuart v1 raid.
+@@ -12,53 +12,74 @@
+ - Data:       /mnt/data/Ashby_Data
+ - Engine:     /mnt/data/Ashby_Engine
+ 
++OPTIONAL PACK RULE (IMPORTANT)
++- Rehydration Packs + Execution Packs are ONLY present when there is a current active one.
++- If a pack folder exists but is empty, that is NOT an error — it means no active pack.
++- For THIS session, the pack IS present and is authoritative resume law.
++
+ DO NOT USE
+ - Any older “engine zip” working copies.
+ - Module-level historical rehydration packs under:
+-  /mnt/data/Ashby_Data/Stuart/Docs/Latest Rehyration Pack
+-  (Those are historical reference; canonical session resume is this folder.)
++  /mnt/data/Ashby_Data/Stuart/Docs/Latest Rehydration Pack
++  (Those are historical reference; canonical session resume is THIS folder.)
+ 
+ MANDATORY READ ORDER (SESSION START)
+-1) Synapse Governance
++1) Synapse Governance (Tier 0)
+    - /mnt/data/Synapse_OS_Governance/README.txt
+    - /mnt/data/Synapse_OS_Governance/INDEX.txt
+    - /mnt/data/Synapse_OS_Governance/Processes/SYNAPSE_GUILD__THE_LOOP.txt
+    - /mnt/data/Synapse_OS_Governance/Processes/SYNAPSE_GUILD__TRUTH_GATE.txt
+ 
+-2) Subject Buffs (Ashby)
++2) Subject Buffs (Ashby) — Tier 0
+    - /mnt/data/Ashby_Data/Buffs/ASHBY_SESSION_START_CHECK.txt
+    - /mnt/data/Ashby_Data/Buffs/ASHBY_EXECUTION_PROTOCOL.txt
+    - /mnt/data/Ashby_Data/Buffs/ASHBY_DATA_DIRECTORY_MAP.txt
+ 
+-3) Continuity Lock (this folder)
+-   - /mnt/data/Ashby_Data/Latest Rehydration Pack/CONTINUITY_LOCK_2026-02-05.txt
++3) Continuity Lock (THIS folder) — binding resume law
++   - /mnt/data/Ashby_Data/Latest Rehydration Pack/CONTINUITY_LOCK_2026-02-06.txt
+ 
+ 4) Codex freeze marker (execution authorization)
+    - /mnt/data/Ashby_Data/Codex/CODEX_FREEZE.md
+ 
+-5) Active Guild Orders
++5) Active Guild Orders (current raid scope)
+    - /mnt/data/Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS_STUART_V1_2026-02-04_REV7.txt
+ 
+-6) Quest Board truth
++6) Quest Board truth (commitment state machine)
+    - /mnt/data/Ashby_Data/Quest Board/Accepted/
+    - /mnt/data/Ashby_Data/Quest Board/Completed/
++   - /mnt/data/Ashby_Data/Quest Board/   (board root for unaccepted quests)
+ 
+-7) Latest Stuart control sync anchor
+-   - /mnt/data/Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-02-04__REV7_Quest_Refactor.txt
++7) Latest snapshots (resume anchors)
++   - Latest Control Sync:
++     - /mnt/data/Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-02-04__REV7_Quest_Refactor.txt
++   - Latest End-of-Day:
++     - /mnt/data/Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2026-02-06__Q042-Q052.txt
+ 
+-CURRENT RAID INTENT (WHAT WE ARE BUILDING)
++CURRENT RAID INTENT (WHAT STUART V1 MUST DO)
+ Goal: Stuart v1 should accept an audio file and produce:
+-- diarization (speaker segments)
+-- verbatim transcript
+-- meeting minutes (minutes.json + minutes.md + minutes.pdf)
+-- journal entry (journal.json + journal.md + journal.pdf)
+-…with truth discipline (citations anchored to segment_ids) and no hallucinated templates.
++- diarization.json (speaker segments + confidence)
++- transcript.json (verbatim transcript)
++- aligned_transcript.json (speaker-tagged transcript w/ diarization source)
++- minutes.json (v1, citations anchored to segment_id) + minutes.md + exports/minutes.pdf
++- journal.json (v1, citations anchored to segment_id) + journal.md + exports/journal.pdf
++- run.json now includes primary_outputs pointers so Doors don’t hardcode filenames
++
++Truth discipline requirements:
++- No hallucinated templates: template_id MUST validate against registry.
++- Formalizers must not invent decisions/actions. If not supported, lists stay empty.
++- If remote LLM is used, it must be profile-gated and explicitly enabled.
++
++RUNTIME ROOT (IMPORTANT)
++- Stuart’s runtime outputs (runs, artifacts, exports) live under STUART_ROOT (outside the repo).
++- Config:
++  - env var: STUART_ROOT
++  - default: ~/ashby_runtime/stuart
+ 
+ CANONICAL RULES (NON-NEGOTIABLE)
+ - No God files. Each file does one job.
+-- Template IDs are registry-validated. If the user asks for a template that doesn’t exist, Stuart must NOT invent one.
+ - Quests are atomic. Execute only Accepted quests.
+ - Truth Gate: every “done” claim requires real receipts (diffs, commands, tests, artifacts).
++- Testing law: NEVER claim pytest passed/failed without running it and capturing the output.
+ - Snapshots:
+   - Control Sync snapshots capture decisions.
+   - End-of-day snapshot only when the accepted quest stack is complete OR the session explicitly ends.
+@@ -68,16 +89,11 @@
+ - GUILD_ORDERS_STUART_V1_2026-02-04_REV7.txt is ACTIVE.
+ 
+ Quest Board:
+-- COMPLETED:
+-  - QUEST_042 — Run params: retention + template_id are first-class + validated
+-  - QUEST_043 — Default meeting/journal templates upgraded (citation format + “no invention”)
+-
+-- ACCEPTED (current commitment stack):
+-  - QUEST_044 → QUEST_052
++- ACCEPTED: none (no active commitment stack right now)
++- COMPLETED: QUEST_042 → QUEST_052 (REV7 phase stack finished)
++- BOARD (unaccepted): QUEST_053+ exist but are NOT authorized until accepted
+ 
+ NEXT ACTION (DO NOT EXECUTE UNTIL HANDS SAYS GO)
+-- If Hands says “execute next quest”, start with:
+-  - QUEST_044 (minutes.json schema v1)
+-- Follow execution order in the execution pack:
+-  - /mnt/data/Ashby_Data/Latest Rehydration Pack/execution pack/
++- Start in Control Sync mode to decide next scope (Dungeon 3 / integration / retrieval).
++- Once Hands accepts the next quest stack, generate/update the execution pack and proceed.
+ 
+
+--- a/CONTINUITY_LOCK_2026-02-05.txt
++++ b/CONTINUITY_LOCK_2026-02-06.txt
+@@ -1,5 +1,5 @@
+ STUART — CONTINUITY LOCK
+-Date: 2026-02-05
++Date: 2026-02-06
+ 
+ PURPOSE
+ - Freeze the authoritative state of the Stuart v1 raid so a new session cannot drift.
+@@ -10,12 +10,10 @@
+ - Subject data canon: /mnt/data/Ashby_Data
+ - Subject engine canon: /mnt/data/Ashby_Engine
+ 
+-CANONICAL ROOT NORMALIZATION (OPTION A EXECUTED)
+-- The canon zip wrapper was extracted and the roots were moved into place:
+-  - /mnt/data/Ashby_Data
+-  - /mnt/data/Ashby_Engine
+-- The wrapper folder is archived (inert):
+-  - /mnt/data/Archive(IGNORE)/WRAPPER__Ashby_CANON__Q042-043_COMPLETED__2026-02-04
++OPTIONAL PACK RULE (BINDING)
++- Rehydration Packs + Execution Packs are ONLY present when there is a current active one.
++- If a pack folder exists but is empty, that is NOT an error — it means no active pack.
++- For THIS session, the pack IS present and is authoritative resume law.
+ 
+ CODEX STATUS (FOG)
+ - Codex Freeze Marker present:
+@@ -28,38 +26,101 @@
+ - /mnt/data/Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS_STUART_V1_2026-02-04_REV7.txt
+ 
+ QUEST BOARD TRUTH (COMMITMENT STATE)
+-COMPLETED:
+-- QUEST_042 — Stuart v1 D2 (1/7): Run Params (retention + template_id) validation
+-- QUEST_043 — Stuart v1 D2 (2/7): Default Templates (meeting/journal) + citation format + no invention
+-
+-ACCEPTED (active commitment stack; execute in this order):
++COMPLETED (implemented + verified via pytest receipts in audits):
++- QUEST_042 — Run Params: retention + template_id are first-class + validated
++- QUEST_043 — Default templates (meeting/journal) upgraded (citation format + “no invention”)
+ - QUEST_044 — minutes.json schema v1 (machine contract)
+ - QUEST_045 — journal.json schema v1 (machine contract)
+-- QUEST_046 — formalize meeting → minutes.json (profile-gated)
+-- QUEST_047 — formalize journal → journal.json (profile-gated)
+-- QUEST_048 — render minutes/journal MD from JSON (deterministic)
+-- QUEST_049 — output naming: minutes.md / journal.md
+-- QUEST_050 — output naming: minutes.pdf / journal.pdf
+-- QUEST_051 — diarization artifact naming: diarization.json
+-- QUEST_052 — run manifest primary output pointers (mode-aware)
++- QUEST_046 — formalize meeting → minutes.json (profile-gated; strict JSON/schema + loud failure receipts)
++- QUEST_047 — formalize journal → journal.json (profile-gated; strict JSON/schema + loud failure receipts)
++- QUEST_048 — render MD from minutes/journal JSON (deterministic)
++- QUEST_049 — output naming: minutes.md / journal.md (no more formalized.md for new runs)
++- QUEST_050 — output naming: exports/minutes.pdf / exports/journal.pdf (no more formalized.pdf for new runs)
++- QUEST_051 — diarization artifact naming: diarization.json (+ confidence)
++- QUEST_052 — run.json primary_outputs pointers (mode-aware) + resolver helper
++
++ACCEPTED:
++- None (no active commitment stack right now)
+ 
+ UNACCEPTED (do not execute without Control Sync decision):
+ - QUEST_053+ (Evidence Map v2, Retrieval upgrades, Doors unification, Speaker map, etc.)
+ 
++WHAT IS NOW TRUE (SYSTEM BEHAVIOR CONTRACT)
++1) Template non-hallucination is enforced
++- Template IDs are validated by registry:
++  - ashby/modules/meetings/template_registry.py
++- v1 allowed templates are STATIC:
++  - meeting: default
++  - journal: default
++- Adding a new template currently requires a code change (update _V1_TEMPLATES_BY_MODE) + adding a template file.
++
++2) Formalization (JSON-first)
++Meeting mode:
++- Writes (write-once):
++  - artifacts/minutes.json (schema v1; citations reference segment_id)
++- Profile behavior:
++  - LOCAL_ONLY: deterministic fallback (no invented decisions/actions; transcript-backed notes)
++  - HYBRID/CLOUD: remote LLM is only attempted when ASHBY_MEETINGS_LLM_ENABLED is set truthy.
++    - If remote unavailable: fallback deterministic (with warning)
++    - If remote returns non-JSON or schema-invalid: FAIL LOUD + write raw + failure receipt
++
++Journal mode:
++- Writes (write-once):
++  - artifacts/journal.json (schema v1; citations reference segment_id)
++- Same profile behavior as meeting.
++
++3) Rendering outputs (mode-specific)
++- Meeting:
++  - artifacts/minutes.md
++  - exports/minutes.pdf
++- Journal:
++  - artifacts/journal.md
++  - exports/journal.pdf
++
++4) Diarization + alignment contracts
++- Canonical diarization file:
++  - artifacts/diarization.json (includes confidence)
++- Alignment uses diarization.json; fallback:
++  - artifacts/diarization_segments.json (legacy)
++
++5) Run manifest pointers
++- run.json includes:
++  - primary_outputs (json/md/pdf/evidence_map pointers per mode)
++- Resolver helper:
++  - ashby/modules/meetings/primary_outputs.py
++
++RUNTIME ROOT (IMPORTANT)
++- Stuart runtime outputs live under STUART_ROOT (outside repo).
++- Default: ~/ashby_runtime/stuart
++- Override via env: STUART_ROOT
++
++EGRESS / REMOTE LLM GATING (DO NOT GUESS)
++- ASHBY_EXECUTION_PROFILE:
++  - LOCAL_ONLY / HYBRID / CLOUD
++- ASHBY_MEETINGS_LLM_ENABLED:
++  - must be explicitly truthy to allow remote minutes/journal JSON formalization
++- OPENAI_API_KEY:
++  - required for OpenAI remote formalizer when enabled
++- ASHBY_MEETINGS_FORMALIZER_MODEL:
++  - optional model override (default: gpt-4o-mini)
++
+ KNOWN HAZARDS / NON-AUTHORITATIVE SOURCES
+ - Historical module-level rehydration packs exist under:
+-  /mnt/data/Ashby_Data/Stuart/Docs/Latest Rehyration Pack
++  /mnt/data/Ashby_Data/Stuart/Docs/Latest Rehydration Pack
+   These are NOT authoritative for session resume. Do not rehydrate from them.
+ 
+-ENGINE REPO NOTE
+-- The engine repo is treated as canonical even if git status is dirty.
+-- Do NOT attempt to “fix” git history during Stuart v1 quests unless explicitly ordered.
+-
+-SNAPSHOT LAW
++SNAPSHOT LAW (BINDING)
+ - End-of-Day snapshot is created ONLY when:
+-  - the accepted quest stack (QUEST_044–QUEST_052) is complete, OR
++  - the accepted quest stack is complete, OR
+   - Hands explicitly ends the session.
+ 
++LATEST SNAPSHOT ANCHORS
++- Latest Control Sync:
++  - /mnt/data/Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-02-04__REV7_Quest_Refactor.txt
++- Latest End-of-Day:
++  - /mnt/data/Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2026-02-06__Q042-Q052.txt
++
+ NEXT EXPECTED STEP
+-- Execute QUEST_044 next (minutes.json schema v1) using the execution pack runbook.
++- Start a Control Sync to decide and accept the next quest stack (Dungeon 3 / integration work).
++- Do NOT execute QUEST_053+ until accepted.
+ 
+
+--- a/STUART_EXECUTION_PACK__REV7__Q044-Q052__2026-02-05.txt
++++ b/STUART_EXECUTION_PACK__REV7__POST_Q052__2026-02-06.txt
+@@ -1,10 +1,11 @@
+ STUART — EXECUTION PACK (REV7)
+-Date: 2026-02-05
+-Scope: Execute the currently ACCEPTED quest stack (QUEST_044 → QUEST_052)
++Date: 2026-02-06
++Scope: Post-Q052 wrap + next stack preparation (no new scope is authorized by this file)
+ 
+ THIS PACK IS A RUNBOOK
+ - It does not change scope.
+-- It tells you exactly how to execute without drift.
++- It tells you exactly how to resume without drift.
++- NO quests are currently Accepted. Execution requires acceptance.
+ 
+ AUTHORITATIVE SOURCES (ORDER)
+ 1) Stuart Codex FULL
+@@ -12,7 +13,8 @@
+ 2) Active Guild Orders
+    - /mnt/data/Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS_STUART_V1_2026-02-04_REV7.txt
+ 3) Continuity Lock (this pack)
+-4) Accepted quest files (quest-specific DoD)
++   - /mnt/data/Ashby_Data/Latest Rehydration Pack/CONTINUITY_LOCK_2026-02-06.txt
++4) Quest files (ONLY once Accepted)
+ 
+ NON-NEGOTIABLE EXECUTION RULES
+ - No God files. Keep modules thin and single-responsibility.
+@@ -21,57 +23,33 @@
+   - diff(s)
+   - test output
+   - artifact output where relevant
+-- Do not accept new quests during this stack unless Hands explicitly expands scope.
++- Testing law: NEVER claim pytest passed/failed without running it and capturing output.
+ 
+-PRE-FLIGHT (BEFORE ANY QUEST)
+-1) Run Buff-up (session start check)
++PRE-FLIGHT (SESSION START)
++1) Run Buff-up:
+    - /mnt/data/Ashby_Data/Buffs/ASHBY_SESSION_START_CHECK.txt
+ 
+-2) Confirm tests run (minimum)
++2) Confirm tests run (minimum):
+    cd /mnt/data/Ashby_Engine
+-   python -m pytest -q
++   PYTHONPATH=/mnt/data/Ashby_Engine python3 -m pytest -q
+ 
+-3) For each quest, open and read:
+-   - quest file in /mnt/data/Ashby_Data/Quest Board/Accepted/
+-   - relevant Stuart Codex sections (schema/formatting/truth discipline)
++3) Confirm there are NO accepted quests:
++   ls -la /mnt/data/Ashby_Data/Quest\ Board/Accepted
+ 
+-EXECUTION ORDER (DO NOT REORDER)
+-1) QUEST_044 — minutes.json schema v1
+-2) QUEST_045 — journal.json schema v1
+-3) QUEST_046 — formalize meeting → minutes.json (profile-gated)
+-4) QUEST_047 — formalize journal → journal.json (profile-gated)
+-5) QUEST_048 — render MD from JSON (deterministic)
+-6) QUEST_049 — output naming (MD)
+-7) QUEST_050 — output naming (PDF)
+-8) QUEST_051 — diarization artifact naming
+-9) QUEST_052 — run manifest primary output pointers
++POST-STACK WRAP (WHAT TO DO NEXT)
++1) Confirm latest End-of-Day snapshot exists:
++   - /mnt/data/Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2026-02-06__Q042-Q052.txt
+ 
+-PER-QUEST EXECUTION CHECKLIST (REPEAT)
+-For QUEST_0XX:
+-1) Create/confirm audit bundle dir (path inside quest file)
+-2) Implement changes in /mnt/data/Ashby_Engine only
+-3) Run tests:
+-   cd /mnt/data/Ashby_Engine
+-   python -m pytest -q
+-4) Capture receipts in audit bundle:
+-   - diff patch
+-   - test output
+-   - notes (if needed)
+-5) Update quest file fields:
+-   - Status: COMPLETED
+-   - Completed On: YYYY-MM-DD
+-   - Completed By: Brains (Ash)
+-   - Check completion boxes truthfully
+-6) Move quest file:
+-   - from Accepted/ → Completed/
++2) Open Control Sync to decide next scope:
++   - Dungeon 3 work (evidence map v2 / retrieval / doors integration)
++   - OR integration smoke tests on real audio + Telegram/web flows
+ 
+-END-OF-DAY SNAPSHOT (ONLY AT END)
+-When QUEST_044–QUEST_052 are complete (or Hands ends session):
+-- Write ONE end-of-day snapshot:
+-  /mnt/data/Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_YYYY-MM-DD.txt
+-- Include:
+-  - what changed (files)
+-  - what was verified (commands)
+-  - links to audit bundles
+-  - what’s next
++3) Once Hands selects scope:
++   - Accept the next quest stack (move quests into Accepted/ and mark ACTIVE)
++   - Create a NEW execution pack for that stack (or update this file)
++   - Execute sequentially (no reordering unless Hands says)
+ 
++NOTE
++- If there is no active execution pack in a future session, that is OK and expected.
++  Execution packs only exist while actively used; after a stack, they get archived.
++

@@ -1,0 +1,103 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+================================================
+
+QUEST ID:
+QUEST_105
+
+Created By:
+Codex (Brains)
+
+Title:
+Stuart v2 — D3 (4/11) — Transcript Version Selector + Transcript Viewer
+
+Subject:
+Stuart
+
+Context: (Ashby / Stuart / System / Other)
+Ashby / Stuart
+
+Origin:
+Guild Orders ACTIVE REV4 -> Dungeon 3 Session tab transcript requirements.
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- API: /api/sessions/{id}/transcripts, /api/transcripts/{transcript_version_id}
+- Dungeon 4 transcript version model
+
+Status: BOARD | ACTIVE | COMPLETED | ABANDONED
+COMPLETED
+
+Audit Bundle Folder Path:
+Ashby_Data/Audits/Execution/QUEST_105__2026-02-18__stuart_v2_d3_transcript_selector_viewer
+
+Accepted On:
+2026-02-18
+
+Accepted By:
+Hands (Peter) via Codex (Brains)
+
+Completed On:
+2026-02-18
+
+Completed By:
+Codex (Brains)
+
+Change Class: (TRIVIAL / FEATURE / STRUCTURAL)
+FEATURE
+
+Vision Delta: (ALIGNED / VARIATION / SHIFT)
+ALIGNED
+
+System Context Statement:
+Session tab must make transcript versions first-class and render timestamped segments reliably.
+
+Anti-Duplication Plan:
+Use canonical transcript endpoint responses and one active transcript selection source-of-truth.
+
+Placement Intent:
+Session transcript panel component and transcript selection state.
+
+Codex Anchors (DRAFT):
+- Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_2.5_Transcript_Visibility_and_Export_Controls.txt
+- Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_7.4_Stage_3_Transcription.txt
+- Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_10.1_V1_Minimum_Shippable_Product_Definition.txt
+
+Codex Constraint Summary:
+- Transcript is canonical content source for formalization and chat.
+- Timestamped segments are mandatory.
+- Multiple transcript versions per session must be selectable.
+
+Door Impact:
+Stuart web door (UI)
+
+Testing Level (TL):
+TL2
+
+Talent Point Awarded: (YES / NO)
+YES
+
+DESCRIPTION
+Implement transcript version dropdown and transcript viewer with timestamps and speaker labels (when diarized).
+
+SCOPE / OBJECTIVE
+- List transcript versions for active session.
+- Fetch and render selected transcript segments.
+- Display timestamps and speaker labels if present.
+
+OUT OF SCOPE
+- Speaker rename persistence.
+- Formalization run launching.
+
+DEPENDENCIES
+- QUEST_104
+- Dungeon 4 transcript versioning API readiness
+
+EXECUTION NOTES
+Preserve behavior when no transcripts exist (no crash, clear empty state).
+
+COMPLETION CRITERIA (REQUIRED)
+- [ ] Transcript version selector lists versions.
+- [ ] Selecting version updates transcript panel.
+- [ ] Segment timestamps render deterministically.

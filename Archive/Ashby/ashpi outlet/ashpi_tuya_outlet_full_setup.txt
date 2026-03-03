@@ -1,0 +1,146 @@
+ASHPI TUYA OUTLET CONTROL – FULL REBUILD DATA
+
+1. TUYA / SMART LIFE CLOUD CREDENTIALS
+
+These are the Tuya IoT / Smart Life credentials for your outlet:
+
+ACCESS_ID="5x3d4r7enjwfgnsvu5hd"
+ACCESS_KEY="a0845ef8cf5848d5986618bf7ff07763"
+
+# This is the Smart Life account you linked to the Tuya cloud project:
+USERNAME="ashpi.iot.setup@gmail.com"
+
+# IMPORTANT: replace this with your real Smart Life password on the Pi.
+# (You can safely store the real password in env.py locally if you want.)
+PASSWORD="Hby64@F3!g..;+Ucx7"
+
+# Tuya device ID for your smart plug:
+DEVICE_ID="ebf157ec2f48cf767auaif"
+
+# Tuya US (Western America) endpoint:
+ENDPOINT="https://openapi.tuyaus.com"
+
+
+2. PYTHON ENV FILE (env.py)
+
+This is the env-style file used by the plug script.
+Save this on the Pi as env.py in the same folder as your script:
+
+from pathlib import Path
+
+ACCESS_ID = "5x3d4r7enjwfgnsvu5hd"
+ACCESS_KEY = "a0845ef8cf5848d5986618bf7ff07763"
+
+USERNAME = "ashpi.iot.setup@gmail.com"
+PASSWORD = "Hby64@F3!g..;+Ucx7"  # <-- put real password here
+
+DEVICE_ID = "ebf157ec2f48cf767auaif"
+
+ENDPOINT = "https://openapi.tuyaus.com"  # Western America data center
+
+
+3. REQUIRED PYTHON PACKAGES
+
+Everything for the outlet uses the same virtual environment (ashpi-env).
+
+Activate venv:
+
+    source ashpi-env/bin/activate
+
+Install the Tuya SDK (inside the venv):
+
+    pip install tuya-iot-py-sdk
+
+
+4. OUTLET CONTROL SCRIPT (ashpi_plug_test.py)
+
+Save this entire script as ashpi_plug_test.py on the Pi:
+
+from env import ENDPOINT, ACCESS_ID, ACCESS_KEY, USERNAME, PASSWORD, DEVICE_ID
+from tuya_iot import TuyaOpenAPI, TUYA_LOGGER
+import logging
+
+# Optional: enable debug logging
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO,
+)
+TUYA_LOGGER.setLevel(logging.INFO)
+
+# Initialize Tuya OpenAPI client
+openapi = TuyaOpenAPI(ENDPOINT, ACCESS_ID, ACCESS_KEY)
+
+# Country code "1" = US/Canada, "smartlife" is the app schema.
+openapi.connect(USERNAME, PASSWORD, "1", "smartlife")
+
+
+def set_plug(on: bool):
+    """Turn the Tuya plug on/off."""
+    commands = {
+        "commands": [
+            {"code": "switch_1", "value": on}
+        ]
+    }
+    res = openapi.post(f"/v1.0/devices/{DEVICE_ID}/commands", commands)
+    print("Response:", res)
+    return res
+
+
+def main():
+    print("Press Enter to turn plug ON...")
+    input()
+    set_plug(True)
+
+    print("Press Enter to turn plug OFF...")
+    input()
+    set_plug(False)
+
+
+if __name__ == "__main__":
+    main()
+
+
+5. HOW TO USE
+
+Each time you want to quickly test/control the outlet from the Pi:
+
+1) SSH into the Pi and activate the virtual environment:
+
+    ssh notsolikely@<your_pi_ip>
+    source ashpi-env/bin/activate
+
+2) Run the plug test script:
+
+    python3 ashpi_plug_test.py
+
+3) Follow prompts:
+   - Press Enter once -> plug turns ON
+   - Press Enter again -> plug turns OFF
+
+
+6. WHAT TO CHECK IF IT BREAKS
+
+- If Tuya returns sign / auth errors:
+  * Confirm ACCESS_ID and ACCESS_KEY are unchanged in both env.py and Tuya cloud.
+  * Confirm USERNAME and PASSWORD are correct Smart Life login (same account linked in Tuya).
+  * Confirm ENDPOINT is still https://openapi.tuyaus.com and your project is in Western America.
+  * Confirm DEVICE_ID matches the plug in Tuya's cloud device list.
+
+- If Python says ModuleNotFoundError:
+  * You probably forgot to activate the venv or install tuya-iot-py-sdk.
+  * Run:
+        source ashpi-env/bin/activate
+        pip install tuya-iot-py-sdk
+
+
+7. HOW TO REBUILD FROM ONLY THIS TXT
+
+If you lose everything on the Pi, but still have this txt:
+
+1) Recreate the venv (if needed), activate it.
+2) Create env.py using the block from section 2 (put in your real password).
+3) Install tuya-iot-py-sdk as in section 3.
+4) Create ashpi_plug_test.py using the script in section 4.
+5) Run python3 ashpi_plug_test.py to verify control.
+
+With this file + your actual Smart Life password, you (or a fresh AshPi in a new chat) can fully restore Tuya outlet control in a few minutes.

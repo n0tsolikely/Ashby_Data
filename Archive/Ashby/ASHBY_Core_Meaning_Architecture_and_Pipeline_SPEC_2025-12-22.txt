@@ -1,0 +1,629 @@
+**“This document is subordinate to:
+
+Ashby Platform Principles
+
+Ashby Architecture Tree Vision
+In case of conflict, those documents take precedence.”**
+
+
+
+
+
+ASHBY — CORE MEANING, ARCHITECTURE, AND OPERATING SPEC (RECREATE-FROM-SCRATCH EDITION)
+Version: 1.0 (compiled for rebuild + continuity)
+Date: 2025-12-22
+Authoring intent: This document is meant to be sufficient for a competent engineer to recreate Ashby’s core platform and critical behaviors from zero, without needing any chat history. It describes the PURPOSE, NON‑NEGOTIABLE PRINCIPLES, PIPELINE, DATA MODELS, MODULE BOUNDARIES, and “ACTION-GATED TRUTH” behavior that differentiates Ashby from typical assistants.
+
+──────────────────────────────────────────────────────────────────────────────
+0) What Ashby IS (meaning)
+──────────────────────────────────────────────────────────────────────────────
+Ashby is NOT “a chatbot that controls devices.”
+Ashby is an agentic PLATFORM (a skeleton) whose job is to turn intelligence (LLM reasoning + NLU) into RELIABLE, STATEFUL operation over real systems.
+
+Ashby is defined by:
+  • State authority (HouseState is the source of truth)
+  • Action-gated truth (never claim an action happened unless execution confirms it)
+  • Modular, removable architecture (no god files; WHAT ≠ HOW)
+  • Config-first domain modeling (zones/rooms/devices/aliases in configs, not hardcoded)
+  • Human-safe control behavior (clarify when ambiguous; retry on transient failures; honest failures)
+  • Transport-agnostic I/O (Telegram/CLI/voice/web are just “ports”)
+  • Extensibility into new agent modules (e.g., Stuart meetings) without forking a new platform
+
+Ashby is the “operating system” layer for agentic control.
+
+──────────────────────────────────────────────────────────────────────────────
+1) The Non‑Negotiables (laws of the system)
+──────────────────────────────────────────────────────────────────────────────
+1. NO GOD FILES. Ever.
+   - If a file becomes “everything,” you split it.
+   - Router must remain thin; brain logic belongs elsewhere.
+
+2. Separate WHAT from HOW:
+   WHAT = intent, policy, domain logic, state, sessions, scheduling, truth gating
+   HOW  = brand/device execution adapters (Tuya, Nest, Reolink, etc.)
+
+3. Router is a dumb orchestrator only:
+   - It should read like a pipeline, not like “the brain.”
+
+4. Modules are removable:
+   - Remove lights module → system still runs (falls back to chat/clarify).
+   - Remove devices registry → system still chats.
+
+5. Zone-based domain model:
+   - zones are canonical and stable: zone1..zoneN
+   - rooms are human labels mapped to zones (optional convenience)
+   - devices attach to zones with category/role/capabilities
+
+6. Action‑Gated Truth:
+   - Ashby must never claim an action occurred unless execution confirmed it (or explicitly says it failed).
+   - If not verified, Ashby must speak in “attempted / last known / unknown.”
+
+7. Config-first, not code-first:
+   - devices, zones, aliases, module enablement in JSON/YAML
+   - code loads config and reasons over it; no hardcoded house names in logic
+
+8. Never blame the user for system failures.
+   - If something breaks, Ashby owns it, explains it, and offers next steps.
+
+These principles are not “style.” They are structural constraints that prevent drift.
+
+──────────────────────────────────────────────────────────────────────────────
+2) The Ashby Pipeline (the canonical control loop)
+──────────────────────────────────────────────────────────────────────────────
+This is the core invention loop and must be preserved:
+
+(1) Input arrives
+    Source: Telegram, CLI, Voice, Web, etc.
+    Payload: user_id, text (and optionally metadata: channel, timestamp, locale)
+
+(2) Router orchestrates
+    - constructs request context (user_id, channel, timestamp, session snapshot)
+    - calls NLU to extract intent + entities
+    - calls policy layer: ACT vs CLARIFY vs CHAT
+    - dispatches to a module handler (lights/plugs/thermostat/cameras/meetings)
+    - executes planned action via module service + adapter
+    - receives ActionResult (attempted/succeeded/failed + verification status)
+    - updates HouseState only from verified results or verified reads
+    - builds compact “Context Snapshot” injected into LLM
+    - calls chat engine to form final reply constrained to verified facts
+
+(3) Output returned
+    - Response text to the user
+    - (Optional) logs/traces stored
+    - memory updates performed (preferences, last targets, last actions)
+
+Key: The LLM is NEVER allowed to “pretend” execution happened.
+Execution results are the reality.
+
+──────────────────────────────────────────────────────────────────────────────
+3) Core Data Models (minimum required)
+──────────────────────────────────────────────────────────────────────────────
+These are the critical structures. The exact class names can vary, but the fields/semantics must exist.
+
+3.1 Device
+Fields (minimum):
+  - id: stable device id (vendor id)
+  - name: internal key (e.g., "thor_bulb")
+  - brand/backend: "tuya", "nest", "reolink"
+  - category: "lights", "plugs", "thermostat", "cameras", etc.
+  - role: functional role ("ambient", "desk", "security", "main")
+  - zone_id: "zone3"
+  - capabilities: set of capabilities (on_off, brightness, color_temp, rgb, motion, recording, etc.)
+  - metadata: optional (description, icons, notes)
+
+3.2 Zone and Room
+Zone:
+  - zone_id: "zone1..zoneN"
+  - labels: optional (human names)
+Room (optional convenience):
+  - room_name: "bedroom"
+  - zone_id: "zone3"
+
+3.3 Intent (normalized)
+Ashby’s NLU must produce a normalized intent dict/object:
+  - type: "lights.on", "lights.off", "lights.adjust", "thermostat.set", "cameras.snapshot", "meetings.start", "chat", etc.
+  - targets: may be null or partial; can include:
+      - device_id / device_name
+      - zone / room
+      - category hints ("lights")
+      - role hints ("ambient")
+      - group alias (legacy)
+  - parameters: brightness, delta, temp, etc.
+  - mode/modifiers: "max", "min", "scene", etc.
+  - confidence: numeric or symbolic (HIGH/MED/LOW)
+  - raw_text: original text (optional)
+
+3.4 ActionRequest and ActionResult (critical)
+ActionRequest:
+  - action_type: e.g. "set_brightness"
+  - target_set: resolved devices or logical target spec
+  - params: e.g. brightness=600
+  - user_id, correlation_id
+
+ActionResult (must exist):
+  - ok: bool overall
+  - attempted: list of device identifiers
+  - succeeded: list of device identifiers
+  - failed: list of records (device, stage, error)
+  - value/state: what was attempted (e.g., brightness=600)
+  - verification: VERIFIED | LAST_KNOWN | UNKNOWN
+  - retries: count performed
+  - timestamp
+
+3.5 HouseState (authoritative state snapshot)
+Minimum:
+  - per-device:
+      - on/off
+      - brightness (0–1000) (if device supports)
+      - last_verified_ts
+      - confidence (VERIFIED/LAST_KNOWN/UNKNOWN)
+  - per-system:
+      - active sessions (lights session, comfort session, etc.)
+      - temp setpoint (if known)
+      - last known temp (if known)
+      - last_action (ActionResult summary)
+  - queries:
+      - get_device_state(device)
+      - summarize_state(category/zone)
+      - mark_unknown(device) on user contradiction
+
+HouseState updates ONLY from:
+  • successful verified actions, OR
+  • explicit verified device reads
+
+──────────────────────────────────────────────────────────────────────────────
+4) Action‑Gated Truth (the core differentiator)
+──────────────────────────────────────────────────────────────────────────────
+This is the hard rule set that prevents hallucination:
+
+Rule A — Never claim “done” unless confirmed
+  - If action succeeded and is verified: you may say “done” (past tense).
+  - If action succeeded but not verified: say “I sent the command; I haven’t confirmed yet.”
+  - If action failed: say it failed, and offer retry or troubleshooting.
+
+Rule B — Every device action returns ActionResult
+  - No “fire and forget” calls without result mapping.
+
+Rule C — Automatic retries
+  - If a failure looks transient (network error, timeout), retry 1–2 times silently.
+  - If still failing: report failure honestly.
+
+Rule D — HouseState is the only source of truth in narrative
+  - Chat layer must not improvise continuity.
+  - If the user contradicts (“it’s actually 100%”), mark state UNKNOWN and offer refresh.
+
+Rule E — No-op suppression
+  - If HouseState is VERIFIED/LAST_KNOWN and command is redundant (already on/off at same level), do not execute; respond “already.”
+
+This gating is mandatory for trust.
+
+──────────────────────────────────────────────────────────────────────────────
+5) NLU & Intent Normalization (how understanding works)
+──────────────────────────────────────────────────────────────────────────────
+Ashby can use hybrid NLU:
+  - Local NLU first (fast rules + fuzzy matching examples)
+  - GPT NLU fallback for “unknown” or complex utterances
+
+But regardless of source, all NLU outputs must be normalized to the same Intent schema.
+
+5.1 Percent semantics (brightness)
+Ashby uses a canonical brightness scale: 0–1000.
+Percent interpretation must be consistent:
+  - “X%” sets absolute brightness to X*10 (0..100 → 0..1000)
+  - “X% more/less” is a delta of X*10 (relative change)
+This logic belongs in an intent-normalization layer, not mixed randomly.
+
+5.2 Contextual resolution
+NLU should extract:
+  - what: intent type
+  - where: room/zone/device/role hints
+  - how much: brightness/temp/delta
+Then domain resolution turns that into targets.
+
+5.3 “Vibe phrases” (human statements)
+Ashby distinguishes:
+  - Command Mode: “turn off thor” → do it, short reply
+  - Conversation Mode: “it’s bright in here” → clarify or act based on session/context
+
+This should be controlled by policy + active session context.
+
+──────────────────────────────────────────────────────────────────────────────
+6) Sessions (continuity + follow-ups)
+──────────────────────────────────────────────────────────────────────────────
+Sessions are short-lived context objects per user that keep continuity without forcing the LLM to guess.
+
+6.1 Lights session
+Tracks:
+  - active target group/zone/device set
+  - current level
+  - step (default delta)
+  - last_delta (for “again / more / less”)
+  - updated timestamp
+Timeout: e.g., 30s
+
+Behavior:
+  - If session active and user says “more” → apply last_delta or default step
+  - “again” repeats the last adjustment command type (delta repeats delta; absolute repeats absolute)
+  - “kill it” / “lights out” turns off active target
+  - If user says “turn it off” without a target, session supplies target
+
+6.2 Comfort session (thermostat)
+Tracks:
+  - current temp, preferred temp, proposed temp, timestamp
+Allows followups:
+  - “yes / do it / ok” → apply proposed
+  - “a little” → +1C (or configured step)
+  - “one more” → +1C again
+Timeout: e.g., 10s
+
+6.3 Pending-target session (clarifier merge)
+If user says:
+  - “turn on the lights” (ambiguous)
+Ashby asks:
+  - “Which lights?”
+Then stores a pending intent.
+If user replies:
+  - “bedroom”
+Ashby merges the pending intent + resolved target and completes action.
+
+This pending merge must support on/off/adjust, not just one path.
+
+──────────────────────────────────────────────────────────────────────────────
+7) Domain Resolution (targets, zones, capabilities)
+──────────────────────────────────────────────────────────────────────────────
+Domain resolution is where ambiguous human phrases become exact targets.
+
+Inputs:
+  - Intent with partial targets (room name, “the lights”, “in here”)
+  - Current sessions (active light target)
+  - HouseState (last targets, last actions)
+  - Config registries (devices, rooms, zones, aliases)
+Outputs:
+  - Resolved targets: list of Device objects or a TargetSet
+
+Resolution rules:
+  1) If explicit device named → that device
+  2) Else if explicit room/zone named → devices in that zone matching category
+  3) Else if session active → session target
+  4) Else if “in here” and you can infer the user’s default zone/context → ask or apply default
+  5) If still ambiguous → ask once (clarify policy)
+
+Capability matching:
+  - If intent requires brightness and some targets don’t support it, either:
+      - degrade gracefully (on/off only), or
+      - ask/notify
+Never silently do the wrong operation.
+
+──────────────────────────────────────────────────────────────────────────────
+8) Modules vs Adapters (WHAT vs HOW boundaries)
+──────────────────────────────────────────────────────────────────────────────
+8.1 Modules (brand‑agnostic feature logic)
+A module is a category handler + service:
+  - modules/lights/handler.py: interpret intents into actions
+  - modules/lights/service.py: execute actions via interfaces, return ActionResult
+  - modules/lights/schemas.py: lights-specific action types/structures
+
+Modules must never import vendor SDKs directly.
+
+8.2 Adapters (brand-specific execution)
+Adapters implement interfaces:
+  - adapters/tuya/lights_adapter.py
+  - adapters/nest/thermostat_adapter.py
+They translate generic operations into vendor API calls and return standardized results.
+
+8.3 Interfaces (contracts)
+Interfaces define what modules can request:
+  - interfaces/lights.py: set_level(targets, level) -> ActionResult
+These keep the system swappable.
+
+──────────────────────────────────────────────────────────────────────────────
+9) The Router (thin orchestrator spec)
+──────────────────────────────────────────────────────────────────────────────
+Router responsibilities ONLY:
+  - ingest input
+  - call NLU extract_intent()
+  - call policy: act vs clarify vs chat
+  - dispatch to module handler
+  - run execution (module service)
+  - route result into truth_gate + house_state updates
+  - call chat engine with constrained snapshot
+  - return final response
+
+Router must NOT:
+  - contain Tuya/Nest/Reolink calls
+  - hardcode room/group names
+  - contain session logic implementations
+  - contain long normalization logic (belongs in brain normalization)
+
+Router should be readable in < ~200-300 lines, depending on style.
+
+──────────────────────────────────────────────────────────────────────────────
+10) Truth Gate & Context Snapshot Injection (anti-hallucination)
+──────────────────────────────────────────────────────────────────────────────
+Ashby uses the LLM for conversational naturalness, but must constrain it.
+
+Truth Gate duties:
+  - takes ActionResult + HouseState
+  - produces a small “allowed facts” set for response:
+      - what succeeded
+      - what failed
+      - what is unknown
+      - what is last known
+  - instructs chat engine:
+      - you may say “done” only if VERIFIED success
+      - you must be honest about uncertainty/failure
+
+Context Snapshot duties:
+  - build a compact injected state:
+      - active sessions
+      - last_action summary
+      - relevant device states (only the ones in play)
+      - user preferences (preferred temp, preferred light levels)
+  - keep it small and consistent
+
+The LLM reply must be grounded in that snapshot and action result.
+
+──────────────────────────────────────────────────────────────────────────────
+11) Interaction Modes (Command vs Conversation)
+──────────────────────────────────────────────────────────────────────────────
+Ashby is the same brain in two “postures”:
+
+Command Mode:
+  - triggered by imperative phrasing or short control tokens
+  - execute quickly
+  - short response
+  - no follow-up questions unless ambiguous target blocks execution
+
+Conversation Mode:
+  - triggered by vibe statements / complaints / natural talk
+  - may clarify, suggest, or ask
+  - can be chatty
+  - still must obey truth gate
+
+This mode selection should be a policy function, not scattered if-statements.
+
+──────────────────────────────────────────────────────────────────────────────
+12) Configuration & Secrets (must not leak)
+──────────────────────────────────────────────────────────────────────────────
+Configs (committable):
+  - configs/zones.json
+  - configs/rooms.json
+  - configs/devices.json
+  - configs/aliases.json
+  - configs/modules.json
+  - configs/brands.json (references only; no secrets)
+
+Secrets (NOT committed, NEVER printed):
+  - secrets/.env
+  - secrets/vendor_tokens.json
+  - any OAuth refresh tokens, API keys, Telegram tokens
+
+Load secrets via:
+  - environment variables, or
+  - secret files referenced by env, or
+  - OS secret store (future)
+
+Never log secrets. Never echo them. Never store them in chat transcripts.
+
+──────────────────────────────────────────────────────────────────────────────
+13) Minimal Test Harness & Debugging
+──────────────────────────────────────────────────────────────────────────────
+Ashby must include a CLI harness so development doesn’t require Telegram:
+
+io/cli/cli.py:
+  - loop reading user input
+  - call router.handle_input(user_id="local_terminal", text=...)
+  - print response
+This is how you test NLU + sessions + routing quickly.
+
+Adapters should have optional diagnostic commands (scripts/) to test connectivity.
+
+Logging:
+  - log action attempts and results
+  - log failures with correlation IDs
+  - keep logs safe (no secrets)
+
+──────────────────────────────────────────────────────────────────────────────
+14) Deployment & “source of truth” workflow
+──────────────────────────────────────────────────────────────────────────────
+Ashby should have one canonical repo as “source of truth”:
+  - laptop WSL or a git repo
+Deploy target (Pi) should be updated by:
+  - git pull, or
+  - rsync deploy script
+Avoid manual folder copying that causes drift.
+
+Secrets remain local on each device.
+
+──────────────────────────────────────────────────────────────────────────────
+15) What Ashby MUST be able to do (baseline capabilities)
+──────────────────────────────────────────────────────────────────────────────
+At minimum, Ashby must support:
+
+A) Reliable device control
+  - lights: on/off/adjust/set absolute brightness
+  - plugs: on/off
+  - thermostat: set temp (plus comfort session)
+  - all with ActionResult + truth gating
+
+B) Clarification when ambiguous
+  - “turn off the lights” → ask “which lights?” if cannot resolve
+
+C) Session continuity
+  - “more / again” respect last_delta and active target
+  - “turn it off” uses active target if present
+
+D) State awareness and honesty
+  - “what are the lights at?” uses HouseState (verified or last known)
+  - never claims certainty without verification
+  - handles user corrections by marking UNKNOWN and offering refresh
+
+E) Modular extensibility
+  - new module can be added without changing core router beyond registration
+
+──────────────────────────────────────────────────────────────────────────────
+16) Recommended Repo Layout (practical end state)
+──────────────────────────────────────────────────────────────────────────────
+ashby/
+  README.md
+  pyproject.toml (or requirements.txt)
+  ashby/
+    __init__.py
+
+    core/
+      router.py
+      app.py
+      errors.py
+      logging.py
+      config_loader.py
+      truth_gate.py
+      context_snapshot.py
+      scheduler.py (future)
+      observability.py (recommended)
+
+    brain/
+      chat_engine.py
+      nlu/
+        nlu_manager.py
+        gpt_nlu.py
+        local_nlu.py
+        intent_schema.py
+        normalize.py (recommended)
+      memory/
+        memory_store.py
+      policy/
+        action_policy.py
+        clarify_policy.py
+        style_policy.py
+      sessions/
+        session_manager.py
+        lights_session.py
+        comfort_session.py
+
+    domain/
+      models/
+        device.py
+        zone.py
+        room.py
+        action.py
+        state.py
+      registry/
+        device_registry.py
+        alias_registry.py
+      resolution/
+        target_resolver.py
+        capability_matcher.py
+
+    modules/
+      lights/
+        handler.py
+        service.py
+        schemas.py
+      plugs/
+        handler.py
+        service.py
+      thermostat/
+        handler.py
+        service.py
+      cameras/
+        handler.py
+        service.py
+      meetings/   # Stuart
+        handler.py
+        service.py
+        storage.py
+
+    adapters/
+      tuya/
+        lights_adapter.py
+        plugs_adapter.py
+      nest/
+        thermostat_adapter.py
+      reolink/
+        camera_adapter.py
+
+    interfaces/
+      lights.py
+      plugs.py
+      thermostat.py
+      cameras.py
+      storage.py
+
+    io/
+      telegram/
+        telegram_app.py
+      cli/
+        cli.py
+      voice/
+        (later)
+
+  configs/
+    zones.json
+    rooms.json
+    devices.json
+    aliases.json
+    modules.json
+    brands.json
+    schema_version.json (recommended)
+
+  secrets/
+    .env   (NOT committed)
+
+  runtime/
+    memory/
+    cache/
+    logs/
+
+  scripts/
+    deploy.sh
+    diagnostics_*.py
+
+  tests/
+    (unit/integration tests later)
+
+This layout expresses the non-negotiables mechanically.
+
+──────────────────────────────────────────────────────────────────────────────
+17) Implementation checklist (rebuild order)
+──────────────────────────────────────────────────────────────────────────────
+If recreating from scratch, build in this order:
+
+1) Define Intent schema + ActionResult schema
+2) Build minimal router pipeline (NLU -> policy -> dispatch -> result -> response)
+3) Implement HouseState + confidence flags
+4) Implement truth_gate rules
+5) Implement sessions (lights + comfort + pending target)
+6) Implement domain registries from configs
+7) Implement target resolver
+8) Implement one module end-to-end (lights)
+9) Add adapter for one brand (Tuya)
+10) Add Telegram I/O and CLI harness
+11) Add thermostat module + adapter
+12) Add plugs module + adapter
+13) Add cameras module later
+14) Add Stuart module later
+
+At every step, preserve Action-Gated Truth.
+
+──────────────────────────────────────────────────────────────────────────────
+18) Definition of “done” for core integrity
+──────────────────────────────────────────────────────────────────────────────
+Ashby is “real” when:
+
+- For any device action, system returns ActionResult with attempted/succeeded/failed
+- HouseState updates only on verified success or verified read
+- User-visible responses never claim unverified outcomes
+- Ambiguous targets trigger a single clarifier question
+- “more/again” works reliably using sessions
+- System runs with modules enabled/disabled without crashing
+- Repo is navigable: any engineer can find:
+    - router orchestration
+    - policies
+    - sessions
+    - registries
+    - adapters
+    - configs
+
+That’s Ashby.
+
+END OF SPEC

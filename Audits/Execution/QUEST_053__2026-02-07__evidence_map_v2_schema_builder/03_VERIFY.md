@@ -1,0 +1,41 @@
+# QUEST_053 — Verify
+
+Date: 2026-02-07
+
+## Verification checklist
+- [x] evidence_map.json contains claim-level anchors (schema requires claim objects with anchor objects)
+- [x] Builder supports both meeting and journal modes (reads minutes.json or journal.json)
+- [x] Full test suite passes
+
+## Test run
+Command:
+```bash
+cd /mnt/data/Ashby_Engine
+PYTHONPATH=/mnt/data/Ashby_Engine python3 -m pytest -q
+```
+
+Result (tail):
+```text
+/opt/pyvenv/lib/python3.11/site-packages/ddtrace/vendor/psutil/_pslinux.py:527: RuntimeWarning: 'sin' and 'sout' swap memory stats couldn't be determined and were set to 0 ([Errno 2] No such file or directory: '/proc/vmstat')
+  warnings.warn(msg, RuntimeWarning)
+........................................................................ [ 97%]
+..                                                                       [100%]
+=============================== warnings summary ===============================
+../../../opt/pyvenv/lib/python3.11/site-packages/ddtrace/internal/module.py:220
+  /opt/pyvenv/lib/python3.11/site-packages/ddtrace/internal/module.py:220: PendingDeprecationWarning: Please use `import python_multipart` instead.
+    self.loader.exec_module(module)
+
+tests/test_meetings_web_door_scaffold.py::test_index_has_mode_placeholder_and_no_default_selected
+  /opt/pyvenv/lib/python3.11/site-packages/starlette/templating.py:178: DeprecationWarning: The `name` is not the first parameter anymore. The first parameter should be the `Request` instance.
+  Replace `TemplateResponse(name, {"request": request})` by `TemplateResponse(request, name)`.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+74 passed, 2 warnings in 32.19s
+```
+
+Exit code:
+```text
+0
+
+```

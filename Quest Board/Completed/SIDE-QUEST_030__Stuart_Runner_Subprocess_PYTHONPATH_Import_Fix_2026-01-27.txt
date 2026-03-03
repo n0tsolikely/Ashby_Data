@@ -1,0 +1,97 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+
+QUEST ID:
+SIDE-QUEST_030
+
+Title:
+Stuart Runner Subprocess PYTHONPATH Import Fix
+
+Subject:
+Stuart v1 (Ashby module: meetings)
+
+Context: Stuart (in Ashby) / Runtime
+
+Origin:
+Control Sync — STUART_Control_Sync-2026-01-27
+
+Priority: P1
+
+Links:
+- Related: ashby/interfaces/telegram/stuart_runner.py (_env / subprocess runner)
+- Related: webapp/main.py (/upload calls run_default_pipeline)
+- Discovered by: sandbox smoke test (web upload → runner subprocess ModuleNotFoundError)
+
+Status: COMPLETED
+
+Audit Bundle Folder Path:
+  /mnt/data/Ashby_Data/Audits/Execution/SIDE-QUEST_030__2026-02-02__stuart_runner_subprocess_pypath_import_fix
+
+Accepted On:
+2026-02-02
+Accepted By:
+Hands (Peter)
+
+Completed On:
+2026-02-02
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+The web door and Telegram door invoke Stuart via run_default_pipeline(), which shells out to:
+  python -m ashby.modules.meetings.cli_stuart ...
+
+In subprocess context, the module import fails:
+  ModuleNotFoundError: No module named 'ashby'
+
+because the subprocess does not inherit a correct repo-root PYTHONPATH. This prevents end-to-end
+upload→run→PDF flow unless the user manually launches the parent process with fragile path hacks.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Make subprocess invocation deterministic by injecting canonical repo root into subprocess env PYTHONPATH.
+- Fix should work regardless of how the webapp/telegram entrypoint is launched.
+- Preserve Execution Profile / STUART_ROOT behavior.
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Packaging or installer changes.
+- Major refactors of runner architecture (no new job queue).
+- UI changes.
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- None (this is a blocker for reliable web/telegram pipeline execution).
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+Candidate implementation: compute repo_root from __file__ location and prepend to env["PYTHONPATH"] in _env().
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] Web upload path can run Stuart without ModuleNotFoundError
+- [x] run_default_pipeline subprocess can import ashby modules with no external PYTHONPATH hacks
+- [x] Evidence: audit bundle + import smoke + end-to-end test result
+- [x] End-of-Day snapshot generated on completion
+
+FINAL NOTES
+- Subprocess PYTHONPATH injection implemented in stuart_runner._env().
+- Legacy audit receipts:
+  /mnt/data/Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/SIDE-QUEST_030__AUDIT
+- Canonical audit bundle (this execution):
+  /mnt/data/Ashby_Data/Audits/Execution/SIDE-QUEST_030__2026-02-02__stuart_runner_subprocess_pypath_import_fix
+  Import smoke:
+  - ashby_import: OK
+  - env_has_PYTHONPATH: True
+  - functional_smoke_run_default_pipeline: PASS (see audit bundle verify receipts)
+
+────────────────────────────────────────────────────────
+REOPEN NOTE (TRUTH FIX)
+────────────────────────────────────────────────────────
+This quest was previously marked Completed (2026-01-27) but engine reality does not satisfy DoD.
+Reason: stuart_runner._env() references Path without importing it, causing NameError and preventing subprocess reliability.
+Reopened for execution + verification on 2026-02-02 under canonical audit bundle.
+

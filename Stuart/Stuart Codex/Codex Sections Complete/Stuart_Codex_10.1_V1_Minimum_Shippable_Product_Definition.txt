@@ -1,0 +1,169 @@
+STUART CODEX
+10.1 V1 Minimum Shippable Product Definition (Canonical)
+
+Status: Canonical
+Last updated: 2026-02-16
+
+This section defines Stuart V1: what must exist, what must work, and what is explicitly out of scope for first release.
+
+This is not marketing. This is the build contract.
+
+Chat-canon V1 priorities (explicit from you):
+- Meeting Minutes mode must work “perfectly” (truthful, detailed, speaker diarization supported).
+- Journal/Diary mode must work “perfectly” (clean readable narrative derived from a single-speaker voice note).
+- Incident mode is highly desired (close to meeting mode) but can be shipped if it does not destabilize V1.
+- Stuart must be chat-first, simple to use, and must not be a “shitty designed app.”
+- Explicit execution gating: nothing runs automatically on upload.
+- Artifact-first: store transcript + formalization + PDF printing.
+- Retrieval: must be able to pull up past meetings/incidents and print.
+- LOCAL_ONLY must be viable for sensitive orgs.
+
+Because “perfect” is unrealistic for ASR, V1’s “perfect” means:
+- correctness of system behavior and truth contract,
+- best-effort verbatim transcript with uncertainty disclosure,
+- no invented content,
+- complete outputs without truncation,
+- and print-ready deliverables.
+
+1) V1 MUST HAVE (non-negotiable)
+
+V1-1) Chat-first interface
+- chat is the canonical interface and MUST be complete
+- when the app opens, Chat is the default view/tab
+- upload audio/video/text from chat (e.g., '+' attachment button and drag-drop)
+- no complicated navigation or multi-page labyrinth
+- session library + tabs (Session / Chat / Outputs) are allowed as a thin product shell, but MUST NOT make chat incomplete
+- mode dropdown + template dropdown (scoped) are allowed as convenience
+- obvious “Submit/Run” control for novices
+- every action must be doable via chat commands (transcribe, diarize toggle, formalize, export types, show/hide transcript)
+
+
+V1-2) Explicit execution gating
+- uploading a file does not process it automatically
+- user must explicitly run transcription/formalization
+- remote processing always requires disclosure + confirmation
+
+V1-3) Profiles
+- LOCAL_ONLY profile fully supported end-to-end
+- HYBRID profile supported (optional, if feasible)
+- CLOUD profile support can exist, but LOCAL_ONLY must not be broken
+
+V1-4) Transcription pipeline with durable artifacts
+- normalization (Stage 1)
+- transcription (Stage 3)
+- store transcript.json + transcript.txt
+- handle long sessions via chunking
+- uncertainty markers for unclear regions
+- transcript versioning: allow retranscribe with diarization ON/OFF as separate transcript artifacts (multiple transcript versions per session)
+
+
+V1-5) Diarization pipeline (for meetings)
+- diarization stage supported (Stage 2)
+- alignment stage supported (Stage 4)
+- speaker labels preserved as labels
+- speaker mapping overlay supported (optional, but recommended)
+- overlap and low confidence disclosed
+
+V1-6) Meeting Minutes mode (core deliverable)
+- at least one default meeting minutes template
+- formalization with evidence/citations
+- retention knob available (at least default + override)
+- output.md + output.pdf produced
+- print-ready PDF
+
+V1-7) Journal/Diary mode (core deliverable)
+- at least one default journal template
+- supports single-speaker recordings by default (skip diarization)
+- produces readable narrative derived from transcript
+- output.md + output.pdf produced
+- print-ready PDF
+
+V1-8) Retrieval and recall (core)
+- store sessions locally under deterministic paths
+- basic keyword search across transcripts
+- chat query: “find meetings mentioning X”
+- open/print a prior formalization PDF
+
+V1-9) Export
+- export PDF
+- export a full session bundle (zip) at least for local archiving
+
+V1-10) Help / safe chat (basic)
+- user can ask “how do I use you”
+- system gives accurate capability list
+- it does not hallucinate nonexistent modes/templates
+
+2) V1 SHOULD HAVE (strongly recommended)
+
+S1) Incident Report mode
+- built as a mode with a default template
+- strict truth and evidence rules
+- timeline and follow-ups
+If it destabilizes V1, it can ship as V1.1.
+
+S2) Creator Notes mode
+- may ship later if meeting + journal are solid
+- or include minimal creator template as extra.
+
+S3) Captions mode
+- optional; may be v1.1
+Captions depend on word-level timestamps; if not stable, do not ship as core.
+
+S4) Translation step
+- optional; depends on formalization maturity
+- should be post-transcript.
+
+S5) Speaker mapping UX
+- allow user to label SPEAKER_00 = Greg
+- improves retrieval semantics (“what did Greg say”)
+
+3) V1 MUST NOT HAVE (explicitly out of scope)
+
+O1) Template marketplace / background community uploads
+- not in V1
+- sharing is future/gated (4.7)
+
+O2) Live meeting join (Teams/Zoom/RingCentral bot)
+- vNext (you want it, but not V1)
+V1 relies on uploads or local capture.
+
+O3) Real-time transcription during meetings
+- vNext
+V1 focuses on high-trust offline processing.
+
+O4) Complex app navigation or “app store UI”
+- keep it simple: chat + dropdowns.
+
+O5) Hidden memory / personality memory
+- Stuart is not Ashby
+- session artifacts are durable; chat memory is not the system’s source of truth.
+
+4) V1 quality gates (acceptance criteria)
+
+QG-1) No invented decisions/actions
+Minutes and incidents must not add things not in transcript.
+
+QG-2) Evidence traceability
+Decisions/actions/timelines must be citeable to segment IDs/timestamps.
+
+QG-3) Long session completeness
+A 60-minute meeting must produce complete transcript and complete minutes without truncation.
+
+QG-4) Print readiness
+PDF outputs must print cleanly without manual formatting.
+
+QG-5) Profile safety
+LOCAL_ONLY must never perform network calls.
+
+QG-6) Mode/template truth gating
+If user asks for non-existent mode/template, Stuart must refuse and list available options.
+
+5) Self-audit (10.1)
+
+Chat-canon alignment checklist:
+- V1 focuses on meeting + journal as the core “works perfectly” modes. (Maintained.)
+- Explicit execution gating and LOCAL_ONLY viability are preserved. (Maintained.)
+- Artifact-first approach solves truncation and enables printing and recall. (Maintained.)
+- Marketplace and live meeting join are explicitly vNext to avoid V1 complexity. (Maintained.)
+
+This section is complete.

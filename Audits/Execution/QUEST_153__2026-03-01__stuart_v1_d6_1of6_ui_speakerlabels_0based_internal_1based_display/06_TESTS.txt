@@ -1,0 +1,62 @@
+## Command Receipt Log
+WRAPPER: synapse_quest_run.sh
+ENGINE_ROOT: /home/notsolikely/Ashby_Engine
+DATA_ROOT: /home/notsolikely/Ashby_Data
+---
+CMD: cd webapp/stuart_frontend/stuart_app && npm run build
+
+> stuart-frontend@0.0.0 build
+> vite build
+
+RC: 0
+CMD: cat > /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_153__2026-03-01__stuart_v1_d6_1of6_ui_speakerlabels_0based_internal_1based_display/03_VERIFY.md << 'EOF'
+# 03_VERIFY.md
+- Verification command receipts: 06_TESTS.txt
+- Build check executed:   - 
+- Result: build command returned RC 0.
+- Acceptance checks implemented in code:
+  - TranscriptViewer now uses Speaker-01 style label when unmapped.
+  - TranscriptViewer shows mapped name only when mapping exists.
+  - SpeakerMapper badge now uses Speaker-01 style display labels.
+OVERALL: PASS
+EOF
+
+cat > /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_153__2026-03-01__stuart_v1_d6_1of6_ui_speakerlabels_0based_internal_1based_display/04_OUTCOME.md << 'EOF'
+# 04_OUTCOME.md
+QUEST_153 completed.
+
+What is now true:
+- Shared speaker label helper exists at .
+- Transcript speaker display is 1-based () when no mapped name exists.
+- Mapped names override display label in transcript UI.
+- SpeakerMapper displays 1-based speaker labels while keeping internal  keys.
+- Build receipt captured in .
+EOF
+RC: 0
+CMD: cat > /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_153__2026-03-01__stuart_v1_d6_1of6_ui_speakerlabels_0based_internal_1based_display/03_VERIFY.md << 'EOF'
+# 03_VERIFY.md
+- Verification command receipts: 06_TESTS.txt
+- Build check executed:
+  - cd webapp/stuart_frontend/stuart_app && npm run build
+- Result: build command returned RC 0.
+- Acceptance checks implemented in code:
+  - TranscriptViewer now uses Speaker-01 style label when unmapped.
+  - TranscriptViewer shows mapped name only when mapping exists.
+  - SpeakerMapper badge now uses Speaker-01 style display labels.
+OVERALL: PASS
+EOF
+
+cat > /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_153__2026-03-01__stuart_v1_d6_1of6_ui_speakerlabels_0based_internal_1based_display/04_OUTCOME.md << 'EOF'
+# 04_OUTCOME.md
+QUEST_153 completed.
+
+What is now true:
+- Shared speaker label helper exists at webapp/stuart_frontend/stuart_app/src/lib/speaker_labels.js.
+- Transcript speaker display is 1-based (Speaker-01) when no mapped name exists.
+- Mapped names override display label in transcript UI.
+- SpeakerMapper displays 1-based speaker labels while keeping internal SPEAKER_XX keys.
+- Build receipt captured in 06_TESTS.txt.
+EOF
+RC: 0
+PASS: governance validation OK for QUEST_153 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_153__2026-03-01__stuart_v1_d6_1of6_ui_speakerlabels_0based_internal_1based_display
+OK: finalize complete (validation PASS recorded).

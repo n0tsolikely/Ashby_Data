@@ -1,0 +1,29 @@
+## Command Receipt Log
+WRAPPER: synapse_quest_run.sh
+ENGINE_ROOT: /home/notsolikely/Ashby_Engine
+DATA_ROOT: /home/notsolikely/Ashby_Data
+---
+CMD: cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_template_store_root_runtime_layout.py
+ERROR: file or directory not found: tests/test_template_store_root_runtime_layout.py
+
+
+no tests ran in 0.00s
+RC: 4
+BLOCKED: command failed (see RC above): cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_template_store_root_runtime_layout.py
+CMD: cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_template_store_root_runtime_layout.py
+..                                                                       [100%]
+2 passed in 0.05s
+RC: 0
+FAIL: governance validation errors:
+- 03_VERIFY.md is placeholder-only; it must contain real verification content
+BLOCKED: governance validate failed (see output above).
+FAIL: governance validation errors:
+- 03_VERIFY.md must include an explicit outcome line (e.g. 'OVERALL: PASS' / 'OVERALL: FAIL' / 'OVERALL: BLOCKED')
+BLOCKED: governance validate failed (see output above).
+FAIL: governance validation errors:
+- 03_VERIFY.md must reference 06_TESTS.txt (raw receipts)
+BLOCKED: governance validate failed (see output above).
+PASS: governance validation OK for QUEST_188 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_188__2026-03-03__stuart_v1_dungeon_11_1_10_templatestoreroot_and_runtime_layout_seam
+OK: finalize complete (validation PASS recorded).
+PASS: governance validation OK for QUEST_188 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_188__2026-03-03__stuart_v1_dungeon_11_1_10_templatestoreroot_and_runtime_layout_seam
+OK: finalize complete (validation PASS recorded).

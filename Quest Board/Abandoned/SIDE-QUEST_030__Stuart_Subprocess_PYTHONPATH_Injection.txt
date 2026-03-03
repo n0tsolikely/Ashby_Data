@@ -1,0 +1,50 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+
+QUEST ID:
+SIDE-QUEST_030
+
+Title:
+Stuart Subprocess PYTHONPATH Injection Fix
+
+Context:
+Ashby / Stuart Runtime
+
+Origin:
+Control Sync — STUART_Control_Sync-2026-01-27
+
+Priority:
+P1
+
+Status:
+BOARD
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Stuart runner spawns a subprocess that does not inherit a valid PYTHONPATH,
+causing 'ModuleNotFoundError: ashby' during execution when run via webapp
+or other entrypoints.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Inject canonical repo root into PYTHONPATH for Stuart subprocess execution.
+- Ensure consistent runtime behavior across webapp and Telegram.
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- UI changes
+- Pipeline logic changes
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA
+────────────────────────────────────────────────────────
+- Subprocess can import ashby without manual PYTHONPATH hacks.
+- Webapp upload → run works in clean environment.
+- Audit bundle captured.
+
+
+FINAL NOTES
+- Abandoned as duplicate. Bugfix already completed in: SIDE-QUEST_030__Stuart_Runner_Subprocess_PYTHONPATH_Import_Fix_2026-01-27.txt
+- Date: 2026-01-27

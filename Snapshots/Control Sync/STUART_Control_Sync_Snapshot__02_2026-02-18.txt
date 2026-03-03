@@ -1,0 +1,87 @@
+================================================================================
+CONTROL SYNC SNAPSHOT
+================================================================================
+A) Header (required)
+- Subject: STUART
+- Date: 2026-02-18
+- Topic: D4 accepted stack + pre-execution audit readiness
+- Snapshot Type: Control_Sync
+- World State: Fog Lifted
+- Codex Freeze status: PRESENT (/home/notsolikely/Ashby_Data/Codex/CODEX_FREEZE.md)
+
+B) Rehydration Review (required when resuming)
+- Latest Control Sync Snapshot reviewed: (fill)
+- Latest End-of-Day Snapshot reviewed: (fill)
+- Relevant General Snapshots reviewed: (fill)
+
+C) Current Reality (State Surface)
+- Active Guild Orders / Raids: (fill)
+- Paused Guild Orders / Raids: (fill)
+- Quest Board summary: (fill)
+- Blockers: (fill)
+- Known risks / unknowns: (fill)
+
+D) Binding Decisions (required when binding decisions exist)
+1) Guild Orders status normalized to ACTIVE for the current raid baseline:
+- /home/notsolikely/Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt
+
+2) Latest Rehydration Pack continuity references updated to current truth:
+- Latest Control Sync anchor now points to 2026-02-19 close-cycle pre-state snapshot.
+- Latest General snapshot anchor corrected to existing file:
+  /home/notsolikely/Ashby_Data/Snapshots/General/STUART_General_Snapshot_2026-02-18.txt
+- Continuity state updated to D3 completed + D4 intake present.
+
+3) Execution pack routing updated from D3 to D4:
+- Updated index:
+  /home/notsolikely/Ashby_Data/Latest Rehydration Pack/execution pack/00_EXECUTION_PACK_INDEX__2026-02-18.txt
+- Added/activated D4 runbook artifacts:
+  /home/notsolikely/Ashby_Data/Latest Rehydration Pack/execution pack/STUART_EXECUTION_PACK__V2_REV2__DUNGEON4_RUNBOOK__2026-02-18.txt
+  /home/notsolikely/Ashby_Data/Latest Rehydration Pack/execution pack/STUART_EXECUTION_PACK__V2_REV2__DUNGEON4_QUEST_INTAKE_AND_EXECUTION__2026-02-18.txt
+
+4) D4 quest intake accepted as execution-ready stack:
+- QUEST_114..QUEST_128 moved to:
+  /home/notsolikely/Ashby_Data/Quest Board/Accepted/
+- Acceptance metadata stamped on each quest:
+  Status ACTIVE, Accepted On 2026-02-19, Accepted By Hands (Peter) via Codex (Brains).
+
+5) Pre-execution audit scaffolds initialized for D4:
+- Bundles created under:
+  /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_114__2026-02-19__stuart_v1_d4_114_intake
+  ... through ...
+  /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_128__2026-02-19__stuart_v1_d4_128_intake
+- 01_PREQUEST.md exists for each quest bundle.
+
+Deferred / Not decided:
+1) Do not run governance-guard validate for intake-only state until execution proof artifacts (06_*) exist.
+2) Execute D4 quests in numeric order with full execution audits and verification receipts.
+3) Roll rehydration pack date/version forward in a future continuity refresh pass if Hands wants filename/date parity with current day.
+
+Decision changes (if any):
+- prior decision → new decision (with reference)
+
+E) Scope Commitment (required)
+- Quests to accept now (by ID): (fill)
+- Deferred work (and why): (fill)
+- Expected side-work (bugs/refactors): (fill)
+
+F) Artifacts Touched / Created (required)
+- Codex/TOC updates: (paths)
+- Guild Orders/Raids updates: (paths)
+- Dungeon/Quest artifacts: (paths)
+- Other data artifacts: (paths)
+
+G) NOTES
+- (none)
+
+H) Exit Condition + Closure Statement (required)
+- Closure statement: This Control Sync is CLOSED only when this Snapshot exists as a file.
+- Started At: 2026-02-18T23:39:27.682220-05:00
+- Closed At: 2026-02-18T23:54:52.213830-05:00
+- Participants: Hands,Codex
+- Reason: State recon requested: snapshots + guild orders + codex review
+- Next immediate action: Begin D4 execution at QUEST_114 with full per-quest audits and verification receipts.
+
+- If execution will begin: state the first Quest to accept/execute.
+- If no execution committed: state why.
+
+END OF SNAPSHOT

@@ -1,0 +1,919 @@
+You said:
+
+
+hes got some shit man but hes failing in ways aswell... look read all this and process it.. 
+1. his personality sucks.. he doesnt do the "why are u gay" joke like that uganda news meme video.. (i know hes not supposed to lol we will change that later as a easter egg ;) )
+but i dont like his super positive attitude.. but we can change that later.. we could also change chatgpt 4o mini to a better model right? and that would be easy to do later? especially for workig proto to impress viewers.
+
+2. see how i said turn on lights and he said 
+turn on what, man? the lights? thor? bedroom. im not a mind reader.. 
+
+was this hard coded in? we dont want that to bethe same response everytime man... you took my words to specifically.. it should be the NLU that responds with different phrases like how you do and  they would need to make sense.. in this case.. i said lights, so why did he say "turn what on?" he should have just gathered i said lights and asked which lights.. and then i said the bedroom man and he included "man" in the prompt.. then i said theyre burning my eyes and he turned to conversation. but i said "theyre" "my eyes" why did a NLU not understand that?
+
+is this all errors in language because we are using a lower model and would a better model fix all of this? 
+
+then i said turn thor on.. and too bright.. he turned it down ONLY ONE point.. every change without specific numbers given should change by 100 pts.  or 10% and he went down 1 point but then i said more and he didnt down down more he went up.. then i said less he put to 60% .. this was good !
+then i said turn it down and same thing as earlier but only 2 points down.
+
+then he switched back to "imaginary switch" even the comversation mode picked up i was talking about lights! 
+
+so how do we fix all of this.. and also.. see how it gives me the dater and time and httpx - info...etc... is there anyway to hide this? it didnt show me this before i dont believe .. will it show up in the telegram bot? i certainly hope not.. id like to hide that part so i dont see it unless i really want to.. or does it only do this cuz its in test mode
+ChatGPT said:
+Thought for 1m 8s
+
+Yeah, this is really good for a first pass – and yeah, he’s also being a bit of a dumbass in some spots. Let’s go through it clean and fixable.
+
+I’ll keep this tight and concrete.
+
+1. Personality / model stuff
+
+his personality sucks.. super positive etc
+can we swap model later?
+
+Yeah, that “overly wholesome Twitch mod” vibe is coming from your system prompt + the mini model, not from the routing logic.
+
+Personality lives in whatever you put in AshBrain (the system message you send to OpenAI).
+
+The behavior bugs (wrong group, 1-point dimming, etc.) are not because it’s a small model. Those are our own NLU + router logic.
+
+You can absolutely:
+
+Swap gpt-4o-mini → gpt-4.1-mini or full gpt-4.1 later in ash_core.AshBrain.
+
+Rewrite the system prompt to be closer to real Ash and less “everything is love and light”.
+
+That can be a later polishing pass once the brain logic is tight.
+
+2. “Turn on the lights” / “the bedroom man” issues
+
+You’re right on all of this:
+
+"Turn on the lights" → reply "Turn what on, man?" is dumb, because we already know the intent is “lights”, so the follow-up should be “which lights”, not “what on”.
+
+"the bedroom man" got turned into the literal group the_bedroom_man because of this bit in router.py:
+
+if pending and pending.get("type") == "lights.on":
+    if not group:
+        low = text_stripped.lower()
+        if low not in ["turn it on", "turn it off", "on", "off"]:
+            group = low.replace(" ", "_")
+
+
+So yeah, it did exactly what we told it: treat the entire phrase as the group name.
+
+Fix A — Better follow-up text
+
+Change this part in router.py:
+
+if not group:
+    lighting_sessions.set_awaiting_target(user_id, intent)
+    return "Turn what on, man? The lights? Thor? Bedroom? I'm not a mind reader."
+
+
+to something like:
+
+if not group:
+    lighting_sessions.set_awaiting_target(user_id, intent)
+    return "Which lights do you mean? Thor, Captain America, bedroom, or something else?"
+
+
+That alone will stop the “turn what on” nonsense and make it context-correct.
+
+Fix B — Strip filler words like “man” / “bro”
+
+Right under:
+
+if pending and pending.get("type") == "lights.on":
+    if not group:
+        low = text_stripped.lower()
+        if low not in ["turn it on", "turn it off", "on", "off"]:
+            group = low.replace(" ", "_")
+
+
+Change that block to:
+
+if pending and pending.get("type") == "lights.on":
+    if not group:
+        low = text_stripped.lower().strip()
+
+        # strip filler endings like "man", "bro", "dude"
+        for filler in ["man", "bro", "dude"]:
+            if low.endswith(" " + filler):
+                low = low[: -len(filler) - 1].strip()
+
+        # strip leading "the "
+        if low.startswith("the "):
+            low = low[4:]
+
+        if low not in ["turn it on", "turn it off", "on", "off"]:
+            group = low.replace(" ", "_")
+
+    # If this message didn't come through as a lights intent, but now
+    # we have a group and a pending lights.on, force it back to lights.on.
+    if group and not itype.startswith("lights."):
+        itype = "lights.on"
+
+    # inherit brightness/mode from pending if needed
+    if brightness is None and pending.get("brightness") is not None:
+        brightness = pending["brightness"]
+    if mode is None and pending.get("mode") is not None:
+        mode = pending["mode"]
+
+
+Now "the bedroom man" becomes "bedroom" → "bedroom" group, instead of the_bedroom_man.
+
+Later we can add explicit mapping like:
+
+if low in ["bedroom", "bedroom lights"]:
+    group = "bedroom_lights"
+
+
+once you actually define that group.
+
+3. “Burning my eyes” not being understood
+
+then i said theyre burning my eyes and he turned to conversation. but i said "theyre" "my eyes" why did a NLU not understand that?
+
+Because right now your NLU is basically:
+
+If it sees words like too bright, dimmer, darker, etc. → lights.adjust.
+
+“Burning my eyes” isn’t in that list, so it falls back to normal chat.
+
+This is not a model-size thing. It’s our keyword logic.
+
+Fix (conceptual, in local_nlu.py or wherever you detect adjust):
+
+Add phrases like:
+
+"burning my eyes"
+
+"hurts my eyes"
+
+"hurting my eyes"
+
+"blinding"
+
+and map them to:
+
+{"type": "lights.adjust", "delta": -1, "mode": None}
+
+
+Once we fix the delta scaling (next section), that -1 will become “one step darker” (-100).
+
+4. Brightness step logic (the 1-point bug)
+
+You nailed it:
+
+"too bright" → dim by 1 point (600 → 599).
+
+"more" → +100 (good).
+
+"less" → -100 (good).
+
+"turn it down" → -2 points (lol).
+
+Right now in router.py you’ve got:
+
+elif delta is not None:
+    level = _clamp_level(level + int(delta))
+
+
+and delta is whatever the NLU spit out. Sometimes -1, sometimes -2, sometimes +100.
+
+Easy patch: Treat small deltas as “steps” of 100
+
+Replace that elif block with:
+
+elif delta is not None:
+    step = int(delta)
+
+    # Treat small deltas as "steps" (10% = 100 points)
+    if abs(step) <= 10:
+        step *= 100
+
+    level = _clamp_level(level + step)
+
+
+Now:
+
+NLU gives delta = -1 → becomes -100.
+
+NLU gives delta = +1 → +100.
+
+NLU gives delta = -2 → -200.
+
+If in the future we actually set delta = -300 for “30% less”, that’ll stay -300.
+
+That fixes:
+
+"too bright" → real dimming.
+
+"turn it down" → chunky step, not 2 points.
+
+You already saw "more"/"less" doing 100-point jumps, so this will just make the other ones consistent.
+
+5. “Again” flipping back to chat / imaginary switch
+
+then he switched back to "imaginary switch" even the comversation mode picked up i was talking about lights!
+
+Yeah, that’s because:
+
+NLU classified "again" as normal chat (no light words).
+
+router saw itype == "chat" → brain.chat(text) → fluffy “imaginary switch” reply from the Ash personality.
+
+To fix that properly, we want:
+
+If there is an active light session and the phrase is "again", "a bit more", "a bit less", etc. → treat it as lights.adjust using the previous delta.
+
+That’s exactly what your new lighting_sessions.process_adjust_phrase() is for, but we haven’t wired it in yet. We can do that next as a separate small patch (so we don’t explode the file again).
+
+For now, just know: "again" going to chat is NLU + router design, not the model being dumb.
+
+6. Logging spam (httpx - INFO ...) and timestamps
+
+how do I hide this / will this show in telegram / etc
+
+Those lines:
+
+2025-12-09 19:49:50,528 - httpx - INFO - HTTP Request: POST ...
+2025-12-09 19:49:50,843 - ashpi_lights_tuya - INFO - set_brightness ...
+
+
+are just Python logging to your terminal. They will not show up in Telegram messages or in the chat itself.
+
+If you want to hide the HTTP noise during tests, add this at the top of ashpi_test.py (or wherever you boot the brain):
+
+import logging
+
+logging.getLogger("httpx").setLevel(logging.WARNING)
+
+
+If you also want to hide Tuya spam:
+
+logging.getLogger("ashpi_lights_tuya").setLevel(logging.WARNING)
+
+
+That way:
+
+Telegram users see only the bot replies.
+
+Your terminal becomes much quieter unless something actually breaks.
+
+TL;DR fixes (in order I’d do them)
+
+Change the “Turn what on” line → “Which lights do you mean…”.
+
+Normalize “the bedroom man” → strip “man/bro/dude” + leading “the”.
+
+Patch delta scaling in router.py so small deltas (-1, +1, -2) become 100-point steps.
+
+Add “burning my eyes” etc. to NLU as lights.adjust darker.
+
+Later, wire lighting_sessions.process_adjust_phrase() so "again" reuses the last change instead of going to fluffy chat.
+
+Silence httpx logs by setting its logger to WARNING.
+
+If you paste me local_nlu.py / nlu_manager.py next, I can do the same level of small, surgical edits there: no giant rewrites, just clean patches so this feels way more like real Ash and less like “therapy bot running your lights.”
+
+You said:
+short answert back to this.. so now that logging only comes up when theres an issue?
+ChatGPT said:
+
+Yep — once we set those loggers to WARNING, you’ll only see logs when there’s actually a problem.Everything else stays hidden.
+
+You said:
+i got rid of the warning ones.. i patched that test file.. 
+
+now about better follow up text. your just getting me to hard code a response in. so now he will just say "what lights do you mean? etc" 
+what if i said  
+"turn it on"
+then he asks what lights do i mean??
+when i meant.. a fan.. or the heat.. or a plug..
+
+the idea is to get the model involved with the talking part .. and now im understanding what a NLU does.. it only takes words like a thesauraus but if i say
+
+turn up the lights 
+again
+
+he doesnt register again unless we hard code the word again in...
+
+also if we make explicit mapping like "bedroom_lights" or "bedroom" we cant have it just hard coded in again with bedroom. because what if someone never calls their bedroom the bedroom.. what if they call it .. the shag room.. so we need to make it somehow now that its like "zone 1" during setup.. and they associate each room with a zone #.. so when setup is happening... bedroom gets associated with say .. zone 5... and then now instead of hardcoding it to be 
+
+if low in ["bedroom", "bedroom lights"]:...
+
+its [zone 1] and because zone one is associated with bedroom then language kicks in to associate that.. 
+
+and the burning my eyes things.. back to the NLU ... does NLU ONLY work like a fucking bloody thesaurus? we cant make it like.. 
+
+turn on the bedroom lights.. 
+to the max!
+
+NLU doesnt register that cuz its not like any words that assoicate with brought or light or anything like that?
+
+is it possible for us to make it that its like you.. exactly like you.. so its smart at understanding ..
+
+or do we need to train a NLU with every possible scenario? and have you and other models give out massive lists of variations and hard code that shit in... or train up a NLU library to be better.. like maybe its cuz i dont understand how a nlu works.. 
+
+i was hoping it would understand verbage ... nouns.. adjectives.. pronouns... intent.. request.. desire.. like real grammar.. which would help it learn how to route a prompt accordingly or to continue with one.
+
+also lastly... 
+
+heres the router.py after i changed some of it...
+from typing import Dict
+
+from ashpi.control.device_control import set_group_brightness
+from .ash_core import AshBrain
+from . import comfort_sessions, memory, lighting_sessions
+from .nlu_manager import extract_intent
+
+# In a long-running process (like Telegram bot), we can keep brains in memory:
+_brains: Dict[str, AshBrain] = {}
+
+# Simple in-memory lighting sessions:
+# _light_sessions[user_id] = {"group": str, "level": int}
+_light_sessions: Dict[str, Dict[str, object]] = {}
+
+
+def get_brain(user_id: str) -> AshBrain:
+    user_id = str(user_id)
+    if user_id not in _brains:
+        _brains[user_id] = AshBrain(user_id)
+    return _brains[user_id]
+
+
+def _get_light_session(user_id: str):
+    return _light_sessions.get(str(user_id))
+
+
+def _start_light_session(user_id: str, group: str, level: int):
+    _light_sessions[str(user_id)] = {"group": group, "level": level}
+
+
+def _update_light_level(user_id: str, level: int):
+    if str(user_id) in _light_sessions:
+        _light_sessions[str(user_id)]["level"] = level
+
+
+def _end_light_session(user_id: str):
+    _light_sessions.pop(str(user_id), None)
+
+
+def _clamp_level(level: int) -> int:
+    return max(0, min(1000, int(level)))
+
+
+# --- main entrypoint --- #
+
+def handle_text(user_id: str, text: str) -> str:
+    """
+    Main entrypoint for AshPi brain.
+
+    Now uses NLU:
+      - nlu_manager.extract_intent(text) → intent dict:
+        {
+          "type": "lights.on" | "lights.off" | "lights.adjust" | "comfort.cold" | "chat" | "unknown",
+          "group": "captain_america" | "thor" | "sky" | None,
+          "brightness": 0–1000 or None,
+          "delta": +/- int or None,
+          "mode": "max" | "min" | None,
+        }
+    """
+
+    user_id = str(user_id)
+    text_stripped = text.strip()
+    brain = get_brain(user_id)
+
+    # 1) If there's an active HEAT session, let that logic handle yes/no/a bit more/etc.
+    if comfort_sessions.has_active_session(user_id):
+        temp, msg = comfort_sessions.process_reply(user_id, text_stripped)
+        # Later: if temp is not None, call real Nest API here.
+        return msg
+
+    # 2) Run NLU on every message
+    intent = extract_intent(text_stripped)
+
+    # See if we were already waiting for a target (e.g. user said "turn it on")
+    pending = lighting_sessions.pop_awaiting_target(user_id)
+
+    itype = intent["type"]
+    group = intent.get("group")
+    brightness = intent.get("brightness")
+    delta = intent.get("delta")
+    mode = intent.get("mode")
+
+    # If we had a pending "lights.on" with no target, and now the user
+    # says e.g. "thor" or "bedroom lights", merge that into the pending intent.
+    if pending and pending.get("type") == "lights.on":
+        if not group:
+            low = text_stripped.lower().strip()
+
+            # strip filler endings like "man", "bro", "dude"
+            for filler in ["man", "bro", "dude"]:
+                if low.endswith(" " + filler):
+                    low = low[: -len(filler) - 1].strip()
+
+            # strip leading "the "
+            if low.startswith("the "):
+                low = low[4:]
+
+            if low not in ["turn it on", "turn it off", "on", "off"]:
+                group = low.replace(" ", "_")
+
+        # If this message didn't come through as a lights intent, but now
+        # we have a group and a pending lights.on, force it back to lights.on.
+        if group and not itype.startswith("lights."):
+            itype = "lights.on"
+
+        # inherit brightness/mode from pending if needed
+        if brightness is None and pending.get("brightness") is not None:
+            brightness = pending["brightness"]
+        if mode is None and pending.get("mode") is not None:
+            mode = pending["mode"]
+
+
+        # If this message didn't come through as a lights intent, but we now
+        # have a group and a pending lights.on, force it back to lights.on.
+        if group and not itype.startswith("lights."):
+            itype = "lights.on"
+
+        # If pending had brightness/mode and current one didn't, inherit them
+        if brightness is None and pending.get("brightness") is not None:
+            brightness = pending["brightness"]
+        if mode is None and pending.get("mode") is not None:
+            mode = pending["mode"]
+
+
+    # 3) Comfort / heat starter ("I'm cold", etc.)
+    if itype == "comfort.cold":
+        # In the future: get real temp from Nest
+        current_temp = memory.get(user_id, "last_known_temp", 19.0)
+        preferred_temp = memory.get(user_id, "preferred_temp", 21.0)
+
+        if current_temp < preferred_temp - 0.5:
+            comfort_sessions.start_cold_session(user_id, current_temp, preferred_temp)
+            return (
+                f"It's {current_temp}°C in here, and you usually like it around "
+                f"{preferred_temp}°. Want me to warm it up?"
+            )
+        else:
+            return "It’s a little cool but still close to what you usually like."
+
+    # 4) Lights: ON
+    if itype == "lights.on":
+        # If no group was detected, we know there's intent ("turn it on")
+        # but no target. Store this and ask what they mean.
+        if not group:
+            lighting_sessions.set_awaiting_target(user_id, intent)
+            return "Which lights, man? Thor, Bedroom, something else? I'm not a mind reader."
+
+        # If no brightness specified, default to 600 (60%)
+        level = 600 if brightness is None else _clamp_level(brightness)
+
+        set_group_brightness(group, level)
+        _start_light_session(user_id, group, level)
+
+        nice_name = group.replace("_", " ")
+        if mode == "max":
+            return f"Turning on {nice_name} to maximum."
+        return f"Turning on {nice_name}."
+
+    # 5) Lights: OFF
+    if itype == "lights.off":
+        sess = _get_light_session(user_id)
+
+        # Prefer explicit group from intent, else use the active session's group
+        target_group = group or (sess["group"] if sess else None)
+
+        if not target_group:
+            # No idea which lights to turn off → treat as chat
+            return brain.chat(text_stripped)
+
+        set_group_brightness(target_group, 0)
+        _end_light_session(user_id)
+
+        nice_name = target_group.replace("_", " ")
+        return f"Turning off {nice_name}."
+
+    # 6) Lights: ADJUST (darker / brighter / max / etc.)
+    if itype == "lights.adjust":
+        sess = _get_light_session(user_id)
+
+        # Determine which group we're adjusting
+        if sess and not group:
+            target_group = sess["group"]
+        else:
+            target_group = group
+
+        if not target_group:
+            # No active session and no group → we don't know what to adjust
+            return brain.chat(text_stripped)
+
+        # Determine starting level
+        if sess and sess.get("group") == target_group:
+            level = int(sess["level"])
+        else:
+            # No prior session for this group → start at 600
+            level = 600
+
+        # Apply absolute brightness if provided
+        if brightness is not None:
+            level = _clamp_level(brightness)
+        # Else apply delta if provided
+        elif delta is not None:
+            level = _clamp_level(level + int(delta))
+
+        set_group_brightness(target_group, level)
+        _start_light_session(user_id, target_group, level)
+
+        nice_name = target_group.replace("_", " ")
+        percent = round(level / 10)
+        if level == 0:
+            return f"Lights off."
+        if mode == "max":
+            return f"Setting {nice_name} to maximum brightness."
+        return f"Setting {nice_name} to {percent}%."
+
+    # 7) If NLU says "chat" or "unknown" → normal Ash chat
+    return brain.chat(text_stripped)
+
+ChatGPT said:
+Thought for 31s
+
+Yeah, perfect breakdown, you’re seeing the right problems.
+
+Let me hit this in three tight points and give you one concrete patch, not a novel.
+
+1. NLU vs “real Ash brain”
+
+Right now your NLU is basically a smart keyword mapper, not “full Ash”.
+
+router.py is fine – it just does what extract_intent() tells it.
+
+Stuff like:
+
+"burning my eyes" → should be lights.adjust with a big negative delta
+
+"again" → should reuse last direction
+
+"to the max" → should set mode="max"
+
+All of that belongs in nlu_manager / gpt_nlu, not hardcoded strings in router.
+
+So no, NLU doesn’t have to be a dumb thesaurus. With GPT in gpt_nlu it can understand verbs, pronouns, all that. We just haven’t told it the rules yet.
+
+2. Zones / “shag room” instead of bedroom
+
+You’re 100% right: we cannot hardcode "bedroom" in the router.
+
+The right way (later step):
+
+During setup, user labels “shag room” → we store it as zone_1 with:
+
+room: "bedroom"
+
+synonyms: ["shag room", "the shag room", "my den of sin"]
+
+NLU resolves any of those phrases to "zone_1" / "bedroom_lights" and hands that to router.
+
+Router doesn’t care about English, it just sees group="zone_1" and sets brightness.
+
+Again: router should stay dumb; mapping words → groups lives in NLU + memory/device tables.
+
+3. The concrete bug you saw (1-point changes) — quick fix in router.py
+
+The “too bright / more / less / turn it down” only moving 1 point is because NLU is giving small deltas (like +1 / -1).
+We can patch router so any tiny delta automatically becomes a 100-point step.
+
+In your lights.adjust block, replace this part:
+
+        # Apply absolute brightness if provided
+        if brightness is not None:
+            level = _clamp_level(brightness)
+        # Else apply delta if provided
+        elif delta is not None:
+            level = _clamp_level(level + int(delta))
+
+
+with this:
+
+        # Apply absolute brightness if provided
+        if brightness is not None:
+            level = _clamp_level(brightness)
+        # Else apply delta if provided
+        elif delta is not None:
+            # Normalize tiny deltas to a proper step (10%)
+            step = 100
+            delta = int(delta)
+            if abs(delta) < step:
+                delta = step if delta > 0 else -step
+            level = _clamp_level(level + delta)
+
+
+That instantly makes:
+
+"too bright", "turn it down", "more", "less" → jump by 10% even if NLU only gave +1 / -1.
+
+4. Tiny cleanup in your pending block
+
+You accidentally duplicated this logic:
+
+        # If this message didn't come through as a lights intent, but now
+        # we have a group and a pending lights.on, force it back to lights.on.
+        if group and not itype.startswith("lights."):
+            itype = "lights.on"
+
+        # If pending had brightness/mode and current one didn't, inherit them
+        if brightness is None and pending.get("brightness") is not None:
+            brightness = pending["brightness"]
+        if mode is None and pending.get("mode") is not None:
+            mode = pending["mode"]
+
+
+You have it twice in the pending block now. Just keep it once (the second copy is redundant).
+
+If you’re down, next step after this little router patch is:
+show me nlu_manager.py / gpt_nlu and we’ll teach it:
+
+"burning my eyes" → lights.adjust with delta = -200
+
+"to the max" → mode="max"
+
+"again" → use last direction (we can store that in sessions)
+
+For now though: apply the delta patch + delete the duplicate block, run the same test again, and tell me what it does.
+
+You said:
+from typing import Dict
+
+from ashpi.control.device_control import set_group_brightness
+from .ash_core import AshBrain
+from . import comfort_sessions, memory, lighting_sessions
+from .nlu_manager import extract_intent
+
+# In a long-running process (like Telegram bot), we can keep brains in memory:
+_brains: Dict[str, AshBrain] = {}
+
+# Simple in-memory lighting sessions:
+# _light_sessions[user_id] = {"group": str, "level": int}
+_light_sessions: Dict[str, Dict[str, object]] = {}
+
+
+def get_brain(user_id: str) -> AshBrain:
+    user_id = str(user_id)
+    if user_id not in _brains:
+        _brains[user_id] = AshBrain(user_id)
+    return _brains[user_id]
+
+
+def _get_light_session(user_id: str):
+    return _light_sessions.get(str(user_id))
+
+
+def _start_light_session(user_id: str, group: str, level: int):
+    _light_sessions[str(user_id)] = {"group": group, "level": level}
+
+
+def _update_light_level(user_id: str, level: int):
+    if str(user_id) in _light_sessions:
+        _light_sessions[str(user_id)]["level"] = level
+
+
+def _end_light_session(user_id: str):
+    _light_sessions.pop(str(user_id), None)
+
+
+def _clamp_level(level: int) -> int:
+    return max(0, min(1000, int(level)))
+
+
+# --- main entrypoint --- #
+
+def handle_text(user_id: str, text: str) -> str:
+    """
+    Main entrypoint for AshPi brain.
+
+    Now uses NLU:
+      - nlu_manager.extract_intent(text) → intent dict:
+        {
+          "type": "lights.on" | "lights.off" | "lights.adjust" | "comfort.cold" | "chat" | "unknown",
+          "group": "captain_america" | "thor" | "sky" | None,
+          "brightness": 0–1000 or None,
+          "delta": +/- int or None,
+          "mode": "max" | "min" | None,
+        }
+    """
+
+    user_id = str(user_id)
+    text_stripped = text.strip()
+    brain = get_brain(user_id)
+
+    # 1) If there's an active HEAT session, let that logic handle yes/no/a bit more/etc.
+    if comfort_sessions.has_active_session(user_id):
+        temp, msg = comfort_sessions.process_reply(user_id, text_stripped)
+        # Later: if temp is not None, call real Nest API here.
+        return msg
+
+    # 2) Run NLU on every message
+    intent = extract_intent(text_stripped)
+
+    # See if we were already waiting for a target (e.g. user said "turn it on")
+    pending = lighting_sessions.pop_awaiting_target(user_id)
+
+    itype = intent["type"]
+    group = intent.get("group")
+    brightness = intent.get("brightness")
+    delta = intent.get("delta")
+    mode = intent.get("mode")
+
+    # If we had a pending "lights.on" with no target, and now the user
+    # says e.g. "thor" or "bedroom lights", merge that into the pending intent.
+    if pending and pending.get("type") == "lights.on":
+        if not group:
+            low = text_stripped.lower().strip()
+
+            # strip filler endings like "man", "bro", "dude"
+            for filler in ["man", "bro", "dude"]:
+                if low.endswith(" " + filler):
+                    low = low[: -len(filler) - 1].strip()
+
+            # strip leading "the "
+            if low.startswith("the "):
+                low = low[4:]
+
+            if low not in ["turn it on", "turn it off", "on", "off"]:
+                group = low.replace(" ", "_")
+
+        # inherit brightness/mode from pending if needed
+        if brightness is None and pending.get("brightness") is not None:
+            brightness = pending["brightness"]
+        if mode is None and pending.get("mode") is not None:
+            mode = pending["mode"]
+
+
+        # If this message didn't come through as a lights intent, but we now
+        # have a group and a pending lights.on, force it back to lights.on.
+        if group and not itype.startswith("lights."):
+            itype = "lights.on"
+
+        # If pending had brightness/mode and current one didn't, inherit them
+        if brightness is None and pending.get("brightness") is not None:
+            brightness = pending["brightness"]
+        if mode is None and pending.get("mode") is not None:
+            mode = pending["mode"]
+
+
+    # 3) Comfort / heat starter ("I'm cold", etc.)
+    if itype == "comfort.cold":
+        # In the future: get real temp from Nest
+        current_temp = memory.get(user_id, "last_known_temp", 19.0)
+        preferred_temp = memory.get(user_id, "preferred_temp", 21.0)
+
+        if current_temp < preferred_temp - 0.5:
+            comfort_sessions.start_cold_session(user_id, current_temp, preferred_temp)
+            return (
+                f"It's {current_temp}°C in here, and you usually like it around "
+                f"{preferred_temp}°. Want me to warm it up?"
+            )
+        else:
+            return "It’s a little cool but still close to what you usually like."
+
+    # 4) Lights: ON
+    if itype == "lights.on":
+        # If no group was detected, we know there's intent ("turn it on")
+        # but no target. Store this and ask what they mean.
+        if not group:
+            lighting_sessions.set_awaiting_target(user_id, intent)
+            return "Which lights, man? Thor, Bedroom, something else? I'm not a mind reader."
+
+        # If no brightness specified, default to 600 (60%)
+        level = 600 if brightness is None else _clamp_level(brightness)
+
+        set_group_brightness(group, level)
+        _start_light_session(user_id, group, level)
+
+        nice_name = group.replace("_", " ")
+        if mode == "max":
+            return f"Turning on {nice_name} to maximum."
+        return f"Turning on {nice_name}."
+
+    # 5) Lights: OFF
+    if itype == "lights.off":
+        sess = _get_light_session(user_id)
+
+        # Prefer explicit group from intent, else use the active session's group
+        target_group = group or (sess["group"] if sess else None)
+
+        if not target_group:
+            # No idea which lights to turn off → treat as chat
+            return brain.chat(text_stripped)
+
+        set_group_brightness(target_group, 0)
+        _end_light_session(user_id)
+
+        nice_name = target_group.replace("_", " ")
+        return f"Turning off {nice_name}."
+
+    # 6) Lights: ADJUST (darker / brighter / max / etc.)
+    if itype == "lights.adjust":
+        sess = _get_light_session(user_id)
+
+        # Determine which group we're adjusting
+        if sess and not group:
+            target_group = sess["group"]
+        else:
+            target_group = group
+
+        if not target_group:
+            # No active session and no group → we don't know what to adjust
+            return brain.chat(text_stripped)
+
+        # Determine starting level
+        if sess and sess.get("group") == target_group:
+            level = int(sess["level"])
+        else:
+            # No prior session for this group → start at 600
+            level = 600
+
+        # Apply absolute brightness if provided
+        if brightness is not None:
+            level = _clamp_level(brightness)
+        # Else apply delta if provided
+        elif delta is not None:
+            # Normalize tiny deltas to a proper step (10%)
+            step = 100
+            delta = int(delta)
+            if abs(delta) < step:
+                delta = step if delta > 0 else -step
+            level = _clamp_level(level + delta)
+
+        set_group_brightness(target_group, level)
+        _start_light_session(user_id, target_group, level)
+
+        nice_name = target_group.replace("_", " ")
+        percent = round(level / 10)
+        if level == 0:
+            return f"Lights off."
+        if mode == "max":
+            return f"Setting {nice_name} to maximum brightness."
+        return f"Setting {nice_name} to {percent}%."
+
+    # 7) If NLU says "chat" or "unknown" → normal Ash chat
+    return brain.chat(text_stripped)
+ChatGPT said:
+Thought for 7s
+
+Nice, this is really close. Just two things:
+
+1. You still have a duplicated bit in the pending block
+
+Right now you inherit brightness/mode from pending twice. Clean it to this:
+
+    # If we had a pending "lights.on" with no target, and now the user
+    # says e.g. "thor" or "bedroom lights", merge that into the pending intent.
+    if pending and pending.get("type") == "lights.on":
+        if not group:
+            low = text_stripped.lower().strip()
+
+            # strip filler endings like "man", "bro", "dude"
+            for filler in ["man", "bro", "dude"]:
+                if low.endswith(" " + filler):
+                    low = low[: -len(filler) - 1].strip()
+
+            # strip leading "the "
+            if low.startswith("the "):
+                low = low[4:]
+
+            if low not in ["turn it on", "turn it off", "on", "off"]:
+                group = low.replace(" ", "_")
+
+        # inherit brightness/mode from pending if needed
+        if brightness is None and pending.get("brightness") is not None:
+            brightness = pending["brightness"]
+        if mode is None and pending.get("mode") is not None:
+            mode = pending["mode"]
+
+        # force it back to lights.on if we now have a group
+        if group and not itype.startswith("lights."):
+            itype = "lights.on"
+
+
+Delete the second copy of the brightness/mode inherit that you have under it.
+
+2. The 10% step patch is good
+
+This part:
+
+        elif delta is not None:
+            # Normalize tiny deltas to a proper step (10%)
+            step = 100
+            delta = int(delta)
+            if abs(delta) < step:
+                delta = step if delta > 0 else -step
+            level = _clamp_level(level + delta)
+
+
+is exactly what we want for “too bright / less / more / turn it down”.
+
+Fix that duplicate block, save, rerun ashpi_test.py, and then we can move on to teaching NLU about stuff like “burning my eyes”, “to the max”, and “again”.

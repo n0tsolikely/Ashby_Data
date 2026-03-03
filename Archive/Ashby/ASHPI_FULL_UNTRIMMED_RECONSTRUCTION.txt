@@ -1,0 +1,274 @@
+ASHPI FULL UNTRIMMED RECONSTRUCTION SNAPSHOT
+================================================
+
+(This is a fully rebuilt, long-form reconstruction of EVERYTHING relevant from the entire chat.
+Every decision, every architectural choice, every question, every plan, all consolidated so you can load it into a new chat and continue EXACTLY where we left off.)
+
+------------------------------------------------------------
+SECTION 1 — THE CORE GOAL OF ASHPI
+------------------------------------------------------------
+AshPi is the system we are building that:
+- Runs on a Raspberry Pi.
+- Behaves exactly like Ash (your AI personality), but generalizable for all customers.
+- Controls lights, plugs, Nest thermostat, garage, signage, cameras and more.
+- Responds naturally through Telegram, Discord, Web UI, or terminal.
+- Reads INTENT (“darker”, “cozy”, “im cold”, “kill it”, “turn it up”, “cut it”) instead of rigid commands.
+- Learns memories per user — birthdays, preferences, scenes, habits, routines.
+- Uses device roles and rooms for full scalability.
+- Lets installers set up ANY home without editing code.
+
+AshPi is both:
+1) A product you install for customers.
+2) A unified assistant they talk to casually.
+
+------------------------------------------------------------
+SECTION 2 — WHY WE ARE REWRITING THE ASH BRAIN
+------------------------------------------------------------
+Your old ash.py is:
+- Personal to YOU.
+- Contains details about your life, trauma, addictions, emotions, spirituality.
+- Impossible to ship to customers.
+
+So we are replacing it with:
+
+ashpi_brain/
+    core.py          → Ash personality (generalized)
+    memory.py        → Per-user memory system
+    router.py        → Decides which intent module to call
+    lighting_intent.py
+    comfort_intent.py
+    plugs_intent.py
+    garage_intent.py (future)
+    camera_intent.py (future)
+
+This gives:
+- Ash personality intact.
+- ZERO personal Peter details.
+- User-specific memories created at runtime.
+
+When a new user says:
+“Hey Ash, I’m Mark”
+Ash will store:
+preferred_name = "Mark"
+
+------------------------------------------------------------
+SECTION 3 — WHAT WE BUILT TOGETHER IN THIS CHAT
+------------------------------------------------------------
+
+### 3.1 — THE LIGHTING INTENT ENGINE
+You wanted natural conversation like:
+- “darker”
+- “darker darker”
+- “one more”
+- “back one”
+- “kill it”
+- “hey ash, make it cozy”
+- “a bit more”
+- “cut it entirely”
+
+We built a system that:
+- Adjusts brightness in 100-point increments (100, 200, 300, 400, 500…)
+- Has a **30‑second active window**
+- If the window expires → Ash asks what light you mean
+- If multiple lights in a room → Ash asks clarifications
+- Supports “scenes” (cozy, bright, moody, night mode)
+
+You explicitly said:
+“You were the best at saying that earlier — darker darker more more okay one more — do the increments.”
+
+We locked that in.
+
+### 3.2 — COMFORT / THERMOSTAT INTENT
+Supports phrases:
+- “Bro I’m cold”
+- “It’s freezing”
+- “It’s hot in here”
+- “Im sweating”
+
+Ash replies:
+“You usually like 21°, it’s 19 right now — want me to bump it up?”
+
+Heat changes in **small increments (0.5–1°C)**  
+Active window: **10 seconds**
+
+### 3.3 — PLUGS (BED LAMP + BIRD CAGE)
+You said:
+- “Going to bed” → Ash asks “Reading or sleeping?”
+- If reading → bed lamp ON
+- “Turn on my birdcage light”
+
+We designed:
+- Roles: bed_reading_lamp, pet_light, side_lamp
+- Plug intent engine will be similar to lighting engine
+- Eventually scenes involving plugs + lights together.
+
+### 3.4 — SCALABILITY + DEVICE ROLES
+Your biggest concern:
+“What happens when customers don’t have lights named Thor or Captain America??”
+
+We solved it with:
+DEVICE ROLES:
+- wall_light
+- desk_light
+- bed_lamp
+- ambient_light
+- walkway_light
+- pet_light
+- reading_light
+
+ROOMS:
+- bedroom
+- living_room
+- family_room
+- hallway
+- office
+- garage
+- kitchen
+
+Scenes reference roles + rooms, NOT device names.
+
+### 3.5 — INSTALLER WORKFLOW (CRITICALLY IMPORTANT)
+You asked:
+“How do I install AshPi in someone’s house without rewriting everything every time?”
+
+We designed:
+INSTALLER UI (CLI or tiny Web UI)
+- Pull all device IDs from Tuya/Nest/Ayla via YOUR developer accounts
+- Show the installer the list
+- Installer picks:
+  - room
+  - role
+  - nickname (optional)
+
+AshPi saves:
+devices.json
+rooms.json
+roles.json
+
+Customer NEVER sees the underlying IDs.
+
+### 3.6 — FUTURE SMART BEHAVIOR YOU REQUESTED
+Example:
+“Hey Ash, I’m almost home.”
+
+For YOU → Turn on birdcage light.  
+For some customers → Open garage.  
+For others → Turn on desk lamp.  
+
+We designed:
+Ash must learn habits:
+- detect repeated patterns  
+- create memory: “When user is almost home → take action X”
+
+Customers can override or define rules manually.
+
+------------------------------------------------------------
+SECTION 4 — API SCALING (TUYA / NEST / AYLA)
+------------------------------------------------------------
+You asked:
+“Do I need a whole new developer account for each home?”
+
+Answer:
+**NO.**
+
+You only need:
+- One Tuya developer account  
+- One Nest project  
+- One Ayla/NOMA IQ API  
+
+Every customer uses their own Pi which:
+- Connects to YOUR developer APIs  
+- Pulls THEIR device IDs  
+- Stores THEIR memory + preferences  
+
+This is how we scale without repeating headaches like:
+- OAuth tokens
+- Project setup
+- API creation
+
+------------------------------------------------------------
+SECTION 5 — THE ACTUAL PROBLEM YOU HIT IN TERMINAL
+------------------------------------------------------------
+
+Error:
+```
+ModuleNotFoundError: No module named 'ashpi_brain.router'
+```
+
+Because the folder `ashpi_brain/` does NOT exist yet.
+
+We MUST generate the folder and the files.
+
+------------------------------------------------------------
+SECTION 6 — WHAT WE HAVE NOT YET BUILT
+------------------------------------------------------------
+
+We still need to create:
+
+ashpi_brain/
+    __init__.py
+    core.py
+    memory.py
+    router.py
+    lighting_intent.py
+    comfort_intent.py
+    plugs_intent.py
+
+This is the next step.
+
+------------------------------------------------------------
+SECTION 7 — WHERE WE STOPPED IN THIS CHAT (YOUR CURRENT POSITION)
+------------------------------------------------------------
+
+You said:
+“Dude we don’t even have ashpi_brain.py or the folder yet.”
+
+Exactly.
+
+We stopped right before generating:
+- The folder structure
+- The starter modules
+- The import paths
+- The router wiring
+
+The **NEXT STEP** is:
+
+>>> Generate the folder + starter code.
+
+------------------------------------------------------------
+SECTION 8 — EXACT NEXT TASK
+------------------------------------------------------------
+
+Your next command will be:
+
+“**Ash, generate the ashpi_brain folder and files.**”
+
+And I will output:
+- Folder structure
+- Each file’s starter code
+- Import paths
+- A test script
+- Instructions to run:
+
+```
+python3 ashpi_test.py
+```
+
+When imports pass → we continue.
+
+------------------------------------------------------------
+SECTION 9 — WHY THIS FILE EXISTS
+------------------------------------------------------------
+
+You wanted:
+- A full downloadable file
+- Containing EVERYTHING from this entire chat
+- So you can open a new chat
+- Upload this file
+- And I will continue exactly where we left off with total clarity.
+
+This is that file.
+
+------------------------------------------------------------
+END OF SNAPSHOT
+------------------------------------------------------------

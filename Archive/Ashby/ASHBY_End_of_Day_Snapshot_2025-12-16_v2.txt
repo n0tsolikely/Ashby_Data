@@ -1,0 +1,67 @@
+ASHBY END OF DAY SNAPSHOT — 2025-12-16
+================================
+
+STATUS
+------
+Daily Dailies completed. This was NOT a Raid completion.
+Raid (Guild Orders) remains active.
+
+CONTROL SYNC SUMMARY
+--------------------
+Short control sync due to limited time and late return.
+Primary focus: lighting behavior correctness and percent normalization.
+
+WHAT WAS COMPLETED (CUMULATIVE)
+-------------------------------
+Carried forward from previous snapshot(s):
+- Lighting control pipeline stabilized (intent → execution → state awareness).
+- Session-aware lighting adjustments confirmed working.
+- Decision reaffirmed: do NOT refactor router.py yet to avoid cascading breakage.
+- Router allowed to remain heavy temporarily by design.
+
+Completed today:
+- Percent normalization verified:
+  - “60%” → 600/1000
+  - “100%” → 1000/1000
+- Emphasis handling implemented and confirmed:
+  - “down” applies step decrement
+  - “way down” multiplies step correctly
+- Interactive testing passed via ashpi_test.py.
+- Absolute brightness, delta-based adjustment, and emphasis now coexist correctly.
+
+CONFIRMED WORKING BEHAVIOR
+--------------------------
+- Natural language brightness changes behave as expected.
+- Emphasis phrases correctly intensify adjustment.
+- Session inheritance works across consecutive commands.
+- Lights respond correctly to ON / OFF / ADJUST flows.
+
+KNOWN BUGS / BLOCKERS (DO NOT CONTINUE RAID UNTIL FIXED)
+-------------------------------------------------------
+1) Action-Gated Truth Bug
+   - Chat may claim actions occurred even when execution failed or group was invalid.
+   - Must be fixed before expanding to multi-device or automation logic.
+
+2) Group Resolution Bug
+   - Ambiguous phrases like “turn it back on” can misresolve to invalid groups.
+   - Requires explicit session-based or last-known-target resolution.
+
+NOTES / REMINDERS
+-----------------
+- Percent normalization logic currently lives in router.py.
+  This is acknowledged technical debt and will be moved later
+  when router is split into thinner orchestration layers.
+- No refactor work to be done until blockers above are resolved.
+
+NEXT SESSION PLAN
+-----------------
+- Start by checking off completed Guild Orders at top of snapshot.
+- Fix Action-Gated Truth bug first.
+- Then address group / target resolution.
+- Only then resume full Guild Orders execution (Raid).
+
+STOP
+----
+System left in clean, stable state.
+No loose ends.
+Ready to resume next session.

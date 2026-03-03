@@ -1,0 +1,30 @@
+POST 30 PLAN (bookmark)
+
+Purpose
+- Parked plan to execute AFTER Side Quest 30/31 runner hygiene is completed and we have an end-to-end “mint” smoke check.
+- When Hands says: “continue with the Post 30 plan”, we resume at this exact plan.
+
+Resume Preconditions (must be true before starting)
+- Runner subprocess env is reliable (SIDE-QUEST_030/031): stuart_runner._env() works and can spawn cli_stuart without PYTHONPATH hacks.
+- End-to-end smoke (offline) passes using injected inputs:
+  - fake audio file in StuartRuntime/inbox/<door>/...
+  - fake secrets/config placeholders where required (structure only; no real keys)
+  - pipeline executes through upload -> run -> artifacts emitted
+  - only expected failures are external transport (telegram/web not actually running)
+
+Work to do under this plan (new quests required)
+1) Read current Stuart pipeline contracts + artifact schema; preserve them.
+2) Draft Execution Pack(s) for replacing stubs with real implementations (LOCAL_ONLY first):
+   - ASR (transcription)
+   - diarization
+   - PDF rendering
+3) Convert Execution Pack(s) into a batch of new Quests (Quest Board) with clear Accept/Execute/Evidence/Move/Log.
+4) Wire implementations via adapters (no platform leakage):
+   - meetings/adapters/asr_*
+   - meetings/adapters/diarization_*
+   - meetings/render/pdf_*
+5) Add deterministic smoke tests/runbook updates proving V1: telegram/web/cli doors would succeed if transport were live.
+
+Notes
+- Governed mode: no code edits until explicit Execute order.
+- All work produces receipts: diffs + tests + audit bundles + snapshots.

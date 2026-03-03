@@ -1,0 +1,114 @@
+================================================================================
+IDENTITY (REQUIRED)
+================================================================================
+Quest ID:
+SIDE-QUEST_087
+
+Title:
+Stuart v1 — Side Quest: Global vs Session chat clarity (hide/label global until implemented)
+
+Subject:
+Ashby / Stuart
+
+Origin:
+STUART_TO_DO_2026-02-20__REV1.txt (#6): global/session buttons confusing; global is not implemented.
+
+Priority: (P0 / P1 / P2)
+P2
+
+Links:
+- To-Do doc: STUART_TO_DO_2026-02-20__REV1.txt
+- Backend: /api/chat/global (currently scaffold)
+- Frontend: Chat UI components in Stuart.jsx
+
+================================================================================
+CODEX ANCHORS + CONSTRAINT SUMMARY (DRAFT)
+================================================================================
+Codex Anchors (DRAFT):
+- Stuart_Codex_Full.txt (interaction modes; truthfulness)
+
+Codex Constraint Summary:
+- UI must not present non-functional controls as if they work.
+
+================================================================================
+QUEST BOARD FOLDER STATE
+================================================================================
+Quest Board Folder State: BOARD
+
+================================================================================
+DESCRIPTION
+================================================================================
+Global chat is currently a scaffold stub. The UI needs to make this obvious or hide the feature until real.
+
+================================================================================
+SCOPE / OBJECTIVE
+================================================================================
+- Update UI to either:
+  A) hide Global chat toggle entirely, OR
+  B) label it clearly as “Not implemented yet” and default to Session chat.
+- If Global is selected, show a banner warning.
+
+================================================================================
+OUT OF SCOPE
+================================================================================
+- Implementing real global chat.
+
+================================================================================
+DEPENDENCIES
+================================================================================
+None.
+
+================================================================================
+RISK
+================================================================================
+Risk: R0
+
+================================================================================
+DOOR IMPACT
+================================================================================
+Door Impact:
+- WEB
+
+================================================================================
+TESTING LEVEL
+================================================================================
+Testing Level: TL1
+
+================================================================================
+VERIFICATION PLAN (DRAFT)
+================================================================================
+- Manual:
+  - User can tell what Global means.
+  - No confusing dead-end behavior.
+
+================================================================================
+CHANGE CLASS + VISION DELTA
+================================================================================
+Change Class: TRIVIAL
+Vision Delta: ALIGNED
+
+================================================================================
+SYSTEM CONTEXT STATEMENT
+================================================================================
+Clarity prevents wasted user time and bug reports.
+
+================================================================================
+ANTI-DUPLICATION PLAN
+================================================================================
+- rg -n "global" Stuart.jsx
+- Find the toggle control and adjust.
+
+================================================================================
+PLACEMENT INTENT
+================================================================================
+- Stuart.jsx chat controls
+
+================================================================================
+TALENT POINT
+================================================================================
+Talent Point Awarded: NO
+
+================================================================================
+EXECUTION AUDIT BUNDLE
+================================================================================
+Audit Bundle Folder Path: (set when moving to ACCEPTED)

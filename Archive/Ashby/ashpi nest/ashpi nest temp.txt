@@ -1,0 +1,9 @@
+google cloud console, nest project
+
+
+
+
+source ashpi-env/bin/activate
+python3 ashpi_nest_set.py 24
+
+python3 ashpi_nest_set.py "heat value" e.g. 22, 24, 25

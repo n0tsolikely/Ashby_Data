@@ -1,0 +1,69 @@
+AshPi Devices Snapshot (2025-12-08)
+===================================
+
+Purpose:
+--------
+This file records the current known devices, their IDs, types, brands, and rooms.
+
+Note: This is a human reference. The actual live source of truth is ashpi_devices.py.
+
+Devices:
+--------
+
+1) bed_lamp
+   - id: ebf157ec2f48cf767auaif
+   - type: plug
+   - brand: tuya
+   - room: bedroom
+   - description: Bedside lamp outlet
+
+2) birdcage_light
+   - id: ebca18fe0ff83bec80tjtl
+   - type: plug
+   - brand: tuya
+   - room: bedroom
+   - description: Birdcage light outlet
+
+3) captain_america_bulb
+   - id: 405837102cf4325c60c6
+   - type: bulb
+   - brand: tuya
+   - room: bedroom
+   - description: Wall bulb next to Captain America poster
+   - group hints:
+       - part of: wall_lights
+       - part of: room_lights
+
+4) thor_bulb
+   - id: 40583710cc50e3e008dd
+   - type: bulb
+   - brand: tuya
+   - room: bedroom
+   - description: Wall bulb next to Thor poster
+   - group hints:
+       - part of: wall_lights
+       - part of: room_lights
+
+5) sky_bulb
+   - id: 405837102cf4321d1d05
+   - type: bulb
+   - brand: tuya
+   - room: bedroom
+   - description: Ceiling bulb above bed (sky)
+   - group hints:
+       - part of: ceiling_light
+       - part of: room_lights
+
+Planned Groups (to be encoded in core/devices.py or a groups map):
+------------------------------------------------------------------
+- wall_lights:
+    - captain_america_bulb
+    - thor_bulb
+
+- ceiling_light:
+    - sky_bulb
+
+- room_lights:
+    - captain_america_bulb
+    - thor_bulb
+    - sky_bulb

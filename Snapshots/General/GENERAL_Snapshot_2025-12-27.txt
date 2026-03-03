@@ -1,0 +1,324 @@
+ASHBY — CONTROL SYNC SNAPSHOT (GENERAL / ARCHIVAL)
+
+DATE: 2026-01-XX
+TYPE: EXTENDED CONTROL SYNC (INFORMATIONAL / ARCHIVAL)
+SCOPE: Ashby × Reolink LTE Camera Integration (General Discussion)
+OPERATOR: notsolikely
+STATUS: INFORMATIONAL — NO IMPLEMENTATION, NO RAID, NO EOD
+
+================================================================================
+PURPOSE OF THIS SNAPSHOT
+================================================================================
+
+This document exists as a **high-fidelity archival Control Sync Snapshot**.
+Its goal is to fully preserve *all reasoning, decisions, constraints, and
+architectural conclusions* reached during extended discussion regarding:
+
+- Ashby’s agentic architecture
+- Camera integration philosophy
+- Reolink Go PT Plus (LTE) constraints
+- Email vs FTP vs Time Lapse ingestion paths
+- Future-proofing against rewrites
+
+If this chat were deleted, this document alone should be sufficient to:
+- Reconstruct intent and logic
+- Avoid re‑litigating any discussed topics
+- Resume work without conceptual loss
+
+This snapshot intentionally exceeds normal Control Sync brevity.
+
+================================================================================
+ASHBY — CORE ARCHITECTURAL POSITION (RECONFIRMED)
+================================================================================
+
+Ashby is a **local-first, agentic system brain**, not a chatbot, script,
+or vendor-specific automation.
+
+Key properties reaffirmed:
+
+1) Capability-Based Architecture
+   - Ashby reasons in terms of WHAT, never HOW.
+   - Execution details are delegated to adapters.
+   - Vendors, protocols, and transport layers never leak into core logic.
+
+2) Truth-Gated Behavior
+   - Ashby must never claim an action or state unless backed by evidence.
+   - All observations produce confidence states:
+     VERIFIED / LAST_KNOWN / UNKNOWN.
+   - No hallucinated success, no “probably” acting as truth.
+
+3) Agentic Loop
+   - Observe → Reason → Decide → Act → Verify → Update State → Repeat.
+   - Ashby may wait, retry, escalate, or decline to act.
+
+4) Survivability Over Convenience
+   - Architecture is designed to survive new hardware, new vendors,
+     new transports, and new use cases without rewrites.
+
+================================================================================
+CAMERAS IN ASHBY — CONCEPTUAL MODEL
+================================================================================
+
+Cameras are treated as **sensors**, not video streams.
+
+A camera produces:
+- Frames (images)
+- Clips (bounded video artifacts)
+- Events (detections, triggers)
+
+Ashby never “watches live video.”
+Ashby **ingests artifacts** and reasons over them.
+
+Camera-related responsibilities are split into layers:
+
+1) Camera Capability (Domain)
+   - Abstract interface:
+     - snapshot()
+     - start_recording(duration)
+     - stop_recording()
+   - Returns ActionResults with evidence references.
+
+2) Adapters (Execution Backends)
+   - Implement HOW snapshots/clips are acquired.
+   - Examples:
+     - FTP-ingest adapter
+     - Email-ingest adapter
+     - RTSP frame grab adapter (future)
+     - Cloud pull adapter (if applicable)
+
+3) Vision / Analysis Layer
+   - Consumes stored artifacts.
+   - Runs detectors (snow, package, person, vehicle, animal, etc.).
+   - Produces structured events.
+
+4) Agentic Decision Layer
+   - Decides whether to alert, wait, retry, or escalate.
+   - Applies thresholds, confidence rules, and temporal reasoning.
+
+================================================================================
+REOLINK GO PT PLUS — HARD CONSTRAINTS
+================================================================================
+
+The Reolink Go PT Plus camera is a **fixed, non-negotiable constraint**:
+
+- LTE (4G) connectivity
+- Battery / solar powered
+- Intended for remote deployment (Woodland Acres)
+- Cannot be replaced for this use case
+
+Known and accepted limitations:
+
+- No RTSP / ONVIF for LTE models
+- No Home Assistant support
+- Camera may sleep aggressively
+- Live streaming is data-expensive
+- Automation must be PUSH-based, not pull-based
+
+The camera must be treated as an *intermittent sensor*, not a continuous feed.
+
+================================================================================
+EMAIL PIPELINE — CLARIFIED
+================================================================================
+
+Email functionality operates via SMTP only.
+
+Clarifications locked:
+
+- “Sender Email”:
+  - The email account the camera logs into to SEND mail.
+  - Requires valid SMTP credentials.
+  - A dedicated Gmail account is recommended.
+
+- “Recipient Email”:
+  - Where alerts and attachments are delivered.
+  - Can be the same inbox or a different one.
+
+- Gmail SMTP requires:
+  - 2-Step Verification enabled
+  - App Passwords (16-character token)
+  - smtp.gmail.com:465 with SSL
+
+Important limitations:
+
+- Email attachments are typically Fluent / low-resolution.
+- Resolution may not be configurable.
+- Email delivery is usually event-triggered (motion/alarm).
+
+Email is validated as:
+- A reliable notification channel
+- A possible ingestion channel
+- NOT guaranteed for interval-based image delivery
+
+================================================================================
+FTP PIPELINE — CLARIFIED
+================================================================================
+
+FTP is a **direct file upload mechanism**.
+
+Key points:
+
+- Camera acts as FTP client.
+- Server receives files into a directory.
+- No email involved.
+- Reolink supports FTP / FTPS (not SFTP).
+
+Advantages:
+
+- Better control over image quality (Clear vs Fluent).
+- Deterministic “latest image” overwrite behavior.
+- Suitable for automation and analysis.
+
+Requirements:
+
+- A reachable FTP server (local or VPS).
+- Proper port exposure.
+- Credentials managed outside Ashby core.
+
+FTP is considered the **preferred backbone** IF the camera can upload
+interval images (to be empirically tested).
+
+================================================================================
+TIME LAPSE — SEPARATION OF CONCERNS
+================================================================================
+
+Time Lapse is a capture mode, not a transport mechanism.
+
+Clarified understanding:
+
+- Time Lapse captures photos at fixed intervals.
+- Typically stores results on microSD.
+- Does NOT automatically imply:
+  - Email sending
+  - FTP uploading
+
+Whether Time Lapse triggers outbound transfer is **unknown and must be tested**.
+
+No assumptions are permitted.
+
+================================================================================
+IMAGE QUALITY & “ZOOM” CLARIFICATION
+================================================================================
+
+Locked understanding:
+
+- Digital zoom does NOT create new information.
+- Lower-resolution images limit pixel-level detail.
+- AI vision can tolerate noise but cannot infer missing pixels.
+
+Correct mitigation strategy:
+
+- Design physical markers large and high-contrast.
+- Ensure marker occupies meaningful pixel area.
+- Crop region-of-interest (ROI) during analysis.
+
+This enables:
+- Reliable detection even at Fluent resolution.
+- Reduced data usage.
+
+================================================================================
+SNOW DETECTION — ROLE & PLACEMENT
+================================================================================
+
+“Snow Sentinel” is NOT a camera module.
+
+Correct placement:
+
+- Camera module:
+  - Acquires images/clips.
+  - Stores artifacts.
+  - Reports evidence.
+
+- Vision / Sentinel layer:
+  - Runs detectors.
+  - Applies rules.
+  - Produces events.
+
+Snow detection is a **detector configuration**, not a hardcoded feature.
+
+This design supports reuse for:
+- Package detection
+- Person presence
+- Vehicle classification
+- Animal activity
+- Long-dwell object alerts
+
+No rewrite required for new use cases.
+
+================================================================================
+FUTURE CAMERA EXPANSION — PRESERVED
+================================================================================
+
+Architecture explicitly preserves:
+
+- RTSP cameras at home (future)
+- Clip retrieval by timestamp (“10 seconds at 2pm”)
+- Event summaries (“what happened today?”)
+- Selective alerting (“ignore cars, alert on blue truck”)
+- Re-analysis of stored artifacts
+
+These are enabled by:
+- Artifact storage
+- Event indexing
+- Agentic reasoning over time
+
+Not by camera brand specifics.
+
+================================================================================
+LAPTOP VS RASPBERRY PI — OPERATIONAL DECISION
+================================================================================
+
+Locked decision:
+
+- Laptop Ubuntu environment is canonical development environment.
+- Raspberry Pi is a deployment target only.
+- Old Pi installs are irrelevant and should be removed.
+
+Migration rules:
+
+- Code and configs transfer cleanly.
+- Virtual environments do NOT.
+- Services (FTP, systemd) must be reconfigured per host.
+
+================================================================================
+OPEN QUESTIONS (REQUIRING TESTING)
+================================================================================
+
+1) Does Time Lapse photo mode trigger:
+   - Email sends?
+   - FTP uploads?
+   Or SD-only storage?
+
+2) Does FTP upload occur:
+   - On interval?
+   - Or only on motion/alarm/manual events?
+
+3) Are email attachments:
+   - Fixed resolution?
+   - Always Fluent?
+
+Answers to these determine the final ingestion pipeline.
+
+================================================================================
+NEXT STEPS (AGREED, NO IMPLEMENTATION YET)
+================================================================================
+
+1) Complete Gmail App Password setup.
+2) Validate SMTP email sending from camera.
+3) Confirm image attachment delivery.
+4) Test Time Lapse outbound behavior.
+5) Test FTP upload behavior.
+6) Only then: finalize camera ingestion spec.
+
+================================================================================
+FINAL STATEMENT
+================================================================================
+
+This Control Sync Snapshot records a **full conceptual lock-in**
+of Ashby × Reolink camera integration philosophy.
+
+No code was written.
+No scope was opened.
+No raid was started.
+
+All conclusions herein are authoritative unless superseded
+by a future Control Sync.

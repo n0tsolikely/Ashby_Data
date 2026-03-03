@@ -1,0 +1,38 @@
+STUART v2 — EXECUTION PACK INDEX (REV1)
+Date: 2026-02-17
+
+Purpose:
+- This is the deterministic runbook stack for executing the Stuart v2 raid:
+  Base44-style UI port (NO Base44 platform deps) + API surface contract.
+- This pack is meant to reduce “I forgot what we decided” to ZERO.
+
+Status:
+- The raid spec exists in Guild Orders but is PAUSED until Hands starts it:
+  - Ashby_Data/Guild Orders/PAUSED/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt
+- Quest packs for Dungeon 1 + 2 are already generated on the Quest Board:
+  - QUEST_080 … QUEST_089
+  - QUEST_090 … QUEST_101
+
+Read Order (do not freestyle it):
+1) STUART_EXECUTION_PACK__V2_REV1__RAID_GUARDRAILS__2026-02-17.txt
+2) STUART_INSTALL_PACK__V2_REV1__FULLSTACK_DEPENDENCIES_PREFLIGHT__2026-02-17.txt
+3) STUART_EXECUTION_PACK__V2_REV1__SESSION_START_SCRIPT__2026-02-17.txt
+4) STUART_EXECUTION_PACK__V2_REV1__DUNGEON1_RUNBOOK__2026-02-17.txt
+5) STUART_EXECUTION_PACK__V2_REV1__DUNGEON2_RUNBOOK__2026-02-17.txt
+6) STUART_EXECUTION_PACK__V2_REV1__SMOKE_TEST_GATES__2026-02-17.txt
+7) STUART_EXECUTION_PACK__V2_REV1__QUEST_GENERATION_POLICY__2026-02-17.txt
+
+Hard Laws:
+- No execution without Hands + accepted quest.
+- Execute quests in numeric order.
+- No Base44 platform deps.
+- No Base44 naming contamination.
+- Chat-first UI; buttons are convenience.
+
+Where “truth” lives:
+- Continuity lock:
+  - Ashby_Data/Latest Rehydration Pack/CONTINUITY_LOCK_2026-02-17.txt
+- Closure receipt:
+  - Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot__2026-02-16.txt
+- Codex:
+  - Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt

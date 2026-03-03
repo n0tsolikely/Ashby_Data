@@ -1,0 +1,463 @@
+# ASHBY PLATFORM EXPANSION ROADMAP
+
+**Synapse Guild — Brains × Hands**
+**Purpose:** Turn Ashby from a working smart-home brain into a **general-purpose agent engine** (like Unreal/Unity), capable of powering many “children” agents (e.g., **Stuart**, Tori, Mira) and many product modules (cameras, inventory, creator ops, etc.) without ecosystem lock-in.
+
+---
+
+## 0) Executive Summary
+
+Ashby is not “a smart home app.” Ashby is an **agent runtime** that can:
+
+* Understand intent (NLU)
+* Maintain state (sessions + memory)
+* Execute actions (tools/adapters)
+* Verify reality (action-gated truth)
+* Explain or trace decisions (observability)
+* Learn structure (scope graph: zones/rooms/aliases or categories/projects/etc.)
+* Expand via modules/plugins (feature toggles, loader)
+* Scale to new domains (inventory, creator ops, audits, cameras, scheduling)
+
+This roadmap defines the **engine subsystems** that make Ashby reusable and safe, the **domain-independent abstractions** (Scope, Entities, Tools), and a phased plan that avoids future “structural realignment therapy.”
+
+---
+
+## 1) Non-Negotiables (Engine Principles)
+
+1. **No god files.** Router stays thin. Large logic lives in focused modules.
+2. **Separate WHAT from HOW.**
+
+   * WHAT: domain reasoning, policies, sessions, target resolution, action planning
+   * HOW: brand adapters (Tuya/Nest/Reolink/YouTube/etc.)
+3. **Action-gated truth.** Ashby must not claim actions unless execution + verification confirm.
+4. **Config-first.** House/project structure comes from configs (JSON/YAML/DB), not hard-coded room names.
+5. **Removable modules.** Stuart must run without lights/cameras; lights must run without cameras; etc.
+6. **Pluggable storage + tools.** Nothing should depend on “it’s JSON in this folder” forever.
+7. **Observability baked-in.** Debugging is a first-class engine feature, not an afterthought.
+
+---
+
+## 2) Core Engine Model (Domain-Independent)
+
+Ashby becomes “engine” when these concepts are universal:
+
+### 2.1 Scope Graph (Generalized “Zones”)
+
+A **Scope** is an abstract container that can represent:
+
+* Smart home: upstairs, kitchen, zone2, front yard, “shag room”
+* Inventory: category “cables”, bin “A3”, supplier “X”
+* Meetings: project “Ashby”, client “Bell”, team “Field Ops”
+* Creator: pipeline “YouTube uploads”, “VOD titles”, “Thumbnails”
+
+**Key features:**
+
+* Scopes can contain scopes (upstairs contains rooms; “front yard” contains cameras; inventory category contains items).
+* Human phrases map to scopes via **aliases**.
+* Scopes map to entities (devices/items/jobs/docs/etc.).
+
+### 2.2 Entity Registry
+
+A generic system to manage “things”:
+
+* Devices (lights/cameras/thermostat)
+* Items (inventory)
+* Jobs (audits)
+* Assets (videos, clips)
+* Documents (notes, tickets)
+
+Entities have:
+
+* `id`, `type`, `capabilities`, `scope_ids`, `metadata`
+
+### 2.3 Tools (Action Interface)
+
+A tool is a callable action with:
+
+* name, schema, permissions, execution handler, and optional verification handler
+* examples:
+
+  * `lights.set_brightness(group, value)`
+  * `camera.get_latest_snapshot(scope)`
+  * `inventory.adjust_stock(item_id, delta)`
+  * `youtube.upload(video_path, title, tags)`
+
+Tools become the “engine API” that modules use.
+
+---
+
+## 3) Engine Subsystems (What Ashby Needs Beyond NLU/Sessions)
+
+These are the real platform features that turn Ashby into an engine.
+
+### 3.1 Orchestrator Pipeline (Thin Router)
+
+The router should do only:
+
+1. Normalize input
+2. Load user + runtime context
+3. Session follow-up check
+4. NLU → intent + slots
+5. Resolve targets via Scope Graph + Entity Registry
+6. Select tool(s) / plan
+7. Execute via tool runtime
+8. Verify / update state
+9. Inject state snapshot + truth constraints
+10. Respond (safe_chat)
+
+Everything else is delegated.
+
+### 3.2 Tool Runtime + Verification Layer
+
+A uniform runtime for execution:
+
+* timeouts
+* retries (transient failures)
+* structured results
+* verification hooks (“did light actually turn off?”)
+* result logging and trace IDs
+
+This is where the “turn off thor sometimes needs two tries” problem gets solved *later* without chaos.
+
+### 3.3 Storage Abstraction
+
+A single storage API so engine logic doesn’t care if it’s:
+
+* JSON today
+* SQLite tomorrow
+* Postgres later
+* Remote sync later
+
+Storage must support:
+
+* user memory
+* action logs
+* scope graph
+* entity registry
+* module configs
+* audit traces
+
+### 3.4 Scheduler + Job Queue (“Watchers”)
+
+This unlocks:
+
+* “notify me if the plow marker is covered”
+* “check cameras every 5 minutes”
+* “daily briefing at 8am”
+* “retry failed device command”
+* “run nightly reconciliation on inventory”
+
+Jobs require:
+
+* queue persistence
+* cron-style schedules
+* backoff/retry rules
+* notifications
+
+### 3.5 Observability (Tracing + Logs)
+
+Engine-grade debugging:
+
+* request_id / trace_id per interaction
+* action trace timeline (NLU → resolution → tool call → verification → response)
+* staleness detection (“state last verified 12m ago”)
+* dev “explain” mode and production “quiet” mode
+
+### 3.6 Policy + Permissions + Confirmation Rules
+
+Per-user policy:
+
+* who can execute which tools
+* when confirmation is required (e.g., “unlock door”)
+* safe mode (read-only vs control)
+* streaming safe mode (don’t print secrets)
+
+### 3.7 Module Loader (Config-driven)
+
+True platform ability:
+
+* enable/disable modules without code edits
+* discover available tools automatically
+* “Stuart mode” loads meeting modules; “Ashby Home” loads smart-home modules
+
+### 3.8 Evaluation + Regression Harness
+
+The difference between “hack” and “engine”:
+
+* golden prompts (intent tests)
+* golden dispatch (tool choice tests)
+* “no behavior change” tests for refactors
+* scenario tests (session follow-ups)
+
+This prevents future refactor fear.
+
+---
+
+## 4) Directory Architecture (Engine-First Layout)
+
+Goal: make it impossible to reintroduce god files, and make Stuart/Tori first-class citizens.
+
+### 4.1 Proposed Package Layout (Inside `ashby/`)
+
+(“Engine rails”—even if empty initially)
+
+* `ashby/core/`
+  Orchestration, context snapshots, truth gate, safe_chat wrapper
+
+* `ashby/tools/`
+  Tool registry, tool runtime, verification hooks, schemas
+
+* `ashby/scope/`
+  Scope graph, alias resolver, scope queries
+
+* `ashby/domain/`
+  Domain models + resolvers (targets, entities, capability matching)
+
+* `ashby/modules/`
+  Domain “WHAT” modules (lights, cameras, thermostat, inventory, creator)
+
+* `ashby/adapters/`
+  Brand/API “HOW” connectors (tuya, nest, reolink, youtube, twitch, google, etc.)
+
+* `ashby/interfaces/`
+  Contracts/protocols for adapters, storage, and tool runtime
+
+* `ashby/storage/`
+  Storage providers (json_store, sqlite_store), migrations, keys
+
+* `ashby/observability/`
+  logs, traces, metrics, debug views
+
+* `ashby/policy/`
+  permission rules, confirmation flows, safety rules
+
+* `ashby/brain/`
+  “Cognition parts” that are still brain-specific:
+
+  * `brain/nlu/` (manager/local/gpt/schema)
+  * `brain/sessions/` (lighting, comfort, cameras)
+  * `brain/memory/` (user memory helpers, action log helpers)
+
+### 4.2 Repo Root Layout (Outside package)
+
+* `io/` (CLI, Telegram, Web UI, future voice)
+* `configs/` (scopes, aliases, entities, modules enabled)
+* `runtime/` (memory, cache, logs)
+* `secrets/` (never committed)
+* `scripts/` (diagnostics, one-offs)
+* `tests/` (regression harness)
+
+---
+
+## 5) Scope Graph / Zones Design (Smart Home + Stuart Compatibility)
+
+### 5.1 Smart Home Example
+
+* `scope: zone1` labels: family room / lounge / den / tv room
+* `scope: zone2` labels: master bedroom / shag room / suite
+* `scope: zone4` labels: upstairs; contains zone2 + zone3 + upstairs bath
+* devices attach to scopes:
+
+  * `device: thor_light` in `zone2`
+  * cameras in `front_yard` scope
+
+User says: “turn off upstairs” → alias resolver → zone4 → expand children scopes → collect lights → tool calls.
+
+### 5.2 Stuart (Meetings) Example
+
+* `scope: project_ashby` labels: “Ashby”, “platform work”, “guild brain”
+* `scope: client_bell` labels: “Bell”, “that bell job”
+* meeting transcripts attach to scopes; tasks attach to scopes.
+
+User says: “summarize last Bell meeting and create follow-ups” → scope → entity search → tools: summarize + task_create + schedule_followup.
+
+Same engine primitives. Different module set.
+
+---
+
+## 6) Camera Module Roadmap (Immediate Next “Cool” Expansion)
+
+Since you’re gifting the camera tomorrow and you want “notify me if plow marker is covered,” cameras become the first “sensor” module that proves Ashby is more than lights.
+
+### 6.1 Minimum Camera Capabilities (v0)
+
+* list cameras
+* pull latest snapshot
+* pull latest clip
+* basic motion events (if provided by camera API)
+* return structured metadata (timestamp, camera_id, status)
+
+### 6.2 Watchers (v1)
+
+* schedule job: “every 5 minutes”
+* capture snapshot
+* run a detector (simple first: pixel region check; later: model)
+* condition triggers: plow marker obscured → notify
+
+### 6.3 Long-Term Camera Intelligence (v2+)
+
+* event indexing (searchable history)
+* “show me when the truck arrived”
+* anomaly detection
+* clip retrieval by natural language query
+
+---
+
+## 7) “API Consumer” Vision (Ashby Eats Everything)
+
+Ashby’s platform value is **not being stuck in ecosystems**. That means we design adapters as first-class.
+
+### Adapter categories you’ll eventually want:
+
+* Smart home: Tuya, Nest, Reolink, Zigbee2MQTT, Home Assistant, etc.
+* Media: YouTube, Twitch, OBS control, Spotify
+* Productivity: Google Calendar, Notion, email, SMS
+* Business: inventory systems, spreadsheets, ticketing
+
+The engine rule:
+
+* Modules never talk to APIs directly.
+* Modules call tools.
+* Tools call adapters through interfaces.
+
+That’s how you stay unbounded.
+
+---
+
+## 8) Phased Expansion Plan (Engine Growth Without Chaos)
+
+### Phase 0 — Current Reality (now)
+
+* working lights + comfort + CLI
+* Telegram alignment pending
+* router decomposition pending
+* naming cleanup pending
+
+### Phase 1 — Engine Rails (foundation)
+
+* directory scaffold added
+* router decompressed into core components
+* sessions moved to brain/sessions
+* NLU moved under brain/nlu
+* minimal tool runtime introduced (even if it just wraps current calls)
+
+### Phase 2 — Scope Graph (zones generalized)
+
+* configs: scopes.json, aliases.json, entities.json
+* resolver: alias → scope → entities
+* remove hardcoded room words from logic
+
+### Phase 3 — Observability + Regression Harness
+
+* trace ids
+* action logs standardized
+* golden tests for key prompts/actions
+* “no behavior change” refactor safety
+
+### Phase 4 — Scheduler + Watchers
+
+* job queue + persistent schedules
+* notifications pipeline (telegram, later others)
+
+### Phase 5 — Cameras (first sensor module)
+
+* camera adapter + camera module
+* snapshot tool + watcher tool
+* plow marker detection v0
+
+### Phase 6 — Multi-Agent Children (Stuart/Tori)
+
+* config-driven module sets per agent persona
+* same engine, different enabled modules/tools
+* shared scope graph + storage
+
+### Phase 7 — Web UI + Mobile Front-End
+
+* ashby-home app dashboard (states, logs, chat)
+* typed + mic interface
+* user sessions / permissions
+
+---
+
+## 9) What “Platform Complete” Looks Like (Definition)
+
+Ashby is a real engine when:
+
+* A new agent can be created by:
+
+  1. choosing a module set in config
+  2. defining scopes/entities
+  3. enabling adapters/tools
+     …without editing core orchestration code
+
+* You can add a new integration (API) by:
+
+  1. writing an adapter
+  2. implementing interface
+  3. registering tools
+     …without touching NLU/router/sessions
+
+* Refactors don’t scare you because:
+
+  * regression harness exists
+  * observability exists
+  * action-gated truth prevents hallucinated “success”
+
+---
+
+## 10) Examples of Future Ashby “Games” (Engine Deployments)
+
+### Smart Home / Property
+
+* Guardian (security/camera ops)
+* Maintenance (task + parts + logs)
+* Energy (thermostat optimization + comfort)
+
+### Business Ops
+
+* Auditor (checklists + evidence + reports)
+* Inventory (stock + reorder + vendor)
+* Dispatcher (jobs routing + comms)
+
+### Creator Ops
+
+* Stream Producer (VOD naming, titles, overlays, post-stream tasks)
+* Clip Librarian (auto tagging, highlight pipeline)
+
+### Personal OS
+
+* Coach (goals, routines, accountability)
+* Wellness tracker (non-medical: logging, shopping lists, habits)
+* Money clerk (spend logs, categories, reminders)
+
+Each is a module set + scopes + tools + adapters on the same engine.
+
+---
+
+## 11) Immediate Notes to Keep in Mind During Router Refactor
+
+While decomposing router today/soon, keep future engine requirements in mind:
+
+* Ensure router depends on:
+
+  * `core/context_snapshot`
+  * `core/truth_gate`
+  * `brain/sessions/*`
+  * `brain/nlu/*`
+  * `tools/runtime` (even if thin)
+* Ensure no module-specific logic leaks back into router.
+* Ensure file paths aren’t hardcoded; route through storage/runtime config.
+* Keep tool calls returning structured results (even if minimal) to support tracing later.
+
+---
+
+## 12) “Brains” Reminder (Why We’re Doing This)
+
+You’re building the thing the big ecosystems can’t give you:
+
+* Not locked to Google/Amazon/Home Assistant
+* Not stuck in one UI
+* Not limited to “smart home” at all
+* A personality-based agent platform that can do *everything* through tools + memory + verification
+
+Ashby is the engine. The children are the games. The Guild builds the world.

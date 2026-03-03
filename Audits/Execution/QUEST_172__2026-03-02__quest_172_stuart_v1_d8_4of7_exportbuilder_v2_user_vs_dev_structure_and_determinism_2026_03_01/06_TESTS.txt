@@ -1,0 +1,64 @@
+## Command Receipt Log
+CMD: cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_export_bundle_export_type_filters.py tests/test_export_api_v2_params.py tests/test_meetings_cli_search_export.py tests/test_pdf_traceability_footers.py
+....F..F                                                                 [100%]
+=================================== FAILURES ===================================
+_________________ test_cli_export_produces_session_bundle_zip __________________
+
+tmp_path = PosixPath('/tmp/pytest-of-notsolikely/pytest-30/test_cli_export_produces_sessi0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x75d12ca50860>
+
+    def test_cli_export_produces_session_bundle_zip(tmp_path: Path, monkeypatch):
+        root = tmp_path / "stuart_runtime"
+        monkeypatch.setenv("STUART_ROOT", str(root))
+    
+        session_id, run_id = _seed_session_with_run(root, mode="meeting", title="Export", transcript_text="kimchi")
+    
+        out = cmd_export(NS(session_id=session_id, out=None))
+        assert out["ok"] is True
+        zpath = Path(out["zip_path"])
+        assert zpath.exists()
+    
+        with zipfile.ZipFile(zpath, "r") as z:
+            names = set(z.namelist())
+    
+        assert "session.json" in names
+        assert any(n.startswith("transcripts/") and n.endswith("/transcript.txt") for n in names)
+>       assert f"formalizations/{run_id}/minutes.md" in names
+E       AssertionError: assert 'formalizations/run_01KJRX2B77AM2F1GHGQKBD528T/minutes.md' in {'formalizations/run_01KJRX2B77AM2F1GHGQKBD528T/minutes.pdf', 'session.json', 'transcripts/trv_01KJRX2B79ZA5AG5QXA8CHEZCG/transcript.txt'}
+
+tests/test_meetings_cli_search_export.py:138: AssertionError
+________ test_render_pdf_adapter_adds_formalization_footer_in_fast_mode ________
+
+tmp_path = PosixPath('/tmp/pytest-of-notsolikely/pytest-30/test_render_pdf_adapter_adds_f0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x75d12ca50890>
+
+    def test_render_pdf_adapter_adds_formalization_footer_in_fast_mode(tmp_path: Path, monkeypatch) -> None:
+        monkeypatch.setenv("ASHBY_FAST_TESTS", "1")
+    
+        run_dir = tmp_path / "run_2"
+        (run_dir / "exports").mkdir(parents=True, exist_ok=True)
+        (run_dir / "artifacts").mkdir(parents=True, exist_ok=True)
+        (run_dir / "run.json").write_text(
+            json.dumps({"session_id": "ses_2", "run_id": "run_2", "created_ts": 2.0}),
+            encoding="utf-8",
+        )
+        md_path = run_dir / "artifacts" / "minutes.md"
+        md_path.write_text("# Minutes\n\nBody", encoding="utf-8")
+    
+        out = render_pdf_adapter(run_dir, md_path=md_path, out_name="minutes.pdf")
+        pdf_bytes = Path(out["path"]).read_bytes()
+    
+>       assert b"session:ses_2" in pdf_bytes
+E       AssertionError: assert b'session:ses_2' in b'%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n2 0 obj\n<< /Type /Pages /Kids [4 0 R] /Count 1 >>\nen...000115 00000 n \n0000000185 00000 n \n0000000311 00000 n \ntrailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n451\n%%EOF\n'
+
+tests/test_pdf_traceability_footers.py:41: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_meetings_cli_search_export.py::test_cli_export_produces_session_bundle_zip
+FAILED tests/test_pdf_traceability_footers.py::test_render_pdf_adapter_adds_formalization_footer_in_fast_mode
+2 failed, 6 passed in 0.80s
+RC: 1
+CMD: cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_export_bundle_export_type_filters.py tests/test_export_api_v2_params.py tests/test_meetings_cli_search_export.py tests/test_pdf_traceability_footers.py
+........                                                                 [100%]
+8 passed in 0.61s
+RC: 0
+PASS: governance validation OK for QUEST_172 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_172__2026-03-02__quest_172_stuart_v1_d8_4of7_exportbuilder_v2_user_vs_dev_structure_and_determinism_2026_03_01

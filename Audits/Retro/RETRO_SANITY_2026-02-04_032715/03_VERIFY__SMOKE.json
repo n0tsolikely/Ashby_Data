@@ -1,0 +1,24 @@
+{
+  "ok": true,
+  "artifacts": {
+    "normalized": true,
+    "transcript_txt": true,
+    "transcript_json": true,
+    "diarization": true,
+    "aligned": true,
+    "formalized_md": true,
+    "evidence_map": true,
+    "formalized_pdf": true
+  },
+  "artifact_kinds": [
+    "resolved_input",
+    "normalized_audio",
+    "transcript",
+    "fts_ingest",
+    "diarization_segments",
+    "aligned_transcript",
+    "formalized_md",
+    "evidence_map",
+    "formalized_pdf"
+  ]
+}

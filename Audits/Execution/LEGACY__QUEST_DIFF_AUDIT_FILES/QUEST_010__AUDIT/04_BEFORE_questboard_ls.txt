@@ -1,0 +1,9 @@
+total 12
+drwxrwxrwx 2 root root  200 Jan 26 04:36 .
+drwxrwxrwx 2 root root  260 Jan 26 02:00 ..
+drwxrwxrwx 2 root root   80 Jan 26 04:36 Accepted
+drwxrwxrwx 2 root root  360 Jan 26 03:55 Completed
+drwxrwxrwx 2 root root  120 Jan 26 04:36 QUEST DIFF AUDIT FILES
+-rw-rw-rw- 1 root root 3037 Jan 26 00:36 QUEST_024__Stuart_v1_Dungeon_8_1of2_Webapp_scaffold_chat_session_history_plan_preview_shell.txt
+-rw-rw-rw- 1 root root 3534 Jan 26 00:36 QUEST_025__Stuart_v1_Dungeon_8_2of2_Webapp_upload_run_downloads_state_sync.txt
+-rw-rw-rw- 1 root root 4954 Jan 26 00:35 QUEST_TEMPLATE.txt

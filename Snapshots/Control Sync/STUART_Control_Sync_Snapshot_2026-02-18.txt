@@ -1,0 +1,26 @@
+SNAPSHOT_TYPE: CONTROL_SYNC
+SUBJECT: STUART (Ashby)
+DATE: 2026-02-18
+TIMEZONE: America/Toronto
+GOVERNANCE: Synapse_OS
+STATUS: CONTROL_SYNC OPEN
+
+CONTROL_SYNC_OPENING_DECLARATION
+- Control Sync opened for Stuart continuity and forward execution alignment.
+- Prior accepted work remains in force unless explicitly superseded by lawful governance updates.
+
+ACTIVE_SCOPE
+- Stuart frontend/backend integration continuity
+- Governance artifact integrity (rehydration/execution packs, buffs, quests, snapshots)
+- Forward-only execution posture
+
+LOCKED_CONSTRAINTS
+- No governance logic inside `Ashby_Engine`
+- Governance/state artifacts remain in `Ashby_Data` and `Synapse_OS`
+- No Base44 platform dependencies in canonical Stuart frontend runtime
+
+OPEN_FOCUS
+- Maintain deterministic handoff quality for fresh-session AI continuation
+- Preserve quest-board state integrity and audit traceability
+
+END_OF_CONTROL_SYNC_SNAPSHOT

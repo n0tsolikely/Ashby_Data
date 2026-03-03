@@ -1,0 +1,96 @@
+QUEST_ID: QUEST_164
+TITLE: Stuart v1 — D7 6/10 — Renderers v2 (hide empty sections + hide citations by default)
+DATE: 2026-03-01
+STATUS: ACCEPTED (Ready for Codex execution)
+RISK_CLASS: R2 (Rendering behavior changes; affects user-visible outputs)
+OWNER: OpenAI Codex (local CLI)
+
+CONTEXT / WHY
+Dungeon 7 locked two rendering controls:
+- show_empty_sections default FALSE → omit empty sections from rendered MD/PDF/TXT
+- include_citations default FALSE → do not display citation tokens to users
+
+Important: citations MUST still exist internally in minutes.json/journal.json and evidence_map must always be generated.
+We are only changing what is rendered to users.
+
+Right now renderers always:
+- show every section heading, even empty
+- insert placeholder text for empties
+- always include citations (minutes_md), even if the user wants “pretty” output
+
+CANON ANCHORS
+- Guild Orders D7: show_empty_sections + include_citations defaults and meaning
+- Stuart Codex: “pretty output” expectations
+- Prior quest: minutes/journal JSON now contains include_citations/show_empty_sections fields
+
+REPO REALITY
+- minutes renderer: Ashby_Engine/ashby/modules/meetings/render/minutes_md.py
+- journal renderer: Ashby_Engine/ashby/modules/meetings/render/journal_md.py
+- PDF export: Ashby_Engine/ashby/modules/meetings/render/export_pdf.py (uses markdown output)
+- Existing test that currently enforces empty placeholders:
+  - Ashby_Engine/tests/test_meetings_minutes_truth_guards_empty_sections.py
+
+SCOPE LOCK
+IN SCOPE
+1) Update minutes_md + journal_md to respect:
+   - include_citations (default False)
+   - show_empty_sections (default False)
+   These values are read from the source JSON file being rendered.
+2) When show_empty_sections is False:
+   - Omit entire section headings for empty sections
+   - DO NOT print placeholder lines like “No explicit decisions recorded.”
+3) When show_empty_sections is True:
+   - Keep headings for empty sections
+   - Print a single consistent placeholder line (choose one style and use it everywhere)
+4) When include_citations is False:
+   - Render all text without citation token suffixes (e.g., “[@seg_x]”)
+   - Do NOT delete citations from JSON; only hide them in rendered text
+5) Update tests accordingly.
+
+OUT OF SCOPE
+- UI changes (download dropdown etc) — next quest
+- Evidence map UI relocation — optional; not required here unless tiny and safe
+- Changing JSON schema requirements (citations still required where schema demands)
+
+IMPLEMENTATION (deterministic)
+1) minutes_md.py
+- Add helper:
+  - get_render_flags(minutes_json: dict) -> (include_citations: bool, show_empty_sections: bool)
+    - default both to False if missing (backward compatibility)
+- Update format_citations():
+  - if include_citations is False → return "" (no suffix)
+  - else preserve existing behavior
+- Update each section writer:
+  - If list empty and show_empty_sections False → skip writing that section entirely
+  - If list empty and show_empty_sections True → write header + placeholder
+- Keep “Topics” behavior consistent: only render topics that exist; don’t create empty topic section unless show_empty_sections True and template explicitly demands it (future enhancement).
+
+2) journal_md.py
+- Same flags and behaviors:
+  - Skip empty sections entirely by default
+  - Only show placeholders if show_empty_sections True
+  - Hide citations for action items when include_citations False
+
+3) Tests
+- Update tests that currently expect placeholders:
+  - test_meetings_minutes_truth_guards_empty_sections.py should now assert headings are omitted by default when empty.
+- Add a new test for the TRUE path:
+  - Render minutes.json with show_empty_sections=True and confirm headings + placeholders appear.
+- Add tests for include_citations:
+  - Render a minutes.json with citations and include_citations=False and assert “[@” is absent in output markdown.
+  - Render with include_citations=True and assert “[@” is present.
+
+ACCEPTANCE CRITERIA
+- Default render output is “pretty”: empty sections omitted, citations hidden.
+- Evidence maps are unaffected (still generated/available).
+- show_empty_sections=True produces deterministic placeholders everywhere.
+- pytest passes.
+
+RECEIPTS REQUIRED
+- Diff/patch
+- pytest output
+
+FAIL CONDITIONS
+- Deleting citations from the JSON (breaks evidence map + truth)
+- Leaving placeholder text in default outputs (violates locked UX decision)
+- Renderer behavior depends on UI state at runtime instead of JSON metadata (outputs must be self-describing)

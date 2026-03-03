@@ -1,0 +1,142 @@
+ASHBY — STORAGE ADAPTER CONTRACT (BATCH 0)
+Status: Canonical-for-execution (single-purpose contract for Batch 0)
+Date: 2026-01-13
+
+Purpose
+Batch 0 introduces a platform-level storage abstraction so Ashby modules can:
+- write durable artifacts
+- enforce “no silent overwrite”
+- perform atomic writes
+- build deterministic directory trees safely
+
+This is NOT “Stuart storage”.
+This is generic Ashby substrate that any module can use (Stuart, cameras, inventory, logs, etc).
+
+Non-goals (explicit)
+- Cloud object storage support (S3/GCS/etc) in Batch 0
+- Database design
+- Indexing/search
+- Module-specific path conventions (those live inside each module)
+
+Where this lives in the EXISTING Ashby Engine repo (repo-aware)
+Repo root in your zip: <repo_root>/ashby/  (contains ashby/ashby/, io/, configs/, runtime/, etc)
+
+Create these new packages/files:
+
+1) <repo_root>/ashby/ashby/interfaces/
+   - __init__.py
+   - storage.py              # StorageAdapter protocol + path safety rules
+
+2) <repo_root>/ashby/ashby/storage/
+   - __init__.py
+   - local_fs.py             # Local filesystem implementation
+   - paths.py                # small generic helpers (slugify + safe_relpath)
+
+3) <repo_root>/ashby/tests/
+   - test_storage_adapter_smoke.py
+
+Core contract: StorageAdapter
+StorageAdapter represents a “rooted” storage namespace.
+All paths passed to it are *relative paths* (no leading “/”), and must not escape root.
+
+The interface is intentionally small but sufficient for artifacts.
+
+Interface requirements (Python)
+Implement StorageAdapter as a Protocol (typing.Protocol) so implementations are swappable.
+
+Required methods (names are canonical)
+- root() -> str
+  Returns absolute path of the adapter’s root directory.
+
+- exists(rel_path: str) -> bool
+  True if file or directory exists.
+
+- mkdir(rel_dir: str) -> None
+  Ensures directory exists (mkdir -p behavior). No error if already exists.
+
+- list(rel_dir: str) -> list[str]
+  Lists names (not full paths) within the directory. Returns [] if dir missing.
+
+- read_bytes(rel_path: str) -> bytes
+  Reads file bytes. Must raise FileNotFoundError if missing.
+
+- write_bytes(rel_path: str, data: bytes, *, overwrite: bool = False, atomic: bool = True) -> None
+  Writes bytes to rel_path.
+  Rules:
+  - default overwrite=False MUST refuse to overwrite existing files
+  - atomic=True MUST perform atomic replace semantics:
+      write to temp file in same directory -> fsync -> os.replace
+  - if overwrite=True, it may replace existing file (still atomic by default)
+
+Convenience helpers (recommended, but may live as functions)
+- read_text(rel_path: str, encoding: str = "utf-8") -> str
+- write_text(rel_path: str, text: str, *, encoding: str = "utf-8", overwrite: bool = False, atomic: bool = True) -> None
+- read_json(rel_path: str) -> Any
+- write_json(rel_path: str, obj: Any, *, overwrite: bool = False, atomic: bool = True, indent: int = 2) -> None
+
+Path safety rules (MUST)
+All implementations MUST enforce:
+- rel_path must not start with "/" or "\".
+- rel_path must not contain ".." path segments.
+- rel_path must not be empty for read/write.
+If violated: raise ValueError.
+
+Deterministic directory helper rules (paths.py)
+paths.py is not a module-specific layout engine.
+It only provides generic helpers used by modules to build deterministic trees:
+
+Required helpers:
+- sanitize_slug(name: str, *, max_len: int = 48) -> str
+  - trim
+  - spaces -> underscores
+  - remove characters outside [A-Za-z0-9_-]
+  - collapse multiple underscores
+  - truncate to max_len (safe)
+  - if result empty: return "untitled"
+
+- safe_relpath(*parts: str) -> str
+  - join parts with "/"
+  - normalize redundant slashes
+  - forbid absolute parts
+  - forbid ".." traversal
+  - return a safe relative path suitable for StorageAdapter
+
+LocalFSStorageAdapter (local_fs.py)
+Implement LocalFSStorageAdapter that satisfies StorageAdapter.
+
+Construction:
+- LocalFSStorageAdapter(root_dir: str)
+  - stores absolute root path
+  - ensures root exists (mkdir -p)
+
+Atomic write semantics (MUST)
+- temp file location MUST be in same directory as target to ensure os.replace is atomic.
+- write procedure:
+  1) ensure parent directory exists
+  2) create temp file (e.g., .tmp.<pid>.<rand>)
+  3) write bytes
+  4) flush + fsync
+  5) os.replace(temp, target)
+- if overwrite=False and target exists: raise FileExistsError
+
+No silent overwrite (MUST)
+Default behavior of write_* is overwrite=False.
+A caller must opt-in to overwrite=True explicitly.
+
+Self-audit checklist (Batch 0 acceptance)
+Before declaring “StorageAdapter done”:
+- Tests exist and pass:
+  - write_bytes refuses overwrite by default
+  - write_bytes atomic write creates file
+  - path traversal is blocked ("../x" raises ValueError)
+  - safe_relpath produces stable results
+- No other Ashby code was modified (Batch 0B should be additive)
+- No mention of Stuart in interfaces/storage code
+
+Test expectations (test_storage_adapter_smoke.py)
+The smoke test must:
+- create temp directory
+- instantiate LocalFSStorageAdapter
+- write a file, read it back
+- ensure overwrite protection works
+- ensure traversal protection works

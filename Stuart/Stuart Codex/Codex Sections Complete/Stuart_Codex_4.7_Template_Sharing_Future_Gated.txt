@@ -1,0 +1,114 @@
+STUART CODEX
+4.7 Template Sharing (Future / Gated) (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines template sharing as a future capability and locks the safety constraints required to ever do it. In V1, templates are local. Sharing is intentionally not shipped because it introduces privacy, moderation, and trust risks. But we design for it now so we do not refactor later.
+
+1) Canonical stance (V1)
+
+V1 rule:
+- Templates are local by default.
+- There is no template marketplace in V1.
+- Stuart must not upload templates anywhere without explicit user intent.
+
+This is aligned with our chat decisions: design for a future ecosystem, but do not ship automatic community uploading or “background sharing” in V1.
+
+2) Why sharing is risky
+
+Templates can contain:
+- personal names,
+- company names,
+- internal fields,
+- process details,
+- sensitive categories (healthcare, elder care incidents),
+- and metadata that reveals internal practices.
+
+Even if a template is “just structure,” users often embed identifying headers and examples.
+
+Therefore, any sharing system must assume templates may carry PII or sensitive operational details.
+
+3) Required constraints for any future sharing system (non-negotiable)
+
+SH1) Explicit opt-in (no silent upload)
+Sharing MUST be an explicit user action:
+- “Share this template”
+- or “Publish to marketplace”
+No implicit sharing. No default-on.
+
+SH2) Preview before send
+Before sending, Stuart MUST show the user exactly what will be shared:
+- the template content,
+- metadata,
+- and any extracted fields.
+
+SH3) Scrubbing and redaction pipeline
+If sharing is enabled, Stuart MUST support a scrub step that can:
+- remove names, emails, phone numbers, addresses,
+- remove organization names if requested,
+- remove example content that includes PII,
+- and warn when PII is detected.
+
+Scrubbing must be user-visible and user-confirmed.
+
+SH4) Quarantine, not instant publication
+User-shared templates must not become “public defaults” instantly.
+A future ecosystem must include a quarantine/review step:
+- user submits template,
+- it enters a review pool (manual or policy-gated),
+- it is approved, rejected, or returned for edits,
+- then it is published.
+
+This prevents accidental PII release and reduces malicious template injection.
+
+SH5) Versioning and provenance
+Shared templates MUST carry:
+- template_id and version,
+- creator provenance (at least a pseudonymous ID),
+- compatibility metadata,
+- and a changelog.
+This preserves trust and prevents silent template mutation.
+
+SH6) Local copy remains primary
+Even if templates are shared, a user’s local templates remain their primary record. Sharing should never delete or replace local versions.
+
+4) Profiles and sharing
+
+Template sharing has profile implications:
+
+- In LOCAL_ONLY profile:
+  - Sharing must be disabled by default.
+  - If a user attempts sharing, Stuart must refuse (or require an explicit profile change) because LOCAL_ONLY implies no network.
+
+- In HYBRID/CLOUD:
+  - Sharing can be allowed, but still requires explicit opt-in, preview, and confirmation.
+
+5) Marketplace concept (future)
+
+A marketplace is a distribution mechanism, not a core feature.
+If built later, it should support:
+- browsing templates by mode,
+- filtering by tags (e.g., “incident”, “SEV”, “meeting minutes”),
+- ratings/reviews (optional),
+- and import/install into local registry.
+
+But publication must remain gated (quarantine/review).
+
+6) What Stuart should do in V1 if users ask for a marketplace
+
+Because users will ask, Stuart’s safe chat behavior should be:
+- “Template sharing/marketplace is not available in this version.”
+- Offer alternatives:
+  - “You can create a local template”
+  - “You can export a template file and share it manually with your team”
+  - “You can import a template file someone gives you”
+
+Stuart must not pretend a marketplace exists.
+
+7) Self-audit (4.7)
+
+- This section matches our chat decisions: marketplace is a future idea, not v1; templates are local; sharing must be explicit and privacy-aware.
+- It encodes the constraints you raised (PII risk, scrubber, no background upload, community contribution being gated).
+- It preserves the LOCAL_ONLY integrity: no network implies no sharing.
+This section is complete.

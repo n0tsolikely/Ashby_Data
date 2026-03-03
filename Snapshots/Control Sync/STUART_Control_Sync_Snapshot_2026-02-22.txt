@@ -1,0 +1,40 @@
+CONTROL SYNC SNAPSHOT — STUART
+Date: 2026-02-22
+Type: Governance/Execution Discipline Patch (Quest Template Sync)
+
+WHY:
+- Recent Codex-executed quests show degraded audit bundle completeness vs earlier quests.
+- Root cause identified: subject-local Quest Template in Ashby_Data was not aligned with Synapse OS governance template (v1.5), and referenced legacy audit paths.
+
+DETERMINATIONS (BINDING FOR EXECUTOR):
+1) Quest Template Source of Truth:
+   - Governance template: Synapse OS v1.5 (governance/Quest Board/QUEST_TEMPLATE.txt)
+   - Subject-local template MUST match governance structure and MUST require audit bundles.
+
+2) Audit Bundle Structure (NON-NEGOTIABLE ONCE ACCEPTED):
+   - Audit bundle folder: Ashby_Data/Audits/Execution/QUEST_###__YYYY-MM-DD__<short_slug>/
+   - Required phase files:
+     - 00_SUMMARY.md
+     - 01_PREQUEST.md
+     - 02_EXECUTION.md
+     - 03_VERIFY.md
+     - 04_OUTCOME.md
+
+3) Quest State Truth:
+   - Quest state is determined ONLY by folder location (Quest Board root / Accepted / Completed / Abandoned).
+   - Do not rely on any legacy Status fields inside quest text.
+
+CHANGES MADE (ARTIFACTS):
+- Updated: Ashby_Data/Quest Board/QUEST_TEMPLATE.txt
+  - Synced to Synapse OS governance v1.5 template
+  - Bound placeholder paths to Ashby_Data
+- Updated: Ashby_Data/SUBJECT_STATE.yaml
+  - Reading rules now declare quest/guild order truth by folder location (not status fields)
+- Ensured skeleton: Ashby_Data/Quest Board/Accepted/.gitkeep exists
+
+CLEANUP:
+- Premature quest drafts created in-chat were moved out of Quest Board root into:
+  Ashby_Data/Archive/Quest Drafts/2026-02-22__premature_generation__MOVED_FROM_QUEST_BOARD/
+
+NEXT:
+- After audit discipline is restored, proceed to Dungeon 5 quest creation + acceptance under the new template.

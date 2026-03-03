@@ -1,0 +1,64 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+
+QUEST ID:
+PRE-QUEST_027
+
+Title:
+Stuart v1 — Webapp Bootstrap Reproduction
+
+Context: Stuart (in Ashby)
+
+Origin:
+Side-Control Sync: STUART_Control_Sync-2026-01-27
+
+Priority: P2
+
+Links:
+- (see audit bundle + code paths)
+
+Status: COMPLETED
+
+Audit Bundle Path: Quest Board/QUEST DIFF AUDIT FILES/PRE-QUEST_027__AUDIT.txt
+
+Accepted On:
+2026-01-27
+
+Completed On:
+2026-01-27
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+
+Reproduce Hands' local scaffold changes in canonical repo (BASE-relative mounts + JS send/upload scaffold).
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Overwrite webapp/main.py to mount static/templates relative to file location.
+- Add webapp/static/js/app.js with minimal send+upload behavior.
+- Patch index.html to include script + id on file input.
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+No pipeline invocation, no download endpoint, no persistence.
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+None.
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+State alignment only.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] / and /static/js/app.js served
+- [ ] POST /upload returns filename
+- [ ] Audit bundle captured
+
+Completed: scaffold applied; audit bundle PRE-QUEST_027__AUDIT captured.

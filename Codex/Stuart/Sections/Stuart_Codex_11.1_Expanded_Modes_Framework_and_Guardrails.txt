@@ -1,0 +1,160 @@
+STUART CODEX
+11.1 Expanded Modes (Framework and Guardrails) (Canonical Appendix)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This appendix section defines how Stuart can safely expand to “many modes” over time (doctor/chef/student/etc.) without refactoring the pipeline and without collapsing trust.
+
+Chat-canon driver:
+You explicitly want many future modes and templates so users don’t have to think.
+But you also explicitly fear hallucinated modes/templates.
+Therefore expanded modes must be:
+- enumerated (registry-based),
+- template-scoped,
+- evidence-driven,
+- and, where high-stakes, guarded and disclosed.
+
+1) What a “mode” is (canonical definition)
+
+A mode is a formalization contract:
+- it defines the purpose of the output
+- it defines required sections and the structure of the output
+- it defines evidence strictness rules per section
+- it defines default retention level
+- it defines default stance rules (Analyst vs Collaborator)
+- it defines extraction primitives for indexing (what items become decisions/actions/etc.)
+
+A mode is NOT:
+- a freeform “do whatever you think”
+- a prompt the user can invent out of thin air
+Modes are enumerated and versioned.
+
+2) Why modes must remain enumerated (anti-hallucination)
+
+Allowing “invented modes” is a direct path to trust collapse:
+- user asks for “apothecary mode”
+- model complies
+- output looks plausible but has no defined contract
+
+Canonical rule:
+- If a requested mode_id is not in the registry, Stuart must refuse and present valid modes/templates.
+- The system can suggest existing modes that fit, but cannot create or pretend.
+
+3) The “mode registry” concept (implementation-agnostic)
+
+A mode registry (local file or database) lists:
+- mode_id
+- display_name
+- description
+- allowed templates (template ids)
+- default template id
+- required artifacts (transcript required? diarization required?)
+- evidence strictness policies
+- indexing extraction rules
+- safety/compliance tags (e.g., high-stakes)
+
+This registry is the truth gate.
+
+4) How new modes are added safely
+
+A new mode addition requires:
+- a mode definition (as above)
+- at least one default template
+- tests/fixtures (sample sessions) to validate:
+  - evidence mapping
+  - retention behavior
+  - failure behavior
+- documentation of limitations and disclaimers if high-stakes
+
+Adding a mode should not require changes to:
+- transcription pipeline
+- diarization pipeline
+- storage layout
+- evidence mapping primitives
+Only the formalization template and extraction rules should change.
+
+5) High-stakes modes require additional guardrails
+
+Some future modes are inherently high-stakes:
+- medical/clinical note mode
+- legal deposition mode
+- safety incident mode (industrial)
+
+Guardrail posture:
+- default to Analyst stance (no suggestions)
+- strict evidence requirements
+- stronger uncertainty labeling
+- disclaimers that outputs are ASR-derived
+- in many cases, recommend LOCAL_ONLY by default
+
+If a mode is “high-stakes,” the registry should mark it, and the UI should reflect that.
+
+6) Examples of future modes (illustrative, not a promise)
+
+These are examples of how mode definitions would differ:
+
+EX-1) Doctor / clinical note mode (SOAP)
+Sections:
+- Subjective (patient-stated, evidence-backed)
+- Objective (measurements explicitly stated only)
+- Assessment (may be constrained; avoid diagnosis invention)
+- Plan (actions and follow-ups)
+Guardrails:
+- must not invent diagnoses
+- must label uncertainty and “not medical advice” style disclaimers
+
+EX-2) Chef / kitchen iteration mode
+Sections:
+- recipe iteration log
+- ingredient list (explicit only)
+- technique notes
+- next experiment plan
+Retention:
+- higher retention for exact phrasing and measurements
+Guardrails:
+- avoid inventing ingredients not stated
+
+EX-3) Student lecture mode
+Sections:
+- outline
+- key terms/glossary (explicitly defined terms)
+- questions to follow up
+- reading list (only if provided; otherwise “suggested” section clearly labeled)
+
+EX-4) Sales call / CRM mode
+Sections:
+- participants (if mapped)
+- customer goals/pain points (evidence-backed)
+- commitments/next steps (action items)
+- objections
+Guardrails:
+- no invention of commitments; strict citations on commitments.
+
+These modes are primarily template + extraction differences on the same pipeline backbone.
+
+7) Template explosion management
+
+As modes expand, templates will multiply.
+Therefore:
+- templates remain mode-scoped
+- templates are versioned
+- a default template always exists per mode
+- “template suggestion” can exist but must be suggestion-only and must not hallucinate new templates
+
+8) How expanded modes interact with “General Query Mode”
+
+General Query Mode remains the “safe default”:
+- it allows Q&A on transcripts without producing an official formalization.
+It is the right place for exploratory questions (“what did we say about donuts?”) without generating a formal record.
+
+9) Self-audit (11.1)
+
+Chat-canon alignment checklist:
+- Expanded modes remain enumerated and registry-driven to prevent hallucination. (Maintained.)
+- Mode = formalization contract, not freeform prompt. (Maintained.)
+- High-stakes guardrails exist: stricter evidence, Analyst default, uncertainty disclosure, LOCAL_ONLY recommendations. (Maintained.)
+- Expansion does not refactor the pipeline: modes are template/extraction overlays on the same backbone. (Maintained.)
+- General Query Mode remains the default safe entry point. (Maintained.)
+
+This section is complete.

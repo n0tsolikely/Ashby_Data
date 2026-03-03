@@ -1,0 +1,73 @@
+QUEST ID: QUEST_016
+Title: Stuart v1 — Dungeon 4 (1 of 3): Intent parsing + executable plan object
+Context: Stuart
+Origin: Guild Orders: GUILD_ORDERS_STUART_V1_2026-01-16_REV3.txt (Dungeon 4)
+Priority: P0
+Links:
+- Guild Orders: Stuart v1 — Dungeon 4
+- Supersedes (decomposition of): QUEST_005
+- Related: QUEST_013 (immutability/reruns), QUEST_015 (mode/template registry)
+Status: COMPLETED
+Accepted On: Completed On:
+Completed On: DESCRIPTION
+
+DESCRIPTION
+────────────────────────────────────────
+Implement the meetings module router interface that converts natural language + attachments + UI state into a structured intent and an executable plan. This quest defines the plan object and minimum intents.
+
+SCOPE / OBJECTIVE
+────────────────────────────────────────
+Implement a meetings module router that accepts:
+- user text
+- attachment metadata (if present)
+- UI selections (mode/template/speakers) when applicable
+- session context (active session, last run)
+
+Outputs (minimum):
+- structured intent
+- executable plan (ordered steps)
+
+Minimum intents (v1), matching Guild Orders:
+- set mode
+- set speakers
+- intake (store upload into session)
+- formalize
+- search
+- export
+- speaker map overlay request
+- extract-only outputs request
+
+This quest defines the plan structure; clarification and gating are handled in QUEST_017/018.
+
+OUT OF SCOPE
+────────────────────────────────────────
+Clarification prompt contract and plan preview details (QUEST_017).
+Explicit “go” gating enforcement (QUEST_018).
+Pipeline execution implementation (Dungeon 5).
+
+DEPENDENCIES
+────────────────────────────────────────
+- QUEST_013
+- QUEST_015
+
+EXECUTION NOTES
+────────────────────────────────────────
+Plan must be structured and machine-checkable.
+Do not allow free-form execution. Every heavy action must be represented as a plan step.
+
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────
+- [x] Meetings module router accepts (text, attachments metadata, UI state, session context) and returns a structured intent.
+- [x] Router produces an executable plan object with ordered steps for supported intents.
+- [x] Mode/template/speakers are validated against registries (unknown values trigger a structured validation failure, not hallucination).
+- [x] A minimal smoke test exercises at least: set mode, intake, formalize (plan only), search (plan only).
+
+TALENT POINT
+────────────────────────────────────────
+On completion:
+- Talent Point Awarded: YES
+- Talent Spent On: TALENT_STUART_INTENT_PLAN_OBJECT — Intent Parsing + Executable Plan Object
+
+FINAL NOTES
+────────────────────────────────────────
+(optional)

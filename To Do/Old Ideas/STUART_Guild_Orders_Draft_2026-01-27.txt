@@ -1,0 +1,54 @@
+STUART — GUILD ORDERS (DRAFT / TO DO)
+Date: 2026-01-27
+Status: IN PROGRESS (Control Sync still open)
+Purpose: Capture discussion points and future work ideas before formal Guild Orders are finalized.
+
+CONTEXT
+- Core Stuart pipeline (Telegram + Web upload → PDF) is assumed working for planning purposes.
+- Current priority is backbone correctness, truth gating, and operational stability.
+- UI/UX polish is intentionally deferred.
+
+KEY DECISIONS (AGREED IN CONTROL SYNC)
+1) Backbone First, Polish Later
+   - Focus on making the system operational, truthful, and stable.
+   - UI/UX issues (mobile layout, sticky input bar, session switching, chat polish)
+     are acknowledged but deferred.
+   - Stuart can be used in a minimal way (drop file → get PDF) during this phase.
+
+2) Webapp Chat Is Currently Stubbed
+   - Webapp does not yet provide real LLM conversational responses.
+   - This is acceptable for now while pipeline and truth semantics are finalized.
+   - Real chat wiring will be handled in a later Guild Orders set.
+
+3) Mode & Identity Separation Is Critical
+   - Stuart must remain document-focused.
+   - No cross-domain action bleed (searching transcripts must not trigger device actions).
+   - Ashby vs Stuart identity separation remains a core design constraint.
+
+4) Sessions & History
+   - Current session UI is placeholder.
+   - Real session switching, renaming, and history browsing will be future work.
+   - Must be backed by real run/session data, not fake UI state.
+
+5) Diarization Policy
+   - Single-speaker workflows should skip diarization when safe.
+   - Multi-speaker workflows use diarization.
+   - Decision and reasoning must be truthfully disclosed in artifacts.
+
+CANDIDATE FUTURE GUILD ORDERS (NOT FINAL)
+- Stuart identity & mode isolation
+- Truthful retrieval semantics (no fake async)
+- Template and mode awareness
+- Run/session library & downloads
+- Diarization policy controls
+- Packaging & distribution readiness
+- Webapp UX/mobile polish (later phase)
+
+NEXT STEPS
+- Finish Control Sync discussion.
+- Decide final scope and grouping for new Guild Orders.
+- Generate formal Guild Orders document when Control Sync is closed.
+
+NOTE
+This file is a working memory artifact only.
+It is not authoritative Guild Orders until promoted during a Control Sync close.

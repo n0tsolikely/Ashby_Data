@@ -1,0 +1,109 @@
+STUART — CONTINUITY LOCK
+Date: 2026-02-11
+
+PURPOSE
+- Freeze the authoritative state of the Stuart v1 raid so a new session cannot drift.
+- This file is binding resume law. If it conflicts with casual memory, this wins.
+
+CANONICAL ROOTS
+- Governance canon: /mnt/data/Synapse_OS_Governance
+- Subject data canon: /mnt/data/Ashby_Data
+- Subject engine canon: /mnt/data/Ashby_Engine
+
+NO HEURISTICS (HARD RULE — BINDING)
+- You may hold heuristic impressions internally, but you MUST verify every claim against on-disk artifacts as if fresh.
+- When referencing Codex, Snapshots, Audits, or code: locate the exact file and quote/point to the exact clause or output.
+- If evidence is missing or ambiguous: stop and say so. Do NOT infer.
+
+CODEX STATUS (FOG)
+- Codex Freeze Marker present:
+  - /mnt/data/Ashby_Data/Codex/CODEX_FREEZE.md
+- Execution is authorized only under frozen codex references:
+  - /mnt/data/Ashby_Data/Codex/ASHBY CODEX FULL.txt
+  - /mnt/data/Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt
+
+ACTIVE GUILD ORDERS (AUTHORITATIVE SCOPE)
+- /mnt/data/Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS_STUART_V1_2026-02-04_REV7.txt
+
+AUTHORITATIVE DECISION ANCHORS (BINDING)
+- Control Sync Snapshot (baseline selection + D6 phasing decision):
+  /mnt/data/Ashby_Data/Snapshots/Control Sync/ASHBY_Control_Sync_Snapshot_2026-02-10.txt
+- End of Day Snapshot (D6 Phase 1 closure):
+  /mnt/data/Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot.txt
+- Prior phase closure (D5):
+  /mnt/data/Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2026-02-09.txt
+- Binding Buff (platform truth/profile/routing lock):
+  /mnt/data/Ashby_Data/Buffs/ASHBY_PLATFORM_TRUTH_AND_PROFILE_LOCK.txt
+- Vision addendum (profile vs personality + platform truth wiring):
+  /mnt/data/Ashby_Data/Docs/ASHBY_VISION_ADDENDUM__2026-02-07__TRUTH_PROFILE_ROUTING_CLARITY.txt
+
+QUEST BOARD TRUTH (COMMITMENT STATE)
+COMPLETED (implemented + verified via receipts):
+- QUEST_042 → QUEST_052 (REV7 phase stack)
+- QUEST_053 → QUEST_060 (D3 + D4)
+- SIDE-QUEST_076 (Platform: unify execution profile substrate)
+- SIDE-QUEST_077 (Meetings: TruthGateJudge + MeetingsTruthPolicy integration)
+- QUEST_061 → QUEST_067 (D5: doors + consent + UX end-to-end)
+- QUEST_068 → QUEST_070 (D6 Phase 1: overlays + web speaker mapping + formalize-only reuse)
+
+ACCEPTED (ACTIVE COMMITMENT STACK)
+- NONE (Accepted is empty)
+
+UNACCEPTED (DO NOT EXECUTE WITHOUT NEW CONTROL SYNC + ACCEPTANCE)
+- QUEST_071 → QUEST_075 (D6 Phase 2)
+
+RUNTIME ROOT (IMPORTANT)
+- Stuart runtime outputs live under STUART_ROOT (outside repo).
+- Default: ~/ashby_runtime/stuart
+- Override via env: STUART_ROOT
+
+DOORS & CONSENT (D5) — OPERATOR TRUTH
+- Upload is never execution:
+  - Web: /api/upload stores contribution + returns plan preview; does not create a run.
+  - CLI: `stuart upload` stores contribution; does not execute.
+  - Telegram: upload enters a state machine (mode → speakers → confirm); no run until confirm.
+- Runs are always manifest-driven:
+  - Primary downloads must be derived from `run.json.primary_outputs`.
+  - No filename guessing.
+
+OVERLAYS (D6 PHASE 1) — BINDING TRUTH
+- Overlays NEVER mutate ground truth artifacts.
+- Speaker names only come from explicit user mapping overlays.
+- Runs record the overlay snapshot used; ingest should prefer the run-recorded overlay to prevent drift.
+
+TRUTH GATE BEHAVIOR (IMPORTANT)
+- Meetings pipeline runs a Truth Gate after JSON formalize and before MD/PDF publish.
+- If Truth Gate blocks:
+  - MD/PDF outputs are NOT produced.
+  - A write-once report is written:
+    artifacts/truth_gate_report.json
+  - The run manifest points to the truth gate report artifact.
+
+EGRESS / REMOTE LLM GATING (DO NOT GUESS)
+- ASHBY_EXECUTION_PROFILE:
+  - LOCAL_ONLY / HYBRID / CLOUD
+- ASHBY_MEETINGS_LLM_ENABLED:
+  - must be explicitly truthy to allow remote minutes/journal JSON formalization
+- OPENAI_API_KEY:
+  - required for OpenAI remote formalizer when enabled
+
+KNOWN OPERATOR ISSUES (NOT YET FIXED — REQUIRE SIDE QUEST ACCEPTANCE)
+- Diarization dependency mismatch (pyannote auth token param) causing diarization fallback.
+- Webapp UX/status clarity gaps (upload completion, selected-file visibility, progress accuracy, output surfacing).
+
+SNAPSHOT LAW (BINDING)
+- Control Sync snapshots are created ONLY when Control Sync ends.
+- End-of-Day snapshot is created ONLY when:
+  - the accepted quest stack is complete, OR
+  - Hands explicitly ends the session.
+
+CANON EXPORT LAW (BINDING)
+- Every change to Ashby_Data or Ashby_Engine must ship as a new combined zip.
+- The most recently delivered zip is treated as the canonical base for further work.
+
+NEXT EXPECTED STEP
+- Start a new Control Sync to accept the next quest stack.
+- D6 Phase 2 begins at QUEST_071.
+- After D6 Phase 2, create the two side quests:
+  - Diarization dependency fix
+  - Webapp UX/status clarity + output surfacing

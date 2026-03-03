@@ -1,0 +1,19 @@
+--- /mnt/data/Ashby_Data/Audits/Execution/SIDE-QUEST_030__2026-02-02__stuart_runner_subprocess_pypath_import_fix/91_BEFORE__stuart_runner.py	2026-02-03 03:15:58.464182599 +0000
++++ /mnt/data/Ashby_Engine/ashby/interfaces/telegram/stuart_runner.py	2026-02-03 03:16:40.358454026 +0000
+@@ -4,6 +4,7 @@
+ import os
+ import subprocess
+ import sys
++from pathlib import Path
+ from typing import Any, Dict, Optional
+ 
+ 
+@@ -18,7 +19,7 @@
+     # Inject canonical repo root into PYTHONPATH for subprocesses
+     repo_root = Path(__file__).resolve().parents[3]
+     existing = env.get("PYTHONPATH", "")
+-    env["PYTHONPATH"] = str(repo_root) + (":" + existing if existing else "")
++    env["PYTHONPATH"] = str(repo_root) + (os.pathsep + existing if existing else "")
+ 
+     sr = env.get("STUART_ROOT")
+     if sr:

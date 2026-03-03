@@ -1,0 +1,221 @@
+ASHBY END OF DAY SNAPSHOT — 2025-12-23
+Raid: Ashby Structural Realignment (Emergency) — ACTIVE
+Core Raid (Guild Orders 2025-12-15): PAUSED / BLOCKED (structural refactor required)
+Operator: notsolikely
+Environment: WSL (Ubuntu) on laptop (RTX4070)
+
+====================================================================
+0) STATUS (WHAT THIS DAY WAS)
+====================================================================
+Today was a structural realignment day: we stabilized the repo layout, declared a real canonical
+Python environment, removed the fake stub Ashby folder, migrated the working Ashby code into a
+single canonical root, fixed imports to match the new structure, and verified real device control
+still works (Thor ON/OFF) after every major step.
+
+This day was NOT a Core Raid continuation. It was emergency platform hygiene.
+
+====================================================================
+1) CANONICALS (LOCKED SOURCES OF TRUTH)
+====================================================================
+
+✅ Canonical platform root (repo root):
+  ~/ashby
+
+✅ Canonical python package:
+  ~/ashby/ashby
+
+✅ Canonical Python environment (venv):
+  ~/home/notsolikely/ashby-env
+
+Activate canonical env:
+  source ~/home/notsolikely/ashby-env/bin/activate
+
+Run interactive CLI (from repo root):
+  cd ~/ashby
+  PYTHONPATH=. python3 io/cli/ashby_interactive.py
+
+Notes:
+- `python` command is not installed; use `python3`.
+- `PYTHONPATH=.` is required right now because we have not yet added a pyproject/editable install.
+  (This is fine for now; polish later.)
+
+====================================================================
+2) ROLLBACK / SAFETY ARTIFACTS CREATED
+====================================================================
+
+✅ Rollback tarball created BEFORE refactor:
+  ~/ashby_pre_structural_refactor_2025-12-23.tar.gz
+
+This includes the pre-migration working tree + scripts + memory + secrets files as they existed then.
+
+====================================================================
+3) WHAT WAS COMPLETED (CHECKLIST — COMPLETED ITEMS)
+====================================================================
+
+PHASE 0 — Safety Locks
+✅ Created rollback tarball (pre-refactor snapshot).
+✅ Determined prior envs (ashpi-env, ashenv) were NOT canonical (both pointed at /usr/bin/python3 and lacked tuya_iot).
+✅ Created a NEW real canonical venv:
+   - python3 -m venv ~/home/notsolikely/ashby-env
+✅ Installed dependencies in canonical venv:
+   - tuya-iot-py-sdk, openai, python-telegram-bot, requests, pychromecast (+deps)
+✅ Verified tuya import works:
+   - python3 -c "import tuya_iot; print('tuya_iot OK')"
+✅ Verified device control works in canonical env via CLI test harness (Thor ON/OFF).
+
+PHASE 1 — Purge Stub + Canonical Root
+✅ Verified fake stub folder was empty:
+   ~/ashby/agents/stuart  (empty)
+✅ Deleted fake stub root:
+   rm -rf ~/ashby   (the old stub, not the new canonical root)
+✅ Created real canonical root + skeleton folders:
+   ~/ashby/{ashby,io/telegram,io/cli,scripts,configs,secrets,runtime/memory,runtime/cache,runtime/logs,tests,archive}
+
+PHASE 2 — Move Working Code Into Platform (no renames first)
+✅ Moved working package from recovery path into canonical root:
+   FROM: ~/home/notsolikely/ashpi
+   TO:   ~/ashby/ashby   (staged via ~/ashby/ashpi temp folder, then moved contents into ~/ashby/ashby)
+✅ Moved operational scripts into platform folders:
+   - Telegram gateway moved into:  ~/ashby/io/telegram/ashby_telegram_control.py
+   - CLI harness moved into:       ~/ashby/io/cli/ashpi_test.py  (later renamed)
+   - Scripts moved into:           ~/ashby/scripts/ashpi_tuya_test.py
+                                  ~/ashby/scripts/ashpi_cast.py
+                                  ~/ashby/scripts/ashpi_nest_set.py
+
+PHASE 4 — Secrets + Runtime (hygiene)
+✅ Moved secrets out of loose home directory:
+   - env.py        → ~/ashby/secrets/env.py
+   - ashpi_nest.env→ ~/ashby/secrets/ashpi_nest.env
+✅ Moved memory store into runtime:
+   - ~/home/notsolikely/memory/* → ~/ashby/runtime/memory/
+   (memory confirmed present under ~/ashby/runtime/memory/users/)
+✅ Added secrets package marker so Python can import it safely:
+   - touch ~/ashby/secrets/__init__.py
+✅ Updated Tuya adapter import to new secrets location:
+   - lights_tuya.py now imports from secrets.env instead of env
+
+PHASE 3 — Rename Pass (mechanical import hygiene + cosmetics)
+✅ Removed pycache noise in package:
+   - rm -rf __pycache__ dirs under ~/ashby/ashby
+✅ Renamed device registry file:
+   - ~/ashby/ashby/devices/ashpi_devices.py → ashby_devices.py
+✅ Updated references:
+   - device_manager.py now imports/uses ashby_devices
+   - control files import DEVICES from ashby.devices.ashby_devices
+   - router imports set_group_brightness from ashby.control.device_control
+   - device_control imports lights_tuya from ashby.control.lights_tuya
+✅ Updated CLI harness import:
+   - io/cli script now imports from ashby.brain.router
+✅ Fixed import path break due to secrets move:
+   - lights_tuya now imports from secrets.env
+✅ Verified working end-to-end from canonical repo root using:
+   - cd ~/ashby
+   - PYTHONPATH=. python3 io/cli/...
+✅ Cosmetic cleanup option B completed:
+   - Renamed CLI harness:
+     ~/ashby/io/cli/ashpi_test.py → ~/ashby/io/cli/ashby_interactive.py
+   - Updated CLI banner text:
+     “ASHPI BRAIN TEST” → “ASHBY INTERACTIVE”
+   - Updated CLI helper line:
+     “Talk to AshPi…” → “Talk to Ashby…”
+   - Updated example corpus:
+     “hello ashpi” → “hello ashby”
+     “what can ashpi control” → “what can ashby control”
+✅ Final verification:
+   - PYTHONPATH=. python3 io/cli/ashby_interactive.py runs and controls Thor.
+
+====================================================================
+4) CURRENT DIRECTORY STRUCTURE (AUTHORITATIVE)
+====================================================================
+
+Repo root:
+  ~/ashby/
+    ashby/          (python package: brain/control/devices)
+    io/
+      cli/
+        ashby_interactive.py
+      telegram/
+        ashby_telegram_control.py
+    scripts/
+      ashpi_cast.py
+      ashpi_nest_set.py
+      ashpi_tuya_test.py
+    secrets/
+      __init__.py
+      env.py
+      ashpi_nest.env
+    runtime/
+      memory/
+        users/
+          8218562397.json
+          local_terminal.json
+      cache/
+      logs/
+    configs/         (placeholders for future config-first migration)
+    tests/
+    archive/
+
+Canonical venv (outside repo):
+  ~/home/notsolikely/ashby-env/
+
+====================================================================
+5) OBSERVED BUG (LOGGED ONLY — DO NOT FIX IN THIS RAID)
+====================================================================
+Observed during live verification:
+- Command “turn off thor” sometimes required a second attempt.
+- The system logged: “Setting group 'thor' ... to 0/1000” but the bulb remained ON.
+- A second “turn off thor” succeeded.
+
+Classification:
+- This is an Action-Gated Truth / verification gap (Core Raid concern), not structural.
+Action:
+- Logged here only. Do not chase tonight.
+
+====================================================================
+6) WHAT’S LEFT (REMAINING WORK IN THIS RAID)
+====================================================================
+
+Structural Realignment remaining items (likely next session):
+- Verify Telegram gateway runs from new location with canonical env + new secrets paths:
+  - cd ~/ashby
+  - PYTHONPATH=. python3 io/telegram/ashby_telegram_control.py
+  (May require updating that file’s imports similarly to the CLI harness + secrets path.)
+- Decide whether to rename script filenames in scripts/ from ashpi_* → ashby_* (cosmetic).
+  (Not required for function; optional polish.)
+- Optional polish: introduce a proper project runner so PYTHONPATH isn't needed:
+  - pyproject.toml + “pip install -e .” OR
+  - simple run.sh that exports PYTHONPATH automatically
+- Confirm whether any leftover legacy files should be moved to archive:
+  - ~/home/notsolikely/ash.py
+  - ~/home/notsolikely/ashenv
+  - ~/home/notsolikely/ashpi-env
+  (Do NOT delete blindly; archive later.)
+
+====================================================================
+7) TOMORROW RESUME (EXACT NEXT STEPS)
+====================================================================
+1) Activate canonical env:
+   source ~/home/notsolikely/ashby-env/bin/activate
+
+2) Verify interactive CLI still works:
+   cd ~/ashby
+   PYTHONPATH=. python3 io/cli/ashby_interactive.py
+
+3) Get Telegram gateway working from new structure (update imports if needed):
+   PYTHONPATH=. python3 io/telegram/ashby_telegram_control.py
+
+4) If Telegram works, Structural Realignment Raid is effectively stable enough to:
+   - either declare RAID COMPLETE (if you consider optional polishes unnecessary), OR
+   - do the remaining cosmetic script renames + introduce editable install.
+
+5) Begin taking apart router.py file to make it a dumb router file again and take all the brain activity out of router
+to make their own files of control & also move files from the home/notsolikely/ashby/ashby folder into their respected files they belong.. like lighting_sessions.py inside brain need to be moved to their respected folders..
+
+====================================================================
+8) STOP
+====================================================================
+End of day reached with a clean stable state:
+- Canonical root and env declared
+- Working device control validated
+- No drift
+- Ready to resume tomorrow without guesswork

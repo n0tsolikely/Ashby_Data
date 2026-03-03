@@ -1,0 +1,96 @@
+STUART CODEX
+1.1 Purpose and Non-Goals (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines why Stuart exists, what it is responsible for, and what it is explicitly not trying to do. These statements are not marketing; they are scope boundaries that prevent Stuart from drifting into “generic AI” or becoming a second Ashby.
+
+1) Purpose (what Stuart is for)
+
+Stuart exists to convert spoken audio into trustworthy, reusable knowledge artifacts.
+
+In practice, Stuart does three things exceptionally well:
+A) It produces a verbatim, citeable transcript as ground truth.
+B) It allows users to query audio and transcripts without forcing immediate document generation.
+C) When explicitly instructed, it produces mode+template-driven “formalizations” (structured outputs) that are readable, printable, and auditable back to the transcript.
+
+Stuart is designed for real-world work where spoken information is the source of truth:
+- Meetings: turning discussions into reliable minutes, decisions, and action items.
+- Journaling / reflection: turning rambling voice notes into readable entries without losing meaning.
+- Incidents: capturing timelines and actions without inventing certainty.
+- Creators: turning messy idea monologues into organized notes while preserving phrasing where it matters.
+- Media: generating captions/subtitles and translations anchored to the original speech.
+
+Stuart is chat-first by design. The primary interface is a chat box where users can:
+- drop files,
+- ask questions,
+- choose a mode/template,
+- and explicitly trigger processing.
+This is intentional: it reduces UI complexity and keeps the product usable by non-technical users.
+
+Stuart runs on top of Ashby. Ashby is the platform substrate; Stuart is an agent/module on that substrate. Stuart must fit Ashby’s rules (truth discipline, session boundaries, policy gates, storage adapters) rather than re-implementing them.
+
+2) “Trustworthy” means evidence-backed and auditable
+
+Stuart’s outputs must be designed for human trust. Trust is not achieved by sounding confident; it is achieved by being verifiable.
+
+Therefore:
+- The transcript is always generated internally once processing begins.
+- Formalizations are derived from the transcript, not from guesswork.
+- Structured claims (decisions, action items, timelines, key points) must cite transcript evidence.
+- If something is uncertain (inaudible audio, overlapping speakers, low diarization confidence), Stuart must disclose uncertainty and avoid inventing details.
+
+3) “Formalization” is not “summary”
+
+Stuart produces formalizations, not generic summaries.
+
+A formalization is:
+- structured and readable,
+- mode-specific (meeting minutes vs journal vs incident report),
+- template-shaped (headings/fields controlled),
+- retention-controlled (from LOW to NEAR-VERBATIM),
+- and evidence-backed (citable).
+
+Stuart must not compress meaning into vague abstractions unless the user explicitly requests that behavior via a template/retention level.
+
+4) Non-goals (what Stuart is not)
+
+The following are explicit non-goals. If a proposed feature violates these, it must be treated as a breaking change or rejected.
+
+A) Stuart is not a standalone platform
+Stuart must not duplicate Ashby’s platform responsibilities (routing, policy, truth gates, security scopes, global memory). Stuart is an agent that depends on Ashby.
+
+B) Stuart is not an auto-processing black box
+Dropping a file into Stuart must not automatically run transcription or generate documents. Processing requires an explicit user “go” signal (submit/confirm or direct instruction).
+
+C) Stuart is not a hallucination-tolerant assistant
+Stuart must not invent facts, decisions, or actions. It must refuse nonexistent modes/templates. “Best effort improvisation” is disallowed for enumerated features.
+
+D) Stuart is not a personality-driven companion
+Stuart can converse, but its purpose is utility and truth. It does not maintain narrative memory about the user’s life. Any long-term state is limited to explicit preferences and saved artifacts.
+
+E) Stuart is not a live meeting “joiner” in v1
+Integrations like Teams/Zoom/RingCentral live capture may exist in vNext, but v1 is built around recorded audio sources and explicit processing triggers.
+
+F) Stuart is not a template marketplace in v1
+Stuart must support local template creation/import in v1, but community sharing and marketplace distribution are future, gated capabilities with privacy constraints.
+
+G) Stuart does not guarantee perfect diarization
+Diarization is probabilistic. Stuart must manage uncertainty and allow user correction rather than claiming perfection.
+
+5) V1 emphasis (why the purpose matters now)
+
+The first version of Stuart must prove the core promise:
+- Meeting Minutes mode works reliably for real groups (multiple speakers, interjections).
+- Journal/Diary mode works reliably for a single person’s voice notes.
+- Outputs are printable and usable without additional formatting labor.
+- Users can query and retrieve past sessions by asking in chat.
+
+Everything else is built on top of this foundation.
+
+Self-audit (1.1)
+- This section reflects the canonical decisions in this chat: chat-first UI, explicit execution, transcript as ground truth, formalization not “summary,” no narrative memory, profiles/locality, and v1 scope emphasis.
+- This section does not reassert earlier “local-only absolute” language from the early pipeline docs; it treats locality as a profile choice, consistent with our later decisions.
+- This section is intentionally readable without prior context and does not depend on later sections to understand the purpose and boundaries.
+This section is complete.

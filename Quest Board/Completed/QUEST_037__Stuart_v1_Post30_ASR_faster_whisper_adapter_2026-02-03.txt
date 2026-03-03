@@ -1,0 +1,90 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+
+QUEST ID:
+QUEST_037
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Post-30: Stage 2 ASR (SYSTRAN faster-whisper LOCAL_ONLY; CPU-first)
+
+Context: Stuart pipeline
+
+Origin:
+Control Sync — 2026-02-03 (Post-30 plan)
+
+Priority: P0
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-03_REV4.txt (Dungeon 5 transcribe stage)
+- Target: faster-whisper (CTranslate2) local ASR
+
+Status: COMPLETED
+
+Audit Bundle Path:
+Audits/Execution/QUEST_037__2026-02-03__stuart_v1_post30_asr_faster_whisper_adapter_2026-02-03
+
+Accepted On:
+2026-02-03
+
+Accepted By:
+Hands (Peter)
+
+Completed On:
+2026-02-03
+Completed By:
+Ash (Brains)
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Replace the transcription stub with real local ASR using faster-whisper. Produce transcript.json (segments + timestamps)
+and transcript.txt (human readable) as canonical artifacts.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Implement ASR adapter that consumes canonical wav and outputs:
+-   - transcript.json (segments with start/end + text)
+-   - transcript.txt (speaker labels optional until alignment; still produce deterministic format)
+- CPU-first default configuration (no GPU required).
+- Integrate ingestion hook: after transcript artifacts are produced, ingest into SQLite FTS (existing index) so search works in real flows.
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- GPU acceleration defaults.
+- Word-level alignment (WhisperX).
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_033 (schemas: transcript.json)
+- QUEST_035 (normalize canonical wav)
+- QUEST_032 (adapter selection)
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Model selection must be configurable (default small/medium depending on performance).
+- Respect model cache directory configuration (don’t re-download every run).
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] faster-whisper adapter implemented and used when profile=local_only.
+- [ ] transcript.json + transcript.txt written and recorded as artifacts.
+- [ ] SQLite FTS ingestion triggered automatically for the run (search works without manual ingest_run).
+- [ ] `python3 -m pytest -q` PASS (include at least one ASR adapter test that can run without downloading a huge model; allow skipping if model absent).
+
+────────────────────────────────────────────────────────
+TALENT POINT
+────────────────────────────────────────────────────────
+On completion:
+- Talent Point Awarded: YES
+- Talent Spent On: TBD — Real ASR (faster-whisper)
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+(optional)

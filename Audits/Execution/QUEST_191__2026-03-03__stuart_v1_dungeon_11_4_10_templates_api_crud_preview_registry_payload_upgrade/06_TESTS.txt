@@ -1,0 +1,21 @@
+## Command Receipt Log
+WRAPPER: synapse_quest_run.sh
+ENGINE_ROOT: /home/notsolikely/Ashby_Engine
+DATA_ROOT: /home/notsolikely/Ashby_Data
+---
+CMD: cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_templates_api_crud_and_registry.py tests/test_meetings_web_door_scaffold.py tests/test_meetings_web_api_envelope_consistency.py
+.........                                                                [100%]
+=============================== warnings summary ===============================
+tests/test_meetings_web_door_scaffold.py::test_index_has_mode_placeholder_and_no_default_selected
+tests/test_meetings_web_door_scaffold.py::test_index_has_library_and_search_controls
+  /home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/starlette/templating.py:162: DeprecationWarning: The `name` is not the first parameter anymore. The first parameter should be the `Request` instance.
+  Replace `TemplateResponse(name, {"request": request})` by `TemplateResponse(request, name)`.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+9 passed, 2 warnings in 1.37s
+RC: 0
+PASS: governance validation OK for QUEST_191 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_191__2026-03-03__stuart_v1_dungeon_11_4_10_templates_api_crud_preview_registry_payload_upgrade
+OK: finalize complete (validation PASS recorded).
+PASS: governance validation OK for QUEST_191 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_191__2026-03-03__stuart_v1_dungeon_11_4_10_templates_api_crud_preview_registry_payload_upgrade
+OK: finalize complete (validation PASS recorded).

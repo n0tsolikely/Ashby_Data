@@ -1,0 +1,78 @@
+STUART CONTROL SYNC SNAPSHOT — 2026-02-04
+Timestamp (local): 2026-02-04 15:57:20 EST (-0500)
+Timestamp (utc):   2026-02-04 20:57:20 UTC (+0000)
+Hands: Peter
+Operator: Ash
+
+CONTROL SYNC STATUS
+- OPEN (mid-sync checkpoint)
+
+CANONICAL ROOTS CONFIRMED
+- Data:       /mnt/data/Ashby_Data
+- Engine:     /mnt/data/Ashby_Engine
+- Governance: /mnt/data/Synapse_OS_Governance
+
+PURPOSE OF TODAY
+- Finish Stuart V1 (Meetings module + Journal mode) to the point where Hands can:
+  - drop an audio file via Webapp or Telegram,
+  - choose mode (Meeting Minutes vs Journal) + expected speaker count,
+  - receive diarization + verbatim transcript + mode-specific formalization (minutes/journal),
+  - download outputs (MD/PDF) and retain machine-readable JSON,
+  - have runs logged/indexed for later search/listing,
+  - re-formalize without re-transcribing.
+
+CONTEXT / TRUTH CHECK (ENGINE vs CODEX)
+- Stuart Codex Full is authoritative (Data canon):
+  - /mnt/data/Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt
+- Current engine reality (as of engine zip 2026-02-03):
+  - Pipeline can normalize → diarize → transcribe → align.
+  - "Formalization" currently produces a deterministic prompt+transcript packet (not true minutes/journal).
+  - Retention levels (LOW/MED/HIGH/NEAR-VERBATIM) are not implemented yet.
+  - Evidence mapping exists but is minimal (v1 anchors; not claim-level minutes evidence).
+  - Webapp/Telegram doors exist but need contract + consent gate alignment for V1.
+
+RAID STATE
+- Active Raid(s):
+  - Stuart V1 — REV6 Guild Orders (see below)
+- Paused / Blocked Raid(s):
+  - Prior thin placeholder order "REAL ENGINES AND SHIP" is treated as superseded planning (not deleted).
+
+GUILD ORDERS (CURRENT)
+- Active:
+  - Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS_STUART_V1_2026-02-04_REV6.txt
+
+QUEST BOARD STATE (CURRENT)
+- A new atomic quest chain exists for Stuart V1 work (QUEST_042+), broken into small executable units.
+- Today’s intended scope (per Hands) is to ACCEPT quests 042–051.
+
+REHYDRATION PACK ACTION (DONE THIS SYNC)
+- Goal: keep rehydration artifacts available but inert, while preserving Stuart canonical vision at the top level.
+- Action taken in Data canon:
+  - Created folder:
+    - Ashby_Data/Latest Rehydration Pack/Stuart Rehydration Pack Feb 04/
+  - Moved ALL items from Ashby_Data/Latest Rehydration Pack/ into that folder
+    EXCEPT:
+    - Stuart - The Canonical Vision.txt (left in place, top-level)
+  - The moved items include:
+    - BOOTSRAP_PROMPT_* (all)
+    - CONTINUITY_LOCK_* (all)
+    - execution pack/ (entire folder)
+    - README.txt
+
+DECISIONS LOCKED (BINDING)
+- Do not delete rehydration artifacts; archive/move them inertly.
+- Do not update/create a new execution pack until reality exists (accepted quests + produced artifacts).
+- Focus is Stuart V1 finishing (Meetings + Journal) aligned to Codex.
+
+AMBIGUITIES / RISKS (CALLED OUT)
+- Quest numbering vs dungeon grouping:
+  - Current quest set for Dungeon 3 begins after QUEST_051 in the present quest board.
+  - Hands explicitly requested acceptance of QUEST_042–QUEST_051 as today’s scope.
+  - Resulting ambiguity: Dungeon 3 may be only partially/indirectly covered by 042–051.
+  - Mitigation: next snapshot (post-acceptance) will explicitly list what is accepted vs still BOARD.
+
+NO EXECUTION CLAIM
+- No quest execution performed in this checkpoint snapshot.
+- This is Control Sync only (alignment + state changes in the Data canon folder).
+
+END OF CONTROL SYNC SNAPSHOT

@@ -1,0 +1,117 @@
+================================================================================
+IDENTITY (REQUIRED)
+================================================================================
+Quest ID:
+SIDE-QUEST_081
+
+Title:
+Stuart v1 — Side Quest: Upload entrypoint always available (no refresh needed)
+
+Subject:
+Ashby / Stuart
+
+Origin:
+STUART_TO_DO_2026-02-20__REV1.txt (#1): upload page only shows after refresh; once session selected, New Session loses upload.
+
+Priority: (P0 / P1 / P2)
+P1
+
+Links:
+- To-Do doc: STUART_TO_DO_2026-02-20__REV1.txt
+- Frontend: Ashby_Engine/webapp/stuart_frontend/stuart_app/src/pages/Sessions.jsx
+- Frontend: Ashby_Engine/webapp/stuart_frontend/stuart_app/src/pages/Stuart.jsx
+
+================================================================================
+CODEX ANCHORS + CONSTRAINT SUMMARY (DRAFT)
+================================================================================
+Codex Anchors (DRAFT):
+- Stuart_Codex_Full.txt §7.1–7.4 (Sessions must have usable audio inputs)
+
+Codex Constraint Summary:
+- UI must make the primary workflow (upload audio → session → transcribe/formalize) obvious and reachable.
+
+================================================================================
+QUEST BOARD FOLDER STATE
+================================================================================
+Quest Board Folder State: BOARD
+
+================================================================================
+DESCRIPTION
+================================================================================
+Users get stuck because the Upload entrypoint is not persistently available once a session is selected.
+
+We need a deterministic, always-present way to upload audio:
+- a persistent “Upload Audio” button
+- or an “Upload” tab in the session view
+
+================================================================================
+SCOPE / OBJECTIVE
+================================================================================
+- Add a persistent Upload action reachable from the Stuart UI regardless of selected session.
+- It must open the uploader and complete an upload into a session.
+- After upload completes, the UI must immediately show the uploaded file/session without requiring a full page refresh.
+
+================================================================================
+OUT OF SCOPE
+================================================================================
+- Redesigning the entire navigation shell.
+
+================================================================================
+DEPENDENCIES
+================================================================================
+None.
+
+================================================================================
+RISK
+================================================================================
+Risk: R0
+
+================================================================================
+DOOR IMPACT
+================================================================================
+Door Impact:
+- WEB
+
+================================================================================
+TESTING LEVEL
+================================================================================
+Testing Level: TL1
+
+================================================================================
+VERIFICATION PLAN (DRAFT)
+================================================================================
+- Manual:
+  - From any screen state, user can click Upload Audio and upload a file.
+  - Uploaded session appears immediately in the session list and becomes selectable.
+
+================================================================================
+CHANGE CLASS + VISION DELTA
+================================================================================
+Change Class: FEATURE
+Vision Delta: ALIGNED
+
+================================================================================
+SYSTEM CONTEXT STATEMENT
+================================================================================
+The upload flow is the entrypoint to everything. If it disappears, users think the system is broken.
+
+================================================================================
+ANTI-DUPLICATION PLAN
+================================================================================
+- rg -n "upload" Sessions.jsx Stuart.jsx
+- Confirm whether an upload modal/component already exists and reuse it.
+
+================================================================================
+PLACEMENT INTENT
+================================================================================
+- Stuart frontend only (Sessions.jsx / Stuart.jsx)
+
+================================================================================
+TALENT POINT
+================================================================================
+Talent Point Awarded: NO
+
+================================================================================
+EXECUTION AUDIT BUNDLE
+================================================================================
+Audit Bundle Folder Path: (set when moving to ACCEPTED)

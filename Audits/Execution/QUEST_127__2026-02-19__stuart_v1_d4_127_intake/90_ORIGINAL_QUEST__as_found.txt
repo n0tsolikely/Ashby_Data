@@ -1,0 +1,105 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_127
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 4 (14/15): Tests — transcript version store, API contract, and formalize consumption
+
+Context: (Ashby / Stuart / System / Other)
+Stuart test coverage — Dungeon 4 regression safety
+
+Origin:
+Guild Orders proof requirements
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- Guild Orders: Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt (Dungeon 4 + Dungeon 5 dependencies)
+- Stuart Codex (full): Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_7.4_Stage_3_Transcription.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_7.3_Stage_2_Diarization.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_6.2_Canonical_Artifacts_JSON_Markdown_PDF.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_8.1_Evidence_Anchors_and_Citations.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_3.2_Meeting_Minutes_Mode.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 30.1.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 28.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 8A.4.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 26.txt
+- Test anchors:
+  - Ashby_Engine/tests/test_meetings_web_api_contract_minimum_v1.py
+  - Ashby_Engine/tests/test_meetings_formalize_only_reuse_transcript_json.py
+  - Ashby_Engine/tests/test_meetings_fts_ingest_transcript_json_aligned.py
+
+Status: ACTIVE
+
+Audit Bundle Path:
+  /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_127__2026-02-19__stuart_v1_d4_127_intake
+
+Accepted On:
+2026-02-19
+Accepted By:
+Hands (Peter) via Codex (Brains)
+Completed On:
+
+Completed By:
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Lock Dungeon 4 in with tests so we can refactor later without breaking transcript versioning or traceability.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+Add/extend tests to cover:
+
+- TranscriptVersion store (create/list/load) writes are deterministic and write-once.
+- Web API:
+  - list transcripts returns metadata-only + includes diarization_enabled/asr_engine + active flag
+  - get transcript version returns segments + metadata
+  - set active endpoint updates session_state
+- Formalize consumption:
+  - A formalize run with transcript_version_id does not rerun heavy stages and records consumed_transcript_version_id
+- Back-compat:
+  - tv__run_id lookup still works (if supported)
+
+Update existing tests as needed to reflect the new truth model.
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- E2E browser tests (future).
+- Performance benchmarks.
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+QUEST_114–126 (all prior).
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────
+Tests should be deterministic:
+- Use tmp_path and STUART_ROOT override like existing tests do.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] New/updated tests exist for Dungeon 4 behaviors
+- [ ] python3 -m pytest -q passes
+
+────────────────────────────────────────────────────────
+TALENT POINT
+────────────────────────────────────────────────────────
+# On completion:
+# - Talent Point Awarded: YES / NO
+# - Talent Spent On: (TALENT ID — Name in Talent Tree)
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+# Optional closing notes once the quest is completed or abandoned.

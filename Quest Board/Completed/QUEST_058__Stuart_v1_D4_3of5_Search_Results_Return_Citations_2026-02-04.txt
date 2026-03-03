@@ -1,0 +1,70 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_058
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 4 (3/5): search returns ranked hits with citations
+
+Context: Stuart retrieval/index
+
+Origin:
+Control Sync — 2026-02-04 (Stuart v1 finish-line: REV5)
+
+Priority: P0
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV5.txt (Dungeon 4)
+- Engine: ashby/modules/meetings/index/search.py (or sqlite_fts.py search fn)
+
+Status: DONE
+
+Audit Bundle Path:
+  /mnt/data/Ashby_Data/Audits/Execution/QUEST_058__2026-02-07__search_results_return_citations
+
+Accepted On:
+2026-02-07
+Accepted By:
+Hands (Peter)
+Completed On:
+2026-02-08
+
+Completed By:
+Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Ensure the search API returns ranked hits that include citations (segment_id + timestamps) and session/run metadata so doors can list results without loading full artifacts.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Define search result object shape
+- Implement query + filter by session_id and/or mode
+- Write search_results.json artifact for a run when search stage is executed
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Web UI/Telegram UI (Dungeon 5)
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_057
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Search results should never claim more than the transcript supports.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] Search returns hits with segment_id + timestamp citations
+- [x] Search respects session filter
+- [x] `python3 -m pytest -q` passes
+

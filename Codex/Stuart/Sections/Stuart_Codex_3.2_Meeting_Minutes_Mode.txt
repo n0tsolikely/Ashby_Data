@@ -1,0 +1,151 @@
+STUART CODEX
+3.2 Meeting Minutes Mode (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines Meeting Minutes Mode. This is a V1-critical mode. It must be reliable enough to be used in real organizations (e.g., church committees, workplaces) and produce printable minutes that preserve truth and detail.
+
+Meeting Minutes Mode produces:
+- a verbatim transcript (always generated internally), and
+- a meeting formalization (minutes) shaped by a selected template and retention level, with citations.
+
+1) Inputs and assumptions
+
+Typical input:
+- A recorded multi-speaker meeting audio (or extracted audio from video).
+- Speakers may interrupt or briefly overlap.
+- The recording may include minor background noise.
+
+Assumptions:
+- Overlaps are usually short interjections, not long-dual conversations.
+- The meeting has identifiable topical segments (even if informal).
+
+Meeting Minutes Mode must work even when assumptions break (graceful degradation).
+
+2) Required artifacts (minimum)
+
+Upon execution (transcription + minutes run), Stuart must produce at minimum:
+- transcript.json (machine)
+- transcript.txt (human)
+- diarization.json (if diarization enabled; includes confidence)
+- minutes.json (machine)
+- minutes.md (human)
+- minutes.pdf (print-ready)
+- evidence_map.json (ties minutes claims to transcript segments/timestamps)
+
+3) What meeting minutes must contain
+
+Meeting minutes are not a vague summary. They are a structured record of the meeting that captures what matters while being readable and organized.
+
+Core elements:
+M1) Meeting header
+- date/time (from metadata or user-supplied)
+- title (user-supplied or inferred)
+- participants (if mapped; otherwise speaker labels)
+- recording/source references (optional but recommended)
+
+M2) Topics discussed
+- organized into sections
+- each topic has time ranges and/or citations
+
+M3) Decisions
+- strict definition: must be evidence-backed
+- list decisions with citations
+- if no decisions, say “No explicit decisions recorded.”
+
+M4) Action items
+- tasks identified
+- if assignee explicitly stated, include it
+- if not, mark unassigned
+- include due dates only if explicitly stated
+- include citations
+
+M5) Notes / discussion points
+- major points and arguments
+- capture sufficient detail per retention level
+- preserve important phrasing as quotes or near-verbatim blocks when configured
+
+M6) Open questions / risks
+- unanswered questions or concerns raised
+- include citations
+- do not invent “risks” not raised in the meeting
+
+Optional elements (template-defined):
+- votes and outcomes
+- agenda alignment
+- attendance/roll call
+- follow-up meeting scheduling
+
+4) Retention level behavior in meetings
+
+Retention levels are critical in meeting minutes because “too summarized” can feel like missing reality.
+
+Guidelines:
+- LOW: “executive minutes” (high-level only, minimal quotes)
+- MED: balanced minutes (structured + representative quotes)
+- HIGH: detailed minutes (most points preserved, cleaner language)
+- NEAR-VERBATIM: “organized transcript” (minimal loss; remove disfluencies, preserve wording)
+
+Meeting Minutes Mode must honor retention level strictly and predictably.
+
+5) Speaker handling
+
+Diarization output is probabilistic.
+
+Rules:
+S1) Default speaker representation
+If no mapping exists, minutes may refer to Speaker 1, Speaker 2, etc.
+
+S2) Mapping overlay
+If user maps Speaker 1 to “Greg,” minutes may use the name.
+If diarization confidence is low, minutes must disclose that speaker attribution may be uncertain.
+
+S3) Overlap handling
+If two people overlap briefly, minutes should attribute statements carefully. If uncertain, it should mark attribution as uncertain rather than guessing.
+
+6) Preventing “minutes lies”
+
+Meeting minutes are high-risk because humans will treat them as official.
+
+Therefore:
+- Stuart must never invent consensus.
+- Stuart must never invent attendance.
+- Stuart must never invent decisions.
+- Stuart must never assign actions to someone without explicit evidence.
+- If a user asks Stuart to “interpret motives” (“Was Greg acting bad?”), Stuart may respond, but must label it as opinion/analysis and keep it out of official minutes unless explicitly requested and labeled.
+
+7) Re-running minutes without re-transcribing
+
+A core design decision:
+- Transcript is the ground truth.
+- Minutes are a derived view.
+
+Therefore, after transcription, users must be able to:
+- switch templates,
+- change retention levels,
+- re-run minutes generation,
+without re-uploading and without re-transcribing.
+
+Each run produces a new minutes artifact version with metadata indicating template/retention and run time.
+
+8) Printing and export requirements
+
+Meeting minutes must be printable immediately.
+- minutes.pdf is primary for printing.
+- minutes.md is readable and editable by humans (optional edits outside the system are allowed, but should be treated as user-edited copies).
+- Export should support bundling: “minutes only” or “full session.”
+
+The PDF must avoid hard-wrap corruption and must format headings and bullet lists cleanly.
+
+9) Self-audit (3.2)
+
+This section reflects our chat’s canonical intent for meetings:
+- meeting minutes are not “summaries”; they are structured, detailed, and auditable.
+- transcript always exists internally.
+- minutes require citations/evidence maps.
+- diarization is probabilistic; uncertainty must be disclosed; mapping is user-controlled.
+- users can re-run minutes with different templates/retention without re-transcribing.
+- print-ready output is a v1 requirement.
+
+This section is complete.

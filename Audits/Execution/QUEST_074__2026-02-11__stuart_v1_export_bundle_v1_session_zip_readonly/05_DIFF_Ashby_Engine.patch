@@ -1,0 +1,262 @@
+--- /mnt/data/Ashby_Data/Audits/Execution/QUEST_074__2026-02-11__stuart_v1_export_bundle_v1_session_zip_readonly/91_BEFORE/bundle.py	2026-02-09 08:32:25.000000000 +0000
++++ /mnt/data/Ashby_Engine/ashby/modules/meetings/export/bundle.py	2026-02-11 23:29:44.609049748 +0000
+@@ -18,13 +18,17 @@
+     session_id: str
+     zip_path: str
+     files_added: int
++    run_id: Optional[str] = None
+ 
+     def to_dict(self) -> dict:
+-        return {
++        d = {
+             "session_id": self.session_id,
+             "zip_path": self.zip_path,
+             "files_added": int(self.files_added),
+         }
++        if self.run_id:
++            d["run_id"] = self.run_id
++        return d
+ 
+ 
+ def _safe_rel(root: Path, p: Path) -> Optional[str]:
+@@ -109,6 +113,14 @@
+             if art_dir.exists():
+                 out.extend(list(_iter_files_recursive(art_dir)))
+ 
++            exp_dir = run_dir / "exports"
++            if exp_dir.exists():
++                out.extend(list(_iter_files_recursive(exp_dir)))
++
++            inputs_dir = run_dir / "inputs"
++            if inputs_dir.exists():
++                out.extend(list(_iter_files_recursive(inputs_dir)))
++
+     # Filter to files that exist (some optional paths above)
+     return [p for p in out if p.exists() and p.is_file()]
+ 
+@@ -189,3 +201,168 @@
+             z.writestr(zi, data)
+ 
+     return ExportBundleResult(session_id=session_id, zip_path=str(out_path), files_added=len(items))
++
++
++def _collect_run_files(run_id: str) -> tuple[str, list[Path]]:
++    """Collect files for a single run bundle (v1).
++
++    Includes:
++    - session.json (+ optional session_state.json)
++    - overlays for session (speaker_map)
++    - contribution referenced by resolved_input receipt when available
++    - run.json + events.jsonl
++    - run artifacts/, exports/, inputs/
++
++    This is deterministic and does not mutate the store.
++    """
++    lay = init_stuart_root()
++
++    run_dir = lay.runs / run_id
++    run_json = run_dir / "run.json"
++    if not run_json.exists():
++        raise FileNotFoundError(f"Unknown run_id (missing manifest): {run_json}")
++
++    run_m = load_manifest(run_json)
++    session_id = run_m.get("session_id")
++    if not isinstance(session_id, str) or not session_id:
++        raise ValueError(f"Run manifest missing session_id: {run_json}")
++
++    out: list[Path] = []
++
++    # Session manifests
++    sess_dir = lay.sessions / session_id
++    out.append(sess_dir / "session.json")
++    st = sess_dir / "session_state.json"
++    if st.exists():
++        out.append(st)
++
++    # Overlays
++    ovr_dir = lay.overlays / session_id
++    if ovr_dir.exists():
++        out.extend([p for p in _iter_files_recursive(ovr_dir)])
++
++    # Contribution: prefer resolved_input receipt
++    contrib_id: str | None = None
++    resolved_path = run_dir / "inputs" / "resolved_input.json"
++    if resolved_path.exists():
++        try:
++            import json
++            payload = json.loads(resolved_path.read_text(encoding="utf-8"))
++            v = payload.get("contribution_id")
++            if isinstance(v, str) and v.strip():
++                contrib_id = v.strip()
++        except Exception:
++            contrib_id = None
++
++    if contrib_id is not None:
++        con_dir = lay.contributions / contrib_id
++        man = con_dir / "contribution.json"
++        if man.exists():
++            out.append(man)
++            for p in sorted(con_dir.iterdir()):
++                if p.is_file() and p.name != "contribution.json":
++                    out.append(p)
++    else:
++        # Fallback: include all contributions for session_id
++        if lay.contributions.exists():
++            for con_dir in sorted(lay.contributions.iterdir()):
++                if not con_dir.is_dir():
++                    continue
++                man = con_dir / "contribution.json"
++                if not man.exists():
++                    continue
++                try:
++                    c = load_manifest(man)
++                except Exception:
++                    continue
++                if c.get("session_id") != session_id:
++                    continue
++                out.append(man)
++                for p in sorted(con_dir.iterdir()):
++                    if p.is_file() and p.name != "contribution.json":
++                        out.append(p)
++
++    # Run core files
++    out.append(run_json)
++    ev = run_dir / "events.jsonl"
++    if ev.exists():
++        out.append(ev)
++
++    # Run subdirs
++    for sub in ("artifacts", "exports", "inputs"):
++        d = run_dir / sub
++        if d.exists():
++            out.extend(list(_iter_files_recursive(d)))
++
++    return session_id, [p for p in out if p.exists() and p.is_file()]
++
++
++def export_run_bundle(
++    run_id: str,
++    *,
++    out_dir: Optional[Path] = None,
++    out_path: Optional[Path] = None,
++) -> ExportBundleResult:
++    """Create a deterministic, read-only zip bundle for a single run.
++
++    Naming: <session_id>__run_bundle__<run_id>__YYYYMMDD.zip
++
++    Determinism rails match export_session_bundle.
++    """
++    lay = init_stuart_root()
++
++    session_id, files = _collect_run_files(run_id)
++
++    # Determine date string from run created_ts when available
++    run_json = lay.runs / run_id / "run.json"
++    run_m = load_manifest(run_json)
++    created_ts = run_m.get("created_ts")
++    if not isinstance(created_ts, (int, float)):
++        created_ts = None
++
++    if out_path is None:
++        if out_dir is None:
++            out_dir = lay.exports
++        out_dir = Path(out_dir)
++        out_dir.mkdir(parents=True, exist_ok=True)
++
++        if created_ts is None:
++            date_str = "unknown_date"
++        else:
++            dt = datetime.fromtimestamp(float(created_ts), tz=timezone.utc)
++            date_str = dt.strftime("%Y%m%d")
++
++        out_path = out_dir / f"{session_id}__run_bundle__{run_id}__{date_str}.zip"
++
++    out_path = Path(out_path)
++    out_path.parent.mkdir(parents=True, exist_ok=True)
++
++    root = lay.root
++    items: List[Tuple[Path, str]] = []
++    for p in files:
++        rel = _safe_rel(root, p)
++        if not rel:
++            continue
++        if rel.startswith("exports/"):
++            # never include prior export bundles
++            continue
++        items.append((p, rel))
++
++    # Deterministic ordering, dedup by arcname
++    items.sort(key=lambda t: t[1])
++    deduped: List[Tuple[Path, str]] = []
++    seen = set()
++    for src, arc in items:
++        if arc in seen:
++            continue
++        seen.add(arc)
++        deduped.append((src, arc))
++
++    with zipfile.ZipFile(out_path, mode="x", compression=zipfile.ZIP_DEFLATED) as z:
++        for src, arc in deduped:
++            data = src.read_bytes()
++            zi = zipfile.ZipInfo(filename=arc, date_time=_DETERMINISTIC_ZIP_DT)
++            zi.external_attr = (0o644 & 0xFFFF) << 16
++            z.writestr(zi, data)
++
++    return ExportBundleResult(session_id=session_id, run_id=run_id, zip_path=str(out_path), files_added=len(deduped))
+\n
+--- /mnt/data/Ashby_Data/Audits/Execution/QUEST_074__2026-02-11__stuart_v1_export_bundle_v1_session_zip_readonly/91_BEFORE/export___init__.py	2026-02-09 08:24:25.000000000 +0000
++++ /mnt/data/Ashby_Engine/ashby/modules/meetings/export/__init__.py	2026-02-11 23:30:49.210187387 +0000
+@@ -7,6 +7,6 @@
+ are never mutated by bundling.
+ """
+ 
+-from .bundle import export_session_bundle
++from .bundle import export_run_bundle, export_session_bundle
+ 
+-__all__ = ["export_session_bundle"]
++__all__ = ["export_session_bundle", "export_run_bundle"]
+\n
+--- /mnt/data/Ashby_Data/Audits/Execution/QUEST_074__2026-02-11__stuart_v1_export_bundle_v1_session_zip_readonly/91_BEFORE/test_meetings_cli_search_export.py	2026-02-09 08:48:07.000000000 +0000
++++ /mnt/data/Ashby_Engine/tests/test_meetings_cli_search_export.py	2026-02-11 23:31:44.233709325 +0000
+@@ -5,6 +5,7 @@
+ from pathlib import Path
+ 
+ from ashby.modules.meetings.cli_stuart import cmd_export, cmd_search
++from ashby.modules.meetings.export.bundle import export_session_bundle
+ from ashby.modules.meetings.index import ingest_run
+ from ashby.modules.meetings.store import create_run, create_session
+ 
+@@ -58,6 +59,12 @@
+     (art_dir / "minutes.md").write_text("# Minutes\n\nhello", encoding="utf-8")
+     (art_dir / "evidence_map.json").write_text("{}", encoding="utf-8")
+ 
++    # Export surface outputs live under run_dir/exports (PDF).
++    exp_dir = run_dir / "exports"
++    exp_dir.mkdir(parents=True, exist_ok=True)
++    pdf_name = "minutes.pdf" if mode == "meeting" else "journal.pdf"
++    (exp_dir / pdf_name).write_bytes(b"%PDF-1.4\n% Stuart test stub\n")
++
+     ingest_run(run_id)
+     return session_id, run_id
+ 
+@@ -110,3 +117,20 @@
+     assert f"runs/{run_id}/artifacts/transcript.json" in names
+     assert f"runs/{run_id}/artifacts/minutes.md" in names
+     assert f"runs/{run_id}/artifacts/evidence_map.json" in names
++    assert f"runs/{run_id}/exports/minutes.pdf" in names
++
++
++
++def test_export_bundle_is_deterministic(tmp_path: Path, monkeypatch):
++    root = tmp_path / "stuart_runtime"
++    monkeypatch.setenv("STUART_ROOT", str(root))
++
++    session_id, _run_id = _seed_session_with_run(root, mode="meeting", title="Determinism", transcript_text="kimchi")
++
++    z1 = tmp_path / "bundle_a.zip"
++    z2 = tmp_path / "bundle_b.zip"
++
++    export_session_bundle(session_id, out_path=z1)
++    export_session_bundle(session_id, out_path=z2)
++
++    assert z1.read_bytes() == z2.read_bytes()

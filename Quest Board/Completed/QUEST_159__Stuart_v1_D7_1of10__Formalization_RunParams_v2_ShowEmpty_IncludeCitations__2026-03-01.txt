@@ -1,0 +1,124 @@
+QUEST_ID: QUEST_159
+TITLE: Stuart v1 — D7 1/10 — Formalization Run Params v2 (show_empty_sections + include_citations)
+DATE: 2026-03-01
+STATUS: ACCEPTED (Ready for Codex execution)
+RISK_CLASS: R2 (Cross-cutting request/plan schema + UI plumbing)
+OWNER: OpenAI Codex (local CLI)
+CLIENT: Stuart / Ashby Meetings Module
+
+CONTEXT / WHY
+- Dungeon 7 requires formalizations to be template-shaped + retention-controlled, with two new user-facing rendering controls:
+  1) show_empty_sections (default FALSE) — omit empty sections from rendered outputs
+  2) include_citations (default FALSE) — hide citation tokens in rendered outputs (citations remain in internal JSON + evidence_map)
+- Right now the system has retention + template_id, but no plumbing for these two controls end-to-end (UI → /api/run → plan → run.json → formalize/render).
+
+CANON ANCHORS (read, don’t vibe)
+- Guild Orders (ACTIVE): Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-25_REV14.txt
+  - Dungeon 7: lines around “(C) show_empty_sections” + “(D) include_citations”
+- Stuart Codex: Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt
+  - Template + retention controls (search: “Retention Knob”, “Templates”)
+- Canonical Vision: Ashby_Data/Stuart/Docs/Stuart - The Canonical Vision.txt
+
+REPO REALITY (do not re-implement what exists)
+
+REPO INTEGRITY PRE-FLIGHT (P0 — do this before any D7 work)
+- Sanity check only: confirm the required Stuart launcher + frontend scaffold files exist in your *current working tree* before starting D7. If any are missing (deleted locally, partial checkout, bad merge), **restore them from git** before continuing.
+
+1) Confirm these files exist (paths relative to `Ashby_Engine/`):
+   - `requirements-stuart-v1.txt`
+   - `webapp/stuart_frontend/stuart_app/package.json`
+   - `webapp/stuart_frontend/stuart_app/index.html`
+   - `webapp/stuart_frontend/stuart_app/vite.config.js`
+   - `webapp/stuart_frontend/stuart_app/tailwind.config.js`
+   - `webapp/stuart_frontend/stuart_app/postcss.config.js`
+   - `webapp/stuart_frontend/stuart_app/eslint.config.js`
+   - `webapp/stuart_frontend/stuart_app/jsconfig.json`
+   - `webapp/stuart_frontend/stuart_app/components.json`
+
+2) If any are missing, restore them from git (preferred):
+   - `git checkout -- requirements-stuart-v1.txt \
+       webapp/stuart_frontend/stuart_app/package.json \
+       webapp/stuart_frontend/stuart_app/index.html \
+       webapp/stuart_frontend/stuart_app/vite.config.js \
+       webapp/stuart_frontend/stuart_app/tailwind.config.js \
+       webapp/stuart_frontend/stuart_app/postcss.config.js \
+       webapp/stuart_frontend/stuart_app/eslint.config.js \
+       webapp/stuart_frontend/stuart_app/jsconfig.json \
+       webapp/stuart_frontend/stuart_app/components.json`
+
+3) Sanity check build:
+   - `npm --prefix webapp/stuart_frontend/stuart_app run build`
+
+If you *cannot* restore from git, fallback is to copy these exact files from the previous Canon zip / snapshot where the frontend build was known-good.
+
+- Run request schema: Ashby_Engine/ashby/modules/meetings/schemas/run_request.py
+- UI state + plan builder:
+  - Ashby_Engine/ashby/modules/meetings/schemas/plan.py (UIState)
+  - Ashby_Engine/ashby/modules/meetings/plan_builder.py (formalize step params)
+- Web API entrypoint: Ashby_Engine/ashby/interfaces/web/app.py → POST /api/run
+- Frontend run controls: Ashby_Engine/webapp/stuart_frontend/stuart_app/src/components/stuart/RunControls.jsx
+
+SCOPE LOCK (what changes in THIS quest)
+IN SCOPE
+1) Add two new params to the run-request contract and planning layer:
+   - include_citations: bool (default False)
+   - show_empty_sections: bool (default False)
+2) Wire the params from the Base44 Stuart frontend RunControls → /api/run payload.
+3) Ensure router/plan preserves these params into the formalize step params (so run.json plan contains them).
+4) Add/adjust unit tests that validate:
+   - RunRequest.from_dict parses the new fields
+   - build_plan includes the new fields in the formalize step params
+
+OUT OF SCOPE (explicitly NOT in this quest)
+- Changing renderer behavior (that’s later in D7 pack)
+- Changing LLM gateway request schema / prompt (later quests)
+- Template parsing / template defaults (later quests)
+- Deletion flows (later quests)
+
+IMPLEMENTATION NOTES (deterministic)
+Backend
+- Update UIState to carry these fields:
+  - File: Ashby_Engine/ashby/modules/meetings/schemas/plan.py
+  - Add fields: include_citations: bool = False, show_empty_sections: bool = False
+- Update RunRequest parsing:
+  - File: Ashby_Engine/ashby/modules/meetings/schemas/run_request.py
+  - Add fields include_citations/show_empty_sections with defaults False
+  - Ensure RunRequest.from_dict accepts:
+    - include_citations OR citations OR show_citations (normalize to include_citations)
+    - show_empty_sections OR show_sections OR show_empty (normalize to show_empty_sections)
+    - NOTE: keep backwards compatibility; ignore unknown keys.
+- Update build_plan so the formalize step includes these fields:
+  - File: Ashby_Engine/ashby/modules/meetings/plan_builder.py
+  - When adding the “formalize” step params, include:
+    - include_citations
+    - show_empty_sections
+  - These must be present in the step params even if False (so the plan is explicit and deterministic).
+
+Frontend
+- Update RunControls to expose two checkboxes/toggles (default OFF/OFF):
+  - File: Ashby_Engine/webapp/stuart_frontend/stuart_app/src/components/stuart/RunControls.jsx
+  - Add state vars:
+    - includeCitations (default false)
+    - showEmptySections (default false)
+  - Include in the executeRun payload under the existing structure sent to /run.
+    - Keep naming aligned to backend: include_citations, show_empty_sections
+
+Tests
+- Update/extend existing tests:
+  - Ashby_Engine/tests/test_meetings_router_plan.py
+    - Add a case that passes these fields via RunRequest.from_dict and asserts they land in plan steps.
+  - Any other tests that break because RunRequest signature changed should be updated (do NOT delete tests).
+
+ACCEPTANCE CRITERIA (definition of done)
+- UI can send include_citations/show_empty_sections via /api/run payload (verified by inspecting the request payload in code/tests).
+- build_plan produces a formalize step whose params include both fields.
+- pytest passes for the touched test set (and ideally the full suite).
+
+RECEIPTS REQUIRED (attach in Codex run log)
+- Git diff (or patch) showing all file edits
+- pytest output (at minimum the tests touched; preferably full suite)
+
+FAIL CONDITIONS
+- New flags exist only in frontend but do not reach backend plan
+- New flags are handled via ad-hoc globals instead of being explicit plan params
+- Any “dead” config flags that are never stored anywhere (zombie plumbing)

@@ -1,0 +1,70 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_062
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 5 (2/7): webapp upload stores contribution only (upload ≠ process)
+
+Context: Stuart webapp
+
+Origin:
+Control Sync — 2026-02-04 (Stuart v1 finish-line: REV5)
+
+Priority: P0
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV5.txt (Dungeon 5)
+- Engine: webapp/main.py + webapp/templates/index.html
+
+Status: COMPLETE
+
+Audit Bundle Path:
+  /mnt/data/Ashby_Data/Audits/Execution/QUEST_062__2026-02-09__webapp_upload_stores_contribution_not_run
+
+Accepted On:
+2026-02-09
+Accepted By:
+Hands (Peter)
+Completed On:
+2026-02-09
+
+Completed By:
+Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Implement the privacy/consent gate: uploading a file must not automatically process/transcribe it. Upload stores a contribution and returns a plan preview step.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Webapp upload endpoint stores contribution + session
+- Return a plan preview payload (mode default, speakers default, retention default)
+- No job_runner run triggered on upload
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Run progress UI (next quest)
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_061
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- This is a hard rule: Upload ≠ process.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] Uploading creates a contribution/session but does not start processing
+- [x] Plan preview is returned
+- [x] `python3 -m pytest -q` passes (or webapp tests if present)
+

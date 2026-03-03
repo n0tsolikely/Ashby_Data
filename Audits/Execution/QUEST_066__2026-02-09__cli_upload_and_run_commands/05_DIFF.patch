@@ -1,0 +1,210 @@
+--- /tmp/quest066_pre/cli_stuart.py.pre	2026-02-09 07:28:48.609956153 +0000
++++ /mnt/data/Ashby_Engine/ashby/modules/meetings/cli_stuart.py	2026-02-09 07:23:59.420120270 +0000
+@@ -6,6 +6,7 @@
+ 
+ from ashby.modules.meetings.overlays import create_speaker_map_overlay
+ from ashby.modules.meetings.pipeline.job_runner import run_job
++from ashby.modules.meetings.primary_outputs import resolve_primary_outputs
+ from ashby.modules.meetings.router.router import build_intent_and_plan
+ from ashby.modules.meetings.schemas.plan import SessionContext
+ from ashby.modules.meetings.schemas.run_request import RunRequest
+@@ -23,6 +24,43 @@
+     return out
+ 
+ 
++def _resolve_session_id(args: argparse.Namespace) -> str:
++    """Resolve session id from either positional arg or --session option."""
++    sid = getattr(args, "session", None) or getattr(args, "session_id", None)
++    sid = str(sid).strip() if sid is not None else ""
++    if not sid:
++        raise ValueError("session_id required (use --session ses_...)")
++    return sid
++
++
++def _run_request_from_args(args: argparse.Namespace) -> RunRequest:
++    """Build a door-facing RunRequest from CLI args (no heuristics)."""
++    payload: Dict[str, Any] = {
++        "mode": getattr(args, "mode", None),
++        "template_id": getattr(args, "template", None),
++        "retention": getattr(args, "retention", None),
++        "speakers": getattr(args, "speakers", None),
++    }
++    return RunRequest.from_dict(payload)
++
++
++def _attach_primary_outputs(out: Dict[str, Any], run_id: str) -> None:
++    """Attach primary output pointers + flattened paths using run manifest pointers."""
++    try:
++        po = resolve_primary_outputs(run_id)
++    except Exception:
++        po = {}
++
++    out["primary_outputs"] = po
++
++    paths: Dict[str, str] = {}
++    if isinstance(po, dict):
++        for k, v in po.items():
++            if isinstance(v, dict) and isinstance(v.get("path"), str):
++                paths[str(k)] = v["path"]
++    out["output_paths"] = paths
++
++
+ def cmd_upload(args: argparse.Namespace) -> Dict[str, Any]:
+     session_id = args.session_id or create_session(mode=args.mode, title=args.title)
+     p = Path(args.path).expanduser().resolve()
+@@ -37,7 +75,16 @@
+     if auto_go:
+         run_job(run_id)
+     state = get_run_state(run_id)
+-    return {"ok": True, "run_id": run_id, "status": state.get("status"), "state": _as_jsonable(state)}
++
++    out: Dict[str, Any] = {
++        "ok": True,
++        "session_id": session_id,
++        "run_id": run_id,
++        "status": state.get("status"),
++        "state": _as_jsonable(state),
++    }
++    _attach_primary_outputs(out, run_id)
++    return out
+ 
+ 
+ def _router_formalize_plan(
+@@ -70,14 +117,15 @@
+ 
+ 
+ def cmd_plan(args: argparse.Namespace) -> Dict[str, Any]:
+-    rr = RunRequest(mode=args.mode, template_id=args.template)
++    session_id = _resolve_session_id(args)
++    rr = _run_request_from_args(args)
+ 
+     extra: Dict[str, Any] = {}
+     if getattr(args, "contribution_id", ""):
+         extra["contribution_id"] = args.contribution_id
+ 
+-    plan = _router_formalize_plan(session_id=args.session_id, rr=rr, extra_formalize_params=(extra or None))
+-    out = _make_run(args.session_id, plan, auto_go=False)
++    plan = _router_formalize_plan(session_id=session_id, rr=rr, extra_formalize_params=(extra or None))
++    out = _make_run(session_id, plan, auto_go=False)
+     out["status"] = "pending_go"
+     return out
+ 
+@@ -85,23 +133,51 @@
+ def cmd_go(args: argparse.Namespace) -> Dict[str, Any]:
+     run_job(args.run_id)
+     state = get_run_state(args.run_id)
+-    return {"ok": True, "run_id": args.run_id, "status": state.get("status"), "state": _as_jsonable(state)}
++
++    out: Dict[str, Any] = {
++        "ok": True,
++        "run_id": args.run_id,
++        "status": state.get("status"),
++        "state": _as_jsonable(state),
++    }
++    _attach_primary_outputs(out, args.run_id)
++    return out
+ 
+ 
+ def cmd_run(args: argparse.Namespace) -> Dict[str, Any]:
+-    rr = RunRequest(mode=args.mode, template_id=args.template)
++    """Create and execute a run.
++
++    Confirmation rail:
++      - If --yes is not set, we DO NOT create a run and we DO NOT execute.
++      - We return a plan preview so the operator can confirm.
++    """
++
++    session_id = _resolve_session_id(args)
++    rr = _run_request_from_args(args)
+ 
+     extra: Dict[str, Any] = {}
+     if getattr(args, "contribution_id", ""):
+         extra["contribution_id"] = args.contribution_id
+ 
+-    plan = _router_formalize_plan(session_id=args.session_id, rr=rr, extra_formalize_params=(extra or None))
+-    return _make_run(args.session_id, plan, auto_go=True)
++    plan = _router_formalize_plan(session_id=session_id, rr=rr, extra_formalize_params=(extra or None))
++
++    if not getattr(args, "yes", False):
++        return {
++            "ok": True,
++            "status": "needs_confirm",
++            "session_id": session_id,
++            "run_request": rr.__dict__,
++            "plan": plan,
++            "message": "Confirmation required. Re-run with --yes to execute, or use 'stuart plan' then 'stuart go'.",
++        }
++
++    return _make_run(session_id, plan, auto_go=True)
+ 
+ 
+ def cmd_status(args: argparse.Namespace) -> Dict[str, Any]:
+     state = get_run_state(args.run_id)
+-    return {"ok": True, "state": _as_jsonable(state)}
++    out = {"ok": True, "state": _as_jsonable(state)}
++    return out
+ 
+ 
+ def cmd_overlay_set(args: argparse.Namespace) -> Dict[str, Any]:
+@@ -122,7 +198,7 @@
+ 
+ 
+ def cmd_rerender(args: argparse.Namespace) -> Dict[str, Any]:
+-    rr = RunRequest(mode=args.mode, template_id=args.template)
++    rr = _run_request_from_args(args)
+     plan = _router_formalize_plan(
+         session_id=args.session_id,
+         rr=rr,
+@@ -154,9 +230,12 @@
+     up.set_defaults(_handler=cmd_upload)
+ 
+     pl = sub.add_parser("plan", help="Create a run only (no processing).")
+-    pl.add_argument("session_id", help="Existing session id (ses_...)")
++    pl.add_argument("session_id", nargs="?", default=None, help="Existing session id (ses_...)")
++    pl.add_argument("--session", dest="session", default=None, help="Existing session id (ses_...)")
+     pl.add_argument("--mode", choices=["meeting", "journal"], default="meeting")
+     pl.add_argument("--template", default="default")
++    pl.add_argument("--retention", default=None)
++    pl.add_argument("--speakers", default=None)
+     pl.add_argument("--contribution-id", default="")
+     pl.set_defaults(_handler=cmd_plan)
+ 
+@@ -164,11 +243,15 @@
+     go.add_argument("run_id", help="Run ID (run_...)")
+     go.set_defaults(_handler=cmd_go)
+ 
+-    rn = sub.add_parser("run", help="Create a run and execute processing for a session.")
+-    rn.add_argument("session_id", help="Existing session id (ses_...)")
++    rn = sub.add_parser("run", help="Build plan, require confirm, then execute processing.")
++    rn.add_argument("session_id", nargs="?", default=None, help="Existing session id (ses_...)")
++    rn.add_argument("--session", dest="session", default=None, help="Existing session id (ses_...)")
+     rn.add_argument("--mode", choices=["meeting", "journal"], default="meeting")
+     rn.add_argument("--template", default="default")
++    rn.add_argument("--retention", default=None)
++    rn.add_argument("--speakers", default=None)
+     rn.add_argument("--contribution-id", default="")
++    rn.add_argument("--yes", action="store_true", help="Confirm and execute (otherwise returns plan preview).")
+     rn.set_defaults(_handler=cmd_run)
+ 
+     st = sub.add_parser("status", help="Show run state.")
+@@ -185,6 +268,8 @@
+     rr.add_argument("source_run_id", help="Existing run_id to reuse transcript from")
+     rr.add_argument("--mode", choices=["meeting", "journal"], default="meeting")
+     rr.add_argument("--template", default="default")
++    rr.add_argument("--retention", default=None)
++    rr.add_argument("--speakers", default=None)
+     rr.set_defaults(_handler=cmd_rerender)
+ 
+     ex = sub.add_parser("extract", help="Export only what a named speaker said (requires active mapping).")
+
+--- /tmp/quest066_pre/test_meetings_cli_stuart.py.pre	2026-02-09 07:28:48.646985545 +0000
++++ /mnt/data/Ashby_Engine/tests/test_meetings_cli_stuart.py	2026-02-09 07:25:25.960623118 +0000
+@@ -37,7 +37,7 @@
+     assert out_up["ok"] is True
+     ses = out_up["session_id"]
+ 
+-    out_run = cmd_run(NS(session_id=ses, mode="meeting", template="default", contribution_id=""))
++    out_run = cmd_run(NS(session_id=ses, mode="meeting", template="default", contribution_id="", yes=True))
+     assert out_run["ok"] is True
+     run_id = out_run["run_id"]
+     assert out_run["state"]["status"] == "succeeded"

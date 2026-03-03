@@ -1,0 +1,115 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_118
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 4 (5/15): Formalize stage loads selected TranscriptVersion (or active) and never re-derives transcripts
+
+Context: (Ashby / Stuart / System / Other)
+Stuart meetings — pipeline formalize inputs
+
+Origin:
+Guild Orders — Dungeon 4 task #6
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- Guild Orders: Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt (Dungeon 4 + Dungeon 5 dependencies)
+- Stuart Codex (full): Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_7.4_Stage_3_Transcription.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_7.3_Stage_2_Diarization.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_6.2_Canonical_Artifacts_JSON_Markdown_PDF.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_8.1_Evidence_Anchors_and_Citations.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_3.2_Meeting_Minutes_Mode.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 30.1.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 28.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 8A.4.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 26.txt
+- Engine anchors:
+  - Ashby_Engine/ashby/modules/meetings/pipeline/job_runner.py (formalize path)
+  - Ashby_Engine/ashby/modules/meetings/pipeline/input_resolver.py (resolved input)
+  - Ashby_Engine/ashby/modules/meetings/session_state.py
+  - Ashby_Engine/ashby/modules/meetings/transcript_versions.py (from QUEST_114)
+
+Status: ACTIVE
+
+Audit Bundle Path:
+  /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_118__2026-02-19__stuart_v1_d4_118_intake
+
+Accepted On:
+2026-02-19
+Accepted By:
+Hands (Peter) via Codex (Brains)
+Completed On:
+
+Completed By:
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Formalization must be decoupled from the transcribe run. It must consume a specific transcript_version_id (explicitly provided in plan params) or default to the session’s active transcript version.
+
+This prevents drift and guarantees traceability.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+Update the execution path for formalize runs:
+
+- When executing a FORMALIZE step:
+  1) Determine transcript_version_id to use:
+     - If plan params include transcript_version_id: use it
+     - Else: load session_state.active_transcript_version_id
+     - Else: fall back to legacy reuse_run_id logic (if present) OR fail with a clear error (choose the safest behavior)
+
+  2) Load transcript segments from the TranscriptVersion artifact (not from arbitrary run artifacts)
+     - Continue to produce run-local copies if the architecture requires, but the source of truth is the transcript_version artifact.
+
+  3) Ensure NO heavy stages (normalize/transcribe/diarize/align) run when formalize is requested with an existing transcript_version_id.
+
+- Update resolved_input.json or run.json to record the consumed transcript_version_id (detailed traceability is next quest).
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Changing how evidence_map citations work (Dungeon 6/8 territory).
+- UI changes.
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+QUEST_115, QUEST_116, QUEST_117
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────
+Truth gate:
+- Formalize stage is forbidden from fabricating transcripts.
+- Formalize stage does not own diarization toggling (Dungeon 5).
+
+Back-compat:
+- Keep reuse_run_id behavior working; do not break QUEST_070 regression test.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] Formalize step can consume an explicit transcript_version_id without rerunning heavy stages
+- [ ] If transcript_version_id omitted, formalize uses session_state.active_transcript_version_id
+- [ ] Existing formalize-only reuse_run_id test still passes (update test if needed)
+- [ ] pytest passes
+
+────────────────────────────────────────────────────────
+TALENT POINT
+────────────────────────────────────────────────────────
+# On completion:
+# - Talent Point Awarded: YES / NO
+# - Talent Spent On: (TALENT ID — Name in Talent Tree)
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+# Optional closing notes once the quest is completed or abandoned.

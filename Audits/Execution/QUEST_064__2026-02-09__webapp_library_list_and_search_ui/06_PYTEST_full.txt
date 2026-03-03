@@ -1,0 +1,73 @@
+/opt/pyvenv/lib/python3.11/site-packages/ddtrace/vendor/psutil/_pslinux.py:527: RuntimeWarning: 'sin' and 'sout' swap memory stats couldn't be determined and were set to 0 ([Errno 2] No such file or directory: '/proc/vmstat')
+  warnings.warn(msg, RuntimeWarning)
+============================= test session starts ==============================
+platform linux -- Python 3.11.2, pytest-8.2.2, pluggy-1.6.0
+rootdir: /mnt/data/Ashby_Engine
+configfile: pytest.ini
+testpaths: tests
+plugins: metadata-3.1.1, asyncio-0.23.8, ddtrace-2.8.7, cov-5.0.0, anyio-4.12.0, Faker-8.13.2, json-report-1.5.0
+asyncio: mode=Mode.STRICT
+collected 88 items
+
+tests/test_execution_profile_and_adapter_matrix.py ...                   [  3%]
+tests/test_meetings_alignment_time_overlap.py .                          [  4%]
+tests/test_meetings_artifact_schemas_v1.py ...                           [  7%]
+tests/test_meetings_attendee_query_speaker_maps.py .                     [  9%]
+tests/test_meetings_auto_fts_ingest_on_formalize.py .                    [ 10%]
+tests/test_meetings_clarify_preview.py ...                               [ 13%]
+tests/test_meetings_cli_stuart.py .                                      [ 14%]
+tests/test_meetings_diarization_policy.py ..                             [ 17%]
+tests/test_meetings_diarize_pyannote_guarded.py .                        [ 18%]
+tests/test_meetings_evidence_map_anchors.py .                            [ 19%]
+tests/test_meetings_execution_gating.py ...                              [ 22%]
+tests/test_meetings_formalize_journal_json_profile_gated.py ...          [ 26%]
+tests/test_meetings_formalize_minutes_json_profile_gated.py ...          [ 29%]
+tests/test_meetings_fts_auto_ingest.py .                                 [ 30%]
+tests/test_meetings_fts_ingest_transcript_json_aligned.py .              [ 31%]
+tests/test_meetings_input_resolver.py .                                  [ 32%]
+tests/test_meetings_job_runner.py ..                                     [ 35%]
+tests/test_meetings_journal_schema_v1.py ....                            [ 39%]
+tests/test_meetings_library_list_sessions.py .                           [ 40%]
+tests/test_meetings_minutes_schema_v1.py ....                            [ 45%]
+tests/test_meetings_minutes_truth_guards_empty_sections.py .             [ 46%]
+tests/test_meetings_mode_registry.py ....                                [ 51%]
+tests/test_meetings_normalize_ffmpeg.py .                                [ 52%]
+tests/test_meetings_pdf_adapter_never_crashes.py .                       [ 53%]
+tests/test_meetings_pipeline_transcribe_diarize.py .                     [ 54%]
+tests/test_meetings_primary_outputs_resolver.py ..                       [ 56%]
+tests/test_meetings_render_journal_md_pdf_evidence.py .                  [ 57%]
+tests/test_meetings_render_md_pdf_evidence.py .                          [ 59%]
+tests/test_meetings_render_minutes_journal_md_deterministic.py ..        [ 61%]
+tests/test_meetings_router_plan.py ....                                  [ 65%]
+tests/test_meetings_run_init.py .                                        [ 67%]
+tests/test_meetings_run_params_validation.py ...                         [ 70%]
+tests/test_meetings_search_filters.py .                                  [ 71%]
+tests/test_meetings_search_ranked_results_citations.py ..                [ 73%]
+tests/test_meetings_sqlite_fts_index_ingestion.py .                      [ 75%]
+tests/test_meetings_sqlite_schema_migration_segment_anchors.py .         [ 76%]
+tests/test_meetings_template_registry.py ....                            [ 80%]
+tests/test_meetings_transcribe_adapter_v1_json.py .                      [ 81%]
+tests/test_meetings_truth_gate_integration.py ..                         [ 84%]
+tests/test_meetings_web_door_scaffold.py ....                            [ 88%]
+tests/test_meetings_web_upload_preview_no_run.py .                       [ 89%]
+tests/test_meetings_web_upload_run.py .                                  [ 90%]
+tests/test_module_registry_smoke.py .                                    [ 92%]
+tests/test_profile_gate_smoke.py .                                       [ 93%]
+tests/test_results_smoke.py .                                            [ 94%]
+tests/test_storage_adapter_smoke.py .                                    [ 95%]
+tests/test_telegram_stuart_door_core.py ...                              [ 98%]
+tests/test_truth_gate_spine_smoke.py .                                   [100%]
+
+=============================== warnings summary ===============================
+../../../opt/pyvenv/lib/python3.11/site-packages/ddtrace/internal/module.py:220
+  /opt/pyvenv/lib/python3.11/site-packages/ddtrace/internal/module.py:220: PendingDeprecationWarning: Please use `import python_multipart` instead.
+    self.loader.exec_module(module)
+
+tests/test_meetings_web_door_scaffold.py::test_index_has_mode_placeholder_and_no_default_selected
+tests/test_meetings_web_door_scaffold.py::test_index_has_library_and_search_controls
+  /opt/pyvenv/lib/python3.11/site-packages/starlette/templating.py:178: DeprecationWarning: The `name` is not the first parameter anymore. The first parameter should be the `Request` instance.
+  Replace `TemplateResponse(name, {"request": request})` by `TemplateResponse(request, name)`.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 88 passed, 3 warnings in 19.81s ========================

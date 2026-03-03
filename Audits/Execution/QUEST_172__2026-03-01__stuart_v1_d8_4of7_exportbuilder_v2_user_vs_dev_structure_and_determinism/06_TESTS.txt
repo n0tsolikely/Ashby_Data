@@ -1,0 +1,18 @@
+## Command Receipt Log
+WRAPPER: synapse_quest_run.sh
+ENGINE_ROOT: /home/notsolikely/Ashby_Engine
+DATA_ROOT: /home/notsolikely/Ashby_Data
+---
+FAIL: governance validation errors:
+- 06_TESTS.txt must contain at least one 'CMD:' receipt line (run commands via quest runner wrapper)
+- 03_VERIFY.md is placeholder-only; it must contain real verification content
+- 04_OUTCOME.md is placeholder-only; it must state what is now true + artifacts/paths
+BLOCKED: governance validate failed (see output above).
+CMD: source /home/notsolikely/venvs/ashby-env/bin/activate && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_export_bundle_export_type_filters.py tests/test_export_api_v2_params.py tests/test_meetings_cli_search_export.py tests/test_pdf_traceability_footers.py
+........                                                                 [100%]
+8 passed in 0.71s
+RC: 0
+PASS: governance validation OK for QUEST_172 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_172__2026-03-01__stuart_v1_d8_4of7_exportbuilder_v2_user_vs_dev_structure_and_determinism
+OK: finalize complete (validation PASS recorded).
+PASS: governance validation OK for QUEST_172 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_172__2026-03-01__stuart_v1_d8_4of7_exportbuilder_v2_user_vs_dev_structure_and_determinism
+OK: finalize complete (validation PASS recorded).

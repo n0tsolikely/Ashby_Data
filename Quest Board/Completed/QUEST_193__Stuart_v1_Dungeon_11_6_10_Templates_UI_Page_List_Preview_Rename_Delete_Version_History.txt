@@ -1,0 +1,152 @@
+# QUEST_193 — Stuart v1 — Dungeon 11 (6/10) — Templates UI Page: List / Preview / Rename / Delete / Version History
+
+(Quest template: Synapse OS — Architecture Transcendence Protocol, Stuart v1)
+
+IDENTITY
+- Quest ID: QUEST_193
+- Title: Stuart v1 — Dungeon 11 (6/10) — Templates UI Page: List / Preview / Rename / Delete / Version History
+- Dungeon: 11 (Templates as first-class artifacts)
+- Owner: OpenAI Codex (CLI execution)
+- Priority: P1
+- Risk Class: R2
+- Expected Testing Level: TL2 (unit + API) unless explicitly upgraded in this quest
+- Date Authored: 2026-03-03
+
+CANON LOCKS (sha256)
+- Guild Orders (ACTIVE): Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-25_REV14.txt
+  sha256: d10c278cd45a543c32c27102a912ce6f1c0569401c5ec0e00f6dc1e5c5b9b094
+
+- Guild Orders — Dungeon 11 block (verbatim) sha256: 00aff20ab5689f18747d0931ed6eea4432d0828df6dd180f0994337193b3905b
+
+- Stuart Codex anchors:
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_4.1_Mode_vs_Template_Separation.txt
+    sha256: 3823c6a3fa132e600d2b8b8c3cf825a6dc950c65b1dfa3c62a06a5a319bd7424
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_4.2_Template_Schema_Sections_Required_vs_Optional.txt
+    sha256: 2e6ca9a2caef22ec2eb432254afbe37cd5b53502aec9afe87e3b86f87f439611
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_4.4_Template_Creation_Chat_Guided.txt
+    sha256: c27b38f828095b60d21fc591c664c47ca44f987275ba438b3896220f83c50ca7
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_4.5_Template_Import_Document_or_Image_Based.txt
+    sha256: f10e6c36bd1206efb11d0f2da84b47797d705d31f89f7788d1a142747f96a047
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_4.6_Template_Versioning_and_Compatibility.txt
+    sha256: c359eed7780c19aef3b54fafc50ddc3e941ef25b367c958d8f6b0f3b9fc0b68f
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_2.4_Template_Selection_Scoped_by_Mode.txt
+    sha256: 03d3aa53371845a759f165fe1f542b38e7694829a0618b881316a0802d18c165
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_6.2_Canonical_Artifacts_JSON_Markdown_PDF.txt
+    sha256: aaf3db33935220866ed5f48dc0bf5d0e95a92ea6f690fa008ff47e01bee5bfc0
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_6.3_File_Naming_and_Deterministic_Paths.txt
+    sha256: f551b5e5166d175eac545518cde1a9d9dcea0bae7d43477c298471d42bf6371d
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_1.2_Core_Invariants_Truth_Evidence_Explicit_Execution.txt
+    sha256: 2f15b9014fc6f787986f990020867c177561e268950bafda58d6f0cbe8472953
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_2.2_Explicit_Execution_Gating_Submit_Confirm.txt
+    sha256: 322b838cce234e1c17d36f6a9a4c35a612dba211000b3ee8878be4e5dec6b602
+
+- Monster (Canon16 reference): MONSTER_ASHBY__THE_MONSTER_WORKSPACE__20260303_170000.zip
+  Routes index: MONSTER/repomap/snapshot_repomap_pack_current/WEB_API.md
+  sha256: df6c574135ac970896d89513b3aa87923d50feded9f91d2695a6f04a82f9dd4e
+
+
+SYSTEM CONTEXT STATEMENT
+- Dungeon 11 requires a dedicated UI surface for managing templates (Templates/Settings).
+- Current UI pages are:
+  - Sessions
+  - Stuart
+- There is no template management UI yet.
+- Backend templates API exists after QUEST_191.
+
+REPO / MONSTER ANCHORS
+- Frontend pages:
+  - `webapp/stuart_frontend/stuart_app/src/pages/`
+  - pages config: `webapp/stuart_frontend/stuart_app/src/pages.config.js`
+  - layout nav: `webapp/stuart_frontend/stuart_app/src/Layout.jsx`
+- API client:
+  - `src/api/stuartClient.js`
+- Backend:
+  - `/api/templates*` (QUEST_191)
+
+CONSTRAINT SUMMARY
+- UI must support:
+  - List templates (filter by mode)
+  - Preview template (render markdown)
+  - Rename template_title (implemented as “new version” under the hood, to respect immutability)
+  - Show version history (basic)
+  - Delete template (confirm modal)
+- Avoid UI clutter:
+  - Keep it clean, minimal, and deterministic.
+
+ANTI-DUP PLAN
+- Search for any existing “Templates” UI in repo:
+  - `rg -n "Templates" webapp/stuart_frontend/stuart_app/src`
+- If something exists, extend instead of recreating.
+
+DELIVERABLES
+- New Templates page + routing:
+  - `/templates` route in nav
+- Template management components:
+  - TemplateListPanel
+  - TemplatePreviewPanel
+  - TemplateActions (rename/delete)
+  - VersionHistoryPanel (basic)
+- Uses backend API:
+  - list/get/versions/delete/create_version (rename via create)
+
+TASK BREAKDOWN
+1) Add templates client methods
+   - Edit: `src/api/stuartClient.js`
+   - Add:
+     - templates.list({mode, q, limit, offset})
+     - templates.get({mode, template_id, version?})
+     - templates.versions({mode, template_id})
+     - templates.create({...})
+     - templates.delete({mode, template_id})
+   - Match backend routes from QUEST_191
+
+2) Create Templates page
+   - Add: `src/pages/Templates.jsx`
+   - UI layout:
+     - Left: template list + mode filter + search input
+     - Right: preview + metadata + actions + version history
+
+3) Add route + nav item
+   - Update: `src/pages.config.js` to include Templates page
+   - Update: `src/Layout.jsx` NAV_ITEMS:
+     - Add {label:"Templates", path:"/templates"}
+
+4) Add rename flow (versioned)
+   - UI action “Rename”
+   - Calls POST /api/templates with same template_id + new title (template_text unchanged)
+   - Backend creates v+1; UI refreshes list and versions
+
+5) Add delete flow (danger confirm)
+   - Confirm modal: “Delete template and all versions?”
+   - Calls DELETE /api/templates/{template_id}?confirm=true
+
+6) Version history (basic)
+   - Right panel shows versions list; clicking a version loads and previews that version
+   - Default to latest version
+
+ACCEPTANCE CRITERIA
+- /templates page exists and is reachable from nav.
+- User can:
+  - View templates
+  - Preview template markdown
+  - Rename (creates new version)
+  - View version history
+  - Delete template (confirm)
+- Manual smoke passes end-to-end with local backend.
+
+VERIFICATION PLAN
+- `cd /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app`
+- `npm run dev`
+- Navigate to /templates and validate:
+  - list loads from /api/templates
+  - preview renders markdown
+  - rename bumps version
+  - delete removes it
+
+ROLLBACK PLAN
+- Remove Templates page and nav entry.
+- No backend changes needed.
+
+AUDIT BUNDLE
+- `/home/notsolikely/Ashby_Data/Audit Bundles/QUEST_193/`
+  - Include: diff + screenshots of Templates page.

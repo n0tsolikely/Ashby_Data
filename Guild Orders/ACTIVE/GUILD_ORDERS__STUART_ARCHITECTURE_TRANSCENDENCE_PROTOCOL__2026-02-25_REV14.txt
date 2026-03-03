@@ -1,0 +1,1107 @@
+GUILD_ORDERS
+SUBJECT: ASHBY / STUART (Meetings Module)
+DATE: 2026-02-25
+ORIGINAL_DATE: 2026-02-16
+TIMEZONE: America/Toronto
+REVISION: 2026-02-28_REV13 (Control Sync: D11 Template Management Lock-In — Local-first runtime store + reuse discovery pass + staged import)
+STATUS: ACTIVE (Raid in progress; governed execution baseline)
+GOVERNANCE: Synapse_OS_Governance(AI)10
+CANONICAL INPUTS (authoritative for this Guild Orders):
+- Ashby_Data/Codex/ASHBY CODEX FULL.txt
+- Ashby_Data/Stuart/Docs/Stuart - The Canonical Vision.txt
+- Ashby_Data/Stuart/Docs/stuart_app.zip
+- Ashby_Data/Stuart/Docs/STUART_Base44_UI_Code_Audit__2026-02-16.txt
+- Ashby_Data/Stuart/Docs/STUART_Base44_UI_Surgery_Checklist__2026-02-16.txt
+- Ashby_Data/Snapshots/Draft Shots/DRAFTSHOT__2026-02-25__CONTROL_SYNC__REV6.txt
+- Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-02-24.txt
+- Prior Guild Orders: Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-23_REV5.txt
+
+NON-NEGOTIABLE LAWS (binding):
+1) Upload ≠ Run. Uploading audio is not permission to process.
+2) No fake transcription. ASR must be from real audio.
+3) Diarization belongs to TRANSCRIPTION (optional toggle on transcribe), NOT formalization.
+4) Formalization is loss-minimized restructuring (a “summary” without losing materially relevant information) and must be template + retention governed.
+5) Evidence discipline: factual claims about meeting contents must be anchorable to transcript segments (segment_id + timestamps). No citations → no claims.
+6) Profile truth: Local/Hybrid/Cloud must reflect real routing; never pretend cloud storage/compute exists if it doesn’t.
+7) No god files; keep WHAT vs HOW boundaries; adapters swappable; router thin; truth gate single source.
+
+8) Chat-first completeness: Chat is the canonical control surface. On launch, default view/tab MUST be Chat. 
+   All core actions (upload, transcribe, toggle diarization, list/select transcript versions, speaker mapping, formalize, 
+   export variants, show/hide transcript, jump to timestamp) MUST be executable via chat commands. 
+   Buttons and UI panels are convenience controls only.
+
+9) Base44 Migration Constraint (No Shims by Default)
+   - Preferred outcome: ZERO Base44 compatibility code. Port the UI to canonical Stuart API calls directly.
+   - If (and only if) a temporary compat shim is required to get the UI booting, it must be:
+     - Frontend-only
+     - Isolated under src/compat/
+     - Explicitly marked TEMP_BASE44_COMPAT
+     - Removed by the end of Dungeon 1
+   - No backend/engine modules may contain Base44 naming or dependencies.
+
+
+10) Single UI Surface Rule (No Duplicate Webapps)
+   - Canonical frontend source: Ashby_Engine/webapp/stuart_frontend/stuart_app/
+   - The only allowed served UI is the Vite+React build from this source.
+   - Legacy Jinja/static UIs must be removed/disabled after cutover:
+     - Ashby_Engine/ashby/interfaces/web/templates/index.html + Ashby_Engine/ashby/interfaces/web/static/app.js
+     - Ashby_Engine/webapp/main.py + Ashby_Engine/webapp/templates/index.html + Ashby_Engine/webapp/static/js/app.js
+
+11) Chat Must Be Real Stuart (Not Planner-Only)
+   - Default Chat behavior is governed Q&A over artifacts (session or global scope).
+   - Planner/clarify previews are allowed ONLY for explicit action commands (e.g., /transcribe, /formalize, /export).
+   - For action commands, if required parameters are missing (template/mode/retention/profile/transcript_version), Stuart MUST ask clarifying questions instead of guessing.
+   - Meeting facts require citations; no citations → label unknown or omit.
+
+DEFINITION (binding clarification):
+FORMALIZATION = the structured meeting artifact (minutes/journal/incident/etc.) generated from a chosen transcript version via template+retention. It is not “just the transcript,” and it is not allowed to fabricate content.
+
+======================================================================
+REV6 CONTROL SYNC AMENDMENTS — 2026-02-25
+======================================================================
+This revision corrects and locks scope based on Control Sync:
+
+A) UI Surface Consolidation (Single UI)
+- Canonical frontend source root: Ashby_Engine/webapp/stuart_frontend/stuart_app/
+- Canonical served web door remains: Ashby_Engine/ashby/interfaces/web/app.py
+- Legacy HTML/Jinja UIs are migration scaffolds only and must be retired once React is served:
+  - Ashby_Engine/ashby/interfaces/web/templates/index.html + static/app.js (+app.css)
+  - Ashby_Engine/webapp/main.py + webapp/templates/index.html + webapp/static/js/app.js (+css)
+
+B) Dungeon 10 is now explicitly “Real Stuart Chat Q&A”
+- /api/chat (session) + /api/chat/global (global) must be LLM-backed Q&A over artifacts with citations + session jump actions.
+- Planner/clarify behavior is permitted only for explicit action commands (slash commands).
+
+C) Session Listing + Index Consolidation
+- /api/sessions is canonical.
+- /api/library may exist only as a TEMP alias to /api/sessions (no divergent response shapes); remove once legacy UI is gone.
+
+D) Explicitly OUT OF SCOPE (do not touch; Codex depends on these)
+- Rehydration pack index path normalization
+- .governance_runtime/control_sync_state.json
+- Any Codex runtime plumbing used for automation
+E) Dungeon 6 Lock-Ins (Speaker Overlay + Sessions Search Semantics)
+- Internal diarization IDs remain SPEAKER_01…; UI shows Speaker-01 when unmapped.
+- Overlay is per transcript_version_id and seeds forward to new transcript versions within the same session; it does not retroactively mutate older transcript versions.
+- Sessions search semantics:
+  - Mentioned = transcript keyword only (no title/ID matching)
+  - Attendee = overlay-backed speaker presence (ACTIVE overlay only; no mere mentions)
+  - All = union including title + session_id + transcript_version_id/run_id + Mentioned + Attendee
+- Session rename edits metadata title only; session storage folders remain session_id; stamping titles into exports/formalizations is handled in D7/D8.
+
+
+======================================================================
+RAID INTENT
+======================================================================
+Ship a product-grade Stuart web experience that matches the Base44 UI interaction model (Session/Chat/Outputs + profile badge + export zip + config panels) while using REAL Stuart backend stages (upload → transcribe(+optional diarize) → align → formalize(template+retention) → render/export → index) and wiring LLM properly for:
+- formalization (template-governed)
+- chat Q&A (session + global scope, retrieval + citations)
+
+This Guild Orders is intentionally large. Dungeons are dependency-safe and can be executed in any safe order, but there IS a recommended dependency graph called out per Dungeon.
+
+======================================================================
+DONE (Raid Complete) — HARD ACCEPTANCE CRITERIA
+======================================================================
+Raid is complete only when ALL are true:
+A) UI/UX parity achieved for the core flow:
+   - Sessions list + New Session
+   - Session/Chat/Outputs tabs
+   - Separate Transcribe button with diarization toggle beside it
+   - Speaker mapping overlay editor
+   - Formalization config panel (mode/template/retention/profile) + Formalize button
+   - Outputs tab shows multiple formalizations with formatted/JSON/evidence views
+   - Export ZIP works and downloads a proof bundle
+   - Single UI surface: root / serves the Vite+React Stuart UI; legacy Jinja/static UIs are removed/disabled.
+B) Pipeline E2E works on real audio:
+   - meeting audio (2–3 speakers) → transcript + diarization ON → formalization via default test template
+   - journal audio (1 speaker) → transcript → journal formalization (near-verbatim cleaning) via default test template variant
+C) LLM wiring is real and governed:
+   - LOCAL_ONLY cannot call remote LLM
+   - HYBRID can call remote LLM when explicitly enabled
+   - Chat returns citations for meeting facts
+   - Global chat works from cold start (no selected session) and can return open_session actions + citations.
+D) Proof exists:
+   - Diffs / changed files or new files
+   - Commands run + full stdout/stderr + exit codes
+   - Produced artifacts in runtime output (and an export zip that includes them)
+
+======================================================================
+SCOPE BOUNDARY (what is NOT required in this Raid)
+======================================================================
+- Real cloud tenancy/auth/subscriptions (future)
+- GPU cloud execution fleet (future)
+- Perfect diarization accuracy (we need working + improvable, not perfect)
+- Full template marketplace (future)
+- Pixel-perfect “photo log → identical PDF layout reproduction” templates (future; D11 ships structured templates first)
+- Admin/Developer unlock phrase + repo-wide Q&A/debug mode inside Stuart chat (future)
+- Internet browsing/tool integrations inside Stuart chat (future)
+- Telegram/CLI doors parity (future)
+- Codex automation artifacts (Rehydration Pack index, .governance_runtime/control_sync_state.json, path drift cleanup) — explicitly out of scope in this Raid.
+
+
+======================================================================
+DUNGEON 1 — FRONTEND FOUNDATION: BASE44 UI INGEST + CANONICAL STUART NAMING (NO COMPAT SHIMS)
+======================================================================
+
+REQUIRED INPUT ARTIFACTS (MUST BE PRESENT BEFORE WORK STARTS):
+
+- Base44 Stuart UI source pack:
+  Ashby_Data/Stuart/Docs/stuart_app.zip
+  (This file is the authoritative UI reference we are porting. If missing, STOP and  request it.)
+
+- Base44 UI audit + surgery docs:
+  Ashby_Data/Stuart/Docs/STUART_Base44_UI_Code_Audit__2026-02-16.txt
+  Ashby_Data/Stuart/Docs/STUART_Base44_UI_Surgery_Checklist__2026-02-16.txt
+
+- Stuart Canonical Vision:
+  Ashby_Data/Stuart/Docs/Stuart - The Canonical Vision.txt
+
+- Current Guild Orders document (this file).
+
+
+
+Goal:
+- Ingest the Base44-generated Stuart UI source (stuart_app.zip) and convert it into our canonical Stuart webapp frontend
+  in Ashby_Engine with correct naming and correct API surfaces from the start.
+- The resulting frontend must boot and run as a normal Vite+React app WITHOUT any Base44 platform dependencies and WITHOUT
+  any "base44" compatibility client/shim. We wire to canonical Stuart API names immediately.
+
+BINDING RULES (NON-NEGOTIABLE):
+1) No Base44 platform dependencies may remain:
+   - No @base44/sdk
+   - No @base44/vite-plugin
+   - No Base44 auth/context/telemetry glue
+2) No “compatibility shim” is permitted (no base44Client adapter layer).
+   - All frontend code must call canonical Stuart client/API names directly.
+3) No backend/engine code may contain Base44 naming at all.
+4) Canonical API surfaces must be Stuart-native from day 1:
+   - /api/sessions
+   - /api/upload
+   - /api/run
+   - /api/runs/{run_id}
+   - /api/sessions/{id}/transcripts
+   - /api/sessions/{id}/formalizations
+   - /api/chat
+   - /api/sessions/{id}/export (with export variants later)
+5) Upload ≠ Run must be preserved in UI and contract.
+
+REQUIRED INPUT ARTIFACTS (MUST BE PRESENT BEFORE WORK STARTS):
+- stuart_app.zip (Base44 UI source pack) — authoritative UI source we are porting.
+  If missing, STOP: request it from Hands.
+- Base44 UI audit + surgery docs:
+  - Ashby_Data/Stuart/Docs/STUART_Base44_UI_Code_Audit__2026-02-16.txt
+  - Ashby_Data/Stuart/Docs/STUART_Base44_UI_Surgery_Checklist__2026-02-16.txt
+- Stuart Canonical Vision (for invariants):
+  - Ashby_Data/Stuart/Docs/Stuart - The Canonical Vision.txt
+- Current Guild Orders doc (this file)
+
+Tasks:
+1) Confirm canonical frontend source root (NO DUPLICATE FRONTENDS):
+   - Canonical frontend root: Ashby_Engine/webapp/stuart_frontend/
+   - Canonical app source:  Ashby_Engine/webapp/stuart_frontend/stuart_app/
+   - Do NOT create a second Stuart frontend under ashby/interfaces/web or anywhere else.
+   - Preserve provenance docs in Ashby_Engine/webapp/stuart_frontend/ (00_SOURCE_PROVENANCE.md, FRONTEND_ROOT.md, etc.)
+   - stuart_app.zip remains a reference input only; the working source of truth is the directory above.
+
+2) Remove Base44 platform wiring completely:
+   - Remove all Base44 deps/plugins from package.json and Vite config.
+   - Remove/replace Base44 auth contexts, navigation tracking, platform “me” calls, etc.
+
+3) Canonical naming & structure corrections:
+   - Fix entrypoint/App naming mismatches (App vs Apps) using canonical naming.
+   - Ensure router boots with our canonical App component naming.
+   - Add Vite alias @ -> src (if we keep that style) OR refactor imports to relative paths.
+   - Ensure no "base44" module names exist anywhere in src/ tree.
+
+4) Replace Base44 call patterns with canonical Stuart client calls:
+   - Replace any "InvokeLLM" / Base44 integration calls with NO-OP placeholders that call OUR endpoints instead.
+   - All data access must point to our canonical API client:
+     - sessions.list/create
+     - upload
+     - runs.create/status polling
+     - transcripts list/get
+     - outputs list/get
+     - export
+     - chat
+   (Implement minimal client stubs if backend endpoints aren't ready yet, but DO NOT name them base44.)
+
+5) Boot + compile + smoke:
+   - Install deps
+   - Run dev server
+   - Verify UI loads and core layout renders:
+     - header bar
+     - session list panel
+     - tabs exist
+   - Even if endpoints return empty data, the UI must not crash.
+
+Deliverables:
+- A bootable, non-Base44 Stuart frontend committed into Ashby_Engine.
+- Zero Base44 runtime dependencies.
+- Zero Base44 naming in the codebase (frontend + backend).
+- Clear documented “frontend root path” and how to run it.
+
+Proof:
+- Terminal logs showing:
+  - install (npm/pnpm)
+  - dev server start
+  - build success (optional but recommended)
+- Grep proof: no "base44" and no "InvokeLLM" remains in frontend workspace:
+  - grep -R "base44" src/
+  - grep -R "InvokeLLM" src/
+- Screenshot/log that UI rendered without crashing.
+
+Dependencies:
+- stuart_app.zip must be provided by Hands.
+- Backend endpoints can be stubbed temporarily for UI boot ONLY, but stubs must use canonical Stuart naming.
+
+Risks:
+- Doing this “right-first-time” means slightly more up-front edits than a shim.
+  Payoff: zero migration debt later and no naming contamination.
+
+
+======================================================================
+DUNGEON 2 — FRONTEND↔BACKEND CONTRACT: STUART WEB APP API SURFACE
+======================================================================
+Goal:
+Define and implement the minimum API endpoints required to make the UI real (no fake InvokeLLM behavior).
+
+Contract (minimum):
+SESSIONS
+- GET  /api/sessions
+- POST /api/sessions
+- GET  /api/sessions/{session_id}
+- PATCH /api/sessions/{session_id}   (optional initially)
+
+UPLOAD
+- POST /api/upload (must attach to session; upload ≠ run)
+
+TRANSCRIPTS
+- GET  /api/sessions/{session_id}/transcripts
+- GET  /api/transcripts/{transcript_version_id}
+
+RUNS
+- POST /api/run
+- GET  /api/runs/{run_id}
+- GET  /api/sessions/{session_id}/runs
+
+FORMALIZATIONS (index)
+- GET  /api/sessions/{session_id}/formalizations
+- GET  /api/formalizations/{formalization_id} (optional if listing run artifacts is enough)
+
+CHAT
+- POST /api/chat  (session scope)
+- POST /api/chat/global (global scope; can ship later but design now)
+
+EXPORT
+- GET /api/sessions/{session_id}/export
+  - supports export_type=[formalization_only|transcript_only|full_bundle]
+
+Tasks:
+1. Decide where these live in Ashby_Engine (web door routes + module services).
+2. Implement minimal session store + indices (local runtime data, not repo).
+3. Implement transcript_version model (see Dungeon 4) and list/get endpoints.
+4. Implement runs list endpoints for UI polling.
+5. Implement formalizations index endpoint (can be derived from run artifacts initially).
+6. Implement export endpoint that bundles session proof artifacts.
+7. Consolidate /api/library vs /api/sessions:
+   - /api/sessions remains canonical for all modern clients.
+   - /api/library must either (A) be removed after legacy UI removal OR (B) be a strict alias/redirect to /api/sessions (no divergent shapes).
+
+Deliverables:
+- Documented API contract (in repo docs)
+- Endpoints implemented + smoke-tested with curl/httpie
+- UI wired to endpoints
+
+Proof:
+- curl transcripts/runs/formalizations list returns expected JSON
+- UI loads real session list and shows statuses
+
+Dependencies:
+- Dungeon 1 (UI boots)
+- Some backend scaffolding exists already; integrate with minimal churn
+
+======================================================================
+DUNGEON 3 — UI PRODUCT SURFACE PARITY (SESSION / CHAT / OUTPUTS + HEADER BADGE + EXPORT ZIP)
+======================================================================
+Goal:
+Make our Stuart web app look/feel/operate like the screenshots (Base44 product surface), but backed by real endpoints.
+
+UI Requirements (locked):
+Header:
+- Show profile badge: Local / Hybrid / Cloud (truthful)
+- Export ZIP button (per selected session)
+
+Left panel:
+- New Session button
+- Sessions list + search + status badges
+
+Tabs:
+- Session | Chat | Outputs
+
+Session tab must include:
+- Transcribe button
+- Diarization toggle BESIDE Transcribe button
+- Transcript version selector dropdown
+- Transcript viewer (segments with timestamps + speaker labels if diarized)
+- Speaker mapping overlay editor
+- Formalization config panel: mode/template/retention/profile + Formalize
+- Processing log (real stage progress)
+
+Outputs tab must include:
+- List of formalizations per session (multiple runs)
+- Views: formatted / JSON / evidence map
+- Downloads (md/pdf)
+
+Chat tab must include:
+- Transcript visibility controls: show/hide transcript UI toggle
+- Chat commands must support: “show transcript”, “hide transcript”, “jump to 12:34”, “show transcript around 12:34 (+/- N seconds)”, “filter transcript by speaker SPEAKER_02 / Greg”
+- Export commands must be callable via chat (see Dungeon 8)
+
+- chat interface that feels like “talking to Stuart”
+- Chat is default tab on launch
+- '+' attachment affordance for uploading audio/files
+- default scope session; toggle to global
+- citations display for meeting facts
+- transcript visibility controls (show/hide transcript, jump to timestamp)
+- all transcript operations callable via chat commands
+
+Tasks:
+1. Wire session list/search/selection to /api/sessions.
+2. Wire Transcribe action to create a run OR dedicated transcribe endpoint (see Dungeon 5).
+3. Wire Transcript viewer to /api/transcripts/...
+4. Implement speaker mapping UI overlay edits (see Dungeon 6).
+5. Wire Formalize action to /api/run with selected transcript_version_id.
+6. Wire Outputs list to /api/sessions/{id}/formalizations (or derived runs).
+7. Wire Export ZIP to /api/sessions/{id}/export.
+8. Wire Processing log to run polling (/api/runs/{run_id}) or event stream later.
+9. UI surface consolidation (Single UI Surface Rule):
+   - Serve the Vite+React build at backend root (/) from the canonical web door.
+   - Remove/disable legacy Jinja/static UIs after cutover (see Law #10).
+
+Deliverables:
+- UI parity demonstrated end-to-end (real session, real transcript, real formalization output, real export)
+- No fake processing
+- Single UI surface: only the Vite+React UI is served; legacy UIs are removed/disabled.
+
+Proof:
+- UI video/gif optional, but required: terminal logs + endpoint outputs + exported zip
+
+Dependencies:
+- Dungeon 1 (UI boots)
+- Dungeon 2 (API surface)
+- Dungeon 4/5/6 for transcript/speaker/diarization correctness
+
+======================================================================
+DUNGEON 4 — TRANSCRIPT VERSIONING MODEL (MULTIPLE TRANSCRIPTS PER SESSION)
+======================================================================
+Goal:
+Implement transcript versions so you can retranscribe with diarization on/off (and later other ASR engines) and pick which transcript feeds formalization.
+
+Definition:
+TRANSCRIPT_VERSION:
+- transcript_version_id
+- session_id
+- created_at
+- diarization_enabled: bool
+- asr_engine: string (start with “default”)
+- segments: [{segment_id, start_ms, end_ms, speaker_label?, text, confidence?}]
+- references to audio (path/url) and run_id that produced it
+
+Tasks:
+1. Define transcript version artifact schema and where it is stored (runtime).
+2. Update transcription stage to emit transcript_version artifacts.
+3. Add list/get endpoints:
+   - list transcript versions for session
+   - fetch a specific transcript version
+4. UI: transcript version selector dropdown shows all versions.
+5. Chat must support listing transcript versions and switching active transcript version.
+6. Formalization run must explicitly declare which transcript_version_id it consumed.
+
+Deliverables:
+- transcript_version artifacts in runtime
+- endpoints + UI selector
+- clear traceability: transcript_version_id → run_id → artifacts
+
+Proof:
+- Create session, transcribe twice (diarize on/off), verify two versions exist and UI can switch
+
+Dependencies:
+- Dungeon 2 (API surface)
+- Dungeon 5 (transcribe pipeline stage mapping)
+
+======================================================================
+DUNGEON 5 — TRANSCRIBE STAGE (REAL ASR) + DIARIZATION TOGGLE
+======================================================================
+Goal:
+Implement real transcription from real audio and optionally diarization at transcription time.
+
+Rules:
+- No LLM transcript fabrication. Ever.
+- Diarization toggle belongs to Transcribe action.
+- Formalization does not own diarization.
+
+Tasks:
+1. Ensure transcribe run path exists and is callable from UI:
+   Option A: POST /api/run with mode=TRANSCRIBE (pipeline includes transcribe + optional diarize)
+   Option B: POST /api/transcribe that creates a run under the hood
+2. Ensure diarization toggle affects pipeline:
+   - diarize=False: transcript segments without speaker labels
+   - diarize=True: transcript segments labeled SPEAKER_01 etc + timestamps
+3. Ensure output is stored as transcript_version artifacts (Dungeon 4).
+4. Ensure transcript segments have stable IDs and timestamps for citations.
+
+Deliverables:
+- Real transcript output on real audio
+- Optional diarization output
+- Stored transcript_version artifacts
+
+Proof:
+- Provide one meeting audio run showing diarized transcript with multiple speakers separated
+- Provide one run with diarization off showing single stream transcript
+
+Dependencies:
+- Existing ASR/diarization adapters in engine; wire them cleanly.
+
+END OF GUILD_ORDERS (Page 1)
+
+
+======================================================================
+DUNGEON 6 — SPEAKER MAPPING OVERLAY + ATTENDEE/MENTIONED SEARCH TRUTH
+======================================================================
+Goal:
+Support user editing speaker display names (Greg/Katie/…) while keeping diarization truth intact (SPEAKER_01…).
+Also lock truthful Sessions search semantics (All vs Mentioned vs Attendee).
+
+Rules:
+- Do not rewrite transcript segments; maintain diarization speaker IDs (SPEAKER_01, SPEAKER_02, …) as the canonical anchors.
+- Speaker naming is an overlay tied to transcript_version_id; overlay may be seeded forward but must not retroactively mutate older transcript versions.
+- UI label when unmapped is “Speaker-01”, “Speaker-02”, … (pretty display); internal IDs remain SPEAKER_01 etc.
+- “Mentioned” ≠ “Attendee”:
+  - Mentioned = keyword match in transcript text
+  - Attendee = speaker presence via overlay-backed mapping (ACTIVE overlay only)
+
+Tasks:
+1) Define speaker_map overlay artifact (canonical scope = transcript_version_id):
+   - speaker_map_id
+   - transcript_version_id (CANONICAL scope)
+   - session_id (convenience pointer)
+   - mapping: SPEAKER_01 → “Greg” etc
+   - updated_at
+   - active scope: one ACTIVE mapping per session at a time (or a session pointer to “active transcript_version_id”)
+2) Overlay seeding rule:
+   - When a new transcript_version is created within the same session, seed its speaker_map from the most recent ACTIVE mapping (same session) by default.
+   - Editing a mapping affects ONLY the selected transcript_version (unless the user explicitly selects a different transcript_version).
+3) Endpoints:
+   - GET/PUT speaker map for a transcript_version_id (session_id may resolve the current ACTIVE transcript_version)
+   - GET discovered speakers for a transcript_version_id (list SPEAKER_01… in that transcript version)
+4) UI speaker mapping editor:
+   - Show detected speakers as Speaker-01, Speaker-02… when unmapped
+   - Allow name assignment and persistence
+5) Session rename persistence (metadata only):
+   - Session storage folder remains session_id (never rename folders)
+   - UI “title” is a separate field and is what rename edits; session_id remains stable and visible/searchable
+6) Sessions search semantics (UI + API behavior):
+   - Tabs/filters: All | Mentioned | Attendee (rename “Spoke” → “Attendee”)
+   - All = union across:
+     - session title
+     - session_id
+     - transcript_version_id / run_id (exact/prefix matches)
+     - Mentioned (transcript keyword)
+     - Attendee (overlay-backed speaker presence; ACTIVE overlay only)
+   - Mentioned = transcript keyword only (does not include title/IDs)
+   - Attendee = overlay-backed speaker names only (ACTIVE overlay only; must not match mere mentions)
+
+Ensure:
+- Transcript display uses mapping
+- Formalization prompt uses mapping (mapped_name available)
+- Chat retrieval uses mapping (names are indexable)
+
+Deliverables:
+- speaker mapping stored and reflected in UI, formalization, and chat context
+- truthful Sessions search behavior for Mentioned vs Attendee, and All includes title + IDs + content
+
+Proof:
+- Map speakers; transcript view/export shows names without re-transcribe (rerender = re-render derived view/export)
+- Search:
+  - Mentioned finds sessions where name appears in transcript text
+  - Attendee finds sessions where mapped speaker name exists (and does NOT return mere mentions)
+  - All finds both, plus session title and session_id matches
+
+Dependencies:
+- Dungeon 4/5 (diarization produces speaker IDs)
+======================================================================
+DUNGEON 7 — FORMALIZATION MVP: END-TO-END REAL FORMALIZATION (NOT A TRANSCRIPT COPY)
+======================================================================
+Goal:
+Make Stuart produce a legitimate formalization from a transcript using a SIMPLE DEFAULT TEMPLATE as a test, then expand.
+
+User requirement (explicit):
+- At minimum, Stuart must: audio → transcribe(+diarize) → formalize (meeting) using a default template.
+- Today’s default template can be “Summarize this transcript with all important information in a structured organized doc” as a test.
+- Journal formalization should be more near-verbatim, cleaned of filler/stutters.
+
+Rules:
+- Formalization is loss-minimized restructuring (not lossy “summary”).
+- Must not fabricate facts.
+- Must be template+retention governed.
+- Transcript MUST be provided to the LLM as annotated speaker-turn segments: (segment_id, timestamps, speaker_label, mapped_name when available).
+- Sections are content-driven by default (do not show empty sections unless explicitly enabled).
+  - show_empty_sections is a control with TEMPLATE DEFAULT + UI OVERRIDE (1C). Default: false.
+- Citations-in-document are optional and must NOT be coupled to retention.
+  - include_citations is a control with TEMPLATE DEFAULT + UI OVERRIDE (2C). Default: false.
+- Evidence maps are primarily for model/dev truth discipline; users do not need them front-and-center.
+
+Tasks:
+0. Template storage paths (canonical):
+   - System templates (committed): Ashby_Engine/ashby/modules/meetings/templates/system/
+     - meeting default: Ashby_Engine/ashby/modules/meetings/templates/system/meeting/default.md
+     - journal default:  Ashby_Engine/ashby/modules/meetings/templates/system/journal/default.md
+   - User templates (initial v1 store): Ashby_Engine/ashby/modules/meetings/templates/user/
+     (Later this becomes a user data store + marketplace; for now this path is canonical.)
+
+1. Ensure DEFAULT system templates exist and remain the baseline test templates:
+   - Meeting Minutes (structured sections; include a final catch-all section like “Additional Notes”)
+   - Journal Entry (near-verbatim cleaned narrative + key points)
+   - Template authoring may include optional “always show these sections even if empty” intent via show_empty_sections defaults.
+
+2. Wire formalization stage to:
+   - accept transcript_version_id (canonical scope)
+   - accept mode/template/retention/profile
+   - accept show_empty_sections + include_citations controls (template defaults + UI overrides)
+   - produce outputs (see Output artifacts)
+   - LLM input MUST be annotated speaker-turn segments (see Rules) — not just raw transcript_text.
+   - Template content MUST shape the prompt; no hard-coded provider prompt that ignores selected template.
+   - Template shaping approach: BOTH schema/structure derived from template + raw template text (D3).
+     - Schema drives canonical minutes.json/journal.json structure.
+     - Raw template text is provided to the LLM to enforce formatting/field filling.
+
+3. Evidence map (always generated, user-facing optional):
+   - Evidence map must include segment references for all claims of fact, decisions, and action items.
+   - Evidence map is ALWAYS generated for each formalization run (1A), regardless of include_citations.
+   - Evidence map should be hidden from normal users by default (developer-facing).
+   - Packaging rule: Evidence map and usage receipts are excluded from USER_EXPORT and included in DEV_EXPORT.
+
+4. Retention knob (formalization only):
+   - LOW: bullet / compact
+   - MED: structured + some detail
+   - HIGH: detailed formalization
+   - NEAR_VERBATIM: cleaned transcript-like narrative (still template-shaped)
+
+5. Non-fabrication discipline:
+   - If missing evidence, mark UNKNOWN or omit.
+   - Do not “fill in” names or facts.
+
+6. Output artifacts (per formalization run):
+   USER-FACING:
+   - minutes.md + minutes.pdf (+ optional minutes.txt)
+   - journal.md + journal.pdf (+ optional journal.txt)
+   DEV/INTERNAL (still stored, excluded from USER_EXPORT):
+   - minutes.json / journal.json (canonical structured output)
+   - evidence_map.json
+   - llm_usage_receipt.json
+   METADATA:
+   - include template_id + template_version + retention + include_citations + show_empty_sections in outputs metadata
+
+7. UX:
+   - Formalization dropdown selects template
+   - Retention knob selects retention
+   - Toggles: include_citations + show_empty_sections (template default + UI override)
+   - Output tab shows available outputs; user can download as PDF/MD/TXT (format selection)
+   - Re-run formalization does not require re-transcribe; uses transcript_version_id
+
+8. Deletion (tiered):
+   - Delete FORMALIZATION RUN: deletes outputs for that run (docs + internal receipts/evidence) but does NOT delete transcripts.
+   - Delete TRANSCRIPT VERSION:
+     - Default behavior: BLOCK deletion if dependent formalizations exist (3C).
+     - Provide warning modal (same UI pattern as cloud-mode warning) listing impacted formalization IDs/titles.
+     - Offer explicit confirm option: “Delete transcript AND delete dependent formalizations” (cascade delete).
+   - Delete SESSION: deletes all session artifacts (transcripts, overlays, runs, formalizations, receipts) for that session.
+
+Deliverables:
+- Default templates present in repo/runtime template store
+- Formalization run working for meeting + journal
+- Artifacts downloadable in user formats (PDF/MD/TXT)
+
+Proof:
+- Run meeting formalization on real meeting audio with 2–3 speakers
+- Run journal formalization on real journal audio
+- Provide produced outputs (PDF/MD/TXT) and internal evidence map presence
+
+Dependencies:
+- Dungeon 4/5 for transcript_version + diarization
+- LLM routing (Dungeon 9)
+
+======================================================================
+DUNGEON 8 — EXPORT ZIP (SESSION BUNDLES: USER_EXPORT vs DEV_EXPORT)
+======================================================================
+Goal:
+Export deterministic zip bundles for a session (user-facing and developer-facing) with stable structure and traceability.
+
+Core decisions (binding):
+- Export MUST be deterministic: stable ordering, no absolute paths, no recursive inclusion of prior exports.
+- Two bundle classes:
+  - USER_EXPORT: user-facing artifacts only (no evidence_map / no llm_usage_receipt / no run logs).
+  - DEV_EXPORT: includes developer artifacts (evidence_map, llm_usage_receipt, run manifests/logs, raw JSON outputs).
+
+Export endpoints / types:
+- /api/sessions/{id}/export?export_type=transcript_only      -> USER_EXPORT
+- /api/sessions/{id}/export?export_type=formalization_only   -> USER_EXPORT
+- /api/sessions/{id}/export?export_type=full_bundle          -> USER_EXPORT
+- /api/sessions/{id}/export?export_type=dev_bundle           -> DEV_EXPORT
+
+Format selection (USER_EXPORT):
+- User must be able to select formats:
+  - Transcripts: PDF and/or MD and/or TXT
+  - Formalizations: PDF and/or MD
+- JSON outputs are excluded from USER_EXPORT (DEV_EXPORT only).
+
+Zip structure (deterministic; simple / user-mental-model):
+- session.json  (includes session_id + session_title)
+- audio/
+- transcripts/<transcript_version_id>/
+- formalizations/<formalization_id>/
+- overlays/ (speaker_map overlays; active overlay included)
+- dev/ (DEV_EXPORT only: evidence_map.json, llm_usage_receipt.json, run manifests/logs, raw JSON outputs)
+
+Naming / traceability:
+- Session folder names remain session_id (storage canon). Zip filename may include sanitized session_title, but session_id MUST always be included.
+- Formalizations have user-visible titles (A1: optional at creation; auto-generated default; rename later). Title never replaces the stable formalization_id.
+- All exported artifacts MUST remain traceable back to system IDs:
+  - PDFs include a small footer (opaque/watermark-style) with session_id + formalization_id (and generated_at).
+  - MD/TXT include a small header/front-matter containing IDs (session_id, transcript_version_id, formalization_id as applicable).
+  - System must support search by IDs AND names (e.g., session_id/formalization_id search produces an explicit “ID Match” result category).
+
+Deletion interaction (ties to D7):
+- If a user attempts to delete a transcript_version that has dependent formalizations:
+  - show a warning modal listing impacted formalization titles/IDs
+  - offer explicit cascade delete option (delete transcript + dependent formalizations), otherwise block deletion.
+
+UI requirements:
+- UI exposes export variants and format selection (USER_EXPORT vs DEV_EXPORT).
+- UI allows renaming formalizations (title) independently of session title.
+- Chat supports export commands for each variant.
+
+Deliverables:
+- Exported USER_EXPORT zip from a real session containing selected formats.
+- Exported DEV_EXPORT zip containing developer artifacts.
+
+Proof:
+- Download both zips and verify contents match contract + deterministic structure.
+
+DUNGEON 9A — LLM GATEWAY INFRASTRUCTURE (LOCAL SAAS SIMULATION)
+======================================================================
+Goal:
+Introduce a local HTTP-based LLM Gateway service that mimics SaaS deployment architecture while holding provider API keys securely in a separate process. This enables LLM-backed formalization (Gemini initially) without embedding keys in Stuart core code or frontend assets.
+
+Rules:
+- API keys must never be committed to the Stuart repo or embedded in frontend bundles.
+- Gateway must bind to 127.0.0.1 only (local machine).
+- Gateway is swappable with a future hosted SaaS endpoint by configuration only (URL change, no refactor).
+- Gateway must return schema-valid outputs for Stuart formalization (JSON + evidence anchors) and include usage metadata when available.
+
+Tasks:
+1. Create a standalone LLM Gateway service (FastAPI or equivalent) with:
+   - GET /health
+   - POST /v1/formalize
+2. Implement Gemini provider adapter inside gateway:
+   - Load GEMINI_API_KEY from environment only
+   - Choose a default model (configurable via env)
+3. Define request/response contract (versioned):
+   Request includes:
+   - transcript_version_id (optional but recommended)
+   - segments: [{segment_id, start_ms, end_ms, speaker_label?, speaker_name?, text}]
+     (REQUIRED. Gateway must receive segment IDs + timestamps so evidence_map can reference them.)
+   - mode (meeting/journal)
+   - template_id
+   - template_text (the selected template content; MUST shape the output)
+   - retention (LOW/MED/HIGH/NEAR-VERBATIM)
+   - profile (LOCAL_ONLY / CLOUD_ONLY / HYBRID) [passed-through for logging]
+   Response includes:
+   - output_json (minutes/journal JSON schema)
+   - evidence_map (section→segment_id(s) + timestamp ranges when possible)
+   - usage metadata (tokens/char counts) if available
+4. Add rails:
+   - Reject requests missing required fields
+   - Log request_id + timing + usage metadata (no transcript content logging required)
+5. Add minimal tests for gateway contract (request validation + response schema stub path).
+
+Deliverables:
+- Local gateway can be started as a separate process in WSL.
+- Stuart can be configured later to call it via URL, but no Stuart changes required in 9A.
+
+Proof:
+- Call POST /v1/formalize with a small transcript_text and confirm schema-valid JSON response.
+
+Dependencies:
+- None (gateway stands alone).
+
+
+DUNGEON 9B — STUART LLM ROUTING INTEGRATION
+======================================================================
+Goal:
+Integrate LLM routing into Stuart using a provider adapter seam and profile-based routing, consuming the 9A Gateway. Make retention knob semantics real (LLM-driven) for formalizations.
+
+Rules:
+- Stuart core must never contain provider API keys.
+- Formalization modules must not import provider SDKs directly.
+- LLM outputs must pass schema validation before artifacts are written.
+- Evidence mapping must be enforced and stored; no fabricated decisions without evidence anchors.
+
+Tasks:
+1. Implement LLMService interface in Stuart core:
+   - Provider routing based on profile (LOCAL_ONLY / CLOUD_ONLY / HYBRID)
+2. Implement HTTP provider adapter:
+   - Calls 9A gateway URL (STUART_LLM_GATEWAY_URL)
+   - Propagates mode/template/retention + annotated transcript segments (segment_id + timestamps + speaker labels/names)
+3. Wire formalization stage to call LLMService when profile permits:
+   - Meeting minutes + journal
+   - Retention knob affects prompt and expected detail level
+4. Store LLM usage metadata in run artifacts (for later quotas/billing):
+   - llm_usage.json per run
+5. Add tests:
+   - Contract: formalize stage calls gateway in CLOUD_ONLY mode
+   - LOCAL_ONLY remains deterministic fallback or BLOCKED (Hands decision)
+6. Proof:
+   - Real meeting + journal formalization via gateway, downloadable outputs + evidence map.
+
+Deliverables:
+- LLM-backed formalization works end-to-end via gateway.
+- Retention knob affects semantic depth (LOW/MED/HIGH/NEAR-VERBATIM).
+
+Dependencies:
+- Dungeon 9A complete.
+- Dungeon 7 formalization contract complete.
+
+DUNGEON 10 — REAL STUART CHAT Q&A (SESSION vs GLOBAL) + CROSS-SESSION INTELLIGENCE
+======================================================================
+Goal:
+Make Chat behave like a real governed LLM assistant over the archive, not a “plan preview” toy.
+
+Core UX Contract (binding):
+- The UI already has a Session/Global toggle in the Chat surface. Do NOT add extra “scope buttons.”
+- Wire/reuse what exists; if current wiring is wrong/stubbed, rewire it. Do NOT leave zombie logic.
+
+Scope Model (binding):
+A) SESSION scope (Hard Lock)
+- SESSION scope means: ONLY use artifacts from the currently selected session in the left panel (selected_session_id).
+- No cross-session search. If user asks about other meetings, respond that it is not in this session and instruct to switch to GLOBAL.
+- SESSION scope does not emit open_session actions (toggle is already in the UI).
+
+B) GLOBAL scope (Archive + Soft Focus)
+- GLOBAL scope means: search across ALL sessions.
+- GLOBAL scope maintains a soft focus “current topic session” when user:
+  - references a session title/date/id explicitly, OR
+  - clicks/selects a session in the left panel while GLOBAL is active.
+- Soft focus is a hint only; Stuart may expand to full-archive search when the question clearly spans sessions (e.g., “how many meetings…”, “which meeting…”, “show all sessions…”) or when the focused session lacks the answer.
+- When answer is found in another session: respond “not in <focused>; found in <other>” with citations + an open_session action.
+
+Assistant Awareness (UI-State Injection) (binding):
+- The assistant MUST receive current UI state every turn (not shown to user), including at minimum:
+  - scope_toggle: SESSION|GLOBAL
+  - selected_session_id + selected_session_title (left panel selection)
+  - active_transcript_version_id (if any)
+  - active_overlay_id / speaker_map info (if any)
+  - active_mode/template/retention/profile selections (if present)
+  - last_user_action (e.g., clicked transcribe/formalize/export) and latest run status when available
+- This enables Stuart to behave like it is “beside the user” (truth-gated), without leaking backend/dev details.
+
+Objective outcomes:
+- Session scope Q&A: answer questions only using the selected session’s artifacts.
+- Global scope Q&A: answer questions using the entire archive with retrieval, citations, and session-jump actions.
+- Attendee/speaker queries must be backed by speaker-map overlays (not transcript keyword mentions).
+- Search must support IDs AND names; UI must show explicit “ID Match” categories.
+
+Hard contracts (binding):
+1) GLOBAL scope MUST work with no selected session chosen.
+2) /api/chat (session) and /api/chat/global (global) MUST be real Q&A endpoints:
+   - Retrieval over transcripts + formalizations (transcript is ground truth).
+   - Meeting facts require citations (segment_id + timestamps). No citations → no meeting claims.
+   - Global responses may return open_session actions for hits.
+3) Planner/clarify behavior is allowed ONLY for explicit action commands:
+   - /upload, /transcribe, /formalize, /export, /map_speakers, etc.
+4) No hallucination rail:
+   - If evidence is missing, say so. No citations → label unknown or omit.
+5) API consolidation:
+   - /api/sessions is canonical session listing.
+   - /api/library is TEMP only (alias/redirect to /api/sessions) and may be removed once legacy UI is gone.
+
+Persistent Chat Thread (binding):
+- Chat history is ONE persistent thread (not per-session), even as the user switches sessions/tabs.
+- Stuart maintains scoped memory: remembers the conversation but binds meeting facts to cited sessions; it must not “blend” sessions.
+- The user does NOT need explicit “SYSTEM: switched” spam; Stuart may naturally reference the active meeting name when helpful.
+
+Minimum Chat Command Set (v1) — REQUIRED:
+- /help
+- /sessions [search_terms]
+- /open <session_id | exact_session_name>   (GLOBAL scope behavior; in SESSION scope it should instruct switching to GLOBAL)
+- /rename <new_session_name>
+- /transcribe diarize={on|off}
+- /formalize mode=<meeting|journal> template=<template_id> retention=<LOW|MED|HIGH|NEAR-VERBATIM> profile=<LOCAL_ONLY|HYBRID|CLOUD_ONLY> transcript_version=<id>
+- /export export_type=<full_bundle|transcript_only|formalization_only|dev_bundle>
+- /map_speakers (or /set_speaker SPEAKER_01=Greg)
+
+Action Command Clarification Rule (binding):
+- If a user issues an action command with missing required parameters, Stuart MUST respond with reply.kind="clarify" and present valid options.
+- Stuart MUST NOT silently default parameters that change meaning (template/retention/profile/transcript_version).
+
+Required API behaviors:
+- POST /api/chat
+  - accepts: { text, session_id, ui_state:{...}, ui:{mode,template,retention,profile}, attachments[] }
+  - returns: { reply:{ kind:"assistant|clarify|planner", text, citations[], actions[] }, hits[]? }
+
+- POST /api/chat/global
+  - accepts: { text, ui_state:{...}, ui:{...}, attachments[] }
+  - returns: { reply:{ kind:"assistant|clarify|planner", text, citations[], actions[] }, hits[] }
+
+Match reasons / hit schema (REQUIRED):
+- hits[] entries must include match reasons so UI can label “Title Match / ID Match / Attendee Match / Mention Match / Formalization Match”:
+  { session_id, session_title, transcript_version_id?, formalization_id?, match_reasons:[TITLE_MATCH|ID_MATCH|ATTENDEE_MATCH|MENTION_MATCH|FORMALIZATION_MATCH], snippet? }
+- Display should prefer user-facing titles; IDs remain searchable and may be shown as secondary text.
+
+Citation object schema (REQUIRED):
+- citations[] entries must include enough to jump back to evidence:
+  { session_id, transcript_version_id, segment_id, start_ms, end_ms, speaker_label?, speaker_name?, snippet? }
+
+Action object schema (REQUIRED):
+- actions[] supports at minimum:
+  { kind:"open_session", session_id }           (GLOBAL scope only)
+  { kind:"jump_to_segment", transcript_version_id, segment_id }
+
+Required index-backed query:
+- GET /api/sessions?attendee=<name>
+  - returns sessions where speaker_map overlay contains the attendee name
+  - MUST NOT match mere transcript mentions
+
+Required UI behaviors:
+- Global toggle is NOT labeled “Not Implemented” and is not blocked by “select a session first”.
+- Session scope is a hard lock to the left-panel selected session.
+- Global chat renders hits with match-reason badges and clickable open_session actions.
+- Citations are visible (segment/timestamp) and can jump transcript view.
+
+Proof (acceptance tests):
+- Two sessions with diarization + speaker map overlay (Greg present in both)
+  - Query (GLOBAL): “show me all sessions Greg was at” → returns both sessions + open_session actions + ATTENDEE_MATCH.
+- Global cold-start query (no selected session):
+  - “Which meeting discussed changing the locks?” → returns session hit(s) + citations + open_session action.
+- Session scope Q&A:
+  - “What did we decide about the locks?” → answer includes citations; if none, must say unknown.
+  - If asked cross-session: “Switch to GLOBAL” behavior occurs.
+
+Dependencies:
+- Dungeon 4/5 (segment IDs + timestamps exist)
+- Dungeon 6 (speaker mapping overlay + indexable names)
+- Dungeon 7 (formalizations + evidence discipline)
+======================================================================
+
+=========================================================================================================================
+DUNGEON 11 — TEMPLATE MANAGEMENT (CREATE/IMPORT/VERSION) — LOCAL-FIRST (D11 v1)
+======================================================================
+Goal:
+Enable custom templates (chat-authored + PDF/text import) without zombie plumbing, while staying local-first.
+
+Binding decisions (this Control Sync):
+- 11.1 A (Local-first): user templates live in PRODUCT runtime storage on the user’s machine (NOT Ashby_Data governance).
+- 11.2 B (Import staging): ship TEXT + PDF import now. Image import is deferred unless a low-risk “structure-only” path can be added without refactor.
+- 11.3 C (Approval flow): chat can generate drafts; UI previews and saves (action gate).
+- 11.4 A (Template format): markdown-first template_text + small JSON metadata. Pixel-perfect “photo log → identical PDF layout” is explicitly future scope.
+
+Definition (v1):
+- Templates define STRUCTURE (sections/fields) + prompt hints + rendering hints (markdown-first).
+- Output is structured MD/PDF via renderer; it is NOT pixel-perfect layout reproduction.
+- Templates are mode-scoped (meeting/journal/etc.) and versioned.
+
+Discovery / reuse law (NON-NEGOTIABLE for D11):
+- The system already has a template dropdown and a “Default” template behavior.
+- Before implementing ANY new template store/plumbing, Codex MUST locate the current template source-of-truth and dropdown wiring.
+- Reuse/extend what exists. If current wiring is stubbed/wrong, rewire it and DELETE the wrong wiring (no zombie endpoints, no parallel stores).
+- This discovery pass must be Monster-assisted when available (repomap/route map) and backed by concrete file/path receipts in the Quest audit.
+
+Template identity (binding):
+- template_id is stable and never replaced by user titles.
+- template_title is user-facing (renamable).
+- version increments on edits (immutable prior versions for traceability).
+- Outputs MUST record: template_id + version (and template_title as display metadata).
+
+Storage rules (binding):
+A) System templates (committed, shipped):
+- Ashby_Engine/ashby/modules/meetings/templates/system/
+
+B) User templates (runtime, local-first, NOT committed):
+- Stored under a single TemplateStoreRoot resolved from the existing local session/runtime store root:
+  TemplateStoreRoot := <STUART_RUNTIME_ROOT>/templates/
+  (Exact <STUART_RUNTIME_ROOT> is discovered from current session storage configuration; do NOT introduce a second root.)
+- Migration rail (future, no-refactor intent):
+  - TemplateStoreRoot must be controlled by ONE resolver/config seam so moving from “co-located with session runtime” → “OS appdata path” is a single change + optional migration tool (not a refactor).
+
+Export rule (binding):
+- Templates must be exportable for portability/debug:
+  - DEV_EXPORT includes the exact template_text + metadata used for each exported formalization (dev/templates/…).
+  - USER_EXPORT does NOT need to include template internals (may include template_title/id in session.json metadata only).
+
+Template record (minimum fields):
+- template_id
+- template_title
+- version
+- mode
+- template_text (markdown)
+- defaults (optional): include_citations, show_empty_sections
+- created_at, updated_at
+
+Tasks (v1):
+1) Templates UI section:
+- Add/manage templates in a dedicated UI surface (Templates/Settings).
+- Support: list, preview, rename (template_title), version history (basic), delete (with confirm).
+
+2) Template store + versioning (runtime):
+- Implement TemplateStoreRoot resolver + TemplateRegistry (no god-file; keep router thin).
+- Save templates as:
+  - metadata.json (id/title/version/mode/timestamps/defaults)
+  - template.md (template_text)
+- Ensure dropdown reads from the registry (not hardcoded).
+
+3) Template creation flows:
+A) Chat-authored:
+- User requests a template in chat.
+- Stuart proposes a draft template (template.md + metadata).
+- UI shows preview (rendered) and asks user to Save/Cancel (action gate).
+
+B) Import (MVP):
+- Upload PDF or text → extract structure → propose template draft.
+- UI preview + Save/Cancel.
+
+C) Image import (DEFERRED by default):
+- If (and only if) a low-risk “structure-only” extraction path exists without refactor, gate it behind a feature flag.
+- Pixel-perfect replication remains out-of-scope.
+
+4) Integration:
+- Template selection integrates into formalization config (existing dropdown).
+- Formalization runs reference template_id + version; templates shape LLM prompt as per Dungeon 7.
+
+Deliverables:
+- At least one custom template can be created/imported, saved, selected, and used in a formalization.
+- No duplicate template stores; no zombie UI wiring.
+
+Proof:
+- Create/import template → preview → save → appears in dropdown → run formalization using it (outputs record template_id+version).
+
+Dependencies:
+- LLM wiring + action gating (Dungeon 9/10 patterns)
+- Formalization contract (Dungeon 7)
+======================================================================
+===================
+DUNGEON 12 — SMOKE TEST PACK (E2E DEMO SCRIPT)
+======================================================================
+Goal:
+Produce a deterministic set of commands and expected outputs to prove the system works end-to-end.
+
+Must include:
+- Start server
+- Create session
+- Upload audio
+- Transcribe (diarize on/off)
+- Map speakers
+- Formalize using DEFAULT_TEST_TEMPLATE
+- Chat question with citations
+- Global chat (cold start) question returning session hit(s) + open_session actions + citations
+- Verify only the Vite+React UI is served at / (legacy UIs removed/disabled)
+- Export zip and verify contents
+
+Deliverables:
+- A “demo script” (docs) + recorded terminal outputs
+
+======================================================================
+NOTES: DISPOSITION OF PRIOR GUILD ORDERS
+======================================================================
+At start of this Raid, Hands should review currently ACTIVE Guild Orders and move them:
+- ACTIVE → COMPLETED if truly done
+- ACTIVE → PAUSED if superseded by this plan
+This must be done with evidence (mv + diff). Brains can propose the disposition list when asked.
+
+======================================================================
+END OF GUILD_ORDERS (Page 2)
+======================================================================
+
+
+
+======================================================================
+
+======================================================================
+DUNGEON 12 — FULL SYSTEM SMOKE TEST PACK (E2E DEMO SCRIPT)
+======================================================================
+Goal:
+Produce a deterministic, repeatable end-to-end “prove it works” ritual that validates the FULL system flow
+(UI door + API door + pipeline + exports + chat scope rules), beyond per-quest unit checks.
+
+This is NOT “unit tests”. This is the canonical system-level proof pack.
+
+Deliverables (binding):
+- scripts/full_system_smoke_test.sh
+- docs/full_system_smoke_test.md (copy/paste friendly; mirrors the script)
+- docs/smoke_outputs/<YYYY-MM-DD>/{run.log, artifacts_list.txt, export_list.txt} (captured outputs)
+
+Fixture inputs (binding):
+- Commit two tiny fixture audios in Engine fixtures:
+  - meeting fixture (2–3 speakers, ~30–90s)
+  - journal fixture (1 speaker, ~30–60s)
+  NOTE: these are test fixtures only; keep them small and non-sensitive.
+
+Must include (binding steps + checks):
+1) Start server
+   - Prove the API door is up and returns expected health/version info.
+2) Create session(s)
+   - Create one meeting session and one journal session (or one session reused with mode flip if architecture requires).
+3) Upload audio
+   - Upload meeting fixture and journal fixture.
+4) Transcribe (diarize on/off)
+   - Transcribe meeting with diarization ON (speaker labels + timestamps).
+   - Transcribe meeting with diarization OFF (single stream) to prove transcript_versioning.
+5) Map speakers
+   - Apply a speaker_map overlay for diarized transcript_version (must persist; ACTIVE overlay semantics apply).
+6) Formalize using DEFAULT_TEST_TEMPLATE
+   - Meeting formalization using default meeting template.
+   - Journal formalization using default journal template.
+   - PDF output REQUIRED (and MD/TXT as configured by USER_EXPORT format selection).
+7) Session Chat (hard lock)
+   - With Session scope selected, ask a meeting-fact question and require citations.
+   - Verify cross-session question is NOT answered in Session scope; it instructs “switch to Global”.
+8) Global Chat (cold start)
+   - With Global scope and no selected session required, ask:
+     - “Which meeting discussed changing the locks?” (or equivalent fixture keyword)
+   - Must return:
+     - session hit(s) with match-reason badges
+     - open_session actions
+     - citations (segment_id + timestamps + session_id)
+9) Single UI Surface (root /)
+   - Verify only the Vite+React Stuart UI is served at /.
+   - Legacy UIs must be removed/disabled (no Jinja/static fallback).
+10) Export bundles and verify contents
+   - USER_EXPORT: full_bundle / transcript_only / formalization_only
+     - Confirm user-selected formats are respected (PDF/MD/TXT) and JSON is excluded.
+   - DEV_EXPORT: dev_bundle
+     - Confirm evidence_map + usage receipts + run manifests/logs + raw JSON outputs included under dev/.
+   - Confirm deterministic structure and no absolute paths.
+
+Verification checklist (binding; must be explicitly asserted in outputs):
+- Transcript versions exist and are selectable (diarize on/off yields two transcript_version_ids).
+- Speaker_map overlay persists and applies without re-transcribe (rerender-only).
+- Formalizations include template_id/template_version + retention metadata.
+- Evidence map exists internally (even if hidden from normal UI; DEV export only).
+- PDFs exist and contain traceability footer (session_id + formalization_id + generated_at).
+- Global chat works from cold start and returns open_session actions + citations.
+- Session scope is a hard lock (refuses cross-session without switching to Global).
+- Root / serves ONLY the React UI (no legacy UI).
+
+Network / LLM policy (binding):
+- Default smoke run must work in LOCAL_ONLY (no remote calls).
+- Optional HYBRID/CLOUD steps may run ONLY when explicitly enabled (env var) AND permitted by governance consent
+  (e.g., R2 confirmation artifact on disk for token/network usage).
+- When HYBRID is not enabled, script must SKIP remote steps cleanly and still PASS baseline checks.
+
+Proof requirements:
+- The docs and script must include expected outputs (or patterns) for each step.
+- Terminal outputs must be captured to docs/smoke_outputs/<YYYY-MM-DD>/run.log.
+- This smoke pack should be invoked at least once per major integration change and referenced from Execution Audits.
+
+Dependencies:
+- D4/5/6/7/8/10/11 completed enough that the end-to-end flow is viable.
+======================================================================

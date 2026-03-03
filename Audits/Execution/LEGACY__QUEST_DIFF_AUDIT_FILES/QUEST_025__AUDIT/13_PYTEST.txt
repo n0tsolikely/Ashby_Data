@@ -1,0 +1,21 @@
+[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[33m                                   [100%][0m
+[33m=============================== warnings summary ===============================[0m
+../../../../../opt/pyvenv/lib/python3.11/site-packages/ddtrace/internal/module.py:220
+  /opt/pyvenv/lib/python3.11/site-packages/ddtrace/internal/module.py:220: PendingDeprecationWarning: Please use `import python_multipart` instead.
+    self.loader.exec_module(module)
+
+tests/test_meetings_web_door_scaffold.py::test_index_has_mode_placeholder_and_no_default_selected
+  /opt/pyvenv/lib/python3.11/site-packages/starlette/templating.py:178: DeprecationWarning: The `name` is not the first parameter anymore. The first parameter should be the `Request` instance.
+  Replace `TemplateResponse(name, {"request": request})` by `TemplateResponse(request, name)`.
+    warnings.warn(
+
+../../../../../opt/pyvenv/lib/python3.11/site-packages/_pytest/cacheprovider.py:479
+  /opt/pyvenv/lib/python3.11/site-packages/_pytest/cacheprovider.py:479: PytestCacheWarning: cache could not write path /mnt/data/Ashby_Engine_CANON/Ashby_Engine_2026-01-25/Ashby_Engine/.pytest_cache/v/cache/nodeids: [Errno 13] Permission denied: '/mnt/data/Ashby_Engine_CANON/Ashby_Engine_2026-01-25/Ashby_Engine/.pytest_cache/v/cache/nodeids'
+    config.cache.set("cache/nodeids", sorted(self.cached_nodeids))
+
+../../../../../opt/pyvenv/lib/python3.11/site-packages/_pytest/stepwise.py:57
+  /opt/pyvenv/lib/python3.11/site-packages/_pytest/stepwise.py:57: PytestCacheWarning: cache could not write path /mnt/data/Ashby_Engine_CANON/Ashby_Engine_2026-01-25/Ashby_Engine/.pytest_cache/v/cache/stepwise: [Errno 13] Permission denied: '/mnt/data/Ashby_Engine_CANON/Ashby_Engine_2026-01-25/Ashby_Engine/.pytest_cache/v/cache/stepwise'
+    session.config.cache.set(STEPWISE_CACHE_DIR, [])
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+[33m[32m38 passed[0m, [33m[1m4 warnings[0m[33m in 3.89s[0m[0m

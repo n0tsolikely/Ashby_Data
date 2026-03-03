@@ -1,0 +1,31 @@
+STUART — EXECUTION PACK INDEX (ARCHIVED POINTER)
+Date: 2026-02-12
+
+STATUS
+- There is NO ACTIVE execution pack stack right now.
+- The last active execution pack was consumed during D6 execution and is now archived.
+
+WHY THIS FILE EXISTS
+- Some rehydration read-orders expect an execution pack entry.
+- This stub prevents confusion and points to the last archived pack.
+
+ARCHIVED EXECUTION PACK LOCATION
+- /mnt/data/Ashby_Data/Archive(IGNORE)/Latest Rehydration Pack History/2026-02-11/execution pack/
+
+ARCHIVED CONTENTS (REFERENCE)
+- 00_EXECUTION_PACK_INDEX__2026-02-11.txt
+- STUART_EXECUTION_PACK__REV10__DOORS_AND_CONSENT_OPERATIONS__2026-02-09.txt
+- STUART_EXECUTION_PACK__REV10__INDEX_RETRIEVAL_OPERATIONS__2026-02-09.txt
+- STUART_EXECUTION_PACK__REV10__SMOKE_TEST_GATES__2026-02-09.txt
+- STUART_EXECUTION_PACK__REV10__TRUTH_SPINE_OPERATIONS__2026-02-09.txt
+- STUART_EXECUTION_PACK__REV11__PHASE_COMPLETE__NEXT_D6_PHASE2__2026-02-11.txt
+- STUART_INSTALL_PACK__REV1__DEPENDENCIES_AND_PREFLIGHT__2026-02-11.txt
+
+CURRENT OPERATION
+- Operate via:
+  - Synapse Governance
+  - Ashby Buffs
+  - Stuart Codex
+  - Active Guild Orders
+  - Quest Board (Accepted only)
+  - Latest snapshots

@@ -1,0 +1,122 @@
+QUEST_ID: QUEST_161
+TITLE: Stuart v1 — D7 3/10 — LLM Formalize Contract v2 (segments + template_text + template_sections)
+DATE: 2026-03-01
+STATUS: ACCEPTED (Ready for Codex execution)
+RISK_CLASS: R3 (API contract change between engine ↔ llm_gateway; tests required)
+OWNER: OpenAI Codex (local CLI)
+
+CONTEXT / WHY
+Dungeon 7 requires the LLM to receive an annotated transcript, not a raw blob:
+- speaker-turn segments
+- stable segment_id anchors
+- timestamps
+- speaker_label + mapped speaker_name (if available)
+
+It also requires template shaping:
+- raw template text
+- parsed “template sections/schema” representation
+
+Right now:
+- Engine sends only transcript_text + mode/template_id/retention to the gateway.
+- Gateway schema doesn’t accept segments or template content.
+
+This quest upgrades the engine ↔ gateway contract *without changing the prompt yet*.
+(Next quest upgrades the provider prompt.)
+
+CANON ANCHORS
+- Guild Orders D7:
+  - “Segments must remain speaker turns; feed annotated transcript with segment_id + timestamps”
+  - “Template content must shape the prompt — provide raw template + parsed schema (D3)”
+- Stuart Codex: retention/template controls
+- Canonical Vision: evidence-first / template-first
+
+REPO REALITY
+Engine contract:
+- Ashby_Engine/ashby/modules/llm/service.py (LLMFormalizeRequest)
+- Ashby_Engine/ashby/modules/llm/http_gateway.py (HTTPGatewayLLMService.formalize)
+
+Gateway contract:
+- Ashby_Engine/ashby/interfaces/llm_gateway/schemas.py (FormalizeRequest)
+- Ashby_Engine/ashby/interfaces/llm_gateway/validate.py
+- Ashby_Engine/ashby/interfaces/llm_gateway/app.py
+
+SCOPE LOCK
+IN SCOPE
+1) Extend engine-side LLMFormalizeRequest to include:
+   - transcript_segments: list[TranscriptSegmentPayload]
+   - template_text: str
+   - template_sections: list[TemplateSectionPayload]
+   - include_citations: bool (optional; default False)
+   - show_empty_sections: bool (optional; default False)
+   (retain transcript_text for backward compatibility)
+2) Extend gateway FormalizeRequest schema and validation to accept those fields.
+3) Ensure gateway validates:
+   - Either transcript_text OR transcript_segments must be present
+   - If transcript_segments present: each segment has segment_id + start_ms + end_ms + text + speaker_label (speaker_name optional)
+4) Update /v1/formalize endpoint to pass these fields through to provider.
+5) Update tests that assert gateway client payloads.
+
+OUT OF SCOPE
+- Changing provider prompt content (next quest)
+- Changing formalize pipeline to actually send segments/template_text (later quest)
+- Any UI work (already handled in earlier quest)
+
+IMPLEMENTATION (deterministic)
+1) Engine: update request dataclasses
+- File: Ashby_Engine/ashby/modules/llm/service.py
+  - Add dataclasses:
+    - TranscriptSegmentPayload { segment_id:str, start_ms:int, end_ms:int, speaker_label:str, speaker_name:Optional[str], text:str }
+    - TemplateSectionPayload { heading:str, target_key:Optional[str], order:int }
+  - Extend LLMFormalizeRequest with:
+    - transcript_segments: Optional[list[TranscriptSegmentPayload]] = None
+    - template_text: Optional[str] = None
+    - template_sections: Optional[list[TemplateSectionPayload]] = None
+    - include_citations: bool = False
+    - show_empty_sections: bool = False
+  - Keep transcript_text for backward compatibility.
+
+2) Engine: update HTTPGatewayLLMService serializer
+- File: Ashby_Engine/ashby/modules/llm/http_gateway.py
+  - When building payload for POST /v1/formalize:
+    - include transcript_segments if present
+    - include template_text if present
+    - include template_sections if present
+    - include include_citations/show_empty_sections
+  - Do not log transcript content; keep existing logging discipline.
+
+3) Gateway: update schema + validation
+- File: Ashby_Engine/ashby/interfaces/llm_gateway/schemas.py
+  - Extend FormalizeRequest with fields matching engine payload.
+  - Add Pydantic models for segment/section payloads.
+- File: Ashby_Engine/ashby/interfaces/llm_gateway/validate.py
+  - Update validate_formalization_request:
+    - Enforce at least one of transcript_text/transcript_segments
+    - Validate segment shape and types
+    - Provide actionable error messages (422-ish)
+
+4) Gateway app: pass through to provider
+- File: Ashby_Engine/ashby/interfaces/llm_gateway/app.py
+  - Ensure provider receives the new fields on req
+  - (Provider can ignore them for now; next quest will use them.)
+
+5) Tests
+- Update existing tests that pin request structure:
+  - Ashby_Engine/tests/test_llm_gateway_client_contract.py
+  - Ashby_Engine/tests/test_meetings_minutes_gateway_call_cloud_only.py
+  - Ashby_Engine/tests/test_meetings_journal_gateway_call_cloud_only.py
+- Add at least one gateway-side unit test:
+  - validate_formalization_request accepts transcript_segments-only payload
+
+ACCEPTANCE CRITERIA
+- Engine can send transcript_segments/template_text/template_sections fields (serializer includes them).
+- Gateway accepts these fields and rejects malformed payloads.
+- All touched tests pass.
+
+RECEIPTS REQUIRED
+- Diff/patch
+- pytest output
+
+FAIL CONDITIONS
+- Breaking backward compatibility without a migration note (transcript_text-only calls must still work)
+- Accepting transcript_segments without segment_id/timestamps (kills evidence anchoring)
+- “Fake” segment ids generated in gateway instead of using engine-provided ids

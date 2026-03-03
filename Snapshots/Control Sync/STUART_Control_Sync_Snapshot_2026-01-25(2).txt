@@ -1,0 +1,31 @@
+STUART CONTROL SYNC SNAPSHOT — 2026-01-25 (CHAT WRAP)
+Timestamp: 2026-01-26 01:25:50
+Hands: Peter
+Operator: Ash
+
+WHY THIS SNAPSHOT EXISTS
+- Control Sync was not run at session start; this captures the equivalent outputs retroactively for continuity.
+
+STATE OF THE WORLD (INPUTS INGESTED)
+- Synapse Governance ZIP present (BUFFS active).
+- Ashby_Data.zip and Ashby_Engine.zip present; updated deliverables produced as new ZIP artifacts (see EOD snapshot).
+
+DECISIONS / GOVERNANCE UPDATES (TODAY)
+- Reaffirmed: Governance is active law for Synapse Guild / Ashby / Stuart.
+- Reaffirmed: Canonical extraction rule (ZIP inert after unzip) as operating principle.
+- Reaffirmed: Artifacts-over-narrative; completion requires receipts (diffs + terminal/test output).
+- Added governance concept: Quest audit receipts as mandatory proof for completion.
+  - Recommended structure: Quest Board → “Quest Diff Audit Files/” with per-quest receipts.
+  - Preferred format (minimal): one audit text file per quest (sections inside) is acceptable.
+  - Template addition planned: “Audit Bundle Path:” line after Status.
+
+ENVIRONMENT REALITY (IMPORTANT)
+- Execution environment persistence is not guaranteed; treat sessions as artifact-centric.
+- Reliable continuity boundary is downloadable artifacts (ZIPs/PDFs) + receipts, not live workspace state.
+
+RAID / DUNGEON FOCUS
+- Active Raid: Stuart v1
+- Next priority (after today’s work): QUEST_023 (Dungeon 7, 2/2) — search/query UX + ranked results + citations.
+
+OPEN QUESTIONS / NEXT CONTROL SYNC INPUTS
+- Dependency truth: the repo currently lacks a clear dependency manifest (requirements/pyproject). Create a runbook + manifest + smoke test contract before web UI.

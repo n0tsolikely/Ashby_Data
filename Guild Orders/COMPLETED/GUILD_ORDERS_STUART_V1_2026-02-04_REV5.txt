@@ -1,0 +1,286 @@
+SYNAPSE GUILD — GUILD ORDERS
+STUART v1 (Meetings Module)
+
+Created: 2026-01-16
+Revised: 2026-02-04
+Status: ACTIVE (REV5; supersedes REV4 + replaces the short active order)
+Format: DUNGEONS. “Raiding” means executing these Guild Orders. Dungeons may be raided in any order where dependencies allow.
+
+──────────────────────────────────────────────────────────────────────────────
+A) DEFINITION OF DONE (WHAT SUCCESS LOOKS LIKE)
+──────────────────────────────────────────────────────────────────────────────
+When all Dungeons are complete, Stuart v1 is demo-ready, codex-true, and usable daily.
+
+1) Inputs (what the user can do)
+- Drop an audio OR video file (video gets audio extracted canonically).
+- Choose:
+  - Mode: Journal/Diary OR Meeting Minutes
+  - Speakers: Auto / 1 / 2 / 3+
+  - Template: Default (v1 ships with ONE template per mode)
+  - Retention: LOW / MED / HIGH / NEAR-VERBATIM
+- Execute via:
+  - Webapp (primary)
+  - Telegram (secondary)
+  - CLI (operator tool)
+
+2) Outputs (what Stuart must produce)
+Meeting Minutes Mode (Codex 3.2 minimum):
+- transcript.json (machine)
+- transcript.txt (human)
+- diarization.json (if diarization enabled; includes confidence)
+- minutes.json (machine)
+- minutes.md (human)
+- minutes.pdf (print-ready)
+- evidence_map.json (minutes claims → transcript anchors/timestamps)
+
+Journal/Diary Mode (Codex 3.3 minimum):
+- transcript.json
+- transcript.txt
+- journal.json
+- journal.md
+- journal.pdf
+- evidence_map.json (lighter allowed, but traceability must exist)
+
+3) Core behaviors (non-negotiable)
+- Transcript is ALWAYS ground truth.
+- Minutes/journal outputs MUST NOT invent:
+  - attendance, decisions, action assignees, due dates, risks, “consensus”, etc.
+- Speaker diarization is probabilistic:
+  - uncertainty must be disclosed when confidence is low.
+- No silent overwrite of canonical artifacts:
+  - re-run == new run_id + new output directory.
+- Re-formalization without re-transcription:
+  - users can switch template/retention and regenerate minutes/journal without re-uploading.
+- Retrieval is index-first (SQLite FTS):
+  - “show me all meetings where we talked about X” returns ranked sessions/snippets + citations.
+
+──────────────────────────────────────────────────────────────────────────────
+B) BUILD LAWS (THE RULES THAT PREVENT DRIFT)
+──────────────────────────────────────────────────────────────────────────────
+B1) Stuart is a removable module; Ashby core/router stays clean
+- Stuart lives at ashby/modules/meetings/.
+- Ashby core/router must not contain Stuart-specific domain logic.
+- Doors (web/telegram/cli) must not embed business logic beyond transport + UI.
+
+B2) Canonical memory is artifacts, not chat
+- transcript.* is ground truth.
+- minutes/journal are derived.
+- derived outputs must cite transcript anchors.
+
+B3) Explicit execution gating (privacy + correctness)
+- Upload ≠ process.
+- Heavy execution (diarize/transcribe/formalize) only runs on explicit “go”:
+  - user intent fully specifies the run OR
+  - user clicks/taps Confirm in a door UI.
+
+B4) Immutability + overlays
+- No destructive edits to transcript artifacts.
+- Speaker naming is an overlay.
+- Rerender uses overlays; transcript stays untouched.
+
+B5) Enumerated modes/templates/retention (no hallucinated options)
+- Modes in v1: journal/diary, meeting.
+- Templates: registry-based (v1 ships default only).
+- Retention: LOW/MED/HIGH/NEAR-VERBATIM only.
+
+B6) Expandability-first
+- v1 implements the spine so v2 is additive.
+- Avoid “one-off hacks” that will need deletion later.
+
+──────────────────────────────────────────────────────────────────────────────
+C) REALITY CHECK (ENGINE STATE AS OF 2026-02-03 ENGINE ZIP)
+──────────────────────────────────────────────────────────────────────────────
+What’s already real (confirmed in engine code):
+- meetings module scaffold exists (router/pipeline/schemas/templates/render/index).
+- normalize + diarize (pyannote adapter with HF token gate) + ASR (faster-whisper adapter) + align stages exist.
+- a deterministic formalization renderer exists, but it is currently “template + transcript embed” (not codex minutes/journal yet).
+- Telegram door has Mode + Speakers buttons, but speakers are not yet wired into diarization hints in the Telegram runner.
+- Webapp is currently a minimal upload→auto-run→download flow (no plan preview / confirm / library / search UI).
+- SQLite FTS index exists, but current ingestion is mismatched with transcript.txt formatting (so search reliability is not yet guaranteed).
+
+Therefore REV5 focus is: codex-true minutes/journal + wiring doors + retrieval + re-formalize.
+
+──────────────────────────────────────────────────────────────────────────────
+D) DUNGEONS
+──────────────────────────────────────────────────────────────────────────────
+
+Dungeon 1 — Codex artifact contract + naming alignment
+Objective:
+Align Stuart outputs to the Stuart Codex required artifacts (minutes.* vs journal.*), without breaking immutability.
+
+Deliverables:
+- Meeting outputs named and stored as:
+  - minutes.json / minutes.md / minutes.pdf
+  - diarization.json (or diarization_segments.json with codex aliasing)
+  - transcript.json / transcript.txt
+  - evidence_map.json
+- Journal outputs named and stored as:
+  - journal.json / journal.md / journal.pdf
+  - transcript.json / transcript.txt
+  - evidence_map.json
+- Run manifests updated so the door layer can always find “the PDF for this run” deterministically.
+
+Definition of Done:
+- Meeting run produces minutes.* artifacts (not only formalized.*).
+- Journal run produces journal.* artifacts.
+- No existing run outputs are overwritten.
+
+Dependencies:
+- Existing pipeline + renderer spine (post-30 quests).
+
+──────────────────────────────────────────────────────────────────────────────
+
+Dungeon 2 — Formalization v1 (Meeting Minutes + Journal) + Retention levels
+Objective:
+Generate codex-true minutes/journal outputs (readable, structured, non-invented) driven by template + retention.
+
+Deliverables:
+- Meeting minutes generator:
+  - Topics, Decisions, Action Items, Notes, Open Questions/Risks (only if raised)
+  - citations to transcript anchors
+- Journal generator:
+  - clean prose derived from speech
+  - retention-level behavior implemented
+  - no invention
+- Template + retention are first-class run params.
+- Execution-profile aware:
+  - LOCAL_ONLY: must run without remote LLM usage
+  - HYBRID/CLOUD: remote LLM allowed only with explicit disclosure/confirmation
+
+Definition of Done:
+- A real 2–3 speaker test recording produces printable minutes.pdf that match Codex 3.2 expectations.
+- A single-speaker voice note produces journal.pdf that matches Codex 3.3 expectations.
+
+Dependencies:
+- Dungeon 1.
+
+──────────────────────────────────────────────────────────────────────────────
+
+Dungeon 3 — Evidence + citations v2 (claim-level)
+Objective:
+Make “minutes truth” auditable: every extracted claim maps back to transcript segments/timestamps.
+
+Deliverables:
+- evidence_map.json upgraded to support:
+  - claim → [segment anchors]
+  - timestamp ranges
+  - speaker attribution notes (incl. uncertainty)
+- Minutes/journal renderers display citations consistently.
+
+Definition of Done:
+- “Decisions” and “Action Items” sections are always evidence-backed.
+- If no decisions exist, minutes explicitly say so.
+
+Dependencies:
+- Dungeon 2.
+
+──────────────────────────────────────────────────────────────────────────────
+
+Dungeon 4 — Retrieval / Library (SQLite FTS) upgrade
+Objective:
+Fast, deterministic retrieval without “LLM scans the filesystem.”
+
+Deliverables:
+- Index ingestion reads transcript.json / aligned_transcript.json (not brittle transcript.txt parsing).
+- Stored fields include:
+  - session_id / run_id
+  - mode
+  - speaker labels + mapped names (if overlay exists)
+  - timestamps (when present)
+  - pointers for citations
+- Query results:
+  - ranked hits
+  - snippets
+  - citations back to transcript segments
+
+Definition of Done:
+- “kimchi” returns matching sessions/snippets quickly.
+- “meetings where Greg attended” works once speaker map exists.
+
+Dependencies:
+- Dungeon 1 (naming), existing index scaffold.
+
+──────────────────────────────────────────────────────────────────────────────
+
+Dungeon 5 — Door contract sync (Web + Telegram + CLI)
+Objective:
+Make the user-facing doors actually usable for daily capture.
+
+Deliverables:
+Webapp (primary):
+- Upload stores contribution (does not auto-run unless explicitly instructed).
+- Mode / Speakers / Retention / Template controls.
+- Plan preview + Confirm gating when ambiguous.
+- Run progress + downloads.
+- Library: list prior sessions + search.
+
+Telegram (secondary):
+- Send audio/video/voice.
+- Inline buttons:
+  - Mode: Journal/Diary | Meeting Minutes
+  - Speakers: Auto | 1 | 2 | 3+
+  - (Retention optional: default to MED if not surfaced)
+- Runs default template only.
+- Returns the correct PDF (minutes.pdf or journal.pdf).
+
+CLI (operator):
+- upload
+- run (with mode/speakers/retention/template)
+- search
+- export bundle
+
+Definition of Done:
+- Webapp: upload → confirm → run → download PDF.
+- Telegram: send file → tap selections → receive PDF.
+- CLI can do the same run deterministically.
+
+Dependencies:
+- Dungeons 1–4.
+
+──────────────────────────────────────────────────────────────────────────────
+
+Dungeon 6 — Re-formalize + speaker map overlay UX
+Objective:
+Make “SPEAKER_00 is Greg” real, and allow rerender/reformalize without re-transcribing.
+
+Deliverables:
+- Speaker map overlay flows (door-level):
+  - assign labels to names
+  - set active overlay
+  - rerender minutes/journal to show names
+- Re-formalize without re-transcribe:
+  - reuse prior transcript artifacts
+  - generate a new run_id minutes/journal output
+  - keep transcript immutable
+
+Definition of Done:
+- User maps speakers → minutes/journal re-render with names.
+- User changes retention/template → re-formalize without re-uploading.
+
+Dependencies:
+- Dungeon 2, Dungeon 5.
+
+──────────────────────────────────────────────────────────────────────────────
+E) QUEST MAP (WHAT’S DONE VS WHAT’S NEXT)
+──────────────────────────────────────────────────────────────────────────────
+Already completed (foundation + post-30 spine):
+- Dungeons 1–9 initial scaffold: QUEST_002, 007, 010–025
+- Post-30 real engines spine: QUEST_031–041
+
+New work to finish v1 (BOARD quests created in this Control Sync):
+- QUEST_042 — Retrieval/index upgrade (ingest transcript.json/aligned + timestamps + citations)
+- QUEST_043 — Door contract sync (web + cli + telegram pass run config + contribution binding)
+- QUEST_044 — Telegram voice note v1 (mode/speakers → run → correct PDF)
+- QUEST_045 — Webapp v1 (plan preview + confirm + run + downloads + library/search)
+- QUEST_046 — CLI v1 (upload/run/search/export)
+- QUEST_047 — End-to-end test harness (deterministic proofs + fake secrets)
+- QUEST_048 — Install pack (dependency pins + system deps docs)
+- QUEST_049 — Export bundle v1 (session bundle zip)
+- QUEST_050 — Formalization v1 upgrade (minutes + journal + retention; codex-true)
+- QUEST_051 — Evidence map v2 (claim-level citations)
+- QUEST_052 — Re-formalize without re-transcribe (reuse transcript runs cleanly)
+
+Operator note:
+- The previous short active order file “REAL ENGINES AND SHIP” is now treated as superseded-by-REV5 planning; it has been moved to PAUSED for history.
+
+END OF GUILD ORDERS

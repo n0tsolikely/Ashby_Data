@@ -1,0 +1,63 @@
+QUEST ID: QUEST_024
+Title: Stuart v1 — Dungeon 8 (1 of 2): Webapp scaffold + chat/session history + plan preview shell
+Context: Stuart
+Origin: Guild Orders: GUILD_ORDERS_STUART_V1_2026-01-16_REV3.txt (Dungeon 8)
+Priority: P0
+Links:
+- Guild Orders: Stuart v1 — Dungeon 8
+- Supersedes (decomposition of): QUEST_009
+- Related: QUEST_018 (execution gating), QUEST_017 (plan preview contract)
+Status: ACTIVE
+Audit Bundle Path: Quest Board/QUEST DIFF AUDIT FILES/QUEST_024__AUDIT/
+Accepted On: 2026-01-26
+Completed On:
+
+DESCRIPTION
+────────────────────────────────────────
+Build the primary web door scaffold: ChatGPT-like UI structure with session history and chat pane, wired enough to display plan previews/clarify prompts from the engine.
+
+SCOPE / OBJECTIVE
+────────────────────────────────────────
+Implement webapp scaffold with:
+- session history list
+- chat pane
+- ability to display engine outputs:
+  - plan preview
+  - clarification prompts/options (rendered in UI)
+
+This quest establishes the UI shell and engine integration for messaging/plan display.
+It does not require full pipeline execution or downloads yet (handled in QUEST_025).
+
+OUT OF SCOPE
+────────────────────────────────────────
+Full upload-to-run flow and artifact downloads (QUEST_025).
+Accounts/auth (v1 may be local-only).
+Template editor UI.
+
+DEPENDENCIES
+────────────────────────────────────────
+- QUEST_018
+- QUEST_013
+
+EXECUTION NOTES
+────────────────────────────────────────
+Door law: UI is transport + rendering. Business logic remains in meetings module engine.
+Ensure the UI can render enumerated options without re-implementing decision logic.
+
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────
+- [ ] Webapp displays session history and chat pane.
+- [ ] Webapp can send a user message to the module router and render the returned plan/clarify structures.
+- [ ] Plan preview is displayed when engine returns one; enumerated options are displayed when engine returns clarifications.
+- [ ] UI does not hardcode modes/templates; it renders allowed values supplied by the engine/registry.
+- [ ] No default mode is preselected on fresh load (aligns with Guild Orders).
+
+TALENT POINT
+────────────────────────────────────────
+On completion:
+- Talent Point Awarded: YES
+- Talent Spent On: TBD (choose a TALENT entry to add in TALENT_TREE.txt)
+
+FINAL NOTES
+────────────────────────────────────────
+(optional)

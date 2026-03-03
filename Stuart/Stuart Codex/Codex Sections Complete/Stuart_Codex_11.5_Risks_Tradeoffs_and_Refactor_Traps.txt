@@ -1,0 +1,213 @@
+STUART CODEX
+11.5 Risks, Tradeoffs, and Refactor Traps (Canonical Appendix)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section is the “10 years from now” stress-test distilled into concrete traps and mitigations.
+
+The point:
+- keep Stuart buildable,
+- preserve trust,
+- and avoid refactors caused by early shortcuts that later become structural failures.
+
+Chat-canon foundation:
+- trust is the product,
+- explicit execution gating is non-negotiable,
+- artifacts are the source of truth,
+- evidence mapping is the safety rail,
+- modes/templates are enumerated to prevent hallucination,
+- retention controls loss,
+- and LOCAL_ONLY must stay viable.
+
+1) Core risks (truth, trust, and user adoption)
+
+R-1) Wrong speaker attribution destroys trust faster than a bad transcript
+Users forgive some ASR errors.
+They do not forgive “Greg said X” when Greg didn’t.
+
+Mitigation:
+- diarization is conservative
+- overlap is disclosed
+- speaker naming is overlay-only
+- UNKNOWN is acceptable and honest
+
+R-2) “Summary vibes” minutes are worse than no minutes
+Generic compression that loses nuance kills adoption (“that’s not what we said”).
+
+Mitigation:
+- formalization ≠ summary
+- retention defaults high for meetings
+- evidence citations for decisions/actions
+- allow near-verbatim retention where needed
+
+R-3) Silent hallucination (invented decisions/actions) is catastrophic
+Minutes and incidents become “records.” Invented content can cause real harm.
+
+Mitigation:
+- strict evidence requirements
+- run logs + evidence maps
+- analyst vs collaborator gating
+- refuse when evidence is missing
+
+R-4) Users will accidentally drift into cloud unless you make it obvious
+If the profile is unclear, people will use a remote adapter and violate policy.
+
+Mitigation:
+- profile indicator always visible
+- run preview shows what leaves device
+- explicit confirm for remote runs
+- run.json records data scope
+
+2) Product/design tradeoffs (what we choose deliberately)
+
+T-1) Simplicity vs configurability
+Too many knobs creates a “shitty app.”
+Too few knobs makes it feel generic.
+
+Deliberate choice:
+- surface only: mode, template, retention, Run
+- hide advanced knobs behind “Advanced” and keep defaults sane
+
+T-2) Speed vs accuracy (especially local)
+Local CPU-only can be slow, but privacy matters.
+
+Deliberate choice:
+- chunking + progress + resumability
+- allow adapter swaps (GPU local or remote) under HYBRID/CLOUD with explicit consent
+
+T-3) Diarization “always on” vs “optional”
+Always on can waste compute and create false confidence if low quality.
+
+Deliberate choice:
+- diarization recommended for meetings, not mandatory for journals
+- degrade honestly when diarization fails
+
+T-4) Heavy citations in printed output vs readability
+Too many citations can make minutes ugly.
+
+Deliberate choice:
+- evidence map always exists
+- template decides how citations display (inline/footnote/hidden)
+- decisions/actions remain citeable even if citations are not printed inline
+
+3) Refactor traps (the ones that hurt years later)
+
+Trap A: Treating chat output as canonical
+If your “deliverable” is the chat message, you will hit truncation, missing evidence, and no printing parity.
+
+Mitigation:
+- artifacts on disk are canonical (JSON/MD/PDF)
+- chat shows previews only
+
+Trap B: Letting the LLM be the truth gate
+If the model decides what modes exist or what templates exist, it will hallucinate and break trust.
+
+Mitigation:
+- registry is the source of truth
+- the model is downstream of registry resolution
+- refuse unknown mode/template and list valid ones
+
+Trap C: Mixing collaborator suggestions into official records
+If suggestions get merged silently into minutes/incidents, disputes become unresolvable.
+
+Mitigation:
+- analyst vs collaborator split
+- suggestions are segregated and labeled
+- “insert suggestion” requires explicit user instruction and is logged
+
+Trap D: Unversioned templates
+If template changes are silent, you cannot reproduce outputs and disputes become impossible.
+
+Mitigation:
+- template versioning
+- sessions record template_id + template_version
+- old versions remain accessible
+
+Trap E: No overlay model for corrections
+If edits overwrite ground truth, you lose auditability and confidence.
+
+Mitigation:
+- overlay-only corrections with provenance
+- original transcript preserved
+
+Trap F: Marketplace too early
+Marketplace introduces:
+- PII leakage risk
+- security reviews
+- compatibility problems
+- trust signal problems
+It will slow V1 and cause refactors.
+
+Mitigation:
+- marketplace is gated vNext
+- explicit submission + scrubbing + review pipeline
+- do not auto-upload “in the background” in early builds
+
+Trap G: Coupling pipeline stages to specific vendors
+If stages are coded directly to one provider, you refactor when switching.
+
+Mitigation:
+- adapters with capability declarations
+- stage interfaces are stable
+
+Trap H: Conflating “mentioned” with “attended/spoke”
+This creates fake organizational records (“Greg attended” because his name was said).
+
+Mitigation:
+- semantic rules enforced at query interpretation
+- attendance/spoke requires mapping/metadata
+
+Trap I: Overcomplicated UI navigation
+If users must hunt through menus, adoption dies.
+
+Mitigation:
+- chat-first UI
+- dropdowns for mode/template
+- explicit Run button
+- retrieval via chat queries
+
+4) Scaling pitfalls (when thousands of sessions exist)
+
+S-1) Index drift and stale search
+If indexing isn’t robust, retrieval becomes unreliable.
+
+Mitigation:
+- index status + rebuild commands
+- incremental updates with run logs
+- fallback direct scan of a session transcript
+
+S-2) Storage bloat and uncontrolled retention
+Audio + transcripts + PDFs add up.
+
+Mitigation:
+- explicit archival policies (user-controlled)
+- compress audio, keep transcripts/PDFs
+- never delete silently
+
+S-3) Template explosion and choice paralysis
+100 templates per mode overwhelms users.
+
+Mitigation:
+- mode-scoped lists
+- search + favorites + recent templates
+- optional template suggestion (registry-only)
+
+5) Safety boundaries (the ones that must not erode)
+
+- LOCAL_ONLY must remain truly local for processing.
+- Explicit execution gating must remain.
+- Evidence mapping must remain.
+- Unknowns and uncertainty must be disclosed.
+If any of these erode, Stuart becomes “just another summarizer.”
+
+6) Self-audit (11.5)
+
+Chat-canon alignment checklist:
+- Trust-first: identifies the main trust killers and locks mitigations. (Maintained.)
+- Explicit execution + profile clarity are treated as non-negotiable boundaries. (Maintained.)
+- Artifact-first + evidence maps prevent truncation and hallucination disputes. (Maintained.)
+- Enumerated registry prevents mode/template hallucination. (Maintained.)
+- Refactor traps are explicitly listed so we don’t step on them later. (Maintained.)
+
+This section is complete.

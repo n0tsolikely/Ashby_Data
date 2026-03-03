@@ -1,0 +1,331 @@
+==COMPLETED==COMPLETED==COMPLETED==COMPLETED=  DECEMBER-28-2025  ==COMPLETED==COMPLETED==COMPLETED==COMPLETED==
+
+ASHBY CONTROL SYNC — GUILD ORDERS (EMERGENCY RAID)
+RAID NAME: Ashby Structural Realignment
+Status: ACTIVE (Emergency)
+Date drafted: 2025-12-23
+Core Raid (Guild Orders 2025-12-15): PAUSED/BLOCKED — Structural refactor required
+All other raids: HALTED until this raid completes
+
+PURPOSE
+This raid exists to eliminate filesystem chaos + naming drift, establish ONE canonical Ashby root,
+and restructure the repo to match the Ashby platform vision WITHOUT changing behavior.
+This is a structural raid. It is intentionally boring.
+
+NON‑NEGOTIABLE RULES (READ THIS TWICE)
+1) ZERO behavior change.
+   - Lights/Telegram/CLI must work exactly as before at the end of every session.
+2) Small, reversible steps.
+   - Every phase must be roll‑backable quickly.
+3) No secrets printed, logged, or pasted into chat.
+4) Router can stay ugly temporarily.
+   - Do NOT “improve logic” during structural moves.
+
+DEFINITION OF DONE (RAID COMPLETE)
+- One canonical root directory exists for the platform: ~/ashby/
+- “ashpi” naming is removed from the platform (folder + scripts + imports), replaced by “ashby”
+- Files are placed in sane folders (io/, scripts/, runtime/, secrets/, configs/, ashby/)
+- Only ONE active venv is declared and used (others archived or deleted safely)
+- CLI harness runs, Telegram gateway runs, device control works (Thor test)
+- End-of-day snapshot written with exact resume steps
+- Acceptance sanity checks pass (see Phase 6)
+
+──────────────────────────────────────────────────────────────────────────────
+PHASE 0 — SAFETY LOCKS (MANDATORY FIRST)
+──────────────────────────────────────────────────────────────────────────────
+0.1 Create a rollback snapshot (do this BEFORE touching folders)
+- Create a tar/zip of the current working tree(s) that matter:
+  - ~/home/notsolikely/ashpi/
+  - any scripts in ~/home/notsolikely/ used by Ashby (telegram, test harness, tuya test, nest set, cast)
+  - current memory folder if needed (state preservation)
+
+Acceptance:
+- You can restore within 2 minutes if something breaks.
+
+0.2 Identify which Python environment is actually used
+Goal: determine which venv runs the working system.
+Likely candidates in your current layout:
+- ~/home/notsolikely/ashpi-env   (likely active for Ashby)
+- ~/home/notsolikely/ashenv      (legacy, likely for old ash.py)
+- Any .venv folders found inside stub dirs (ignore until verified)
+
+Method:
+- Activate candidate env → run CLI harness → verify lights control.
+- The env that successfully runs the working pipeline becomes CANONICAL.
+
+Acceptance:
+- You can state (in the snapshot) “Canonical venv is: ____” and how to activate it.
+
+──────────────────────────────────────────────────────────────────────────────
+PHASE 1 — PURGE THE STUB + SET CANONICAL ROOT
+──────────────────────────────────────────────────────────────────────────────
+1.1 Delete the dead stub folder created during the Stuart night
+Current stub:
+- ~/ashby/agents/stuart/  (empty stub)
+Action:
+- Remove the entire ~/ashby stub folder IF and ONLY IF it contains no real platform code.
+Rationale:
+- We do not want two “ashby” roots. One true root only.
+
+Acceptance:
+- Nothing breaks (because the stub was not used).
+- `ls ~` should eventually show a single canonical ~/ashby (the real platform).
+
+1.2 Create the canonical platform root
+Canonical root MUST be:
+- ~/ashby/
+
+Create the platform skeleton directories (empty is fine):
+- ~/ashby/ashby/        (python package root)
+- ~/ashby/io/
+- ~/ashby/scripts/
+- ~/ashby/configs/
+- ~/ashby/secrets/      (NOT committed)
+- ~/ashby/runtime/
+- ~/ashby/tests/
+- ~/ashby/archive/      (legacy + old attempts live here)
+
+Acceptance:
+- `tree -L 2 ~/ashby` shows the skeleton exists.
+
+──────────────────────────────────────────────────────────────────────────────
+PHASE 2 — MOVE WORKING CODE INTO PLATFORM (NO RENAMES YET)
+──────────────────────────────────────────────────────────────────────────────
+2.1 Move the real working package into the platform root
+Current working package:
+- ~/home/notsolikely/ashpi/
+
+Move into platform:
+- ~/ashby/ashby/   (temporary: you can keep internal name until Phase 3)
+
+Acceptance:
+- Imports still resolve (even if they still say ashpi internally).
+- CLI harness can be run from inside ~/ashby using the canonical venv.
+
+2.2 Relocate “loose” operational scripts into platform folders
+Goal: nothing remains as random .py files in ~/home/notsolikely/ for Ashby execution.
+
+Telegram gateway → io/telegram/
+CLI harness → io/cli/
+Diagnostics / one-offs → scripts/
+Memory / state files → runtime/
+
+Acceptance:
+- The only “run targets” are inside ~/ashby.
+- Telegram + CLI both still work.
+
+──────────────────────────────────────────────────────────────────────────────
+PHASE 3 — RENAME PASS: ASHPI → ASHBY (MECHANICAL ONLY)
+──────────────────────────────────────────────────────────────────────────────
+3.1 Rename the package folder and top-level scripts
+- ashpi (package) becomes ashby
+- ashpi_* scripts become ashby_* scripts
+- Update imports accordingly
+
+Rules:
+- No logic edits; only file names + import paths + module references.
+- After each rename batch, run the CLI harness to confirm.
+
+Acceptance:
+- `python -c "import ashby"` works in canonical venv.
+- CLI harness still controls Thor.
+
+3.2 Quarantine legacy items
+Likely legacy:
+- ~/home/notsolikely/ash.py
+- ~/home/notsolikely/ashenv
+Action:
+- Move to ~/ashby/archive/legacy_ash_chatbot/
+Do NOT delete yet.
+
+Acceptance:
+- Platform runs with zero dependency on legacy.
+
+──────────────────────────────────────────────────────────────────────────────
+PHASE 4 — DIRECTORY HYGIENE: RUNTIME, SECRETS, CONFIGS
+──────────────────────────────────────────────────────────────────────────────
+4.1 Secrets relocation (no leaks)
+Move secrets out of source locations into:
+- ~/ashby/secrets/
+
+Then ensure runtime loading uses env vars / secrets file loader.
+Never print secrets. Never store them in memory/logs.
+
+Acceptance:
+- Running Ashby requires secrets but does not expose them.
+
+4.2 Runtime directory standardization
+Create:
+- ~/ashby/runtime/memory/
+- ~/ashby/runtime/cache/
+- ~/ashby/runtime/logs/
+Move any memory JSON files from old locations into runtime/memory.
+
+Acceptance:
+- Ashby reads/writes state only under runtime/ (or an explicitly configured runtime path).
+
+4.3 Configs folder readiness (no immediate migration required)
+Create placeholder configs based on Preservation Pack #1:
+- zones.json, rooms.json, devices.json, aliases.json, modules.json, brands.json, schema_version.json
+You may leave existing hardcoded mappings in place for now (compat layer) — this is structural raid.
+
+Acceptance:
+- Configs exist, even if not yet wired into execution.
+
+──────────────────────────────────────────────────────────────────────────────
+PHASE 5 — ROUTER DECOMPRESSION (ONLY AFTER PHASES 0–4 ARE STABLE)
+──────────────────────────────────────────────────────────────────────────────
+IMPORTANT: Router refactor is allowed ONLY if:
+- CLI + Telegram still work from the new canonical root
+- Canonical venv is confirmed
+- Renames are complete
+- You have a rollback snapshot
+
+Goal:
+- Split router.py into compartments WITHOUT changing behavior.
+- Router becomes a thin orchestrator over extracted functions.
+
+Minimum split targets (no logic change):
+- core/router.py                   (thin pipeline)
+- core/context_snapshot.py         (state injection building)
+- core/truth_gate.py               (response constraints; even if initially minimal wrapper)
+- brain/nlu/*                      (nlu_manager, local, gpt, schema)
+- brain/sessions/*                 (lights_session, comfort_session)
+- brain/policy/*                   (style_policy, clarify_policy)
+- domain/resolution/target_resolver.py (even if it initially wraps legacy group mapping)
+
+Acceptance:
+- Pack #4 acceptance tests still pass.
+- No “done” language without VERIFIED (Pack #3 rules).
+
+──────────────────────────────────────────────────────────────────────────────
+PHASE 6 — ACCEPTANCE SANITY CHECKS (RUN AFTER EACH PHASE)
+──────────────────────────────────────────────────────────────────────────────
+Minimum sanity checks:
+- CLI harness runs and responds
+- “turn on thor” works
+- “set thor to 30%” maps to 300/1000 behavior (do not regress)
+- “more” then “again” repeats last delta
+- Telegram bot replies and can control lights
+- No secrets printed in logs or terminal
+
+If any check fails:
+- STOP
+- revert last move
+- do not proceed
+
+──────────────────────────────────────────────────────────────────────────────
+PHASE 7 — SNAPSHOT + STOP (END OF DAY)
+──────────────────────────────────────────────────────────────────────────────
+At end of each work session:
+- Write End-of-Day Snapshot including:
+  - what moved
+  - what renamed
+  - canonical root path
+  - canonical venv name + activation command
+  - how to run CLI harness
+  - how to run Telegram bot
+  - what remains for next day
+- Commit to “Stop” (no drift)
+
+Acceptance:
+- Next day you can resume with zero guesswork.
+
+──────────────────────────────────────────────────────────────────────────────
+FROM → TO MIGRATION MAP (CURRENT FILES)
+──────────────────────────────────────────────────────────────────────────────
+NOTE: This is the planned map based on your current listing. We will adjust if a file is missing
+or if you’ve added new ones, but this is the baseline.
+
+A) Working package + subfolders
+FROM:
+  ~/home/notsolikely/ashpi/
+    brain/
+    control/
+    devices/
+TO (Phase 2 then Phase 3):
+  ~/ashby/ashby/brain/
+  ~/ashby/ashby/control/
+  ~/ashby/ashby/devices/
+  (then internal naming is updated to ashby in Phase 3)
+
+B) Telegram gateway
+FROM:
+  ~/home/notsolikely/ashby_telegram_control.py
+TO:
+  ~/ashby/io/telegram/telegram_app.py
+(rename + update imports to ashby.* in Phase 3)
+
+C) CLI harness
+FROM:
+  ~/home/notsolikely/ashpi_test.py
+TO:
+  ~/ashby/io/cli/cli.py
+(rename to ashby naming in Phase 3)
+
+D) Tuya diagnostics
+FROM:
+  ~/home/notsolikely/ashpi_tuya_test.py
+TO:
+  ~/ashby/scripts/diagnostics_tuya.py
+
+E) Nest control scripts
+FROM:
+  ~/home/notsolikely/ashpi_nest_set.py
+  ~/home/notsolikely/ashpi_nest.env   (SECRETS — handle carefully)
+TO:
+  ~/ashby/scripts/ashby_nest_set.py
+  ~/ashby/secrets/nest.env            (or convert to env vars; do NOT commit)
+
+F) Cast / TTS experiment
+FROM:
+  ~/home/notsolikely/ashpi_cast.py
+TO:
+  ~/ashby/scripts/ashby_cast.py
+
+G) Secrets (Tuya/Telegram/OpenAI/etc.)
+FROM:
+  ~/home/notsolikely/env.py   (SECRETS)
+TO:
+  ~/ashby/secrets/env.py      (or convert to .env env-vars loader later)
+
+H) Memory folder
+FROM:
+  ~/home/notsolikely/memory/
+TO:
+  ~/ashby/runtime/memory/
+(then update memory path in code to runtime/)
+
+I) Canonical venv
+FROM:
+  ~/home/notsolikely/ashpi-env/   (if confirmed active)
+TO OPTIONS:
+  Option 1 (recommended): keep venv OUTSIDE repo and just document it
+    - leave it in ~/home/notsolikely/ashpi-env (or move to ~/venvs/ashby-env)
+  Option 2 (allowed): ~/ashby/.venv (inside repo) — but keep it out of git and backups
+We will decide after confirming which env is active.
+
+J) Legacy archive
+FROM:
+  ~/home/notsolikely/ash.py
+  ~/home/notsolikely/ashenv/
+TO:
+  ~/ashby/archive/legacy_ash_chatbot/
+
+K) Delete stub
+FROM:
+  ~/ashby/agents/stuart/   (empty)
+TO:
+  DELETE ENTIRE STUB DIRECTORY (Phase 1)
+
+──────────────────────────────────────────────────────────────────────────────
+NOTES / WARNINGS
+──────────────────────────────────────────────────────────────────────────────
+- __init__.py files are required for Python packages; keep them.
+- __pycache__/ can be ignored and safely deleted; they will regenerate.
+- Do NOT open or print secrets files while streaming.
+- If anything breaks, revert immediately — do not “fix forward” blindly in a structural raid.
+
+END OF GUILD ORDERS — EMERGENCY RAID: ASHBY STRUCTURAL REALIGNMENT
+
+==COMPLETED==COMPLETED==COMPLETED==COMPLETED=  DECEMBER-28-2025  ==COMPLETED==COMPLETED==COMPLETED==COMPLETED==

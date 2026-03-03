@@ -1,0 +1,9 @@
+## Command Receipt Log
+WRAPPER: synapse_quest_run.sh
+ENGINE_ROOT: /home/notsolikely/Ashby_Engine
+DATA_ROOT: /home/notsolikely/Ashby_Data
+---
+CMD: cd /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app && npx eslint src/pages/Stuart.jsx src/components/stuart/TranscriptViewer.jsx src/components/stuart/ChatInterface.jsx --quiet
+RC: 0
+PASS: governance validation OK for QUEST_183 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_183__2026-03-03__stuart_v1_dungeon_10_8_12_chat_actions_open_session_jump_to_segment_wiring_transcript_jump_ux
+OK: finalize complete (validation PASS recorded).

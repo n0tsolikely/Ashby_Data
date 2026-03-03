@@ -1,0 +1,141 @@
+ASHBY — MODULE REGISTRY CONTRACT (BATCH 0)
+Status: Canonical-for-execution (single-purpose contract for Batch 0)
+Date: 2026-01-13
+
+Purpose
+Batch 0 introduces a platform-level module registry and module contract so Ashby can scale beyond hard-coded router imports.
+This is the foundation for:
+- removable modules
+- clean routing by intent prefixes
+- future multi-agent coexistence without router bloat
+
+Repo-aware constraint (existing engine reality)
+Your current router.py directly imports handlers:
+- ashby.capabilities.lights.handler
+- ashby.capabilities.comfort.handler
+
+Batch 0 does NOT rewrite router.py to use the registry.
+Batch 0 creates the registry so it can be adopted incrementally later.
+
+Non-goals (explicit)
+- Full router rewrite
+- Dependency injection framework
+- Dynamic plugin loading from disk
+- Module discovery UX
+
+Where this lives in the EXISTING Ashby repo (files to create)
+Create:
+- <repo_root>/ashby/ashby/core/module_registry.py
+
+Add smoke test:
+- <repo_root>/ashby/tests/test_module_registry_smoke.py
+
+Contract: Result type
+All module dispatch MUST return a structured Result object.
+
+Result types live in:
+- ashby.core.results  (Batch 0C)
+
+The module registry MUST NOT invent alternative result objects.
+
+Contract: ModuleContext
+Batch 0 defines a minimal context container to pass shared platform objects into modules.
+
+Create a dataclass in module_registry.py:
+
+ModuleContext required fields:
+- user_id: str
+
+Recommended optional fields (default None, but included now to prevent refactor later):
+- correlation_id: str | None
+- profile: ExecutionProfile | None          # from ashby.core.profile (Batch 0D)
+- storage: StorageAdapter | None            # from ashby.interfaces.storage (Batch 0B)
+- brain: Any | None                         # AshBrain instance when available
+- raw_text: str | None
+- channel: str | None                       # "cli" | "telegram" | "api" etc
+- extra: dict[str, Any]                     # freeform extension point
+
+Rules:
+- Context is a bag of platform references. It should not own module state.
+- Modules may ignore fields they don’t need.
+
+Contract: Module interface
+Define an AshbyModule Protocol in module_registry.py with canonical names:
+
+Required attributes:
+- module_id: str
+- intent_prefixes: list[str]     # e.g. ["lights.", "comfort."]
+
+Required method:
+- handle(self, *, intent: dict[str, Any], context: ModuleContext) -> Result
+
+Rules:
+- module_id is stable and used in audit logs.
+- intent_prefixes entries MUST be normalized:
+  - must end with "." if they represent a namespace (recommended)
+  - must be non-empty
+- handle() must be side-effect-free unless it executes through platform adapters and returns ActionResult.
+
+Contract: Registry
+Implement ModuleRegistry with these canonical methods:
+
+- register(module: AshbyModule) -> None
+  Registers the module for each prefix in module.intent_prefixes.
+
+- resolve(intent_type: str) -> AshbyModule | None
+  Returns the module matching the intent_type using LONGEST PREFIX MATCH.
+
+- dispatch(intent: dict[str, Any], context: ModuleContext) -> Result
+  Looks up intent["type"] (string) and dispatches to the resolved module.
+  If no module found, returns ErrorResult with:
+    - error_code: "ASHBY_E_NO_MODULE"
+    - message: includes intent type
+
+Resolution algorithm (canonical)
+Given intent_type:
+- choose the registered prefix p where intent_type.startswith(p)
+- if multiple match, choose the longest p
+- if none match, return None
+
+Examples:
+- prefixes: ["lights.", "lights.scene."]
+  intent_type: "lights.scene.party"
+  -> resolves to "lights.scene." module
+
+- prefixes: ["comfort."]
+  intent_type: "comfort.cold"
+  -> resolves to comfort module
+
+Registry integrity rules
+- Registering the same prefix twice is forbidden unless it is the same module_id.
+  If a different module tries to claim the same prefix:
+  - raise ValueError (fail fast)
+
+- Prefix normalization: registry should store prefixes as-is but may enforce:
+  - no leading/trailing whitespace
+  - not empty
+  - must not start with "/"
+
+Smoke test expectations (test_module_registry_smoke.py)
+The smoke test MUST:
+- create a dummy module class with module_id and intent_prefixes
+- register it for prefix "dummy."
+- dispatch intent {"type":"dummy.ping"} and verify:
+  - module handle() was called
+  - returned value is an ActionResult or ArtifactResult ok=True
+
+Also test LONGEST PREFIX MATCH:
+- register module A for "a."
+- register module B for "a.b."
+- resolve "a.b.c" returns module B
+
+Self-audit checklist (Batch 0 acceptance)
+Before declaring “Module registry done”:
+- module_registry.py exists and imports cleanly
+- It depends only on:
+  - ashby.core.results
+  - typing/dataclasses
+  - optional types from storage/profile (should be imported safely)
+- It does not import any capability/module handlers (no coupling)
+- Tests pass and require no secrets/network
+- No mention of “stuart” exists in module_registry.py

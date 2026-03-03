@@ -1,0 +1,80 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_048
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 2 (7/7): JSON → MD renderers (deterministic)
+
+Context: Stuart renderers
+
+Origin:
+Control Sync — 2026-02-04 (Stuart v1 finish-line: REV7)
+
+Priority: P0
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV7.txt (Dungeon 2)
+- Engine: ashby/modules/meetings/render/ (add new renderer(s); legacy is formalize_md.py)
+- Stuart Codex 3.2/3.3: minutes/journal outputs must be readable + auditable
+
+Status: COMPLETED
+
+Audit Bundle Path:
+Audits/Execution/QUEST_048__2026-02-04__stuart_v1_dungeon_2_7_7_render_md_from_minutes_and_journal_json_deterministic_2026-02-04
+
+Accepted On:
+2026-02-04
+
+Accepted By:
+Hands (Peter)
+
+Completed On:
+2026-02-06
+Completed By:
+Ash (Brains)
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Implement deterministic (non-LLM) renderers that turn:
+- artifacts/minutes.json → minutes.md
+- artifacts/journal.json → journal.md
+
+These renderers must be stable given the same JSON input (ordering/headings). Integration into the pipeline + artifact naming is handled by QUEST_049.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Add `render_minutes_md(run_dir)` that reads artifacts/minutes.json and writes artifacts/minutes.md
+- Add `render_journal_md(run_dir)` that reads artifacts/journal.json and writes artifacts/journal.md
+- Ensure citations (segment_id anchors) are visible in MD output (format can be simple)
+- Ensure no-overwrite: if minutes.md/journal.md already exist in the run dir, fail loudly
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Wiring into job_runner (QUEST_049)
+- PDF export naming (QUEST_050)
+- Evidence map v2 (Dungeon 3)
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_046
+- QUEST_047
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Keep formatting deterministic (sorted lists, stable headings).
+- Don’t “summarize” here — this is a renderer, not a formalizer.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] Unit tests validate MD renderer output is deterministic given a fixed JSON fixture
+- [ ] minutes.md/journal.md include citation anchors for decisions/actions (when present)
+- [ ] No-overwrite behavior enforced
+- [ ] `python3 -m pytest -q` passes

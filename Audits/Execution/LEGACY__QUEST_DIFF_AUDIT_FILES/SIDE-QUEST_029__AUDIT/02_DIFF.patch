@@ -1,0 +1,41 @@
+Renamed folder: /mnt/data/Ashby_Engine/Ashby_Engine/Ashby_Engine/secrets -> /mnt/data/Ashby_Engine/Ashby_Engine/Ashby_Engine/secrets_store
+
+--- /mnt/data/Ashby_Engine/Ashby_Engine/Ashby_Engine/ashby/control/lights_tuya.py
++++ /mnt/data/Ashby_Engine/Ashby_Engine/Ashby_Engine/ashby/control/lights_tuya.py
+@@ -2,7 +2,7 @@
+ from typing import List, Union
+ 
+ from tuya_iot import TuyaOpenAPI, TUYA_LOGGER
+-from secrets.env import ENDPOINT, ACCESS_ID, ACCESS_KEY, USERNAME, PASSWORD
++from secrets_store.env import ENDPOINT, ACCESS_ID, ACCESS_KEY, USERNAME, PASSWORD
+ from ashby.devices.ashby_devices import DEVICES
+ 
+ # ---------- Logging ----------
+--- /mnt/data/Ashby_Engine/Ashby_Engine/Ashby_Engine/io/telegram/ashby_telegram_control.py
++++ /mnt/data/Ashby_Engine/Ashby_Engine/Ashby_Engine/io/telegram/ashby_telegram_control.py
+@@ -1,4 +1,4 @@
+-from secrets.env import (
++from secrets_store.env import (
+     ENDPOINT,
+     ACCESS_ID,
+     ACCESS_KEY,
+@@ -66,7 +66,7 @@
+ 
+ # ---------- Nest (thermostat) ----------
+ nest_env = {}
+-with open("secrets/ashby_nest.env") as f:
++with open("secrets_store/ashby_nest.env") as f:
+     for line in f:
+         line = line.strip()
+         if not line or line.startswith("#"):
+--- /mnt/data/Ashby_Engine/Ashby_Engine/Ashby_Engine/scripts/ashby_nest_set.py
++++ /mnt/data/Ashby_Engine/Ashby_Engine/Ashby_Engine/scripts/ashby_nest_set.py
+@@ -4,7 +4,7 @@
+ 
+ # Load env from file
+ env = {}
+-with open("secrets/ashby_nest.env") as f:
++with open("secrets_store/ashby_nest.env") as f:
+     for line in f:
+         line = line.strip()
+         if not line or line.startswith("#"):

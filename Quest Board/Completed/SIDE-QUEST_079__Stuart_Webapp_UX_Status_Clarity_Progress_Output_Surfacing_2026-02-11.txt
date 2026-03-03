@@ -1,0 +1,86 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+SIDE-QUEST_079
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Side Quest: webapp UX clarity (upload feedback, progress accuracy, output links, session list hygiene)
+
+Context: Stuart webapp
+
+Origin:
+Control Sync — 2026-02-11 (Hands field report: webapp confusing; progress jumps; outputs not surfaced)
+
+Priority: P1
+
+Links:
+- QUEST_062–064 (webapp upload/confirm/progress/library/search)
+- QUEST_069–071 (speaker mapping + reformalize controls)
+
+Status: COMPLETED
+Audit Bundle Path:
+  /mnt/data/Ashby_Data/Audits/Execution/SIDE-QUEST_079__2026-02-11__stuart_webapp_ux_status_clarity_progress_output_surfacing
+Accepted On:
+2026-02-11
+Accepted By:
+Hands (Peter)
+Completed On:
+2026-02-12
+Completed By:
+Ash (Brains)
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Webapp currently provides weak or misleading feedback during upload and run execution:
+- No clear “file selected / upload complete” indicator
+- Progress jumps (0 → ~90%) and does not reflect true stage completion
+- When a run fails or blocks, the UI can appear stuck
+- Users must navigate the filesystem to find outputs instead of getting links in the UI
+- Session list contains confusing/gibberish identifiers and feels messy
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+Upload UX:
+- Show explicit “File Selected” / “Upload Complete” state with filename
+- Prevent ambiguous “Uploading…” forever states
+
+Progress UX:
+- Stage-based progress display that tracks real pipeline status
+- Continue polling until terminal state (success or fail)
+
+Outputs:
+- When available, surface links/buttons for minutes.md + minutes.pdf + transcript artifacts
+- On failure, show an error banner with the failure reason and where to find logs/artifacts
+
+Sessions:
+- Make session list human-readable (title/name heuristics, ordering)
+- Avoid raw gibberish identifiers as primary labels
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Full UI redesign
+- Auth / multi-user sessions
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- Existing webapp endpoints for run status + artifacts
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Keep behavior deterministic and offline-friendly.
+- Prefer incremental UI improvements over major refactor.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] Upload UI clearly indicates selected file + upload completion
+- [x] Progress reflects real stages; no misleading instant 90% jumps
+- [x] On success, outputs are linked in UI (no filesystem spelunking)
+- [x] On failure, UI shows explicit error and does not appear stuck
+- [x] `python3 -m pytest -q` passes

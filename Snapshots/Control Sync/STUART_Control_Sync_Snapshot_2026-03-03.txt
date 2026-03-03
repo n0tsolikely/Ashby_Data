@@ -1,0 +1,60 @@
+================================================================================
+CONTROL SYNC SNAPSHOT
+================================================================================
+A) Header (required)
+- Subject: STUART
+- Date: 2026-03-03
+- Topic: Close Control Sync and start Dungeon 10 execution
+- Snapshot Type: Control_Sync
+- World State: Fog Lifted
+- Codex Freeze status: PRESENT (/home/notsolikely/Ashby_Data/Codex/CODEX_FREEZE.md)
+
+B) Rehydration Review (required when resuming)
+- Latest Control Sync Snapshot reviewed: (fill)
+- Latest End-of-Day Snapshot reviewed: (fill)
+- Relevant General Snapshots reviewed: (fill)
+
+C) Current Reality (State Surface)
+- Active Guild Orders / Raids: (fill)
+- Paused Guild Orders / Raids: (fill)
+- Quest Board summary: (fill)
+- Blockers: (fill)
+- Known risks / unknowns: (fill)
+
+D) Binding Decisions (required when binding decisions exist)
+- Close current Control Sync session.
+- Quest board accepted state is set for Dungeon 10 (QUEST_176..QUEST_187).
+- Execution authority proceeds via wrapper-governed quest audits.
+
+Deferred / Not decided:
+- No additional deferred scope at close.
+
+Decision changes (if any):
+- prior decision → new decision (with reference)
+
+E) Scope Commitment (required)
+- Quests to accept now (by ID): (fill)
+- Deferred work (and why): (fill)
+- Expected side-work (bugs/refactors): (fill)
+
+F) Artifacts Touched / Created (required)
+- Codex/TOC updates: (paths)
+- Guild Orders/Raids updates: (paths)
+- Dungeon/Quest artifacts: (paths)
+- Other data artifacts: (paths)
+
+G) NOTES
+- (none)
+
+H) Exit Condition + Closure Statement (required)
+- Closure statement: This Control Sync is CLOSED only when this Snapshot exists as a file.
+- Started At: 2026-03-02T14:45:45.633295-05:00
+- Closed At: 2026-03-03T02:29:36.167214-05:00
+- Participants: Peter,Codex
+- Reason: Select next scoped raid action from ACTIVE Guild Orders after D6 completion
+- Next immediate action: Initialize and execute QUEST_176..QUEST_187 in order
+
+- If execution will begin: state the first Quest to accept/execute.
+- If no execution committed: state why.
+
+END OF SNAPSHOT

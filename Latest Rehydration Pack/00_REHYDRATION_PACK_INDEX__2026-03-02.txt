@@ -1,0 +1,98 @@
+REHYDRATION PACK INDEX — 2026-03-02 (ASHBY / STUART)
+
+Purpose:
+- Deterministic zero-ambiguity re-entry pack for continuing ASHBY/STUART execution.
+- Avoid hardcoded "latest" filenames; resolve latest artifacts from canonical directories.
+
+Governance relationship:
+- This pack is SUBJECT STATE continuity (not governance law).
+- Governance source of truth: /home/notsolikely/Synapse_OS/governance
+- If conflict exists, governance locks/processes win.
+
+================================================================================
+A) ACTIVE ARTIFACTS (THIS PACK)
+================================================================================
+- Bootstrap Prompt directory:
+  /home/notsolikely/Ashby_Data/Latest Rehydration Pack/
+  Pattern: BOOTSTRAP_PROMPT_YYYY-MM-DD.txt
+
+- Continuity Lock directory:
+  /home/notsolikely/Ashby_Data/Latest Rehydration Pack/
+  Pattern: CONTINUITY_LOCK_YYYY-MM-DD.txt
+
+================================================================================
+B) CANONICAL STATE SURFACES (NO HARDCODED LATEST NAMES)
+================================================================================
+- Control Sync snapshots:
+  /home/notsolikely/Ashby_Data/Snapshots/Control Sync/
+  Pattern: <SUBJECT>_Control_Sync_Snapshot[_ _NN]_YYYY-MM-DD.txt
+
+- End-of-Day snapshots:
+  /home/notsolikely/Ashby_Data/Snapshots/End of Day/
+  Pattern: <SUBJECT>_End_of_Day_Snapshot[_ _NN]_YYYY-MM-DD.txt
+
+- General snapshots:
+  /home/notsolikely/Ashby_Data/Snapshots/General/
+  Pattern: <SUBJECT>_General_Snapshot[_ _NN]_YYYY-MM-DD.txt
+
+- Active Guild Orders folder:
+  /home/notsolikely/Ashby_Data/Guild Orders/ACTIVE/
+
+- Stuart Codex folder:
+  /home/notsolikely/Ashby_Data/Stuart/Stuart Codex/
+
+- Quest Board folders:
+  /home/notsolikely/Ashby_Data/Quest Board/Accepted/
+  /home/notsolikely/Ashby_Data/Quest Board/Completed/
+
+================================================================================
+C) LATEST RESOLUTION RULE (MANDATORY)
+================================================================================
+Resolve "latest" by filename date token, then same-day counter (NN) when present.
+Do not pick by mtime.
+
+Resolver command (example):
+- `ls -1 <DIR> | rg '<PREFIX>' | python3 -c "import sys,re; r=[]\nfor s in sys.stdin.read().splitlines():\n m=re.search(r'(?:__(\d{2})_)?(\d{4}-\d{2}-\d{2})\\.txt$',s);\n  \n if m: r.append((m.group(2), int(m.group(1) or '0'), s))\nprint(sorted(r)[-1][2] if r else '')"`
+
+Meaning:
+- Highest date wins.
+- If same date appears multiple times, highest `__NN` wins.
+
+================================================================================
+D) REQUIRED READ ORDER (SESSION START)
+================================================================================
+1) Governance routing:
+   - /home/notsolikely/Synapse_OS/governance/README.txt
+   - /home/notsolikely/Synapse_OS/governance/INDEX.txt
+   - /home/notsolikely/Synapse_OS/governance/SYNAPSE_STATE.yaml
+
+2) Subject Buffs:
+   - /home/notsolikely/Ashby_Data/Buffs/ASHBY_SESSION_START_CHECK.txt
+   - /home/notsolikely/Ashby_Data/Buffs/ASHBY_EXECUTION_PROTOCOL.txt
+   - /home/notsolikely/Ashby_Data/Buffs/ASHBY_DATA_DIRECTORY_MAP.txt
+
+3) Resolve latest in Latest Rehydration Pack by date/counter rule:
+   - BOOTSTRAP_PROMPT_*.txt
+   - CONTINUITY_LOCK_*.txt
+
+4) Resolve latest snapshots by date/counter rule from:
+   - /home/notsolikely/Ashby_Data/Snapshots/Control Sync/
+   - /home/notsolikely/Ashby_Data/Snapshots/End of Day/
+   - /home/notsolikely/Ashby_Data/Snapshots/General/
+
+5) Scope + canon:
+   - /home/notsolikely/Ashby_Data/Guild Orders/ACTIVE/
+   - /home/notsolikely/Ashby_Data/Stuart/Stuart Codex/
+
+================================================================================
+E) EXECUTION WRAPPER + NEXT SAFE ACTION
+================================================================================
+Canonical quest execution wrapper:
+- /home/notsolikely/Synapse_OS/governance/tools/synapse_quest_run.sh
+
+Current safe action:
+- Rehydrate from latest resolved artifacts.
+- Open Control Sync before selecting next execution scope.
+- Do not execute changes without accepted quest lifecycle + wrapper receipts.
+
+END OF FILE

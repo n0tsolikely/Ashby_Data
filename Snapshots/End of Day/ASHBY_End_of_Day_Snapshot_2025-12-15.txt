@@ -1,0 +1,126 @@
+ASHBY — END OF DAY SNAPSHOT (DETAILED)
+Date: 2025-12-15 (America/Toronto)
+Session: Step 3+ — Action Echo → Memory Loop (Lights-first), plus early “human in the room” behavior tuning
+Status: Compiles, partially working; next fixes are surgical and well-defined
+
+0) THE GOAL (locked)
+Ashby should feel like a real person in the room who can control the house:
+- Direct commands (“turn off thor”, “set to 50%”, “off”) => short, human replies + immediate execution
+- Vibe statements (“it’s bright in here”, “that’s way too bright”, “damn it’s dark”) => chatty, contextual replies + either:
+  - act if context is clearly lights (e.g., active lighting session / “in here”), OR
+  - ask a human clarification about the subject if it’s ambiguous (“bright out today” => weather, not lights)
+- Ashby must never *claim* an action occurred if router did not execute it (no “yeah it’s off” while lights are still on).
+
+1) CURRENT PROJECT SHAPE (confirmed)
+Core loop is: Telegram message -> router.handle_text() -> action routing -> device_control -> lights_tuya -> state injection -> safe_chat() response.
+Files in play (current core):
+- brain/router.py
+  - handle_text(): orchestrates sessions, NLU, routing, action execution, injection, chat fallback
+  - inject_state(): appends SYSTEM STATE UPDATE into brain history
+  - safe_chat(brain,user_id,text): injects ASHBY_STATE_SNAPSHOT and blocks “I can’t control…” hallucinations
+  - action logging: _set_recent_action() persists last_action + action_log (rolling) into memory store
+- brain/memory.py
+  - per-user persistent JSON at users/{user_id}.json
+  - keys currently used: preferred_temp, preferred_level_<group>, last_action, action_log, last_known_temp, etc.
+- brain/lighting_sessions.py
+  - active session per user: group/level/step/last_delta + expiry
+  - awaiting_target: used when user says “turn on the lights” without specifying which group
+- brain/nlu_manager.py + gpt_nlu.py + local_nlu.py + intent_schema.py
+  - hybrid intent extraction
+  - example file: nlu_lights_comfort_eg.txt
+- control/device_control.py + control/lights_tuya.py
+  - group abstractions (e.g., “thor”) -> actual device operations
+  - brightness is 0–1000 internal scale
+
+2) WHAT WAS FIXED / CHANGED TODAY
+A) Router control-flow bug fixed
+- A premature return in handle_text() previously caused the entire routing pipeline to be unreachable.
+- That early return was removed so the actual session/NLU/action code executes.
+
+B) Duplicate safe_chat() cleanup in router.py
+- There were two safe_chat definitions: safe_chat(brain,text) and safe_chat(brain,user_id,text).
+- Python keeps the second; the first is dead/misleading.
+- Standardized on the state-snapshot injecting safe_chat(brain,user_id,text) and removed the older one.
+
+C) “In the room” state snapshot injection is active
+- safe_chat injects ASHBY_STATE_SNAPSHOT including:
+  - active light session (group, level, last_delta)
+  - preferred_temp, last_known_temp
+  - last_action
+  - rules: Ashby is the home operator; don’t deny access/control
+This is the core differentiator vs “stateless chatbot”.
+
+D) Began implementing “vibe phrase” handling and clarifier behavior
+Two branches of behavior were discussed and partially implemented:
+- Session-active forcing: if a lighting session is active, interpret “it’s bright in here”, “kill it”, “turn it off” as lights.adjust/lights.off using the active group.
+- No-session clarifier: if there is NO active session and the phrase is ambiguous (“bright out today”), Ashby should ask about the subject (weather) rather than act. If phrase strongly implies room lighting (“bright in here”), Ashby should ask “You mean the lights?” before acting.
+
+3) WHAT THE TESTS SHOWED (PROBLEMS OBSERVED)
+A) Execution vs speech mismatch (critical)
+- Ashby sometimes *said* lights were off/dimmed without the device actually changing.
+Root cause:
+- Router returns safe_chat() when target_group is missing, so the LLM “confirms” an action that never happened.
+Fix direction:
+- Router must only describe post-action reality; if no target, ask/clarify, don’t claim execution.
+
+B) Target resolution is incomplete
+- “Turn off the lights” often fails unless the user explicitly says “thor” / “captain”.
+Root cause:
+- group=None + no active session => target_group resolves to None => chat fallback.
+Fix direction:
+- Add a concept of “default group for this user/room” OR prompt for target.
+- When a lighting session is active, interpret “the lights” as the active group.
+
+C) Direction inheritance / emphasis scaling not right yet
+- “way more down” sometimes only changed by 10% (step) instead of a big jump.
+- After dimming, saying “more” sometimes went UP instead of “more down”.
+Root cause:
+- last_delta / direction inheritance logic isn’t consistently applied; “more” defaults to brighter unless tied to last direction.
+Fix direction:
+- Persist and reuse direction context: last_delta sign should decide what “more” means.
+- Add “emphasis -> magnitude” mapping: “way/way way/retinas” => bigger delta; “a little” => small delta.
+
+D) Reply length/style is not yet consistent
+- Direct commands still sometimes produce long multi-sentence replies.
+Fix direction:
+- Implement reply-style routing:
+  - if command-like => short
+  - if vibe-like => chatty
+This should be enforced inside lights.on/off/adjust returns (not left to random chat).
+
+4) ARCHITECTURE CONCERN (IMPORTANT, CALLED OUT)
+router.py is absorbing too much “brain” logic.
+Current reality:
+- Router is doing routing + policy + heuristics + style + clarification.
+Scaling risk:
+- Expanding to plugs/appliances/garage/cameras will turn router into a monster file.
+Planned fix:
+- Keep router as an orchestrator; extract “brain policies” into dedicated modules:
+  - brain/policy_light_vibes.py (vibe phrase interpretation & clarifiers)
+  - brain/reply_style.py (short vs chatty decision)
+  - brain/target_resolution.py (resolve “the lights” -> default group / active session)
+  - brain/direction_inheritance.py (more/again semantics + emphasis scaling)
+Router should call these helpers, not own all the logic.
+
+5) NEXT STEP (ONE AT A TIME, LOCKED ORDER)
+Next “single move” to do first (execution reliability):
+1) Target resolution so “turn off the lights” actually turns something off:
+   - If session active: “the lights” => active group
+   - If no session: ask which group (or define a user default group)
+   - Never allow safe_chat to claim an action happened if no action executed.
+
+Then:
+2) Direction inheritance + emphasis scaling:
+   - “more” should follow last_delta sign
+   - “way way” should mean bigger delta than 10%
+
+Then:
+3) Reply style enforcement:
+   - direct commands short
+   - vibe statements chatty
+   - still grounded in executed state
+
+6) RESUME SENTENCE (for new chat)
+“Resuming Ashby at Step 3+: router.py compiles after removing duplicate safe_chat and early return. Current blockers are (1) target resolution so ‘turn off the lights’ executes without explicit group, (2) direction inheritance/emphasis scaling for ‘more/way more’, and (3) reply-style consistency (short for commands, chatty for vibe). Next change is target resolution so Ashby never claims actions that didn’t execute.”
+
+END SNAPSHOT

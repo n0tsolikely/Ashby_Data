@@ -1,0 +1,107 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+================================================
+
+QUEST ID:
+QUEST_102
+
+Created By:
+Codex (Brains)
+
+Title:
+Stuart v2 — D3 (1/11) — Product Shell Parity (Header + Tabs + Default Chat)
+
+Subject:
+Stuart
+
+Context: (Ashby / Stuart / System / Other)
+Ashby / Stuart
+
+Origin:
+Guild Orders ACTIVE REV4 -> Dungeon 3 UI Product Surface Parity.
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- Guild Orders: Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt
+- Codex: Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt
+- Frontend root: Ashby_Engine/webapp/stuart_frontend/stuart_app
+
+Status: BOARD | ACTIVE | COMPLETED | ABANDONED
+COMPLETED
+
+Audit Bundle Folder Path:
+Ashby_Data/Audits/Execution/QUEST_102__2026-02-18__stuart_v2_d3_shell_header_tabs_default_chat
+
+Accepted On:
+2026-02-18
+
+Accepted By:
+Hands (Peter) via Codex (Brains)
+
+Completed On:
+2026-02-18
+
+Completed By:
+Codex (Brains)
+
+Change Class: (TRIVIAL / FEATURE / STRUCTURAL)
+FEATURE
+
+Vision Delta: (ALIGNED / VARIATION / SHIFT)
+ALIGNED
+
+System Context Statement:
+Dungeon 3 must make the Stuart web surface match product UX parity while preserving canonical Stuart APIs and chat-first behavior.
+
+Anti-Duplication Plan:
+Reuse existing App shell/components/routes in stuart_app; do not introduce parallel layout stacks.
+
+Placement Intent:
+webapp/stuart_frontend/stuart_app/src/App.jsx and shell components (header, tab container).
+
+Codex Anchors (DRAFT):
+- Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_2.1_Chat_First_Interface.txt
+- Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_1.3_Profiles_LOCAL_ONLY_HYBRID_CLOUD.txt
+- Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_10.1_V1_Minimum_Shippable_Product_Definition.txt
+
+Codex Constraint Summary:
+- Chat must be default view/tab on launch.
+- Active profile must be visible and truthful.
+- Session/Chat/Outputs shell may exist but must not reduce chat completeness.
+
+Door Impact:
+Stuart web door (UI)
+
+Testing Level (TL):
+TL2
+
+Talent Point Awarded: (YES / NO)
+YES
+
+DESCRIPTION
+Create the top-level product shell parity for Dungeon 3: header with truthful profile badge, Session/Chat/Outputs tabs, and default launch into Chat.
+
+SCOPE / OBJECTIVE
+- Header renders product title + profile badge.
+- Tabs render Session, Chat, Outputs.
+- Chat tab is selected by default on app launch.
+
+OUT OF SCOPE
+- Backend profile persistence changes.
+- Chat command logic internals.
+
+DEPENDENCIES
+- QUEST_090..QUEST_101 (Dungeon 2 API surface and contract docs).
+
+EXECUTION NOTES
+Preserve canonical naming and avoid introducing new compatibility layers.
+
+COMPLETION CRITERIA (REQUIRED)
+- [ ] Header shows profile badge Local/Hybrid/Cloud from canonical source.
+- [ ] Tabs render and switch correctly.
+- [ ] Default tab on launch is Chat.
+- [ ] No Base44 dependencies or naming introduced.
+
+FINAL NOTES
+This quest establishes the UX frame all subsequent Dungeon 3 quests depend on.

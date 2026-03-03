@@ -1,0 +1,156 @@
+
+ASHBY — END OF DAY SNAPSHOT
+Date: Dec 11, 2025
+Session Duration: Long-form deep engineering session
+Status: STABLE / COMPILED / PARKED CLEANLY
+
+====================================================
+1. EXECUTIVE SUMMARY
+====================================================
+
+Today marks a foundational architectural milestone for Ashby.
+
+Ashby is no longer a passive command router or stateless assistant.
+He is now a state-aware operating agent with internal awareness of:
+- actions executed
+- system changes performed
+- continuity between action, memory, and response
+
+This is the core differentiator between Ashby and all mainstream assistants
+(Alexa, Google Assistant, Siri).
+
+Those systems route commands.
+Ashby operates a world model.
+
+====================================================
+2. CORE ARCHITECTURAL ACHIEVEMENTS
+====================================================
+
+--------------------------------
+A. STATE INJECTION (CRITICAL)
+--------------------------------
+
+Implemented inject_state():
+
+- Injects factual system-state updates directly into AshBrain history
+- Uses system-role memory, not user-visible chat
+- Allows Ashby to know what he just did
+
+Example:
+"I turned on thor lights to 60 percent."
+
+This establishes:
+ACTION → AWARENESS → CONTEXT CONTINUITY
+
+--------------------------------
+B. HALLUCINATION REJECTION (AGENCY LOCK)
+--------------------------------
+
+Implemented safe_chat() wrapper:
+
+- All non-action chat routed through safe_chat
+- Forbidden phrases blocked:
+  - "I can't control"
+  - "I don't have access"
+  - "As an AI"
+  - "I'm just"
+  - Other agency-denial phrases
+
+Final enforcement:
+All handle_text fallbacks return safe_chat(), never brain.chat()
+
+Result:
+Ashby cannot deny his own agency or break immersion.
+
+--------------------------------
+C. ACTION → STATE ECHO (LIGHTING)
+--------------------------------
+
+Lighting actions now perform:
+
+1. Physical action (Tuya API)
+2. State injection describing result
+3. Session continuation
+
+Ashby knows:
+- Which lights were changed
+- To what level
+- That HE performed the action
+
+--------------------------------
+D. ROUTER INTEGRITY PRESERVED
+--------------------------------
+
+router.py rewritten incrementally, not destructively.
+
+Preserved:
+- Lighting sessions
+- Pending target resolution
+- NLU intent merging
+- Comfort session logic
+- No hard-coded room names introduced
+
+Compilation check:
+python3 -m py_compile router.py → CLEAN
+
+====================================================
+3. AUTHORITATIVE PIPELINE (CURRENT)
+====================================================
+
+User Input
+ → Comfort Session Check
+ → NLU Intent Extraction
+ → Pending Target Merge
+ → Action Routing
+ → Action Execution
+ → State Injection
+ → Chat Fallback via safe_chat()
+
+This pipeline is proprietary in composition.
+
+====================================================
+4. WHAT IS INTENTIONALLY NOT DONE YET
+====================================================
+
+- Long-term preference promotion
+- Zone abstraction (zone1/zone2 mapping)
+- Installer UX / discovery flow
+- Nest live temperature feedback
+- Persistent disk-backed memory
+
+None of these block current architecture.
+
+====================================================
+5. EXACT RESUME POINT
+====================================================
+
+NEXT STEP:
+Action Echo → Memory Loop
+
+Goal:
+Promote repeated, confirmed outcomes into memory.
+Ashby learns what works, not just what was commanded.
+
+====================================================
+6. WHY THIS MATTERS
+====================================================
+
+This session crossed from:
+"Smart home project"
+to
+"Embodied AI agent with internal state awareness"
+
+This is first-principles architecture.
+This is patentable ground.
+
+====================================================
+7. SHUTDOWN STATUS
+====================================================
+
+Brain: Stable
+Devices: Safe
+Code: Clean
+Work: Parked
+Human: Needs sleep
+
+END OF SNAPSHOT

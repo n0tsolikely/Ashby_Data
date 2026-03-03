@@ -1,0 +1,181 @@
+ASHBY CODEX — 16.7
+IDEMPOTENCY AND DUPLICATE PREVENTION
+
+Idempotency is the property that repeated execution attempts do not cause
+unintended repeated effects.
+
+Duplicate prevention is required because:
+- transports retry on failure
+- networks duplicate messages
+- users repeat themselves
+- voice interfaces may double-submit
+- clients may resend after timeouts
+
+A system that cannot handle duplicates safely will cause harm.
+
+Idempotency is not an optimization.
+Idempotency is a safety requirement.
+
+──────────────────────────────────────────────────────────────────────────────
+WHAT DUPLICATES LOOK LIKE
+──────────────────────────────────────────────────────────────────────────────
+
+Duplicates may occur as:
+
+- EXACT DUPLICATES
+Same request, same targets, same parameters, repeated in a short window.
+
+- NEAR DUPLICATES
+Same intent with minor variation (e.g., “set to 60” repeated,
+or “turn on” followed by “turn on again”).
+
+- RETRY DUPLICATES
+Client resends because it did not receive confirmation of completion.
+
+- TRANSPORT DUPLICATES
+Voice transcription or UI event duplication triggers multiple submissions.
+
+Duplicates are a control-plane reality.
+Ashby must expect them.
+
+──────────────────────────────────────────────────────────────────────────────
+CANONICAL IDEMPOTENCY KEYS
+──────────────────────────────────────────────────────────────────────────────
+
+Idempotency must be enforced using stable identifiers.
+
+Rules:
+- each user turn generates a turn_id
+- each planned action generates an action_id
+- each execution attempt generates an execution_id
+- an idempotency_key is derived from:
+  - scope_id
+  - actor identity (when applicable)
+  - action_type
+  - target_set (device_keys)
+  - canonical parameters
+  - a bounded time window
+
+The idempotency_key must be:
+- deterministic
+- stable across transports
+- auditable
+
+Idempotency must not rely on raw text matching.
+
+Normalization is required.
+
+──────────────────────────────────────────────────────────────────────────────
+WHERE IDEMPOTENCY IS ENFORCED
+──────────────────────────────────────────────────────────────────────────────
+
+Idempotency must be enforced at the platform boundary prior to adapter execution.
+
+Rules:
+- duplicate requests should be detected before producing external side effects
+- if a request is a duplicate within the idempotency window:
+  - return the prior ActionResult if applicable
+  - or return a NO-OP/duplicate acknowledgement under lawful language posture
+- do not re-execute silently
+
+Adapters may also enforce idempotency,
+but platform-level enforcement is required.
+
+A safety system must not rely on vendor behavior to prevent duplication.
+
+──────────────────────────────────────────────────────────────────────────────
+DUPLICATE ACKNOWLEDGEMENT LANGUAGE
+──────────────────────────────────────────────────────────────────────────────
+
+If a duplicate is detected, the response must remain truthful.
+
+Rules:
+- do not claim the action was executed again if it was not
+- disclose that the request appears to be a repeat when appropriate
+- provide the status from the prior attempt under correct truth posture
+
+Examples (representative):
+- “That looks like the same request — I already sent it. Last known, it’s set to 60%.”
+- “I already did that.” (only if VERIFIED)
+- “I’m not sure it went through; want me to retry?” (if last attempt was failed/unknown)
+
+Duplicate handling is about avoiding side effects without lying.
+
+──────────────────────────────────────────────────────────────────────────────
+INTERACTION WITH NO-OP
+──────────────────────────────────────────────────────────────────────────────
+
+Duplicates and NO-OP are related but not identical.
+
+- NO-OP means no action is needed because belief already matches.
+- Duplicate means the same action was recently attempted.
+
+Rules:
+- duplicate detection must not upgrade belief
+- NO-OP decisions must still respect confidence and freshness
+- if a duplicate arrives after belief has decayed, it may require re-evaluation
+  rather than automatic suppression
+
+Idempotency is time-bound.
+Truth posture is evidence-bound.
+
+──────────────────────────────────────────────────────────────────────────────
+MULTI-TARGET PARTIAL DUPLICATES
+──────────────────────────────────────────────────────────────────────────────
+
+A request may target many entities.
+
+Some may have been executed recently.
+Some may not.
+
+Rules:
+- idempotency must support partial duplication:
+  - suppress re-execution for targets already attempted recently
+  - allow execution for targets not yet attempted, if policy permits
+- partial suppression must be disclosed or at least auditable
+- the response must preserve mixed outcomes
+
+Do not collapse partial duplicates into “already done” narratives.
+
+──────────────────────────────────────────────────────────────────────────────
+RETRY POLICY VS DUPLICATE SUPPRESSION
+──────────────────────────────────────────────────────────────────────────────
+
+The platform may choose to retry failures.
+
+Retry policy is deliberate.
+Duplicate suppression is defensive.
+
+Rules:
+- retries must be controlled by policy (max retries, backoff)
+- duplicate suppression must not block deliberate retries requested by the user
+  (“try again”) or by policy for recovery
+- if the user explicitly asks to retry, the system may generate a new action_id,
+  and execute under lawful posture
+
+Idempotency prevents accidental repeats.
+It must not prevent intentional repeats.
+
+──────────────────────────────────────────────────────────────────────────────
+ABSOLUTE CONSTRAINTS
+──────────────────────────────────────────────────────────────────────────────
+
+Idempotency and duplicate prevention must:
+- be enforced at platform level before side effects
+- use deterministic normalization-based keys
+- handle transport retries safely
+- preserve truth posture in responses
+- support partial duplicates for multi-target actions
+- remain auditable
+
+Idempotency and duplicate prevention must never:
+- rely on raw text matching alone
+- re-execute silently on duplicate detection
+- claim repeated execution when suppressed
+- upgrade belief as a side effect of suppression
+- allow transport retries to cause unsafe repeated actions
+
+Duplication is normal.
+Unsafe duplication is forbidden.
+
+END OF 16.7

@@ -1,0 +1,90 @@
+## Command Receipt Log
+WRAPPER: synapse_quest_run.sh
+ENGINE_ROOT: /home/notsolikely/Ashby_Engine
+DATA_ROOT: /home/notsolikely/Ashby_Data
+---
+CMD: source /home/notsolikely/venvs/ashby-env/bin/activate && cd /home/notsolikely/Ashby_Engine && test -f requirements-stuart-v1.txt && test -f webapp/stuart_frontend/stuart_app/package.json && test -f webapp/stuart_frontend/stuart_app/index.html && test -f webapp/stuart_frontend/stuart_app/vite.config.js && test -f webapp/stuart_frontend/stuart_app/tailwind.config.js && test -f webapp/stuart_frontend/stuart_app/postcss.config.js && test -f webapp/stuart_frontend/stuart_app/eslint.config.js && test -f webapp/stuart_frontend/stuart_app/jsconfig.json && test -f webapp/stuart_frontend/stuart_app/components.json && npm --prefix webapp/stuart_frontend/stuart_app run build
+
+> stuart-frontend@0.0.0 build
+> vite build
+
+RC: 0
+CMD: source /home/notsolikely/venvs/ashby-env/bin/activate && cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_formalization_titles_api_v1.py tests/test_meetings_web_upload_run.py tests/test_meetings_run_params_validation.py
+......                                                                   [100%]
+=============================== warnings summary ===============================
+tests/test_formalization_titles_api_v1.py::test_formalizations_list_includes_title_override_or_default
+  /home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/_pytest/threadexception.py:58: PytestUnhandledThreadExceptionWarning: Exception in thread Thread-1 (run_job)
+  
+  Traceback (most recent call last):
+    File "/usr/lib/python3.12/threading.py", line 1073, in _bootstrap_inner
+      self.run()
+    File "/usr/lib/python3.12/threading.py", line 1010, in run
+      self._target(*self._args, **self._kwargs)
+    File "/home/notsolikely/Ashby_Engine/ashby/modules/meetings/pipeline/job_runner.py", line 560, in run_job
+      update_run_state(
+    File "/home/notsolikely/Ashby_Engine/ashby/modules/meetings/store.py", line 248, in update_run_state
+      raise FileNotFoundError(f"Unknown run_id (missing manifest): {run_path}")
+  FileNotFoundError: Unknown run_id (missing manifest): /home/notsolikely/ashby_runtime/stuart/runs/run_01KJRWE4GDTYCAPH0VB1JZ97Q6/run.json
+  
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+    warnings.warn(pytest.PytestUnhandledThreadExceptionWarning(msg))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+6 passed, 1 warning in 4.42s
+RC: 0
+CMD: source /home/notsolikely/venvs/ashby-env/bin/activate && cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_formalization_titles_api_v1.py tests/test_meetings_web_upload_run.py tests/test_meetings_run_params_validation.py
+......                                                                   [100%]
+=============================== warnings summary ===============================
+tests/test_formalization_titles_api_v1.py::test_api_run_persists_title_and_patch_renames
+  /home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/_pytest/threadexception.py:58: PytestUnhandledThreadExceptionWarning: Exception in thread Thread-1 (run_job)
+  
+  Traceback (most recent call last):
+    File "/usr/lib/python3.12/threading.py", line 1073, in _bootstrap_inner
+      self.run()
+    File "/usr/lib/python3.12/threading.py", line 1010, in run
+      self._target(*self._args, **self._kwargs)
+    File "/home/notsolikely/Ashby_Engine/ashby/modules/meetings/pipeline/job_runner.py", line 574, in run_job
+      a0 = matrix.normalize(run_dir, resolved.source_path)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/notsolikely/Ashby_Engine/ashby/modules/meetings/pipeline/normalize.py", line 52, in normalize_ffmpeg
+      raise RuntimeError(f"ffmpeg failed (rc={p.returncode}): {p.stderr}")
+  RuntimeError: ffmpeg failed (rc=183): ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers
+    built with gcc 13 (Ubuntu 13.2.0-23ubuntu3)
+    configuration: --prefix=/usr --extra-version=3ubuntu5 --toolchain=hardened --libdir=/usr/lib/x86_64-linux-gnu --incdir=/usr/include/x86_64-linux-gnu --arch=amd64 --enable-gpl --disable-stripping --disable-omx --enable-gnutls --enable-libaom --enable-libass --enable-libbs2b --enable-libcaca --enable-libcdio --enable-libcodec2 --enable-libdav1d --enable-libflite --enable-libfontconfig --enable-libfreetype --enable-libfribidi --enable-libglslang --enable-libgme --enable-libgsm --enable-libharfbuzz --enable-libmp3lame --enable-libmysofa --enable-libopenjpeg --enable-libopenmpt --enable-libopus --enable-librubberband --enable-libshine --enable-libsnappy --enable-libsoxr --enable-libspeex --enable-libtheora --enable-libtwolame --enable-libvidstab --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx265 --enable-libxml2 --enable-libxvid --enable-libzimg --enable-openal --enable-opencl --enable-opengl --disable-sndio --enable-libvpl --disable-libmfx --enable-libdc1394 --enable-libdrm --enable-libiec61883 --enable-chromaprint --enable-frei0r --enable-ladspa --enable-libbluray --enable-libjack --enable-libpulse --enable-librabbitmq --enable-librist --enable-libsrt --enable-libssh --enable-libsvtav1 --enable-libx264 --enable-libzmq --enable-libzvbi --enable-lv2 --enable-sdl2 --enable-libplacebo --enable-librav1e --enable-pocketsphinx --enable-librsvg --enable-libjxl --enable-shared
+    libavutil      58. 29.100 / 58. 29.100
+    libavcodec     60. 31.102 / 60. 31.102
+    libavformat    60. 16.100 / 60. 16.100
+    libavdevice    60.  3.100 / 60.  3.100
+    libavfilter     9. 12.100 /  9. 12.100
+    libswscale      7.  5.100 /  7.  5.100
+    libswresample   4. 12.100 /  4. 12.100
+    libpostproc    57.  3.100 / 57.  3.100
+  [in#0 @ 0x63db33e7df00] Error opening input: Invalid data found when processing input
+  Error opening input file /tmp/pytest-of-notsolikely/pytest-25/test_api_run_persists_title_an0/stuart_runtime/contributions/con_01KJRWEPV4PSPF5Q11W5NW0GXQ/source.wav.
+  Error opening input files: Invalid data found when processing input
+  
+  
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+    warnings.warn(pytest.PytestUnhandledThreadExceptionWarning(msg))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+6 passed, 1 warning in 7.56s
+RC: 0
+CMD: source /home/notsolikely/venvs/ashby-env/bin/activate && cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_formalization_titles_api_v1.py tests/test_meetings_web_upload_run.py tests/test_meetings_run_params_validation.py
+......                                                                   [100%]
+=============================== warnings summary ===============================
+tests/test_formalization_titles_api_v1.py::test_api_run_persists_title_and_patch_renames
+  /home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/pyannote/core/notebook.py:134: MatplotlibDeprecationWarning: The get_cmap function was deprecated in Matplotlib 3.7 and will be removed in 3.11. Use ``matplotlib.colormaps[name]`` or ``matplotlib.colormaps.get_cmap()`` or ``pyplot.get_cmap()`` instead.
+    cm = get_cmap("Set1")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+6 passed, 1 warning in 5.51s
+RC: 0
+FAIL: governance validation errors:
+- 03_VERIFY.md is placeholder-only; it must contain real verification content
+- 04_OUTCOME.md is placeholder-only; it must state what is now true + artifacts/paths
+BLOCKED: governance validate failed (see output above).
+PASS: governance validation OK for QUEST_169 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_169__2026-03-01__stuart_v1_d8_1of7_formalizationtitles_runmetadata_and_renameapi
+OK: finalize complete (validation PASS recorded).

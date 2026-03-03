@@ -1,0 +1,69 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_066
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 5 (6/7): CLI v1 upload + run commands (operator surface)
+
+Context: Stuart CLI
+
+Origin:
+Control Sync — 2026-02-04 (Stuart v1 finish-line: REV5)
+
+Priority: P1
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV5.txt (Dungeon 5)
+- Engine: ashby/modules/meetings/cli_stuart.py
+
+Status: COMPLETE
+
+Audit Bundle Path:
+  /mnt/data/Ashby_Data/Audits/Execution/QUEST_066__2026-02-09__cli_upload_and_run_commands
+
+Accepted On:
+2026-02-09
+Accepted By:
+Hands (Peter)
+Completed On:
+2026-02-09
+Completed By:
+Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Implement CLI commands that mirror the RunRequest contract: upload a file, choose mode/speakers/retention/template, confirm, run, and print the primary outputs paths.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Add `stuart upload <file>`
+- Add `stuart run --session <id> --mode ... --speakers ... --retention ... --template ...`
+- Print primary outputs paths
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Search/export (next quest)
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_061
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- CLI should never guess file names; use run manifest pointers.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] CLI upload stores contribution/session
+- [ ] CLI run triggers processing and prints output paths
+- [ ] No silent auto-run; confirm step exists
+

@@ -1,0 +1,79 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_046
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 2 (5/7): formalizer v1 (meeting → minutes.json with citations)
+
+Context: Stuart meeting formalization
+
+Origin:
+Control Sync — 2026-02-04 (Stuart v1 finish-line: REV7)
+
+Priority: P0
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV7.txt (Dungeon 2)
+- Stuart Codex 3.2: minutes must be structured + auditable
+- Engine: OpenAI client usage exists in ashby/brain/*; reuse style
+
+Status: COMPLETED
+Audit Bundle Path:
+Audits/Execution/QUEST_046__2026-02-04__stuart_v1_dungeon_2_5_7_llm_formalizer_v1_meeting_minutes_json_with_citations_2026-02-04
+Accepted On:
+2026-02-04
+
+Accepted By:
+Hands (Peter)
+
+Completed On:
+2026-02-06
+
+Completed By:
+Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Implement the v1 meeting minutes formalizer that calls an LLM to convert transcript segments into a valid minutes.json (v1) with citations to segment_id anchors.
+
+Must honor execution profile gating: LOCAL_ONLY uses deterministic fallback; HYBRID/CLOUD may use LLM when enabled.
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Add `formalize_meeting_to_minutes_json(run_dir, template_id, retention)`
+- Call OpenAI (or configured LLM) and request STRICT JSON output
+- Validate output against schema; on validation failure, write a failure receipt (no silent partials)
+- Truth discipline: never invent attendance/decisions/actions; require citations for each decision/action
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Evidence map v2 (Dungeon 3)
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_043
+- QUEST_044
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Profile gating required:
+  - LOCAL_ONLY: no remote LLM calls. Must run fully offline. Provide deterministic fallback formalization.
+  - HYBRID/CLOUD: remote LLM calls allowed only when explicitly enabled; must gracefully fall back if unavailable.
+  - Tests must mock any remote LLM calls.
+
+- If model returns non-JSON, capture raw text into artifacts for debugging, but fail the run stage.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] Meeting mode produces a valid `artifacts/minutes.json`
+- [ ] Each decision/action item includes citations to transcript segment_ids
+- [ ] Validation failures are loud + recorded
+- [ ] `python3 -m pytest -q` passes
+

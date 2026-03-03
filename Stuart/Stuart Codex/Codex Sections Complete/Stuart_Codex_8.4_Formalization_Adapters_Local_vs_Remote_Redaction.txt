@@ -1,0 +1,161 @@
+STUART CODEX
+8.4 Formalization Adapters (Local vs Remote, Redaction) (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines formalization adapters: the components that convert aligned transcripts into structured outputs (Stage 5).
+
+This is the “LLM layer” (or structured NLP layer) that produces meeting minutes, journals, incident reports, creator notes, captions structuring, etc.
+It is the highest hallucination-risk layer and therefore is governed by strict invariants.
+
+Chat-canon constraints enforced here:
+- Formalization must be evidence-backed and auditable.
+- Templates are enumerated and mode-scoped; no hallucinated modes/templates.
+- Retention controls phrasing preservation.
+- Analyst vs Collaborator is enforced; suggestions are labeled and segregated.
+- Local vs remote formalization is a privacy boundary; remote requires disclosure/confirmation.
+- For LOCAL_ONLY, formalization must run entirely local.
+
+1) What a formalization adapter is responsible for
+
+A formalization adapter is responsible for:
+- consuming aligned_transcript.json,
+- consuming template configuration and retention settings,
+- producing output.json with structured sections and extracted items,
+- producing evidence maps (or the data needed to build them),
+- producing output.md (optional; renderer may do this),
+- and ensuring no invented facts.
+
+A formalization adapter is NOT responsible for:
+- collecting raw audio (AudioSource),
+- transcription,
+- diarization,
+- storage layout,
+- global indexing (though it may output extracted items for indexing),
+- printing mechanics (renderer handles PDF).
+
+2) Formalization adapter interface (conceptual)
+
+A minimal interface must support:
+
+- formalize(aligned_transcript, template_config, retention, stance, config) -> formalization_result
+
+Where formalization_result includes:
+- structured output data (sections/items)
+- citations to transcript segment IDs
+- uncertainty markers
+- superseded/current markers (if applicable)
+- optional: suggested items (if stance is Collaborator and suggestions are enabled)
+
+Recommended additional interface abilities:
+- formalize_chunk(chunk_transcript, ...) -> chunk_result
+- merge_chunk_results(chunk_results, ...) -> merged_result
+This supports long sessions and deterministic merging.
+
+3) Capability declarations (adapter must self-describe)
+
+Every formalization adapter MUST declare:
+- supports_chunked_formalization (true/false)
+- supports_deterministic_merge (true/false or “via Stuart merge layer”)
+- max_context_hint (optional; used only for planning, never for correctness)
+- supports_strict_citation_output (true/false)
+- supports_redaction_preprocessing (true/false; or handled by separate redaction adapter)
+
+If supports_chunked_formalization is false:
+- Stuart must implement chunking via wrapper layers and merge externally.
+Chunking is required by the pipeline contract (Section 7.8).
+
+4) Local vs remote formalization (profile-driven)
+
+LOCAL_ONLY:
+- formalization runs entirely local.
+- no transcript text leaves the machine.
+- if the user requests a remote formalizer, Stuart must refuse or require profile change with explicit confirmation.
+
+HYBRID:
+- local formalizer is allowed.
+- remote formalizer is allowed only if:
+  - Stuart discloses what text will be sent (aligned transcript text, plus template config),
+  - user confirms,
+  - redaction options are offered before sending,
+  - run record logs provider/adapter and data scope.
+
+CLOUD:
+- remote formalizer is typical.
+- explicit execution gating still applies.
+- run record must still capture provider/adapter and data scope.
+
+5) Redaction and minimization (required for remote use)
+
+When using a remote formalization adapter, Stuart must support data minimization:
+- send only what is needed (aligned transcript text + segment IDs + timestamps + template structure)
+- do not send unrelated session data
+
+Redaction controls (user-driven):
+- remove or mask names/emails/phone numbers
+- mask sensitive entities
+- remove attachments or notes
+
+Important:
+Redaction is not magic. If redaction is enabled, outputs must disclose that content was redacted before processing (audit transparency).
+
+6) Evidence and citation integrity
+
+Formalization adapters must output citations referencing:
+- transcript segment IDs
+- timestamp ranges
+Citations must be strict for:
+- decisions
+- action items
+- incident timelines
+and must follow template evidence policy for other sections.
+
+If a formalization adapter cannot reliably output citations:
+- it is not acceptable for high-trust modes (meeting/incident) unless wrapped by a strict extraction layer that constructs citations deterministically.
+
+7) Hallucination prevention mechanisms (contract-level)
+
+Because formalization is the hallucination-risk layer, the contract includes:
+
+H-1) No invention
+If content is not present in the transcript, it must not appear as “fact.”
+
+H-2) Uncertainty disclosure
+Low-confidence speech or unclear attribution must be labeled.
+
+H-3) Suggestion segregation
+Suggestions are only allowed under Collaborator stance and must be labeled and separated.
+
+H-4) Enumerated mode/template enforcement
+Formalizer must not accept arbitrary “made up” templates/modes.
+Stuart resolves mode/template IDs before calling the formalizer.
+
+8) Collaboration/override handling
+
+Formalization adapter must support:
+- superseded vs current decision marking
+- evidence citations for both original and override points
+
+This is especially important in Creator Notes and iterative meetings.
+
+9) Printability and renderer separation
+
+Formalizer outputs structured data.
+Renderer produces:
+- output.md (if not already produced)
+- output.pdf
+
+This separation prevents “formatting drift” and ensures PDFs are consistent.
+
+10) Self-audit (8.4)
+
+Chat-canon alignment checklist:
+- Evidence-first: citations required; evidence maps preserved; no invented facts. (Maintained.)
+- Enumerated mode/template: no hallucinated structures; registry resolves IDs first. (Maintained.)
+- Retention knob: formalizer respects retention without changing truth. (Maintained.)
+- Analyst vs Collaborator: suggestions gated and labeled. (Maintained.)
+- Profile privacy boundary: LOCAL_ONLY stays local; HYBRID/CLOUD remote formalization requires disclosure, confirmation, and logging; redaction supported. (Maintained.)
+- Long sessions: formalization must support chunked/hierarchical processing + deterministic merges (Section 7.8). (Maintained.)
+
+This section is complete.

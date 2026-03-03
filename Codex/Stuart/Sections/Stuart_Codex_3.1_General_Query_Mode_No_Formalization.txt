@@ -1,0 +1,78 @@
+STUART CODEX
+3.1 General Query Mode (No Formalization) (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines General Query Mode: the default interaction style where the user asks questions about content without requesting a new formalization artifact.
+
+This was a core decision: Stuart must not force users to choose a mode or generate documents just to ask questions.
+
+1) Definition
+
+General Query Mode is the default behavior where a user:
+- uploads or references session artifacts,
+- asks questions,
+- and receives evidence-backed answers with citations,
+without generating a formalized document like meeting minutes or journal entries.
+
+General query is always available, regardless of selected formalization mode.
+
+2) Typical use cases
+
+Examples:
+- “Bring up all meetings where Greg attended.”
+- “Find every session where ‘time off’ was mentioned.”
+- “Show timestamps where donuts were mentioned.”
+- “What did we say about changing door locks in last week’s meeting?”
+- “List every time Speaker 3 interrupted.”
+
+These requests are about retrieval and inspection, not document generation.
+
+3) What General Query Mode must do
+
+Q1) Work without selecting a formalization mode
+The user should not have to pick Meeting/Journal/Incident/Creator just to search.
+
+Q2) Use saved artifacts and indexes
+General query should operate over:
+- saved transcripts (ground truth),
+- saved formalizations (derived views),
+- and the session index (keyword/embedding), if present.
+
+Q3) Cite evidence
+When answering “what was said” questions, Stuart must cite transcript evidence and timestamps.
+
+Q4) Ask permission before content processing
+If a transcript does not exist yet, and answering requires transcription, Stuart must propose a plan and request permission to run.
+
+Example:
+User: “What did they decide about locks?”
+Stuart: “To answer that, I need to transcribe the audio. Proceed?”
+
+4) Output format for query results
+
+In V1, query results should be returned in chat as:
+- a list of sessions (date/title),
+- relevant snippets or short descriptors,
+- and actions: Open / Print / Export / Jump to timestamp.
+
+Stuart does not need an elaborate file browser to be useful. Chat output is sufficient.
+
+5) Relationship to formalization modes
+
+General query is complementary:
+- Users may query first to understand content.
+- Then users may choose a mode/template and generate a formalization.
+- Users may re-query later across the archive.
+
+General query is the “search and interrogation” layer; formalization is the “produce structured artifact” layer.
+
+6) Self-audit (3.1)
+
+This section encodes our canonical decision:
+- general query mode is always available and does not require mode selection,
+- it supports the “don’t generate documents by default” principle,
+- and it reinforces explicit execution gating when transcription is needed.
+
+This section is complete.

@@ -1,0 +1,194 @@
+STUART — CONTROL SYNC SNAPSHOT
+Date: 2026-01-12
+Owner(s): Peter (n0tsolikely) + Ash
+Status: END OF CONTROL SYNC / STATE SEALED
+
+===============================================================================
+PURPOSE OF THIS SNAPSHOT
+===============================================================================
+This snapshot is a continuity artifact for the Stuart project.
+It captures what was decided, what was produced, what was corrected, and what is now
+considered canonical — so work can resume later without reconstructing this control sync.
+
+This snapshot DOES NOT replace the Stuart Codex.
+- The Codex remains the authoritative statute (complete, non-summarized).
+- The Canonical Vision remains the authoritative narrative of intent.
+- This snapshot only records the state transition that happened in this control sync.
+
+===============================================================================
+0) EXECUTIVE STATE — WHAT IS NOW TRUE
+===============================================================================
+
+0.1 Stuart is now fully specified as a Codex (sectioned contract), with a separate
+    Canonical Vision narrative. The Codex is sealed as canonical.
+
+0.2 The primary intended interface for Stuart is a local-first web app (PWA-capable),
+    which can run:
+    - fully LOCAL_ONLY (offline) on a machine,
+    - on a local network (phone connects to local Stuart host),
+    - or optionally HYBRID/CLOUD when explicitly enabled.
+
+0.3 Telegram/chat-bot frontends are NOT a core requirement and are intentionally parked.
+    They may exist later only as an optional “door,” not the primary UI.
+
+0.4 Stuart’s durability (“memory”) is file/artifact-based, not chat-memory-based:
+    - Sessions + artifacts + index = recall across weeks/months.
+    - Chat is only an interface for steering execution; artifacts are the truth.
+
+0.5 Truth posture is locked:
+    - transcripts are preserved,
+    - formalizations must be evidence-anchored to transcript segments/timestamps,
+    - no invented modes/templates,
+    - explicit execution gating is default.
+
+0.6 A vNext “parking lot” roadmap document exists (non-canonical) derived from a 10–15 year
+    thought experiment. It is a forward map and refactor-avoidance guide.
+
+===============================================================================
+1) WHAT WAS ACCOMPLISHED (HIGH LEVEL)
+===============================================================================
+
+1.1 Stuart Codex created as a complete, sectioned specification.
+    - A canonical Table of Contents was produced.
+    - All subsections were authored to match the TOC structure.
+    - The Codex intentionally separates: Constitution / UX / Modes / Templates / Rules /
+      Data Model / Pipeline / Adapters / Security / V1 scope / vNext appendix.
+
+1.2 “Stuart — The Canonical Vision” authored as a single, highly detailed narrative document
+    describing Stuart end-to-end (what it is, why it exists, how it works, and long-term intent).
+    - Decision reinforced: Vision stays separate from Codex (Codex is law; Vision is the why).
+
+1.3 Ten-year thought experiment completed; outputs distilled into a non-canonical “vNext Ideas & To-Dos”
+    document that captures:
+    - future expansions (use cases, domains, products),
+    - anticipated problems and mitigation patterns,
+    - refactor traps to avoid,
+    - architectural doorways to reserve now.
+
+1.4 Canon hygiene work was performed (naming/numbering cleanup):
+    - The Codex TOC is single-source.
+    - Stray roadmap/integration add-ons were removed from Codex canon.
+    - Pipeline sections 7.5–7.7 were rewritten under stricter discipline and merged cleanly.
+
+===============================================================================
+2) CANONICAL ARTIFACTS PRODUCED / LOCKED
+===============================================================================
+
+2.1 Canonical statute (Codex)
+- Stuart Codex (complete) — sectioned files per TOC; sealed as canon.
+- Stuart Codex TOC — the single canonical Table of Contents for navigation.
+
+2.2 Canonical narrative (intent)
+- “Stuart — The Canonical Vision” (single long narrative).
+  This explains Stuart to someone who has never heard of it and provides the philosophy
+  and end-to-end concept.
+
+2.3 Non-canonical roadmap / parking lot
+- “Stuart — vNext Ideas & To-Dos (10–15 Year Thought Experiment)”
+  This is intentionally NOT part of the Codex. It exists to prevent refactors and
+  preserve future directions without contaminating V1 constraints.
+
+===============================================================================
+3) MATERIAL DECISIONS LOCKED IN THIS CONTROL SYNC
+===============================================================================
+
+3.1 Interface decision
+- Stuart’s primary interface is a local-first web app (PWA-capable).
+- The UI must support: mode selection, template selection (scoped by mode), retention selection,
+  transcript visibility toggles, and explicit execution gating.
+
+3.2 Explicit execution gating is default
+- Uploading a file does not automatically run the pipeline unless explicitly triggered.
+- This prevents wrong-file accidents and privacy/visibility failures.
+
+3.3 “Memory” is artifacts + index, not chat memory
+- Recall is achieved by storing session artifacts and indexing them for query.
+- Users can ask: “pull up all meetings mentioning X,” “all incidents with Y,” etc.
+
+3.4 Modes vs templates separation
+- Modes define output type and governance; templates define formatting + section schema.
+- Templates are scoped by mode; template selection UI is contextual.
+
+3.5 Retention knob is a first-class control
+- LOW/MED/HIGH/NEAR-VERBATIM modifies how much phrasing is preserved in formalizations.
+- Transcript remains verbatim; retention knob affects formalized outputs.
+
+3.6 Evidence posture (anti-hallucination)
+- Formalizations must cite evidence back into the aligned transcript.
+- If evidence is missing or ambiguous, Stuart flags uncertainty rather than inferring.
+
+3.7 Telegram integration parked
+- Telegram is not needed for core product value and introduces LOCAL_ONLY truth issues.
+- Telegram may return later only as a convenience door; not a core path.
+
+3.8 Canon separation doctrine
+- Canonical Vision is separate from Codex.
+- Codex remains non-summarized statute; snapshots/roadmaps are allowed but must not replace it.
+
+===============================================================================
+4) KEY RISKS / CONCERNS IDENTIFIED (AND HOW WE HANDLED THEM)
+===============================================================================
+
+4.1 Long sessions and output limits
+- Risk: very long transcripts + formalizations exceed single-output limits.
+- Mitigation: hierarchical chunking + staged formalization + multi-artifact export formats.
+
+4.2 Speaker diarization realities
+- Risk: diarization isn’t perfect; overlap exists; misattribution creates trust collapse.
+- Mitigation: conservative attribution defaults, explicit speaker mapping overlays, evidence anchors.
+
+4.3 Privacy / offline truth
+- Risk: networked chat frontends compromise “LOCAL_ONLY” at the upload path.
+- Mitigation: web app + local service is canonical; profiles disclose any remote execution.
+
+4.4 Template ecosystem risks
+- Risk: template sharing/marketplace leaks PII and introduces injection vectors.
+- Mitigation: template sharing is future-gated; scrubbers + review + provenance required.
+
+===============================================================================
+5) WHAT WE INTENTIONALLY DID NOT DO
+===============================================================================
+
+- No implementation code was written in this control sync.
+- No new “modes explosion” was locked as V1 beyond what the Codex defines.
+- No marketplace was built or promised; it remains future-gated.
+- No chat-frontend commitment was made; Telegram is parked.
+
+===============================================================================
+6) CURRENT CANON BOUNDARY (IMPORTANT)
+===============================================================================
+
+Canon is now defined as:
+- The Stuart Codex (TOC + all numbered sections through 11.5).
+- “Stuart — The Canonical Vision” narrative.
+
+Non-canonical supporting artifacts (allowed, useful, but not binding):
+- “vNext Ideas & To-Dos (10–15 Year Thought Experiment)” roadmap.
+
+===============================================================================
+7) NEXT ORDERS / NEXT WORK SESSION (SUGGESTED)
+===============================================================================
+
+Now that canon is sealed, the next work session should shift from writing to building.
+Suggested next actions (do in whatever order keeps momentum):
+
+7.1 Repo + placement
+- Confirm Stuart’s canonical placement inside Ashby repo (agent module path).
+- Create the minimal scaffold: pipeline/, adapters/, schemas/, ui/, tests/.
+
+7.2 Minimal end-to-end path (CLI first)
+- Implement: Stage 0–4 (session init → normalize → diarize → transcribe → align)
+- Save canonical artifacts to deterministic session paths.
+- Implement: initial index (keyword/FTS) + basic retrieval with evidence pointers.
+
+7.3 UI skeleton (web app)
+- PWA-capable web UI fronting the local service.
+- Support: upload, mode/template selection, retention selection, Run gating, exports.
+
+7.4 Truth harness
+- Create small golden test sessions to prevent future regressions.
+- Add “no embarrassment” checks (evidence required; uncertainty flagged).
+
+===============================================================================
+END OF SNAPSHOT
+===============================================================================

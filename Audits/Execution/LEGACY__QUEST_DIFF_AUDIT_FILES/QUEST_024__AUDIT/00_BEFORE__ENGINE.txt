@@ -1,0 +1,26 @@
+== git status --porcelain ==
+ M ASHBY_REPO_TREE.txt
+ M io/telegram/ashby_telegram_control.py
+ D "secrets/ashby_nest -REDACTED.env"
+ D "secrets/env - REDACTED.py"
+?? ashby/interfaces/telegram/
+?? ashby/modules/
+?? pytest.ini
+?? tests/test_meetings_clarify_preview.py
+?? tests/test_meetings_cli_stuart.py
+?? tests/test_meetings_execution_gating.py
+?? tests/test_meetings_job_runner.py
+?? tests/test_meetings_mode_registry.py
+?? tests/test_meetings_pipeline_transcribe_diarize.py
+?? tests/test_meetings_render_md_pdf_evidence.py
+?? tests/test_meetings_router_plan.py
+?? tests/test_meetings_run_init.py
+?? tests/test_meetings_search_ranked_results_citations.py
+?? tests/test_meetings_sqlite_fts_index_ingestion.py
+?? tests/test_meetings_template_registry.py
+?? tests/test_telegram_stuart_door_core.py
+?? webapp/
+
+== pytest (pre) ==
+...................................                                      [100%]
+35 passed in 0.55s

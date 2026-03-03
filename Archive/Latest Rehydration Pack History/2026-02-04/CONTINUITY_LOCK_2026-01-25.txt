@@ -1,0 +1,104 @@
+CONTINUITY LOCK — STUART v1 (MEETINGS MODULE) — REVISION 2026-01-25
+Authoritative timestamp: 2026-01-25 08:17:35
+
+Use this as the “START HERE” rehydrate packet when opening a NEW chat that resumes Stuart v1.
+This lock supersedes all prior Stuart v1 continuity locks. It does NOT delete prior history.
+It updates reality and removes drift risk as of 2026-01-25.
+
+================================================================================
+1) WHERE WE ARE RIGHT NOW (AS OF 2026-01-25)
+================================================================================
+You are resuming a live, mid-raid build of Stuart v1 inside Ashby.
+
+Key state:
+- Synapse Governance is active law.
+- BUFFS are mandatory session ignition primitives.
+- Execution occurs in ephemeral environments; continuity is preserved via artifacts.
+- Quest completion now requires audit receipts.
+
+Canonical truth sources:
+- Ashby_Data is authoritative for state:
+  /mnt/data/Ashby_Data/Quest Board/Accepted/
+  /mnt/data/Ashby_Data/Quest Board/Completed/
+- Active Guild Orders define raid scope:
+  /mnt/data/Ashby_Data/Guild Orders/ACTIVE  RAIDS/
+
+Resume rule:
+- Start with quests currently in Accepted/.
+- If ordering is ambiguous, STOP and ask Hands.
+
+================================================================================
+2) HARD PROCESS RULES (SYNAPSE GUILD SYSTEM)
+================================================================================
+Dailies loop:
+1) Control Sync
+2) Decide scope
+3) Implement
+4) Test
+5) Snapshot
+6) Stop
+7) Resume
+
+Quest discipline:
+- Accepted quests are commitments.
+- A quest is not Completed unless:
+  - All DoD boxes are truthfully checked
+  - Verification evidence exists (tests / diffs / terminal output)
+  - An audit receipt file exists and is referenced
+  - Talent Awarded status is accurate
+
+Audit receipt rule:
+- Every Completed quest must reference an audit receipt located at:
+  Quest Board/Quest Diff Audit Files/
+- Completion without a receipt is invalid.
+
+================================================================================
+3) BUFFS (MANDATORY)
+================================================================================
+Buffs are canonical session ignition primitives:
+  /mnt/data/Ashby_Data/Buffs/
+
+Canonical Buffs:
+- ASHBY_EXECUTION_PROTOCOL.txt
+- ASHBY_DATA_DIRECTORY_MAP.txt
+- ASHBY_SESSION_START_CHECK.txt
+
+Rule:
+- Always Buff before a Raid.
+- Session Start Check is mandatory at new chat start.
+
+================================================================================
+4) SNAPSHOT TRUTH
+================================================================================
+Read before executing any quest:
+- Synapse Governance (uploaded first)
+- Latest Control Sync snapshot(s)
+- Latest End-of-Day snapshot(s)
+
+Truth rule:
+- Snapshots are receipts.
+- No claim of work unless artifacts + tests confirm it.
+
+================================================================================
+5) CANONICAL CODEBASE RULE
+================================================================================
+All code changes occur in ONE canonical engine repo:
+  /mnt/data/Ashby_Engine/
+
+ZIP rules:
+- ZIPs are handoff artifacts only.
+- Extract once per session if needed.
+- Never re-extract to “check” work.
+- Repo tree must be regenerated at start and end of session.
+
+================================================================================
+6) STOP CONDITIONS
+================================================================================
+STOP and ask Hands if:
+- Canonical folders are missing
+- Audit receipt is missing
+- Quest ordering is ambiguous
+- Tests cannot run
+- Any uncertainty enters decision-making
+
+End of continuity lock.

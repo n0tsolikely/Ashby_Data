@@ -1,0 +1,80 @@
+STUART — BOOTSTRAP PROMPT (NEW CHAT)
+Date: 2026-02-09
+Owner: Hands (Peter) / Brains (Ash)
+Scope: Stuart v1 (Meetings + Journal) — Post EOD 2026-02-09 (Dungeon 5 complete)
+
+PURPOSE
+- Rehydrate a brand new chat into the exact governed state of the Stuart v1 raid.
+- This prompt is NOT permission to execute; it is permission to become consistent.
+
+CANONICAL ROOTS (ABSOLUTE)
+- Governance: /mnt/data/Synapse_OS_Governance
+- Data:       /mnt/data/Ashby_Data
+- Engine:     /mnt/data/Ashby_Engine
+
+MANDATORY NO-HEURISTICS LAW (HARD)
+- Do not “assume” what the Codex/snapshots say.
+- Always verify by reading the canonical artifacts on disk.
+- If an assertion cannot be verified from artifacts, stop and request the missing evidence.
+
+OPTIONAL PACK RULE (IMPORTANT)
+- Rehydration Packs + Execution Packs are present only when there is a current active one.
+- If a pack folder exists but is empty, that is NOT an error — it means no active pack.
+- For THIS raid, the pack IS present and is authoritative resume law.
+
+MANDATORY READ ORDER (SESSION START)
+1) Synapse Governance (Tier 0)
+   - /mnt/data/Synapse_OS_Governance/README.txt
+   - /mnt/data/Synapse_OS_Governance/INDEX.txt
+   - /mnt/data/Synapse_OS_Governance/Processes/SYNAPSE_GUILD__THE_LOOP.txt
+   - /mnt/data/Synapse_OS_Governance/Processes/SYNAPSE_GUILD__TRUTH_GATE.txt
+
+2) Subject Buffs (Ashby) — Tier 0
+   - /mnt/data/Ashby_Data/Buffs/ASHBY_SESSION_START_CHECK.txt
+   - /mnt/data/Ashby_Data/Buffs/ASHBY_EXECUTION_PROTOCOL.txt
+   - /mnt/data/Ashby_Data/Buffs/ASHBY_DATA_DIRECTORY_MAP.txt
+   - /mnt/data/Ashby_Data/Buffs/ASHBY_PLATFORM_TRUTH_AND_PROFILE_LOCK.txt
+
+3) Vision addendum (clarifies profile vs personality + platform truth wiring)
+   - /mnt/data/Ashby_Data/Docs/ASHBY_VISION_ADDENDUM__2026-02-07__TRUTH_PROFILE_ROUTING_CLARITY.txt
+
+4) Continuity Lock (THIS folder) — binding resume law
+   - /mnt/data/Ashby_Data/Latest Rehydration Pack/CONTINUITY_LOCK_2026-02-09.txt
+
+5) Codex freeze marker (execution authorization)
+   - /mnt/data/Ashby_Data/Codex/CODEX_FREEZE.md
+
+6) Active Guild Orders (current raid scope)
+   - /mnt/data/Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS_STUART_V1_2026-02-04_REV7.txt
+
+7) Quest Board truth (commitment state machine)
+   - /mnt/data/Ashby_Data/Quest Board/Accepted/
+   - /mnt/data/Ashby_Data/Quest Board/Completed/
+   - /mnt/data/Ashby_Data/Quest Board/   (board root for unaccepted quests)
+
+8) Latest snapshots (resume anchors)
+   - Latest Control Sync:
+     - /mnt/data/Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-02-09__D5_ACCEPTED_NO_HEURISTICS_LOCK.txt
+   - Latest End-of-Day:
+     - /mnt/data/Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2026-02-09__Q061-Q067.txt
+
+9) Active Execution Pack (how to operate cleanly)
+   - /mnt/data/Ashby_Data/Latest Rehydration Pack/execution pack/00_EXECUTION_PACK_INDEX__2026-02-09.txt
+
+CURRENT STATE (WHERE WE ARE RIGHT NOW)
+- Dungeon 5 (QUEST_061 → QUEST_067) is COMPLETE.
+- Quest Board/Accepted is EMPTY.
+- Next work requires a NEW Control Sync + explicit acceptance.
+- The next unaccepted phase begins at QUEST_068 (Dungeon 6: overlays + reformalize loop).
+
+CANONICAL RULES (NON-NEGOTIABLE)
+- No God files. Each file does one job.
+- Execute only Accepted quests.
+- Truth Gate: no “done” without receipts (diffs, commands, tests, artifacts).
+- Testing law: NEVER claim a test passed/failed without running it and capturing output.
+- Zip law: every change to Ashby_Data or Ashby_Engine ships as a new combined zip.
+- No-heuristics law: verification only (see continuity lock).
+
+NEXT ACTION (DO NOT EXECUTE UNTIL HANDS SAYS GO)
+- Start a new Control Sync to decide the next accepted phase (D6 begins at QUEST_068).
+- Do not mutate engine/data without acceptance.

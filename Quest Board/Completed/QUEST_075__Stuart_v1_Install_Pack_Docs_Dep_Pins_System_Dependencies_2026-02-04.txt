@@ -1,0 +1,65 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_075
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Support: install pack docs (dependency pins + system deps preflight)
+
+Context: Stuart install/shipping
+
+Origin:
+Control Sync — 2026-02-04 (Stuart v1 finish-line: REV5)
+
+Priority: P2
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV5.txt (Ship gate support)
+
+Status: COMPLETED
+Audit Bundle Path:
+  /mnt/data/Ashby_Data/Audits/Execution/QUEST_075__2026-02-11__stuart_v1_install_pack_docs_dep_pins_system_dependencies
+Accepted On:
+2026-02-11
+Accepted By:
+Hands (Peter)
+Completed On:
+2026-02-12
+Completed By:
+Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Document and pin dependencies required for Stuart v1 (ffmpeg, torch, pyannote, weasyprint) and clarify preflight checks so a new machine can install reliably.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Pin python deps (requirements or lockfile)
+- Write system dependencies doc (ffmpeg, libpango, etc)
+- Add/clarify preflight script output
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Automated installers
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- (none)
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Be explicit about platform differences (Linux/Windows).
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] Install docs exist and are accurate
+- [x] Dependency pins are present
+

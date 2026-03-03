@@ -1,0 +1,186 @@
+CONTINUITY LOCK — STUART v2 (ASHBY) — 2026-02-17
+
+This file is the single-source “DO NOT DRIFT” continuity anchor.
+If a future session contradicts this lock, the future session is wrong.
+
+================================================================================
+0) CANON & WORKING DIRECTORIES (SINGLE SOURCE OF TRUTH)
+================================================================================
+- Canon layout inside the zip:
+  - Ashby_Engine/
+  - Ashby_Data/
+
+- Rule (hard):
+  Once the canon zip is extracted, the extracted directory becomes canonical.
+  Do not maintain parallel extracts. Do not “copy it and work there”.
+  All edits occur ONLY inside the canonical extracted directory.
+
+================================================================================
+1) SYSTEM STATE (WHERE WE ARE RIGHT NOW)
+================================================================================
+A) Stuart v1 status (previous raid):
+- D6 phase work is COMPLETE through QUEST_075 and SIDE-QUEST_079.
+- The 2026-02-15 focus was boot/install hardening (dependency pins + preflight).
+
+B) Stuart v2 status (current raid):
+- A Control Sync was completed and CLOSED on 2026-02-16.
+  Closure receipt:
+    - Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot__2026-02-16.txt
+
+- Guild Orders for the new raid exist but are currently PAUSED (not ACTIVE yet):
+    - Ashby_Data/Guild Orders/PAUSED/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt
+
+- Quest packs have been generated for:
+  - Dungeon 1 (QUEST_080 … QUEST_089)
+  - Dungeon 2 (QUEST_090 … QUEST_101)
+  These quests currently live on the Quest Board (not accepted yet):
+    - Ashby_Data/Quest Board/
+
+C) Current execution posture:
+- There are NO active guild orders at this moment (unless Hands moves them).
+- There are NO accepted quests at this moment (unless Hands accepts one).
+- Therefore: NO ENGINE EXECUTION is authorized yet by default.
+
+================================================================================
+2) BINDING PRODUCT VISION (LOCKED)
+================================================================================
+Stuart is a product surface + an engine, not just scripts.
+
+The “Base44-style UI” target is NOT about Base44 platform services.
+It’s about the UX surface model:
+- Sessions list (left), search, statuses, New Session
+- Tabs: Session / Chat / Outputs
+- Header badge: Local / Hybrid / Cloud (truthful)
+- Export zip button (session bundle)
+- Buttons are convenience; chat is canonical control surface
+- '+' attachment for audio/files
+- Run configuration controls: template, retention, processing profile
+- Real transcript and real formalizations, not fake placeholders
+
+The webapp must feel like talking to Ash, but with Stuart’s memory:
+- Session-scoped chat first; optional global later
+- Chat answers must include citations to transcript segments (timestamps/segment IDs)
+- Chat can perform transcript operations (show/hide/jump/filter)
+- Chat can trigger exports and runs (action-gated)
+
+================================================================================
+3) BINDING ENGINE LAWS (NO EXCEPTIONS)
+================================================================================
+A) Truth laws:
+- Upload != Run.
+  Uploading audio creates a contribution; running processing must be an explicit action gate.
+- No fake transcripts. Ever.
+- No fake formalizations. Ever.
+
+B) Diarization law:
+- Diarization belongs to TRANSCRIBE (at transcription time).
+- Formalization does NOT own diarization.
+
+C) Formalization definition (language lock):
+- A “formalization” is NOT “a file that contains everything”.
+- A formalization is a loss-minimized restructuring of the transcript into an organized document
+  (meeting minutes / incident report / journal entry) without fabricating facts.
+- Templates + retention level govern structure + how verbatim it stays.
+- Evidence mapping must exist (sections ↔ transcript segment anchors).
+
+D) Transcript versions:
+- The system must support multiple transcript versions per session:
+  - e.g. diarize ON vs diarize OFF
+- Formalization runs MUST declare which transcript_version_id they consumed.
+- UI must allow selecting transcript versions.
+
+E) Speaker mapping overlay:
+- SPEAKER_01 → “Greg” mapping is an overlay.
+- Do NOT rewrite transcript truth; keep diarization speaker IDs.
+- The overlay feeds display, formalization prompts, and retrieval indices.
+
+F) Profile truth:
+- Local / Hybrid / Cloud must be truthful at runtime.
+- HYBRID means remote LLM may be used ONLY when explicitly enabled and disclosed.
+- CLOUD is future; do not pretend.
+
+================================================================================
+4) BASE44 PORT LAW (NO PLATFORM DEP, NO NAMING CONTAMINATION)
+================================================================================
+- The Base44 UI bundle is used only as UI code source.
+- Remove Base44 platform glue:
+  - no @base44/sdk
+  - no @base44/vite-plugin
+  - no Base44 auth/navigation tracker assumptions
+
+- No “Base44 compatibility shim” that forces Stuart backend naming to match Base44.
+  We do NOT rename our engine to base44 nouns.
+  Instead:
+  - create a canonical frontend API module (stuartClient) with Stuart naming
+  - refactor the UI to call that module
+  - eradicate Base44 strings/imports to GREP ZERO
+
+- stuart_app.zip is stored in:
+  - Ashby_Data/Stuart/Docs/stuart_app.zip
+  plus audit/checklist docs:
+  - Ashby_Data/Stuart/Docs/STUART_Base44_UI_Code_Audit__2026-02-16.txt
+  - Ashby_Data/Stuart/Docs/STUART_Base44_UI_Surgery_Checklist__2026-02-16.txt
+
+================================================================================
+5) RAID SCOPE (WHAT WE ARE / ARE NOT DOING RIGHT NOW)
+================================================================================
+IN SCOPE (immediate):
+- Dungeon 1: Make the UI boot as a standalone Vite+React app in our repo, no Base44 deps.
+- Dungeon 2: Define and implement API surface so UI can talk to our backend cleanly.
+
+NOT IN SCOPE (for now; later dungeons):
+- Full multi-tenant cloud storage + auth + hosted GPU fleet
+- Mobile app wrappers
+- Full “global chat across everything” beyond the initial contract (design can exist, implementation later)
+
+================================================================================
+6) REQUIRED ORDER OF OPERATIONS (TO AVOID MONTHS OF DRIFT)
+================================================================================
+- Dungeons and quests are executed in numerical order. Period.
+- For this raid:
+  - Dungeon 1 quests: 080 → 089 (in order)
+  - Dungeon 2 quests: 090 → 101 (in order)
+- Do not jump ahead to Dungeon 3+ implementation until D1 + D2 are complete,
+  because D3+ depends on the actual folder contract + API contract produced in D1 + D2.
+
+================================================================================
+7) RESUME POINT (EXACT NEXT ACTIONS)
+================================================================================
+When a new session starts:
+
+1) Run the standard session start check:
+   - Read: Ashby_Data/Buffs/ASHBY_SESSION_START_CHECK.txt
+   - Confirm canonical root and that you are working inside it.
+
+2) Read the closure receipt:
+   - Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot__2026-02-16.txt
+
+3) Read the raid spec:
+   - Ashby_Data/Guild Orders/PAUSED/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt
+   - Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt
+
+4) Confirm with Hands:
+   - If Hands says “start the raid”:
+     a) Move the guild orders file:
+        PAUSED → ACTIVE (file move only; no content rewrite).
+     b) Accept QUEST_080:
+        Quest Board → Accepted (file move), then begin execution of QUEST_080.
+     c) Execute Dungeon 1 in order 080 → 089 with proof packs.
+     d) Then execute Dungeon 2 in order 090 → 101.
+
+   - If Hands says “generate Dungeon 3+ quests”:
+     a) Default: do it AFTER D1 + D2 execution (less rework).
+     b) If Hands insists now: generate, but mark assumptions loudly.
+
+================================================================================
+8) EVIDENCE / RECEIPTS (WHAT MUST BE PRODUCED DURING EXECUTION)
+================================================================================
+Every accepted quest must produce:
+- a visible diff (what changed)
+- proof of execution (terminal output / curl output / screenshots where relevant)
+- updated quest status movement (Accepted → Completed)
+- updated snapshots when a major phase or day closes
+
+================================================================================
+END OF CONTINUITY LOCK
+================================================================================

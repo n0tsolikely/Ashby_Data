@@ -1,0 +1,70 @@
+ASHBY — CANONICAL VISION ADDENDUM
+Date: 2026-02-07
+Purpose: Clarify platform/module architecture decisions so future work does not drift.
+Status: Binding clarifier for ongoing raids (Stuart v1 + future modules like Tori).
+
+AUTHORITATIVE ANCHORS
+- Control Sync Snapshot (decision record):
+  /mnt/data/Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-02-07__PHASE_D3_D4_PLUS_PLATFORM_SPINE_WIRING.txt
+- Binding Buff (implementation constraint):
+  /mnt/data/Ashby_Data/Buffs/ASHBY_PLATFORM_TRUTH_AND_PROFILE_LOCK.txt
+
+================================================================================
+1) “PROFILE” CLARIFIER (IMPORTANT)
+================================================================================
+In Ashby/Stuart documentation, “profile” means EXECUTION PROFILE.
+
+- Execution profile = runtime/egress boundary and consent posture.
+  Examples: LOCAL_ONLY / HYBRID / CLOUD.
+- Execution profile is NOT “personality,” “tone,” “character,” or “who the assistant is.”
+
+Personality/tone is defined separately:
+- Ashby (home chat) can be conversational.
+- Stuart (meetings) can be dry/business.
+- That difference is implemented via templates/prompts/UX policy per module.
+
+Do NOT conflate these two meanings.
+
+================================================================================
+2) TRUTH ARCHITECTURE (PRODUCT-GRADE)
+================================================================================
+Target structure (scalable, minimal refactors):
+
+- PLATFORM: one reusable truth judge.
+  - The platform owns the judge runtime (TruthGateJudge) and generic evidence primitives.
+
+- MODULES: provide domain TruthPolicy + evidence adapters.
+  - Example: meetings module provides MeetingsTruthPolicy.
+  - Policies define what counts as a valid claim (decision/action/attendance) in that domain.
+
+- MODULE LOCAL “truth” is restricted to internal validation only.
+  - Allowed: consistency/invariant checks (segment_id exists, timestamps monotonic, schema valid).
+  - Not allowed: parallel truth gate systems that decide reality in the domain.
+
+Reason:
+- Prevent duplicated truth logic across modules.
+- Keep platform speech law consistent.
+- Enable future modules (Tori, etc.) to inherit the same truth discipline without redesign.
+
+================================================================================
+3) ROUTING ARCHITECTURE (REMOVABLE ORGANS)
+================================================================================
+- Core router stays THIN:
+  - detects high-level intent target (Ashby home vs a module)
+  - dispatches to module entrypoint
+  - does NOT embed module-specific domain semantics.
+
+- Modules own internal routing.
+  - Example: meetings queries (“find meetings Greg attended”) are routed inside Stuart’s module router.
+
+- Removability is mandatory.
+  - Removing a module must not leave dead module-specific logic in core.
+
+================================================================================
+4) FILE DISCIPLINE (ANTI-REFACTOR)
+================================================================================
+- Big files are OK when cohesive.
+- God files are banned.
+- Prefer separated capabilities that call each other.
+- Keep things together only when separation is genuinely worse.
+

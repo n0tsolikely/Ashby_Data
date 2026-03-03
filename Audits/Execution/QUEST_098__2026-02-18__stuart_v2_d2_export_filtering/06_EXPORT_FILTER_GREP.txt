@@ -1,0 +1,6 @@
+128:def _include_rel_for_export_type(rel: str, export_type: str) -> bool:
+129:    et = (export_type or "full_bundle").strip().lower()
+184:def export_session_bundle(
+187:    export_type: str = "full_bundle",
+231:        et = (export_type or "full_bundle").strip().lower()
+247:        if not _include_rel_for_export_type(rel, export_type=export_type):

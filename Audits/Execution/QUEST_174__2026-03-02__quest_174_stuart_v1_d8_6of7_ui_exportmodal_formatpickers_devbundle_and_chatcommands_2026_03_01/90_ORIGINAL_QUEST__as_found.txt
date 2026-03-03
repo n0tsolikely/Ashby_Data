@@ -1,0 +1,97 @@
+# QUEST_ID: QUEST_174
+# TITLE: Stuart v1 — Dungeon 8 (6/7): UI Export Modal + Format Pickers + dev_bundle + Chat /export
+# DATE: 2026-03-01
+# STATUS: ACCEPTED
+# PRIORITY: P0
+# OWNER: OpenAI Codex (CLI)
+# RISK_CLASS: R1
+
+## EXECUTIVE SUMMARY
+Dungeon 8 requires export variants and user-selectable formats. The UI currently has a basic export button with limited types and no format pickers, and chat supports only `/export` for three types.
+
+This quest upgrades the UI to:
+- expose USER_EXPORT variants + DEV_EXPORT (`dev_bundle`)
+- allow selecting transcript/formalization formats
+- update chat `/export` to cover new types
+
+## DEPENDS ON
+- QUEST_171 (export API v2 params)
+- QUEST_172 (export builder v2)
+
+## REPO REALITY CHECK
+- UI export button lives in:
+  - `Ashby_Engine/webapp/stuart_frontend/stuart_app/src/pages/Stuart.jsx`
+- Client export call:
+  - `Ashby_Engine/webapp/stuart_frontend/stuart_app/src/api/stuartClient.js` → `exportSession(sessionId, options)`
+- Chat parsing for `/export` lives in:
+  - `Stuart.jsx` (regex match)
+
+## UI REQUIREMENTS
+- Export variants:
+  - `full_bundle` (USER_EXPORT)
+  - `transcript_only` (USER_EXPORT)
+  - `formalization_only` (USER_EXPORT)
+  - `dev_bundle` (DEV_EXPORT)
+
+- Format selection:
+  - transcripts: `txt`, `md`, `pdf`
+  - formalizations: `md`, `pdf`
+
+- JSON must NOT be offered as a user-visible export format.
+
+## IMPLEMENTATION PLAN
+### A) Replace the export UI with a modal
+In `Stuart.jsx`:
+- Replace the single export button with a modal/dialog that includes:
+  1) Export type dropdown
+  2) Transcript format checkboxes (enabled when export_type includes transcripts)
+  3) Formalization format checkboxes (enabled when export_type includes formalizations)
+  4) A “DEV bundle” note when dev_bundle selected (format pickers disabled)
+
+Defaults:
+- transcripts: `txt`
+- formalizations: `pdf`
+
+### B) Wire query params
+Update `stuartClient.exportSession(sessionId, options)` to accept:
+- `export_type`
+- `transcript_formats` (comma list)
+- `formalization_formats` (comma list)
+- `format=zip`
+
+### C) Deterministic download naming
+Current UI uses `Date.now()` inside the filename.
+Dungeon 8 wants stable, traceable filenames.
+
+Update download name to:
+- `<session_id>__<sanitized_session_title>__export_<export_type>.zip`
+- If title missing, omit that segment.
+
+(Do NOT use Date.now.)
+
+### D) Chat command support
+Update the `/export` parser in `handleChatMessage()`:
+- Accept:
+  - `/export`
+  - `/export full_bundle`
+  - `/export transcript_only`
+  - `/export formalization_only`
+  - `/export dev_bundle`
+
+Optional (nice): allow flags, but not required.
+
+## TESTING LEVEL
+TL2 (UI + API)
+
+## ACCEPTANCE CRITERIA
+- Modal exposes all export types including dev_bundle.
+- User can select transcript/formalization formats.
+- Export downloads a zip matching the selected options.
+- Download filename is deterministic and includes session_id and title (if present).
+- Chat `/export dev_bundle` works.
+
+## RECEIPTS REQUIRED
+- Screenshot of export modal showing options.
+- Short screen capture or screenshot demonstrating downloaded filename.
+- Diff of frontend files touched.
+

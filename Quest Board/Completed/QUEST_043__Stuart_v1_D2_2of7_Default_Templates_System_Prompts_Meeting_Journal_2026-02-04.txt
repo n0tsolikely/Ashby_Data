@@ -1,0 +1,68 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_043
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 2 (2/7): default templates v1 (system prompts for meeting + journal)
+
+Context: Stuart template registry
+
+Origin:
+Control Sync — 2026-02-04 (Stuart v1 finish-line: REV7)
+
+Priority: P0
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV7.txt (Dungeon 2)
+- Stuart Codex 3.2/3.3: minutes/journal requirements
+- Engine: (new) ashby/modules/meetings/formalize/templates/*
+
+Status: COMPLETED
+Audit Bundle Path:
+Audits/Execution/QUEST_043__2026-02-04__stuart_v1_dungeon_2_2_7_default_templates_v1_system_prompts_for_meeting_journal_2026-02-04
+Accepted On:
+2026-02-04
+
+Accepted By:
+Hands (Peter)
+
+Completed On:
+2026-02-04
+Completed By:
+Ash (Brains)
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Create the default template prompts for Meeting Minutes and Journal modes. These prompts are used by the LLM formalizers and must encode the Codex truth discipline (no invented decisions/actions/attendance).
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Add a template registry/loader
+- Add `default_meeting` + `default_journal` templates
+- Templates must instruct output to include citations by segment_id
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Multiple fancy templates (v1 only needs default)
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_042
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Templates should be plain text files in-engine (no DB required).
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] Template loader can load default meeting and default journal templates
+- [ ] Templates include explicit truth rules + citation requirement
+- [ ] `python3 -m pytest -q` passes
+

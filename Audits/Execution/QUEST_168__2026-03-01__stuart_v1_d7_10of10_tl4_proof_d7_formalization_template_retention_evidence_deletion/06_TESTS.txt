@@ -1,0 +1,17 @@
+## Command Receipt Log
+WRAPPER: synapse_quest_run.sh
+ENGINE_ROOT: /home/notsolikely/Ashby_Engine
+DATA_ROOT: /home/notsolikely/Ashby_Data
+---
+CMD: source /home/notsolikely/venvs/ashby-env/bin/activate && cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_minutes_gateway_call_cloud_only.py tests/test_meetings_journal_gateway_call_cloud_only.py tests/test_meetings_minutes_truth_guards_empty_sections.py tests/test_meetings_render_md_pdf_evidence.py tests/test_meetings_render_journal_md_pdf_evidence.py tests/test_meetings_web_upload_run.py tests/test_delete_run_removes_fs_and_index.py tests/test_delete_session_removes_runs_and_index.py tests/test_delete_transcript_version_cascade.py
+............                                                             [100%]
+=============================== warnings summary ===============================
+tests/test_meetings_render_md_pdf_evidence.py::test_formalize_renders_md_evidence_and_pdf
+  /home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/pyannote/core/notebook.py:134: MatplotlibDeprecationWarning: The get_cmap function was deprecated in Matplotlib 3.7 and will be removed in 3.11. Use ``matplotlib.colormaps[name]`` or ``matplotlib.colormaps.get_cmap()`` or ``pyplot.get_cmap()`` instead.
+    cm = get_cmap("Set1")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+12 passed, 1 warning in 8.50s
+RC: 0
+PASS: governance validation OK for QUEST_168 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_168__2026-03-01__stuart_v1_d7_10of10_tl4_proof_d7_formalization_template_retention_evidence_deletion
+OK: finalize complete (validation PASS recorded).

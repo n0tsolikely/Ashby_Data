@@ -1,0 +1,169 @@
+STUART CODEX
+2.1 Chat-First Interface (Canonical)
+
+Status: Canonical
+Last updated: 2026-02-16
+
+This section defines the user interface principle that shapes everything else: Stuart is chat-first. The chat is not a “feature” layered onto an app; it is the primary interface. This decision is canonical because it directly supports usability, trust, and adoption.
+
+1) The core UI primitive: a chat box
+
+Stuart MUST be usable primarily through a single chat interface where a user can:
+- speak or type instructions,
+- drop files (audio/video/text/images),
+- ask questions about current or past sessions,
+- and explicitly trigger processing.
+
+The chat is the center for both:
+- “do work” interactions (transcribe, formalize, export), and
+- “ask questions” interactions (queries across sessions).
+
+2) Minimal UI controls are allowed (but not required to operate)
+
+Stuart MAY provide small UI selectors (e.g., a top-left dropdown) for:
+- Mode selection (Meeting / Journal / Incident / Creator / Captions / Translation),
+- Template selection (scoped by Mode),
+- Profile indicator (LOCAL_ONLY / HYBRID / CLOUD),
+- Retention override (optional, usually template-driven).
+
+However:
+- The presence of these controls MUST NOT make chat incomplete.
+- Everything MUST still be doable via chat commands, because chat is the canonical interface and reduces onboarding friction.
+
+
+
+2A) Chat-first inside a product shell is allowed (Base44-style), with strict constraints
+
+Stuart may present a lightweight product shell around chat to improve usability, as long as chat remains the canonical and complete interface. This includes:
+- a session library panel (recent sessions + New Session),
+- tabs like Session / Chat / Outputs,
+- a header profile badge (LOCAL_ONLY / HYBRID / CLOUD) that reflects real routing,
+- and an Export control.
+
+Constraints (non-negotiable):
+- When the app opens, Chat MUST be the default view/tab (chat-first remains true).
+- The chat input MUST include an attachment affordance (e.g., a “+” button) so the user can add audio/files directly from chat.
+- Buttons and panels are convenience controls only; every action must still be possible via chat commands.
+- The shell MUST NOT introduce hidden auto-processing; Upload ≠ Run still applies.
+
+3) What happens when the user drops a file (chat-first behavior)
+
+When a user drops a file into the chat (via drag-drop or an attachment button like '+'):
+
+- Stuart MUST acknowledge the file.
+- Stuart MUST NOT auto-run transcription or generate documents.
+- Stuart SHOULD present a simple next-step question:
+  “I have the file. What would you like me to do with it?”
+
+Stuart MAY (locally) show safe, non-content metadata to help the user decide:
+- duration,
+- file type/codec,
+- file size,
+- number of channels,
+- approximate loudness.
+But it must not extract speech content until explicitly instructed.
+
+4) Chat-first answers must be useful, not ornamental
+
+When the user asks questions like:
+- “Bring up all meetings where Greg attended,”
+- “Find every time the word ‘time off’ was mentioned,”
+- “What did we decide about changing locks on doors?”
+Stuart must respond in chat with:
+- a list of matching sessions (date/title/template used),
+- short descriptors,
+- and citations when answering content questions.
+
+In V1, Stuart is not required to have a complex file browser UI. It can return results as a chat list with actions:
+- Open
+- Print
+- Export
+- Show transcript
+- Jump to timestamp
+
+5) Session persistence is a first-class chat capability
+
+Chat-first does not mean ephemeral. Stuart MUST behave as a system that:
+- saves sessions and artifacts locally by default (profile-permitting),
+- allows later recall via chat queries,
+- and preserves a stable archive.
+
+This is not “memory.” This is saved, indexed artifacts.
+
+Therefore:
+- “Search the archive” is a chat action.
+- “List my recent sessions” is a chat action.
+- “Open session from last week” is a chat action.
+
+6) The chat must support both novice and expert workflows
+
+Novice: dropdown-driven
+A novice user can:
+- pick Mode and Template from the UI,
+- drop a file,
+- click Submit/Run,
+- and get outputs.
+
+Expert: command-driven
+An expert user can do everything via chat:
+- “Use Meeting Minutes mode, Template ‘Detailed’, retention HIGH.”
+- “Don’t run yet. Show me options.”
+- “Run diarization + transcription only.”
+- “Generate minutes now.”
+- “Print the minutes PDF.”
+- “Search all sessions for ‘donuts’.”
+
+Both must be supported without adding complexity to the UI.
+
+
+
+6A) Canonical chat actions (examples; all must be supported)
+
+Stuart MUST support all core operations via chat (natural language or explicit commands). Buttons may exist, but they must never be required. Examples:
+- “Transcribe this audio.”
+- “Transcribe with diarization ON.”
+- “Retranscribe with diarization OFF.”
+- “List transcript versions for this session.”
+- “Use transcript version v2 for formalization.”
+- “Formalize as Meeting Minutes using template Detailed, retention HIGH.”
+- “Formalize as Journal, retention NEAR-VERBATIM (cleaned).”
+- “Show transcript.” / “Hide transcript.”
+- “Show transcript around 12:34.”
+- “Show everything Speaker 2 said.”
+- “Map SPEAKER_01 to Greg.”
+- “Export formalization only.”
+- “Export transcript only.”
+- “Export full session bundle.”
+- “Open outputs.” / “List my recent sessions.”
+
+These commands are not a separate UX product; they are the canonical interface contract.
+
+7) Mode selection and general query coexist
+
+Because we chose “general query mode by default,” Stuart must support:
+- general query behavior without any mode selected, and
+- explicit mode/template selection when generating formalizations.
+
+This avoids forcing users to choose a mode when they only want to ask questions.
+
+8) Help and onboarding inside chat
+
+Stuart MUST provide safe help when asked:
+- “What can you do?”
+- “How do I use you?”
+- “Give me examples.”
+
+Help must be constrained by enumerated capabilities:
+- It must not invent modes/templates.
+- It must not promise future features as current.
+
+9) Self-audit (2.1)
+
+This section encodes the canonical UI decisions from our chat:
+- Stuart is chat-first (like Telegram/ChatGPT), not a multi-screen app.
+- Users must be able to drop files and ask questions in the same place.
+- No auto-run on drop; explicit execution gating still applies.
+- General query mode can run without selecting a formalization mode.
+- UI selectors are optional convenience, not the primary workflow.
+
+This section is complete.

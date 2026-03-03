@@ -1,0 +1,85 @@
+CONTINUITY LOCK
+
+SUBJECT: ASHBY / STUART (Meetings Module)
+DATE (local): 2026-03-02 (America/Toronto)
+WORLD STATE: FOG LIFTED (CODEX_FREEZE present at /home/notsolikely/Ashby_Data/Codex/CODEX_FREEZE.md)
+CURRENT PHASE: Post-D7 closure / awaiting next scoped raid action.
+
+================================================================================
+BINDING DECISIONS (LAW)
+================================================================================
+1) Canonical roots (no parallel state):
+   - Governance: /home/notsolikely/Synapse_OS/governance
+   - Data: /home/notsolikely/Ashby_Data
+   - Engine: /home/notsolikely/Ashby_Engine
+
+2) Quest truth is folder placement:
+   - BOARD -> ACCEPTED -> COMPLETED/ABANDONED
+   - No completion claims without validated audit receipts.
+
+3) Transcript model is immutable + overlay-scoped:
+   - TranscriptVersion artifacts are immutable.
+   - Speaker naming is transcript-scoped overlay state.
+   - Attendee semantics are overlay-backed (not transcript mention text).
+
+4) Active Guild Orders truth:
+   - ACTIVE folder is authoritative:
+     /home/notsolikely/Ashby_Data/Guild Orders/ACTIVE/
+
+5) Control Sync state:
+   - CLOSED
+   - Use latest Control Sync snapshot resolved by date/counter rule.
+
+6) Canonical quest execution wrapper:
+   - /home/notsolikely/Synapse_OS/governance/tools/synapse_quest_run.sh
+   - End-of-wave enforcement active: when Accepted queue drains, wrapper must produce detailed EOD snapshot or completion is blocked/reverted.
+
+================================================================================
+DEFERRED / REJECTED
+================================================================================
+- No new deferred/rejected entries introduced in this lock update.
+
+================================================================================
+ACTIVE SCOPE / COMMITMENTS
+================================================================================
+- D7 execution wave is complete:
+  - QUEST_160..QUEST_168 are in Completed.
+- Accepted queue currently empty.
+- Use latest EOD snapshot resolved by date/counter rule from:
+  - /home/notsolikely/Ashby_Data/Snapshots/End of Day/
+- D7 proof anchor directory:
+  - /home/notsolikely/Ashby_Data/Audits/Proofs/
+- Latest engine publish anchor:
+  - Ashby_Engine branch: main
+  - Resolve latest commit from local git log.
+
+================================================================================
+REQUIRED READ FIRST
+================================================================================
+1) Governance routing:
+   - /home/notsolikely/Synapse_OS/governance/README.txt
+   - /home/notsolikely/Synapse_OS/governance/INDEX.txt
+   - /home/notsolikely/Synapse_OS/governance/SYNAPSE_STATE.yaml
+
+2) Subject Buffs:
+   - /home/notsolikely/Ashby_Data/Buffs/ASHBY_SESSION_START_CHECK.txt
+   - /home/notsolikely/Ashby_Data/Buffs/ASHBY_EXECUTION_PROTOCOL.txt
+   - /home/notsolikely/Ashby_Data/Buffs/ASHBY_DATA_DIRECTORY_MAP.txt
+
+3) Resolve latest continuity anchors by date/counter rule from:
+   - /home/notsolikely/Ashby_Data/Snapshots/Control Sync/
+   - /home/notsolikely/Ashby_Data/Snapshots/End of Day/
+   - /home/notsolikely/Ashby_Data/Snapshots/General/
+
+4) Active scope + codex:
+   - /home/notsolikely/Ashby_Data/Guild Orders/ACTIVE/
+   - /home/notsolikely/Ashby_Data/Stuart/Stuart Codex/
+
+================================================================================
+RESUME POINT (NEXT DETERMINISTIC ACTION)
+================================================================================
+1) Rehydrate from latest resolved EOD + Control Sync.
+2) Open Control Sync for next scope selection from ACTIVE Guild Orders.
+3) Accept next quest(s) and execute with wrapper-governed receipts.
+
+END OF CONTINUITY LOCK

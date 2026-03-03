@@ -1,0 +1,270 @@
+TALENT TREE — SYNAPSE GUILD (v0.1)
+Purpose: This is the authoritative, human-readable statement of CURRENT unlocked system capabilities.
+Rule: Update only when a Talent Point is spent (usually when a Quest is completed).
+
+How to use:
+- Add new TALENT entries at the bottom.
+- Do not delete old TALENT entries.
+- If a talent must be reversed, use RESPEC_RULES and record it explicitly.
+
+────────────────────────────────────────────────────────
+TALENT FORMAT
+────────────────────────────────────────────────────────
+TALENT ID:
+Name:
+Unlocked On:
+Source Quest:
+Scope: (Ashby / Stuart / System / Other)
+
+Description:
+(What capability now exists?)
+
+Implications:
+(What future work must respect now?)
+
+Notes:
+(optional)
+
+────────────────────────────────────────────────────────
+TALENT ID: TALENT_STUART_FOUNDATION_MASONRY
+Name: Stuart Foundation Masonry (Core Systems)
+Unlocked On: 2026-01-19
+Source Quest: QUEST_002
+Scope: Stuart
+
+Description:
+Stuart has a canonical module home under ashby/modules/meetings with final-shape subpackages. Core directory skeleton is stable.
+
+Implications:
+All Stuart work must live under ashby/modules/meetings/. No Stuart domain logic belongs in ashby/core/router.py.
+
+Notes:
+(optional)
+
+────────────────────────────────────────────────────────
+TALENT ID: TALENT_STUART_STORAGE_ZONING
+Name: Deterministic Storage Zoning (Data Law)
+Unlocked On: 2026-01-19
+Source Quest: QUEST_011
+Scope: Stuart
+
+Description:
+STUART_ROOT is configurable and resolves deterministically; required buckets (sessions/contributions/runs/overlays/exports) are enforced.
+
+Implications:
+All artifact storage must respect STUART_ROOT and its bucket layout. No ad-hoc paths or silent migrations.
+
+Notes:
+(optional)
+
+────────────────────────────────────────────────────────
+TALENT ID: TALENT_STUART_MANIFEST_IDS_HASHING
+Name: Manifests + IDs + Hashing
+Unlocked On: 2026-01-19
+Source Quest: QUEST_012
+Scope: Stuart
+
+Description:
+Schema-versioned JSON manifests exist (session/contribution/run) with stable ULID-like IDs and sha256 hashing for sources/artifacts.
+
+Implications:
+All future stages must write manifests via the immutability-safe helpers and must record hashes + IDs consistently.
+
+Notes:
+(optional)
+
+────────────────────────────────────────────────────────
+TALENT ID: TALENT_STUART_IMMUTABILITY_DISCIPLINE
+Name: Immutability Discipline (Truth Law)
+Unlocked On: 2026-01-19
+Source Quest: QUEST_013
+Scope: Stuart
+
+Description:
+Write-once manifest rails and rerun semantics exist: new run_id per run, no silent overwrite. Video→audio policy rails are reserved in manifest.
+
+Implications:
+Reruns must never overwrite history. Ground-truth artifacts remain immutable; corrections happen via overlays or new runs.
+
+Notes:
+(optional)
+
+────────────────────────────────────────────────────────
+TALENT ID: TALENT_STUART_SPEAKER_OVERLAY_EXTRACT
+Name: Speaker Overlay + Rerender + Extract-Only
+Unlocked On: 2026-01-25
+Source Quest: QUEST_007
+Scope: Stuart
+
+Description:
+Speaker identity overlays exist as append-only artifacts; rerender can reuse prior transcript; extract-only exports with citations are supported.
+
+Implications:
+Speaker names are overlays only (ground truth unchanged). Rerender/extract must reuse existing artifacts and preserve immutability.
+
+Notes:
+(optional)
+
+────────────────────────────────────────────────────────
+TALENT ID: TALENT_STUART_SQLITE_FTS_INDEX
+Name: SQLite FTS Index + Ingestion
+Unlocked On: 2026-01-25
+Source Quest: QUEST_022
+Scope: Stuart
+
+Description:
+Deterministic SQLite FTS5 index exists under STUART_ROOT/index. Ingestion reads transcript artifacts and stores session/run metadata plus segment pointers for citation reconstruction.
+
+Implications:
+Retrieval and citation rendering must use this index (no LLM file scanning for keyword search). Ingestion must remain idempotent and must not mutate transcripts.
+
+Notes:
+- Default DB: <STUART_ROOT>/index/stuart_index.sqlite3 (override STUART_INDEX_DB)
+- Segment anchors: transcript.txt line numbers (v1)
+
+────────────────────────────────────────────────────────
+TALENT ID: TALENT_STUART_SEARCH_RANKED_CITATIONS
+Name: Ranked Search Results + Citations
+Unlocked On: 2026-01-25
+Source Quest: QUEST_023
+Scope: Stuart
+
+Description:
+Deterministic SQLite FTS query path exists and returns door-agnostic ranked results with snippets and citation anchors (session_id/run_id/segment_id with optional timestamps/source_path). Search results are written as a durable artifact (search_results.json) that any door can render.
+
+Implications:
+Retrieval must remain deterministic-first and must use the SQLite index (no LLM filesystem scanning). Doors (web/telegram/cli) render the results payload without embedding retrieval logic. Citations/anchors are mandatory for any returned hit.
+
+Notes:
+- Result artifact: <run_dir>/artifacts/search_results.json
+- CLI: `stuart search <ses_id> <query>`
+
+────────────────────────────────────────────────────────
+TALENT ID: TALENT_STUART_TELEGRAM_DOOR_MINIMAL
+Name: Telegram Door (Buttons + File→PDF)
+Unlocked On: 2026-01-25
+Source Quest: QUEST_010
+Scope: Stuart
+
+Description:
+A thin Telegram door exists for demo/remote use: accepts an audio/video upload, prompts for Mode and Speakers via inline buttons, runs the default template pipeline, and returns the PDF artifact.
+
+Implications:
+Telegram remains a door only. The door renders prompts/results; pipeline logic stays inside the meetings module. Future public-facing Telegram expansion is additive behind the same door contract (no refactors required).
+
+Notes:
+- Implementation: io/telegram/ashby_telegram_control.py + ashby/interfaces/telegram/*
+- Runs Stuart via STUART_PYTHON (separate venv allowed) and respects STUART_ROOT.
+
+
+────────────────────────────────────────────────────────
+TALENT ID: TALENT_STUART_WEB_DOOR_SCAFFOLD
+Name: Web Door Scaffold (Session List + Chat + Plan/Clarify Rendering)
+Unlocked On: 2026-01-26
+Source Quest: QUEST_024
+Scope: Stuart
+
+Description:
+A ChatGPT-like web door shell exists: sidebar session history, chat pane, and top controls for Mode/Template. The UI can send a user message into the meetings module and render the engine’s door-agnostic clarify prompts (enumerated options) or plan previews without re-implementing decision logic.
+
+Implications:
+Web remains a thin door. Allowed modes/templates come from engine registries (no UI hardcoding). Fresh load preselects nothing; user chooses mode intentionally. This scaffold is the base for upload/run/download/state sync (QUEST_025).
+
+Notes:
+- Run: `python scripts/stuart_web.py` (default: http://127.0.0.1:8844)
+- UI contract: /api/registry, /api/sessions, /api/message
+==============================
+TALENT_STUART_WEB_DOOR_UPLOAD_RUN_DOWNLOADS — Web Door Upload→Run→Downloads + State Sync + Search
+==============================
+
+What it unlocks:
+- Upload media in the web UI (plus button) and store it as a contribution (immutable + sha256).
+- Plan preview stays mandatory; user explicitly clicks Run before heavy work executes.
+- Async run execution with UI polling (no frozen UI).
+- Direct downloads for artifacts + exports (formalized.md + formalized.pdf + transcript artifacts).
+- Keyword search via /search using SQLite FTS, returning ranked hits with citation anchors.
+- UI state sync: when chat/engine resolves defaults/overrides, dropdowns update to match (no divergence).
+
+Files:
+- ashby/interfaces/web/app.py
+- ashby/interfaces/web/uploads.py
+- ashby/interfaces/web/runs.py
+- ashby/interfaces/web/static/app.js
+- tests/test_meetings_web_upload_run.py
+
+Notes:
+- Run: `python scripts/stuart_web.py` (default: http://127.0.0.1:8844)
+- Upload contract: POST /api/upload?session_id=... (multipart file)
+- Run contract: POST /api/run (async), poll GET /api/runs/{run_id}
+- Downloads: GET /download/{run_id}/{filename}
+- Search: GET /api/search?q=...&session_id=...
+
+    ────────────────────────────────────────────────────────
+    TALENT ID: TALENT_STUART_LOCAL_SPEECH_UNDERSTANDING_V1
+    Name: Local Speech Understanding (v1)
+    Unlocked On: 2026-02-04
+    Source Quest: RETRO_SANITY_2026-02-04_032715 (Retro Sanity Audit PASS)
+    Scope: Stuart
+
+    Description:
+    Deterministic local audio → text pipeline with truthful fallback when real ASR deps/models are unavailable.
+
+    Implications:
+    - Transcript artifacts are versioned and write-once.
+- Transcript JSON is canonical; transcript.txt remains legacy/index-friendly.
+
+    Notes:
+    Evidence: Audits/Retro/RETRO_SANITY_2026-02-04_032715
+
+    ────────────────────────────────────────────────────────
+    TALENT ID: TALENT_STUART_STRUCTURED_MEETING_INTELLIGENCE_PIPELINE_V1
+    Name: Structured Meeting Intelligence Pipeline (v1)
+    Unlocked On: 2026-02-04
+    Source Quest: RETRO_SANITY_2026-02-04_032715 (Retro Sanity Audit PASS)
+    Scope: Stuart
+
+    Description:
+    Segmented pipeline: normalize → diarize → ASR → align → formalize, producing anchored, queryable artifacts.
+
+    Implications:
+    - Alignment is algorithmic (time overlap) and deterministic.
+- Speaker identity remains overlay-based (no identity inference).
+
+    Notes:
+    Evidence: Audits/Retro/RETRO_SANITY_2026-02-04_032715
+
+    ────────────────────────────────────────────────────────
+    TALENT ID: TALENT_STUART_DETERMINISTIC_DOCUMENT_FORMALIZATION_V1
+    Name: Deterministic Document Formalization (v1)
+    Unlocked On: 2026-02-04
+    Source Quest: RETRO_SANITY_2026-02-04_032715 (Retro Sanity Audit PASS)
+    Scope: Stuart
+
+    Description:
+    Deterministic formalized outputs (MD + PDF artifact) generated from canonical transcript artifacts with evidence anchoring.
+
+    Implications:
+    - formalized.md is deterministic and transcript-backed.
+- evidence_map.json anchors claims to transcript segments/timestamps.
+- PDF generation is truth-gated by renderer availability (no fake PDFs).
+
+    Notes:
+    Evidence: Audits/Retro/RETRO_SANITY_2026-02-04_032715
+
+    ────────────────────────────────────────────────────────
+    TALENT ID: TALENT_STUART_SPEAKER_MAP_OVERLAY_ARTIFACT_AND_RUN_PROVENANCE_V1
+    Name: Speaker Map Overlay Artifact + Run Provenance (v1)
+    Unlocked On: 2026-02-11
+    Source Quest: QUEST_068__Stuart_v1_D6_1of5_Speaker_Map_Overlay_API_and_Manifest_2026-02-04
+    Scope: Stuart
+
+    Description:
+    Immutable speaker-map overlay artifacts (SPEAKER_00 → human name) that can be set active per session and are recorded in run manifests for provenance.
+
+    Implications:
+    - Overlays are stored as write-once JSON manifests under `overlays/<session_id>/speaker_map/<overlay_id>.json`.
+    - `create_speaker_map_overlay()` returns overlay_id + mapping + sha256 + created_ts for downstream UI/API.
+    - Run manifests record the active overlay reference used by the run (`speaker_map_overlay_active`).
+
+    Notes:
+    Evidence: `Audits/Execution/QUEST_068__2026-02-10__stuart_v1_d6_1of5_speaker_map_overlay_api_and_manifest_integration`

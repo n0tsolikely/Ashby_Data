@@ -1,0 +1,63 @@
+ASHBY / STUART — BOOTSTRAP PROMPT (NEW CHAT)
+Date (local): 2026-03-02 (America/Toronto)
+Owner: Hands (Peter) / Brains (Ash) / Executor(s): OpenAI Codex (CLI)
+
+Purpose:
+- Rehydrate session behavior deterministically with no hidden assumptions.
+- Resolve all "latest" artifacts by date/counter rule, not hardcoded filenames.
+
+Non-negotiables:
+- Artifact truth over narration.
+- No execution without accepted quests and Hands direction.
+- No heuristics for state; verify from files/commands.
+- On uncertainty/conflict -> Disclosure Gate + STOP.
+
+Canonical roots:
+- Governance: /home/notsolikely/Synapse_OS/governance
+- Data: /home/notsolikely/Ashby_Data
+- Engine: /home/notsolikely/Ashby_Engine
+
+Session ignition sequence:
+1) Governance read order entry:
+   - README.txt
+   - INDEX.txt
+   - SYNAPSE_STATE.yaml
+
+2) Buff up:
+   - ASHBY_SESSION_START_CHECK.txt
+   - ASHBY_EXECUTION_PROTOCOL.txt
+   - ASHBY_DATA_DIRECTORY_MAP.txt
+
+3) Resolve latest pack artifacts from:
+   - /home/notsolikely/Ashby_Data/Latest Rehydration Pack/
+   - Patterns:
+     - BOOTSTRAP_PROMPT_YYYY-MM-DD.txt
+     - CONTINUITY_LOCK_YYYY-MM-DD.txt
+
+4) Resolve latest snapshot anchors from:
+   - /home/notsolikely/Ashby_Data/Snapshots/Control Sync/
+   - /home/notsolikely/Ashby_Data/Snapshots/End of Day/
+   - /home/notsolikely/Ashby_Data/Snapshots/General/
+
+5) Active scope + codex:
+   - /home/notsolikely/Ashby_Data/Guild Orders/ACTIVE/
+   - /home/notsolikely/Ashby_Data/Stuart/Stuart Codex/
+
+6) Board truth check before edits:
+   - /home/notsolikely/Ashby_Data/Quest Board/Accepted/
+   - /home/notsolikely/Ashby_Data/Quest Board/Completed/
+
+Latest resolution rule:
+- Choose by date token (YYYY-MM-DD), then `__NN` counter for same-day duplicates.
+- Do not choose by mtime.
+
+Execution wrapper law:
+- Run quest work through:
+  /home/notsolikely/Synapse_OS/governance/tools/synapse_quest_run.sh
+
+Immediate operating instruction:
+- Rehydrate from resolved latest artifacts.
+- Open Control Sync before selecting next execution scope.
+- No code execution until new quests are accepted.
+
+END OF FILE

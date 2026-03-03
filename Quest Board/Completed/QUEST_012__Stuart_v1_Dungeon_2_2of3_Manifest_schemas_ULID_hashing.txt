@@ -1,0 +1,58 @@
+QUEST ID: QUEST_012
+Title: Stuart v1 — Dungeon 2 (2 of 3): Manifest schemas + ULIDs + hashing
+Context: Stuart
+Origin: Guild Orders: GUILD_ORDERS_STUART_V1_2026-01-16_REV3.txt (Dungeon 2)
+Priority: P0
+Links:
+- Guild Orders: Stuart v1 — Dungeon 2
+- Stuart Execution Pack: ID conventions + hashing + artifact versioning/immutability
+- Supersedes (decomposition of): QUEST_003
+- Related: QUEST_011 (STUART_ROOT layout + config resolution)
+Status: COMPLETED
+Accepted On: 2026-01-19
+Completed On: 2026-01-19
+
+DESCRIPTION
+────────────────────────────────────────
+Define and implement Stuart’s canonical manifests and identifiers so every session, contribution, and run is represented as schema-versioned JSON with stable IDs and source hashes.
+
+SCOPE / OBJECTIVE
+────────────────────────────────────────
+Implement the canonical manifests (schema-versioned JSON) and identifiers:
+- session.json
+- contribution.json (metadata + sha256 of source media + media type + created_at)
+- run.json (stage settings + status transitions fields + timestamps; lifecycle enforced later)
+
+Implement ULIDs for: session_id, contribution_id, run_id.
+Implement sha256 hashing for uploaded source media and store it in contribution.json.
+Manifests must live under STUART_ROOT using the deterministic paths established in QUEST_011.
+
+OUT OF SCOPE
+────────────────────────────────────────
+Immutability enforcement (no-overwrite + rerun folder creation logic) beyond what is required to safely create initial manifests.
+Video→audio extraction policy and pipeline stages.
+
+DEPENDENCIES
+────────────────────────────────────────
+- QUEST_011
+
+EXECUTION NOTES
+────────────────────────────────────────
+Treat manifests as the durable truth units for on-disk reality.
+Keep schemas minimal but explicit; do not let fields drift into “whatever was convenient today.”
+
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────
+- [x] Stable ULID-like IDs are generated for session_id, contribution_id, run_id (Crockford32 time+rand) and stored in manifests.
+- [x] sha256 is computed for uploaded source media and stored in contribution.json.
+- [x] session.json, contribution.json, run.json are created as schema-versioned JSON.
+- [x] A minimal intake flow can create a session + contribution manifests without errors.
+- [x] A second contribution in the same session creates a new contribution_id and correct manifests without collision.
+
+TALENT POINT
+────────────────────────────────────────
+On completion:
+- Talent Point Awarded: YES
+- Talent Spent On: TALENT_STUART_MANIFEST_IDS_HASHING — Manifests + IDs + Hashing
+────────────────────────────────────────
+(optional)

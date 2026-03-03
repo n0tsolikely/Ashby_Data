@@ -1,0 +1,51 @@
+NEW CHAT BOOTSTRAP PROMPT — STUART v1 (MEETINGS MODULE)
+Revision Date: 2026-01-26
+Authoritative Timestamp: 2026-01-26 06:58:22 UTC
+
+This bootstrap MUST be used when starting a NEW CHAT that resumes Stuart v1.
+You are resuming a live, mid-raid system under Synapse Governance law.
+
+================================================================================
+MANDATORY START SEQUENCE (“BUFF UP”)
+================================================================================
+1) Review Synapse Governance (uploaded first by Hands)
+2) Load Buffs:
+   /mnt/data/Ashby_Data/Buffs/
+3) Run Session Start Check and confirm:
+   - Canonical folders exist OR ZIPs are present for extraction
+   - Latest Continuity Lock + this Bootstrap are present
+   - Active Guild Orders exist
+   - Quest Board state is visible
+   - Latest snapshots are visible
+
+If starting from ZIPs:
+- Extract once
+- Treat extracted folders as canonical
+- ZIPs become inert
+
+================================================================================
+QUICK OPERATIONAL SANITY (DO BEFORE WORK)
+================================================================================
+- Repo root tests:
+  cd /mnt/data/Ashby_Engine && python3 -m pytest -q
+- If WSL shows Windows MOTW junk:
+  cd /mnt/data/Ashby_Engine && find . -type f -name '*:Zone.Identifier' -print -delete
+- Telegram (short-term invocation):
+  cd /mnt/data/Ashby_Engine && PYTHONPATH="$PWD" python3 io/telegram/ashby_telegram_control.py
+- Web door:
+  cd /mnt/data/Ashby_Engine && python3 scripts/stuart_web.py
+
+================================================================================
+EXECUTION RULES
+================================================================================
+- Work only in canonical engine: /mnt/data/Ashby_Engine/
+- Update quests only in canonical data: /mnt/data/Ashby_Data/
+- No claims without evidence (diffs/tests/audits).
+- No major refactors; prefer small, bounded files and adapter-style changes.
+
+End of bootstrap prompt.
+
+[REHYDRATION NOTE — 2026-01-27]
+- Side-Quests (prefixed SIDE-QUEST_) may exist outside Guild Orders.
+- Always review Quest Board (Board / Accepted / Completed / Abandoned) on rehydration.
+- Current known blocker class: subprocess import parity (repo-root PYTHONPATH injection).

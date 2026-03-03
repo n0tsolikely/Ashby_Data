@@ -1,0 +1,67 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_073
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Support: E2E test harness (fixtures + golden assertions + negative truth tests)
+
+Context: Stuart tests
+
+Origin:
+Control Sync — 2026-02-04 (Stuart v1 finish-line: REV5)
+
+Priority: P1
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV5.txt (Definition of Done support)
+
+Status: COMPLETED
+Audit Bundle Path:
+  /mnt/data/Ashby_Data/Audits/Execution/QUEST_073__2026-02-11__stuart_v1_testharness_fixtures_and_golden_assertions
+Accepted On:
+2026-02-11
+Accepted By:
+Hands (Peter)
+Completed On:
+2026-02-11
+
+Completed By:
+Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Create deterministic E2E tests so regressions are caught: fixtures for meeting/journal, golden output checks, and negative tests for 'minutes lies' and overwrite refusal.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Add small fixture transcripts (and optional short audio)
+- Add E2E tests that assert required artifacts exist
+- Add negative tests: uncited decisions rejected; overwrite refusal
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Large benchmark suite
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_055
+- QUEST_070
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Tests should run in CI without secrets (use stubs/mocks for LLM where needed).
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] `python3 -m pytest -q` includes E2E coverage for meeting + journal
+- [x] Truth/overwrite negative tests exist
+

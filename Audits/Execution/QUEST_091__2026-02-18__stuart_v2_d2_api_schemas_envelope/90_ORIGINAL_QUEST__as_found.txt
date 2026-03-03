@@ -1,0 +1,183 @@
+    QUEST TEMPLATE — SYNAPSE GUILD
+    ================================================
+
+    QUEST ID:
+    QUEST_091
+
+    Created By:
+    Ash (Brains)
+
+    Title:
+    Stuart v2 — D2 (2/12) — Shared API Schemas + Error Envelope (Pydantic + Deterministic JSON)
+
+    Context:
+    We need a consistent API contract across all endpoints, otherwise the UI becomes brittle
+and every endpoint returns some random JSON shape.
+
+Current state in web door:
+- Some endpoints return {"ok": True, ...}
+- Some return {"error": "..."} (no ok flag)
+- Some return {"result": {...}} nested
+
+Dungeon 2 requires a minimum set of endpoints and expects UI wiring.
+This quest creates the shared schema and response envelope helpers so the rest of the
+Dungeon 2 quests can implement endpoints consistently and test them easily.
+
+    Origin:
+    Guild Orders → Dungeon 2 tasks + Production-grade requirement.
+
+    Priority:
+    P0 — Required to prevent future contract drift and inconsistent API outputs.
+
+    Links:
+    - GUILD ORDERS: Ashby_Data/Guild Orders/PAUSED/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt (Dungeon 2)
+- CODEX: Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt (3.1 Truth‑locked + 3.5 Artifact‑first)
+- ENGINE ANCHOR: Ashby_Engine/ashby/interfaces/web/app.py (current ad-hoc JSON)
+- TESTS ANCHOR: Ashby_Engine/tests/test_meetings_web_*
+
+    Status:
+    BOARD
+
+    Audit Bundle Path:
+    Ashby_Data/Audits/Execution/QUEST_091__2026-02-17__Stuart_v2_D2_API_Schemas_Envelope
+
+    Accepted On:
+    (blank)
+
+    Owner:
+    (blank)
+
+    Executor:
+    (blank)
+
+    ------------------------------------------------
+    DESCRIPTION
+    ------------------------------------------------
+    Implement a standard response envelope + request/response models for the Stuart Web API.
+
+This is how we avoid:
+- a UI that breaks because endpoints disagree about field names
+- silent “ok but actually failed” payloads
+- impossible-to-debug error handling
+
+This quest does NOT implement all endpoints — it creates the primitives
+(models + helpers) that the other endpoint quests will use.
+
+    ------------------------------------------------
+    SCOPE / OBJECTIVE
+    ------------------------------------------------
+    A) Create shared envelope + error helpers
+
+   Create a module (pick ONE canonical location; document it in Quest 090 doc):
+     - ashby/interfaces/web/http_envelope.py   (recommended)
+     OR
+     - ashby/interfaces/web/api_common.py
+
+   Must provide:
+     - ApiError model:
+         { code: str, message: str, details?: object }
+     - success envelope helper:
+         ok(payload: dict) -> dict  # ensures "ok": True
+     - failure envelope helper:
+         fail(code: str, message: str, status: int, details?: object) -> JSONResponse
+         (or returns dict and caller wraps JSONResponse)
+     - trace helpers (optional but recommended):
+         - request_id generation (uuid4 short)
+         - include in both success and error responses under "trace"
+
+   Error code conventions (examples):
+     - INVALID_REQUEST
+     - NOT_FOUND
+     - NOT_IMPLEMENTED
+     - INTERNAL_ERROR
+
+   HARD RULE:
+     - Do NOT leak stack traces into responses by default.
+     - If you include debug details, gate it behind env var (e.g., STUART_DEBUG=1).
+
+B) Define Pydantic request/response models for core objects (v1)
+   Create module:
+     - ashby/interfaces/web/api_models_v1.py  (recommended)
+     OR
+     - ashby/interfaces/web/schemas_v1.py
+
+   Models to define (minimum):
+     - SessionSummaryV1
+     - SessionDetailV1
+     - RunSummaryV1
+     - RunDetailV1
+     - TranscriptVersionSummaryV1
+     - TranscriptVersionV1 (full transcript payload)
+     - FormalizationSummaryV1
+     - ExportResponseV1
+     - ChatRequestV1, ChatResponseV1 (scaffold; content can be minimal)
+     - PaginationV1 (limit/offset/total? optional)
+
+   NOTE:
+     - Models must be compatible with our storage truth (runtime disk artifacts).
+     - Do NOT invent fields that require cloud tenancy/auth.
+
+C) Refactor existing endpoints to adopt envelope conventions (minimal touch)
+   Minimum conversion targets:
+     - /api/registry
+     - /api/sessions (existing)
+     - /api/upload
+     - /api/run
+     - /api/runs/{run_id}
+     - /api/message (legacy)
+   Do not rewrite logic; just normalize response shapes and errors.
+
+D) Add tests that assert envelope consistency
+   - New test file recommended:
+     Ashby_Engine/tests/test_meetings_web_api_envelope_consistency.py
+   - Ensure at least a few endpoints return {ok: True|False} and error envelope shape.
+
+
+    ------------------------------------------------
+    OUT OF SCOPE
+    ------------------------------------------------
+    - Implementing transcript_version artifacts in the pipeline (Dungeon 4/5).
+- Implementing LLM chat intelligence (Dungeon 9+).
+- Changing UI components (Dungeon 3).
+
+
+    ------------------------------------------------
+    DEPENDENCIES
+    ------------------------------------------------
+    - Quest 090 contract doc should exist (or you must align this work to its decisions).
+- FastAPI already used; Pydantic is available.
+
+
+    ------------------------------------------------
+    EXECUTION NOTES
+    ------------------------------------------------
+    - Keep the models lean. They must describe what we can actually serve.
+- Prefer additive changes: add helpers + adopt them gradually so tests don’t explode.
+- Any new field should have a clear truth source (disk artifact, run manifest, session state).
+
+
+    ------------------------------------------------
+    COMPLETION CRITERIA (DONE = PROOF)
+    ------------------------------------------------
+    DONE when:
+- Shared envelope helper module exists and is used by at least the key endpoints above.
+- Shared API models module exists (Pydantic) with the minimum objects defined.
+- Tests prove:
+    - success payloads contain ok=True
+    - error payloads contain ok=False and error:{code,message}
+- No tests broken.
+
+Proof:
+- Git diff
+- pytest run (or at minimum: relevant tests green)
+
+
+    ------------------------------------------------
+    TALENT POINT (WHY THIS MATTERS)
+    ------------------------------------------------
+    This makes the API stable, predictable, and UI-safe. Without it, everything devolves into un-debuggable bullshit.
+
+    ------------------------------------------------
+    FINAL NOTES / HANDS DECISIONS
+    ------------------------------------------------
+    If any endpoint still returns ad-hoc shapes after this quest, the next quest MUST refactor it before wiring UI.

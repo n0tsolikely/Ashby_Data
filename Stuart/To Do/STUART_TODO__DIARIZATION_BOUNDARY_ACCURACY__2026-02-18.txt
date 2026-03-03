@@ -1,0 +1,73 @@
+STUART TODO — DIARIZATION BOUNDARY ACCURACY
+Date: 2026-02-18
+Status: Draft TODO
+Scope: Fix speaker bleed / interjection boundary errors in Stuart transcript output.
+
+================================================================================
+Problem
+================================================================================
+Observed failure mode:
+- Turn boundaries are sometimes wrong when one speaker interjects.
+- Example pattern:
+  [0:00] SPEAKER_01: ... this is the part
+  [0:00] SPEAKER_00: that stops you ...
+  Expected:
+  SPEAKER_00 should begin earlier at "this is the part that stops you ...".
+
+Current pipeline root cause:
+- Alignment in ashby/modules/meetings/pipeline/align.py splits text by overlap weights.
+- It does not currently use per-word timestamps for assignment.
+
+================================================================================
+TODO Items (Execution Order)
+================================================================================
+1) Word-level alignment substrate
+- Update ASR adapter to emit word-level timestamps in transcript JSON.
+- Preserve deterministic schema fields for backward compatibility.
+- Add explicit artifact metadata for whether word timestamps are present.
+
+2) Deterministic boundary assignment by words
+- Build a new aligner path that assigns each word to diarization speaker by overlap.
+- Reconstruct turns from contiguous same-speaker word runs.
+- Keep source anchors (segment_id + time ranges) for every reconstructed turn.
+
+3) Interjection boundary repair guardrails
+- Add deterministic rules for short interjections and boundary snapping.
+- Prevent long same-speaker runs from being unnecessarily fragmented.
+- Tune merge/split thresholds with fixtures from real failing examples.
+
+4) Optional constrained LLM cleanup pass (post-align)
+- Purpose: punctuation/grammar/turn-boundary polish only.
+- Hard constraints:
+  - No content invention.
+  - No speaker reassignment without evidence from word-time anchors.
+  - Every change must be diffed and auditable.
+- Emit artifact: boundary_repair.json (before/after + reason + confidence).
+
+5) UI + review surfacing
+- Expose aligned transcript clearly in Session tab.
+- Add indicator when boundary repair was applied.
+- Add easy toggle to view raw deterministic transcript vs cleaned transcript.
+
+6) Verification + audits
+- Add regression tests for:
+  - interjection inside another speaker sentence,
+  - rapid turn-taking,
+  - same-speaker chunk merge behavior,
+  - crosstalk fallback behavior.
+- Add smoke proof that pipeline keeps running even if cleanup pass is disabled/fails.
+
+================================================================================
+Acceptance Criteria
+================================================================================
+- Interjection boundary errors materially reduced on Stuart meeting samples.
+- Evidence anchors preserved end-to-end.
+- No fabricated or speaker-shifted content without anchored evidence.
+- Output remains readable and professional.
+
+================================================================================
+Notes
+================================================================================
+- Keep Upload != Run contract unchanged.
+- Keep diarization toggle behavior explicit (on/off must control pipeline stage).
+- Preserve existing artifacts and APIs unless versioned migration is declared.

@@ -1,0 +1,54 @@
+correct way to fill the Talent Tree is:
+
+## Rule
+
+A quest awards a talent **only if it produces a durable capability** that:
+
+* didn’t exist before, and
+* is now usable/repeatable (code + contract + artifacts), and
+* isn’t just cleanup, formatting, or moving files around.
+
+If it’s just “we refactored/cleaned/renamed/organized/rewrote docs,” that’s **Talent: NO**.
+
+## How to decide “real capability”
+
+For each completed quest, we check **engine reality** (not vibes):
+
+### Talent: YES when the quest adds one of these
+
+* New command/action exists (CLI or module entrypoint)
+* New pipeline stage exists
+* New executable function exists
+* New artifact type exists (stored and retrievable)
+* New retrieval/indexing function exists
+* New policy/truth mechanism exists that changes what the system can safely do
+* New adapter or profile behavior exists that expands what can run where
+
+### Talent: NO when it’s one of these
+
+* Pure refactor / thinning / reformat / rename
+* Documentation only
+* Snapshot/governance bookkeeping
+* Test scaffolding only
+* Bugfix that only restores already-promised behavior (unless it unlocks a previously-nonfunctional capability)
+* Code that does not give a new capability or new function (i.e. changing UI layout or adding UI logic that doesn't expand engine capabilities such as a new button that allows to hide transcript in webapp or telegram buttons would be a ui change not a module capability change)
+
+## What this means for the Talent Tree work
+
+The right procedure is:
+
+1. Iterate **Completed quests**
+2. For each quest:
+
+   * verify the capability exists in `Ashby_Engine` (code + path)
+   * verify it’s callable/usable
+3. If YES:
+
+   * assign **1 point** unless the quest clearly unlocked *multiple distinct capabilities* (rare)
+   * write talent name as the capability (not the quest title)
+4. If NO:
+
+   * mark Talent Awarded: NO in the quest file
+   * do **not** add to Talent Tree
+
+That’s it. No “mercy points.”

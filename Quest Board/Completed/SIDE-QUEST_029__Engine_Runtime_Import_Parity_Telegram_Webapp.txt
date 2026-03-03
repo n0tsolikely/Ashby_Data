@@ -1,0 +1,92 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+
+QUEST ID:
+SIDE-QUEST_029
+
+Title:
+Engine Runtime Import Parity (Telegram + Webapp) [SIDE-QUEST]
+Context:
+Ashby / Stuart Engine Runtime
+
+Origin:
+Control Sync — STUART_Control_Sync-2026-01-27
+
+Priority:
+P1
+
+Links:
+- Related issues: secrets stdlib shadowing, PYTHONPATH dependency, uvicorn import failures
+- Affects: Telegram entrypoint, Webapp entrypoint, future packaging (.exe / distribution)
+
+Status: COMPLETED
+Accepted On:
+
+
+Completed On:
+2026-01-27
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Running the Ashby/Stuart engine via different entrypoints (Telegram CLI, Webapp via uvicorn)
+currently produces inconsistent runtime/import behavior depending on environment configuration.
+This includes import failures (e.g., stdlib shadowing such as `secrets.token_hex`) and reliance
+on PYTHONPATH or invocation-specific workarounds.
+
+This quest defines and implements a single, clean, canonical runtime/import strategy so the
+engine runs consistently across:
+- Telegram execution
+- Webapp execution
+- Future packaging / distribution
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Identify and remove remaining stdlib shadowing risks.
+- Define a canonical engine import root and runtime invocation model.
+- Ensure both Telegram and Webapp entrypoints import the engine identically.
+- Eliminate the need for ad-hoc PYTHONPATH hacks where possible.
+- Validate that engine can be imported cleanly in a neutral environment.
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Feature changes to Telegram or Webapp functionality.
+- UI work.
+- New integrations.
+- Performance tuning.
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- Completion of prior PRE-QUEST fixes (PDF path contract, webapp wiring).
+- Governance decisions regarding canonical package layout.
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+This quest focuses on runtime/import correctness only.
+All changes must be auditable and safe for long-term distribution.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- Engine imports cleanly without stdlib collisions.
+- Webapp can be launched without import errors.
+- Telegram entrypoint runs without environment-specific hacks.
+- Clear documentation of the canonical run method.
+- Audit bundle captured.
+- End-of-Day snapshot generated on completion.
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+(To be filled on completion)
+
+FINAL NOTES
+- secrets stdlib shadowing eliminated by renaming repo_root/secrets -> secrets_store and updating imports.
+- Audit bundle: /mnt/data/Ashby_Data/Quest Board/QUEST DIFF AUDIT FILES/SIDE-QUEST_029__AUDIT
+  Import smoke:
+  - stdlib_secrets: /usr/lib/python3.11/secrets.py
+  - token_hex: OK
+  - webapp_import: OK
+  - ashby_import: OK

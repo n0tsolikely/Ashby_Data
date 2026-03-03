@@ -1,0 +1,327 @@
+STUART — vNEXT IDEAS & TO‑DOS (10–15 YEAR THOUGHT EXPERIMENT)
+Date: 2026-01-12
+Status: NON‑CANONICAL PARKING LOT / ROADMAP / FUTURE NOTES
+Purpose: Capture future expansion ideas, anticipated failure modes, refactor traps, and architectural doorways to reserve now.
+Important: This document does NOT override the Codex. The Codex defines what is binding. This document is a forward-looking map.
+
+============================================================
+0) Core framing (what never changes)
+============================================================
+
+Stuart’s core identity stays constant even as everything else expands:
+- Stuart is the spoken-reality → structured-truth engine.
+- The product is NOT “chat.” Chat is a steering wheel. The product is durable artifacts + evidence + auditability + retrieval.
+- Trust is the differentiator: no invention, explicit uncertainty, evidence anchors, reproducibility.
+- Everything scales through adapters, policies, artifacts, and registries — not one-off hacks.
+
+10–15 years forward, Stuart becomes infrastructure. The technical challenge becomes less about models and more about:
+- governance (templates, policies, compliance)
+- scale (jobs, indexing, sync)
+- integrity (signatures, chain-of-custody, overlays)
+- UX discipline (simple front door, powerful back room)
+
+
+============================================================
+1) Timeline roadmap (how Stuart evolves in phases)
+============================================================
+
+This is not a hard schedule; it’s a sequence so we don’t refactor ourselves into a wall.
+
+PHASE A (Year 0–1): “Boringly Reliable Records”
+- Nail artifact-first pipeline and printing.
+- Make long sessions safe via chunking + deterministic merges.
+- Make Local-first web app / PWA the primary interface.
+- Build trust posture: evidence mapping, explicit execution gating, conservative attribution.
+- Ship minimal template set per core modes; keep registry strict.
+
+PHASE B (Year 1–3): “Teams + Compliance-lite”
+- Team workspaces (RBAC) and shared libraries.
+- Overlay corrections workflow (transcript edits and speaker mapping) with provenance.
+- Strong audit logs and reproducible runs (model/version/adapter fingerprints).
+- First integration layer (exports, webhooks) without letting integrations mutate truth.
+
+PHASE C (Year 3–5): “Template Ecosystem + Controlled Discovery”
+- Strong template schema / compilation; templates treated like code.
+- Template linting (PII, injection, unsafe instructions).
+- Template recommendation constrained to registry.
+- Org-private registries become a major product line.
+
+PHASE D (Year 5–8): “Multi-modal Inputs + Cross-language Maturity”
+- Video ingestion (audio extraction) as a first-class path.
+- Bilingual/multi-language transcript segments and translation tracks.
+- Captions/subtitles exports at scale (SRT/VTT + word timestamps if available).
+- Glossaries/hotwords per org to boost ASR without lying.
+
+PHASE E (Year 8–10+): “Infrastructure + Regulated Domains”
+- Chain-of-custody, signatures, legal hold.
+- Data residency and BYOK for serious orgs.
+- On-prem “appliance” deployments for healthcare/elder-care/legal.
+- Real-time transcription as a provisional layer + canonical post-processed record.
+
+
+============================================================
+2) The mature product surface (what Stuart becomes)
+============================================================
+
+Stuart expands into four surfaces (the names can change; the separation matters):
+
+2.1 Stuart Capture (ingestion)
+- Uploads: audio/video files.
+- Device recordings (mic/system audio capture).
+- Live meeting capture (vNext) and later meeting platform joins.
+- Enterprise streams: call centers, support lines, operations radios.
+
+2.2 Stuart Record (canonical vault)
+- Immutable raw sources and normalized audio.
+- Transcripts, diarization, aligned transcript.
+- Formalizations (minutes/incidents/journals/creator notes/instructions).
+- Evidence maps, run logs, adapter fingerprints.
+- Overlays and versioned outputs.
+
+2.3 Stuart Studio (review/corrections)
+- Speaker mapping overlays.
+- Transcript correction overlays.
+- Confidence heatmaps and overlap inspection.
+- Re-run formalization without re-running ASR.
+- “Suggested change” workflow (like code review) for teams.
+
+2.4 Stuart Recall (query)
+- Evidence-first retrieval: mention vs spoke vs attended semantics.
+- Results open artifacts, jump to timestamps.
+- Org-level memory: decisions ledger, action items across sessions.
+
+
+============================================================
+3) Expansion ideas (capabilities to add later)
+============================================================
+
+These are grouped by theme. Each bullet is an implementable direction, not a full spec.
+
+3.1 Input expansion
+- Video ingestion as standard: extract audio, preserve frame timestamps for later alignment to slides/visuals.
+- Screen recordings and lectures: optional slide boundary detection for better note structuring.
+- Multi-source sessions: multiple contributions merged (e.g., two people submit separate recordings).
+- Live capture: local system capture first; meeting-bot join later (consent-aware).
+
+3.2 Output products
+- Captions/subtitles export: SRT/VTT, multi-language tracks.
+- “Instruction sheet” output (pharmacy/clinic/support): retention tuned to preserve exact numbers and steps.
+- “Shift handoff log” output (manufacturing/ops): risks + work orders.
+- “Ghostwriter mode”: life story to book-like narrative; strict boundary between quoted truth vs crafted prose.
+- “Dispute packet”: for HR/legal disputes: canonical transcript + evidence map + provenance log + signature.
+
+3.3 Cross-language and accessibility
+- Multi-language segments within a single transcript (code-switching).
+- Dual-column output (original + translation).
+- Reading-level variants for accessibility (but keep evidence links).
+- Near-verbatim outputs specifically for hearing/processing difficulties.
+
+3.4 Mode expansion (examples)
+These remain output contracts on the same pipeline:
+- Pharmacy / patient instruction mode (NOT medical advice; only structured restatement + warnings).
+- Teacher/classroom mode (lecture notes, parent conference minutes).
+- Legal deposition / board minutes mode (formatting + chain-of-custody, not legal advice).
+- Construction/inspection mode (spoken walkthrough to work order).
+- Research interview mode (qualitative coding layers separated from record).
+- Call center / sales call mode (commitments, objections; CRM integration).
+
+3.5 Template ecosystem growth
+- Org-private template registries as primary; public marketplace gated.
+- Template compilation into typed schema (templates treated like code).
+- Template linting: PII detection, injection scanning, unsafe instruction detection.
+- Template recommendation (registry-only, non-executing) + favorites + recents.
+- Template capability requirements (needs diarization? word timestamps? participant metadata?).
+
+3.6 Collaboration and governance
+- Suggested changes workflow with approvals.
+- Immutable record + overlay edits with provenance.
+- Signed “official” minutes versions and changelog.
+- Cross-session speaker mapping (high-risk) behind explicit consent and policy gates.
+
+
+============================================================
+4) Anticipated problems (the real-world pain we will hit)
+============================================================
+
+These are the recurring failure modes that show up at scale and how to survive them.
+
+4.1 Bad audio and false confidence
+- People will treat minutes as truth even when audio quality was trash.
+Mitigation:
+- Mandatory session quality report (SNR, overlap %, ASR confidence).
+- If confidence is low, decisions/actions sections require review or are labeled as uncertain.
+
+4.2 Speaker misattribution disasters
+- Misattribution is the fastest trust killer and can create HR/legal crises.
+Mitigation:
+- Conservative attribution by default.
+- Names only via explicit mapping overlay.
+- Attendance/spoke semantics enforced.
+
+4.3 Template injection and unsafe templates
+- Templates become attack vectors.
+Mitigation:
+- Templates as declarative schema, not raw prompt text.
+- Template linting + signing.
+- Templates cannot disable core invariants.
+
+4.4 “Auto-run” pressure
+- Users will demand zero-click processing.
+Mitigation:
+- Keep explicit execution gating as default.
+- Allow policy-based auto-run only where permitted, and log it.
+
+4.5 Cost and performance
+- Compute costs rise with diarization, word timestamps, translation.
+Mitigation:
+- Meter minutes + feature weights.
+- Incremental reruns: template changes don’t rerun ASR.
+- Routing: local GPU first, cloud fallback only if allowed.
+
+4.6 Model/provider drift
+- Providers change; outputs drift.
+Mitigation:
+- Adapter fingerprints + model version recorded per run.
+- Regression harness + golden fixtures.
+- Explicit “re-run with new model” workflow.
+
+4.7 Sync and device access complexity
+- People want phone+desktop continuity without nerd setup.
+Mitigation:
+- Web app/PWA as primary.
+- LAN pairing with QR + mDNS.
+- Optional cloud sync as a separate subsystem with encryption.
+
+
+============================================================
+5) Refactor traps (what to avoid at all costs)
+============================================================
+
+These are the mistakes that force rewrites later.
+
+Trap A: Treating chat output as the deliverable
+- Fix: artifacts on disk (JSON/MD/PDF) are canonical.
+
+Trap B: Letting the LLM decide what exists
+- Fix: registry is law; model never invents modes/templates.
+
+Trap C: Overwriting transcripts
+- Fix: immutable sources + overlay corrections with provenance.
+
+Trap D: Unversioned templates
+- Fix: template_id + semantic version + session records template version used.
+
+Trap E: Marketplace too early
+- Fix: org-private registries first; public marketplace gated and reviewed.
+
+Trap F: Speaker naming by default
+- Fix: default is labels; names only via overlay mapping.
+
+Trap G: Auto-run by default
+- Fix: explicit execution gating remains the default.
+
+Trap H: No evaluation harness
+- Fix: golden fixtures and regression tests before scaling.
+
+
+============================================================
+6) Architectural doorways to reserve NOW (placeholders)
+============================================================
+
+We do NOT implement these today, but we reserve the structure so we don’t refactor later.
+
+6.1 Stable IDs and schemas
+- Reserve/standardize: session_id, contribution_id, run_id, segment_id, evidence_id.
+- Schema versioning from day one for transcript, diarization, evidence maps, templates.
+
+6.2 Overlay system
+- Directory/namespace for overlays (transcript corrections, speaker mapping, redactions).
+- Provenance records for every overlay.
+
+6.3 Policy engine hooks (Ashby platform)
+- Central policy evaluation for profiles, consent, redaction requirements, domain restrictions.
+- Policies should be testable and auditable.
+
+6.4 Job orchestration / DAG
+- Stage execution as a DAG with resumable nodes.
+- Deterministic merges.
+
+6.5 Sync subsystem
+- Keep sync separate from core processing.
+- Define what syncs (artifacts) vs what rebuilds (indexes).
+- Encryption and key mgmt reserved.
+
+6.6 Template governance subsystem
+- Linting pipeline.
+- Signing and provenance.
+- Org registries + public marketplace quarantine.
+
+6.7 Integration surface
+- API + webhooks that consume artifacts.
+- Integrations never mutate canonical truth.
+
+
+============================================================
+7) Business / pricing strategy (future-safe)
+============================================================
+
+These are the models that align incentives without betraying LOCAL_ONLY.
+
+7.1 Tiers
+- Personal Local: offline-first, pay once or small subscription; uses local compute.
+- Personal Hybrid: optional cloud acceleration, billed by minutes.
+- Team/SMB: shared library + RBAC + exports, billed per seat + minutes.
+- Enterprise: on-prem/BYOK/compliance, expensive and worth it.
+
+7.2 Metering
+- Base: minutes processed.
+- Multipliers: diarization, word timestamps, translation, high retention, compliance signing.
+
+7.3 Marketplace monetization
+- Revenue share for verified templates.
+- Private registries likely dominate serious revenue.
+
+
+============================================================
+8) “Bad ideas” list (things we deliberately do NOT do)
+============================================================
+
+- Background uploads of templates by default (privacy nightmare).
+- Automatic speaker naming by default (misattribution risk).
+- Letting the model invent new modes/templates.
+- Making auto-run the default.
+- Mixing collaborator suggestions into official records without explicit merge.
+- Treating chat text as canonical outputs.
+
+
+============================================================
+9) Quick future-usecase library (one-liners)
+============================================================
+
+These are “ready to expand” verticals that fit Stuart’s core identity:
+
+- Call center truth engine (commitments + compliance).
+- Legal deposition formatting + chain-of-custody.
+- Construction/field inspections to work orders.
+- Research labs and interviews (themes as separate layer).
+- Accessibility captions + reading-level variants.
+- Podcast/media production (show notes + clips + captions).
+- Sales call extraction (CRM integration, evidence-backed).
+
+
+============================================================
+10) How to use this document during development
+============================================================
+
+Use this document as:
+- a roadmap map (what comes next)
+- a refactor warning system (what to avoid)
+- a directory/placeholder guide (what to reserve)
+
+When you’re building:
+- If a feature suggestion violates core invariants (truth/evidence/explicit execution), reject it.
+- If a feature requires overriding canonical artifacts, redesign it as overlays.
+- If a feature wants marketplace or auto-run by default, gate it behind policy.
+- If a feature can be done as an adapter, do not bake it into core.
+
+End.

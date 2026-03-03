@@ -1,0 +1,72 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_050
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 1 (2/4): mode-specific export naming for PDF (minutes.pdf / journal.pdf)
+
+Context: Stuart artifact contract
+
+Origin:
+Control Sync — 2026-02-04 (Stuart v1 finish-line: REV7)
+
+Priority: P0
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV7.txt (Dungeon 1)
+- Stuart Codex 3.2/3.3: required artifacts minutes.pdf/journal.pdf
+- Engine: ashby/modules/meetings/render/pdf_weasyprint.py + render/export_pdf.py + pipeline/job_runner.py
+
+Status: COMPLETED
+Audit Bundle Path:
+Audits/Execution/QUEST_050__2026-02-04__stuart_v1_dungeon_1_2_4_mode_specific_export_naming_for_pdf_minutes_pdf_journal__2026-02-04
+Accepted On:
+2026-02-04
+
+Accepted By:
+Hands (Peter)
+
+Completed On:
+2026-02-06
+
+Completed By:
+Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Replace the legacy `formalized.pdf` export with Codex-required mode-specific names: `minutes.pdf` for meeting mode, `journal.pdf` for journal mode. Must remain print-ready and stable.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Update PDF export to write `exports/minutes.pdf` or `exports/journal.pdf` based on mode
+- Update any stub exporters to accept output name and keep artifact kind consistent
+- Update pipeline/job_runner to call PDF export using the mode-specific md input and mode-specific pdf output
+- Refuse overwrite if target pdf already exists
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- PDF styling polish (handled later with citation rendering)
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_049
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Prefer using manifest pointers rather than hard-coded filenames in doors; pointer wiring is Dungeon 1 (4/4).
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] Meeting run produces `exports/minutes.pdf`
+- [ ] Journal run produces `exports/journal.pdf`
+- [ ] No `formalized.pdf` is generated for new runs
+- [ ] `python3 -m pytest -q` passes
+

@@ -1,0 +1,70 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_056
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 4 (1/5): SQLite schema migration for transcript segments + anchors
+
+Context: Stuart retrieval/index
+
+Origin:
+Control Sync — 2026-02-04 (Stuart v1 finish-line: REV5)
+
+Priority: P0
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV5.txt (Dungeon 4)
+- Engine: ashby/modules/meetings/index/sqlite_fts.py
+
+Status: DONE
+
+Audit Bundle Path:
+  /mnt/data/Ashby_Data/Audits/Execution/QUEST_056__2026-02-07__sqlite_schema_migration_segment_anchors
+
+Accepted On:
+2026-02-07
+Accepted By:
+Hands (Peter)
+Completed On:
+2026-02-07
+
+Completed By:
+Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Upgrade the SQLite FTS/index schema so we can store transcript segments with stable anchors (segment_id + timestamps) and query them reliably across sessions.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Add/upgrade tables to store: session_id, run_id, mode, segment_id, start_ms, end_ms, speaker_label, text
+- Add indexes needed for search + session filtering
+- Migration is safe and idempotent
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Cloud sync
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- (none)
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Migration should not delete existing rows; use additive migration or versioned schema.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] DB migration runs cleanly on existing DB
+- [x] New fields exist and are queryable
+- [x] `python3 -m pytest -q` passes
+

@@ -1,0 +1,32 @@
+## Command Receipt Log
+WRAPPER: synapse_quest_run.sh
+ENGINE_ROOT: /home/notsolikely/Ashby_Engine
+DATA_ROOT: /home/notsolikely/Ashby_Data
+---
+CMD: source /home/notsolikely/venvs/ashby-env/bin/activate && pip install 'pypdf>=5,<6'
+WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0x7267972964b0>: Failed to establish a new connection: [Errno -2] Name or service not known')': /simple/pypdf/
+WARNING: Retrying (Retry(total=3, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0x7267975d8680>: Failed to establish a new connection: [Errno -2] Name or service not known')': /simple/pypdf/
+WARNING: Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0x72679719c5f0>: Failed to establish a new connection: [Errno -2] Name or service not known')': /simple/pypdf/
+WARNING: Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0x72679719c7d0>: Failed to establish a new connection: [Errno -2] Name or service not known')': /simple/pypdf/
+WARNING: Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0x72679719c9e0>: Failed to establish a new connection: [Errno -2] Name or service not known')': /simple/pypdf/
+ERROR: Could not find a version that satisfies the requirement pypdf<6,>=5 (from versions: none)
+ERROR: No matching distribution found for pypdf<6,>=5
+RC: 1
+BLOCKED: command failed (see RC above): source /home/notsolikely/venvs/ashby-env/bin/activate && pip install 'pypdf>=5,<6'
+CMD: source /home/notsolikely/venvs/ashby-env/bin/activate && pip install 'pypdf>=5,<6'
+Collecting pypdf<6,>=5
+  Downloading pypdf-5.9.0-py3-none-any.whl.metadata (7.1 kB)
+Downloading pypdf-5.9.0-py3-none-any.whl (313 kB)
+Installing collected packages: pypdf
+Successfully installed pypdf-5.9.0
+RC: 0
+CMD: cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_templates_import_pdf_text_extraction.py tests/test_templates_api_crud_and_registry.py
+..                                                                       [100%]
+2 passed in 0.84s
+RC: 0
+CMD: cd /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app && npx eslint src/pages/Templates.jsx src/api/stuartClient.js --quiet
+RC: 0
+PASS: governance validation OK for QUEST_194 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_194__2026-03-03__stuart_v1_dungeon_11_7_10_template_import_mvp_text_and_pdf_draft_preview_save
+OK: finalize complete (validation PASS recorded).
+PASS: governance validation OK for QUEST_194 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_194__2026-03-03__stuart_v1_dungeon_11_7_10_template_import_mvp_text_and_pdf_draft_preview_save
+OK: finalize complete (validation PASS recorded).

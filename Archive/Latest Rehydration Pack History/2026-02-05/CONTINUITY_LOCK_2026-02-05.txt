@@ -1,0 +1,65 @@
+STUART — CONTINUITY LOCK
+Date: 2026-02-05
+
+PURPOSE
+- Freeze the authoritative state of the Stuart v1 raid so a new session cannot drift.
+- This file is binding resume law. If it conflicts with casual memory, this wins.
+
+CANONICAL ROOTS
+- Governance canon: /mnt/data/Synapse_OS_Governance
+- Subject data canon: /mnt/data/Ashby_Data
+- Subject engine canon: /mnt/data/Ashby_Engine
+
+CANONICAL ROOT NORMALIZATION (OPTION A EXECUTED)
+- The canon zip wrapper was extracted and the roots were moved into place:
+  - /mnt/data/Ashby_Data
+  - /mnt/data/Ashby_Engine
+- The wrapper folder is archived (inert):
+  - /mnt/data/Archive(IGNORE)/WRAPPER__Ashby_CANON__Q042-043_COMPLETED__2026-02-04
+
+CODEX STATUS (FOG)
+- Codex Freeze Marker present:
+  - /mnt/data/Ashby_Data/Codex/CODEX_FREEZE.md
+- Execution is authorized under frozen codex references:
+  - /mnt/data/Ashby_Data/Codex/ASHBY CODEX FULL.txt
+  - /mnt/data/Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt
+
+ACTIVE GUILD ORDERS (AUTHORITATIVE SCOPE)
+- /mnt/data/Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS_STUART_V1_2026-02-04_REV7.txt
+
+QUEST BOARD TRUTH (COMMITMENT STATE)
+COMPLETED:
+- QUEST_042 — Stuart v1 D2 (1/7): Run Params (retention + template_id) validation
+- QUEST_043 — Stuart v1 D2 (2/7): Default Templates (meeting/journal) + citation format + no invention
+
+ACCEPTED (active commitment stack; execute in this order):
+- QUEST_044 — minutes.json schema v1 (machine contract)
+- QUEST_045 — journal.json schema v1 (machine contract)
+- QUEST_046 — formalize meeting → minutes.json (profile-gated)
+- QUEST_047 — formalize journal → journal.json (profile-gated)
+- QUEST_048 — render minutes/journal MD from JSON (deterministic)
+- QUEST_049 — output naming: minutes.md / journal.md
+- QUEST_050 — output naming: minutes.pdf / journal.pdf
+- QUEST_051 — diarization artifact naming: diarization.json
+- QUEST_052 — run manifest primary output pointers (mode-aware)
+
+UNACCEPTED (do not execute without Control Sync decision):
+- QUEST_053+ (Evidence Map v2, Retrieval upgrades, Doors unification, Speaker map, etc.)
+
+KNOWN HAZARDS / NON-AUTHORITATIVE SOURCES
+- Historical module-level rehydration packs exist under:
+  /mnt/data/Ashby_Data/Stuart/Docs/Latest Rehyration Pack
+  These are NOT authoritative for session resume. Do not rehydrate from them.
+
+ENGINE REPO NOTE
+- The engine repo is treated as canonical even if git status is dirty.
+- Do NOT attempt to “fix” git history during Stuart v1 quests unless explicitly ordered.
+
+SNAPSHOT LAW
+- End-of-Day snapshot is created ONLY when:
+  - the accepted quest stack (QUEST_044–QUEST_052) is complete, OR
+  - Hands explicitly ends the session.
+
+NEXT EXPECTED STEP
+- Execute QUEST_044 next (minutes.json schema v1) using the execution pack runbook.
+

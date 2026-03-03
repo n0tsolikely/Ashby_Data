@@ -1,0 +1,106 @@
+ASHBY — EXECUTION PROFILES & CONSENT CONTRACT (BATCH 0)
+Status: Canonical-for-execution (single-purpose contract for Batch 0)
+Date: 2026-01-13
+
+Purpose
+Batch 0 defines the platform-level execution profile model so Ashby can enforce:
+- LOCAL_ONLY: no network egress allowed
+- HYBRID: network egress allowed only with explicit, logged consent per run
+- CLOUD: network egress allowed (still logged)
+
+This is a platform primitive.
+Modules do not get to “decide” profile rules.
+Modules declare their adapter requirements; Ashby evaluates profile + consent.
+
+Non-goals (explicit)
+- Full policy engine
+- UI implementation of consent prompts
+- Account identity systems
+Batch 0 provides data structures + evaluation helpers only.
+
+Where this lives in the EXISTING Ashby Engine repo (repo-aware)
+Create:
+
+- <repo_root>/ashby/ashby/core/profile.py
+- <repo_root>/ashby/tests/test_profile_gate_smoke.py
+
+Canonical definitions
+
+1) ExecutionProfile
+Enum with EXACT values:
+- LOCAL_ONLY
+- HYBRID
+- CLOUD
+
+2) DataCategory
+Represent what type of data would leave the device.
+Implement as Literal[str] or small Enum.
+Minimum categories:
+- "audio"
+- "transcript"
+- "text"
+- "image"
+- "metadata"
+
+3) EgressPlan
+Represents a specific planned network egress.
+Fields (required):
+- provider: str                  # e.g., "openai", "anthropic", "custom_endpoint"
+- endpoint: str | None           # optional URL or identifier
+- data_categories: set[DataCategory]
+- purpose: str                   # short reason (e.g., "asr_transcription")
+- retention: str | None          # if known (e.g., "unknown", "30_days", etc)
+
+4) ConsentRecord
+Represents user consent for an egress plan.
+Fields (required):
+- granted: bool
+- disclosure_text: str
+- user_confirmed_at: str | None  # ISO8601 UTC if granted
+- scope: dict[str, Any]          # optional: run_id/session_id correlation
+- provider: str
+- data_categories: list[DataCategory]
+
+Rule:
+- ConsentRecord must be stored in a run manifest by the module,
+  but the profile gate logic belongs to Ashby.
+
+5) ProfileGateDecision
+Return type of the evaluation helper.
+Fields:
+- allowed: bool
+- requires_consent: bool
+- denied_reason: str | None
+- required_disclosure: str | None   # if requires_consent==True, what must be shown
+
+Evaluation helper (core/profile.py)
+Provide a single canonical function:
+- evaluate_profile(profile: ExecutionProfile, egress: EgressPlan | None, consent: ConsentRecord | None) -> ProfileGateDecision
+
+Rules:
+- If egress is None or data_categories empty: always allowed (no network egress)
+- LOCAL_ONLY: deny any egress (allowed=False, denied_reason="LOCAL_ONLY forbids network egress")
+- HYBRID:
+  - if egress exists and consent is None or consent.granted is False:
+      requires_consent=True, allowed=False
+  - if consent.granted is True AND provider/categories match egress:
+      allowed=True
+- CLOUD:
+  - allow egress (allowed=True) but still return required_disclosure=None
+  - (logging is still required elsewhere)
+
+Matching rules (HYBRID)
+Consent must match egress minimally by:
+- same provider
+- data_categories in consent must be a superset of egress data_categories
+If mismatch: treat as no consent.
+
+Self-audit checklist (Batch 0 acceptance)
+Before declaring “Profiles + Consent done”:
+- test_profile_gate_smoke.py passes for all three profiles:
+  - LOCAL_ONLY denies egress
+  - HYBRID requires consent
+  - HYBRID allows when consent matches
+  - CLOUD allows
+- core/profile.py imports only stdlib/typing (no module imports)
+- no Stuart-specific wording in code (providers are generic strings)

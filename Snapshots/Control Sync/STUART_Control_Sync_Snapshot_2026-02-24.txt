@@ -1,0 +1,141 @@
+================================================================================
+CONTROL SYNC SNAPSHOT
+================================================================================
+A) Header (required)
+- Subject: STUART
+- Date: 2026-02-24
+- Topic: Control Sync Snapshot Reconstruction (2026-02-24)
+- Snapshot Type: Control_Sync
+- World State: Fog Lifted
+- Codex Freeze status: PRESENT (/home/notsolikely/Ashby_Data/Codex/CODEX_FREEZE.md)
+
+B) Rehydration Review (required when resuming)
+1) Latest Control Sync Snapshot reviewed:
+- /home/notsolikely/Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-02-23.txt
+- /home/notsolikely/Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot__02_2026-02-23.txt
+
+2) Latest End-of-Day Snapshot reviewed:
+- /home/notsolikely/Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2026-02-23.txt
+- /home/notsolikely/Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot__02_2026-02-23.txt
+
+3) Relevant General Snapshots reviewed:
+- /home/notsolikely/Ashby_Data/Snapshots/General/STUART_General_Snapshot_2026-02-22.txt
+
+C) Current Reality (State Surface)
+- Active Guild Orders / Raid:
+  - /home/notsolikely/Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-23_REV5.txt
+- Paused Guild Orders / Raids:
+  - none
+- Quest Board state summary at close:
+  - Created today:
+    - SIDE-QUEST_089 (later abandoned)
+    - SIDE-QUEST_090
+    - SIDE-QUEST_091
+  - Accepted at close:
+    - SIDE-QUEST_091__Stuart__Sanitize_JSON_As_String_Formalization_Output__2026-02-24.txt
+  - Completed today includes:
+    - QUEST_150, QUEST_151, QUEST_152
+    - SIDE-QUEST_090
+  - Abandoned today includes:
+    - SIDE-QUEST_089
+- Known blockers:
+  - SIDE-QUEST_091 runtime proof blocked in this execution environment:
+    - GEMINI_API_KEY not set in active env during proof step
+    - localhost HTTP calls from wrapper command context denied ([Errno 1] Operation not permitted)
+
+D) Binding Decisions (required when binding decisions exist)
+- Accepted and executed Dungeon 9B accepted quests to closure state:
+  - QUEST_150 finalized PASS and moved to Completed
+  - QUEST_151 finalized PASS and moved to Completed
+  - QUEST_152 finalized PASS and moved to Completed (per Hands directive)
+- Side-quest governance decisions:
+  - SIDE-QUEST_089 created then abandoned by Hands directive
+  - SIDE-QUEST_090 and SIDE-QUEST_091 created and accepted
+- Execution order decision enforced:
+  - SIDE-QUEST_090 executed first (OpenAI removal verification in Stuart scope)
+  - SIDE-QUEST_091 executed second (sanitizer + prompt tightening)
+- Architecture decision reaffirmed:
+  - Stuart LLM paths are gateway-seam based (D9A gateway contract), no direct OpenAI SDK paths in Stuart scoped modules.
+- Snapshot process correction decision:
+  - Recreate detailed Control Sync and EOD snapshots with full decision/work records after prior minimal snapshots were rejected by Hands.
+
+Deferred / Not decided:
+- Deferred until environment supports live proof:
+  - SIDE-QUEST_091 final runtime proof (gateway hit + readable artifacts with live env), blocked by missing GEMINI_API_KEY and localhost HTTP restrictions in current execution context.
+- Not in scope for this control cycle:
+  - Dungeon 10 cross-session memory/chat work.
+
+Decision changes (if any):
+- prior decision → new decision (with reference)
+
+E) Scope Commitment (required)
+- Scope committed and executed during this cycle:
+  - Finalize D9B accepted quest stack and update quest board state
+  - Resolve Stuart backend crash in /api/chat clarify path
+  - Create/accept/execute side quests for Stuart gateway hygiene and output cleanup
+  - Rebuild rehydration pack files to current date/state
+- Remaining committed next scope:
+  - Close SIDE-QUEST_091 by running live runtime proof in a host environment that permits localhost HTTP and has GEMINI_API_KEY exported.
+
+F) Artifacts Touched / Created (required)
+- Quest board artifacts:
+  - /home/notsolikely/Ashby_Data/Quest Board/Completed/QUEST_144__Stuart_v1_D9B_1of9__LLMService_and_GatewayClient__2026-02-23.txt
+  - /home/notsolikely/Ashby_Data/Quest Board/Completed/QUEST_145__Stuart_v1_D9B_2of9__DevEditable_Retention_Prompts__2026-02-23.txt
+  - /home/notsolikely/Ashby_Data/Quest Board/Completed/QUEST_146__Stuart_v1_D9B_3of9__Gateway_Prompt_Uses_Retention_Policy__2026-02-23.txt
+  - /home/notsolikely/Ashby_Data/Quest Board/Completed/QUEST_147__Stuart_v1_D9B_4of9__Minutes_Formalizer_Uses_Gateway__2026-02-23.txt
+  - /home/notsolikely/Ashby_Data/Quest Board/Completed/QUEST_148__Stuart_v1_D9B_5of9__Journal_Formalizer_Uses_Gateway__2026-02-23.txt
+  - /home/notsolikely/Ashby_Data/Quest Board/Completed/QUEST_149__Stuart_v1_D9B_6of9__LLM_Usage_Receipt_Schema_and_No_Leak__2026-02-23.txt
+  - /home/notsolikely/Ashby_Data/Quest Board/Completed/QUEST_150__Stuart_v1_D9B_7of9__Evidence_Map_Persistence_From_Gateway__2026-02-23.txt
+  - /home/notsolikely/Ashby_Data/Quest Board/Completed/QUEST_151__Stuart_v1_D9B_8of9__Contract_Tests_and_Failure_Rails__2026-02-23.txt
+  - /home/notsolikely/Ashby_Data/Quest Board/Completed/QUEST_152__Stuart_v1_D9B_9of9__TL4_Proof_Retention_Diff_and_Downloads__2026-02-23.txt
+  - /home/notsolikely/Ashby_Data/Quest Board/Completed/SIDE-QUEST_090__Stuart__Eliminate_Direct_OpenAI_Calls_Use_D9A_Gateway_Only__2026-02-24.txt
+  - /home/notsolikely/Ashby_Data/Quest Board/Accepted/SIDE-QUEST_091__Stuart__Sanitize_JSON_As_String_Formalization_Output__2026-02-24.txt
+  - /home/notsolikely/Ashby_Data/Quest Board/Abandoned/SIDE-QUEST_089__Stuart__Replace_Remaining_OpenAI_Calls_With_Gateway__2026-02-24.txt
+
+- Engine code/test artifacts touched in this cycle:
+  - /home/notsolikely/Ashby_Engine/ashby/interfaces/web/app.py
+  - /home/notsolikely/Ashby_Engine/tests/test_meetings_web_api_envelope_consistency.py
+  - /home/notsolikely/Ashby_Engine/ashby/modules/meetings/formalize/llm_text_sanitizer.py
+  - /home/notsolikely/Ashby_Engine/ashby/modules/meetings/formalize/minutes_json.py
+  - /home/notsolikely/Ashby_Engine/ashby/modules/meetings/formalize/journal_json.py
+  - /home/notsolikely/Ashby_Engine/ashby/interfaces/llm_gateway/providers/gemini.py
+  - /home/notsolikely/Ashby_Engine/tests/test_llm_minutes_text_sanitizer.py
+
+- Audit bundles:
+  - /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_150__2026-02-23__quest_150_stuart_v1_d9b_7of9_evidence_map_persistence_from_gateway_2026_02_23
+  - /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_151__2026-02-23__quest_151_stuart_v1_d9b_8of9_contract_tests_and_failure_rails_2026_02_23
+  - /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_152__2026-02-23__quest_152_stuart_v1_d9b_9of9_tl4_proof_retention_diff_and_downloads_2026_02_23
+  - /home/notsolikely/Ashby_Data/Audits/Execution/SIDE-QUEST_090__2026-02-24__side_quest_090_stuart_eliminate_direct_openai_calls_use_d9a_gateway_only_2026_02_24
+  - /home/notsolikely/Ashby_Data/Audits/Execution/SIDE-QUEST_091__2026-02-24__side_quest_091_stuart_sanitize_json_as_string_formalization_output_2026_02_24
+
+- Rehydration pack files updated to 2026-02-24:
+  - /home/notsolikely/Ashby_Data/Latest Rehydration Pack/00_REHYDRATION_PACK_INDEX__2026-02-24.txt
+  - /home/notsolikely/Ashby_Data/Latest Rehydration Pack/BOOTSTRAP_PROMPT_2026-02-24.txt
+  - /home/notsolikely/Ashby_Data/Latest Rehydration Pack/CONTINUITY_LOCK_2026-02-24.txt
+
+G) NOTES
+- Major issue resolved:
+  - Stuart backend crash in /api/chat due to out.clarify.question access against ClarifyPrompt(message field).
+  - Fixed by safe fallback to message/question and added targeted API test.
+- Environment constraints encountered repeatedly in proof steps:
+  - Missing GEMINI_API_KEY in active env during runtime proof
+  - Localhost HTTP denied from this sandbox command context
+- Governance process correction enacted by Hands:
+  - Previous minimal Control Sync/EOD snapshots rejected; both re-authored with full-detail sections.
+
+H) Exit Condition + Closure Statement (required)
+- Closure statement: This Control Sync is CLOSED only when this Snapshot exists as a file.
+- Started At: 2026-02-24T00:29:16.144369-05:00
+- Closed At: 2026-02-24T00:29:21.442507-05:00
+- Participants: Hands, Brains
+- Reason: Recreate full-detail snapshots with complete decisions/work records per Hands directive
+- Next immediate action: Run SIDE-QUEST_091 live runtime proof in host env and close quest.
+
+This Control Sync is CLOSED only when this Snapshot exists as a file.
+
+Closure condition satisfied by writing this Control Sync Snapshot.
+
+Next immediate action:
+- Execute SIDE-QUEST_091 live runtime proof in host environment (gateway reachable + GEMINI_API_KEY exported), then close quest to Completed.
+
+END OF SNAPSHOT

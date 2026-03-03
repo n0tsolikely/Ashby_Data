@@ -1,0 +1,226 @@
+QUEST TEMPLATE — SYNAPSE OS
+Version: v1.5
+Last Updated: 2026-02-22
+Status: Canon Template (must comply with Quest Validation Rules)
+Subject Copy: Ashby_Data/Quest Board/QUEST_TEMPLATE.txt
+Provenance: Synapse OS governance/Quest Board/QUEST_TEMPLATE.txt (v1.5)
+
+
+(duplicate this file for each new Quest)
+
+CORE LAW Reminder:
+- Quest state is defined ONLY by WHERE THIS FILE LIVES (Quest Board folder), not by metadata.
+- This Quest file is the execution contract. It MUST be unambiguous enough to execute, audit, verify, and resume.
+- If any REQUIRED field is missing or ambiguous, the Quest MUST remain on BOARD (validation fails).
+- Verification is NOT optional:
+  - Execution MUST NOT begin until a Verification Plan exists.
+  - The Verification Plan may be recorded here OR deferred to the Pre-Quest Audit (01_PREQUEST.md).
+
+NOTE:
+- Do not "change status" in text. Move the file between folders.
+- Location wins over text. If this file claims a state that conflicts with its folder, the folder is authoritative.
+
+================================================================================
+IDENTITY (REQUIRED)
+================================================================================
+Quest ID:
+SIDE-QUEST_090
+
+Title:
+Stuart: Remove all direct OpenAI calls and route all LLM traffic through D9A gateway
+
+Subject:
+STUART
+
+Origin:
+Hands directive on 2026-02-24: Stuart must use the existing D9A gateway seam only; no direct OpenAI SDK usage in Stuart code paths.
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- Dungeon 9A gateway: QUEST_140-143
+- Dungeon 9B integration baseline: QUEST_144-152
+- Gateway runtime: Ashby_Engine/ashby/interfaces/llm_gateway/app.py
+
+================================================================================
+CODEX ANCHORS + CONSTRAINT SUMMARY (DRAFT)
+================================================================================
+Codex Anchors (DRAFT):
+- Stuart Codex 1.3 (Execution Profiles)
+- Stuart Codex 8.4 (Adapter/provider isolation)
+- Stuart Codex 5.3 (Truth/evidence discipline)
+- Guild Orders REV5 (D9A/D9B routing law)
+
+Codex Constraint Summary (DRAFT):
+- Stuart core/formalize paths must not import provider SDKs directly.
+- CLOUD/HYBRID may call gateway only when ASHBY_MEETINGS_LLM_ENABLED=1.
+- LOCAL_ONLY must never call gateway.
+- Response contract must enforce version=1/request_id/output_json.
+- llm_usage.json must remain metadata-only.
+
+
+================================================================================
+QUEST CREATION VISION ALIGNMENT (REQUIRED)
+================================================================================
+Change Class: (TRIVIAL / FEATURE / STRUCTURAL)
+FEATURE
+
+Vision Delta: (ALIGNED / VARIATION / SHIFT)
+ALIGNED
+
+System Context Statement:
+This quest is Stuart-bounded and operates within established D9A/D9B architecture. It standardizes Stuart LLM routing so all Stuart remote inference flows pass through the gateway endpoint seam.
+
+If Vision Delta = VARIATION:
+# REQUIRED only if Vision Delta = VARIATION.
+# - Codex intent class it maps to: <e.g., Door: chat interface>
+# - Codification path: <SIDE-QUEST id or "TBD — requires Hands approval">
+# NOTE: Variations may be allowed to execute if anchored + oriented, but MUST spawn a Side-Quest to codify.
+
+If Vision Delta = SHIFT:
+# REQUIRED only if Vision Delta = SHIFT.
+# Write: BLOCKED — CONTROL_SYNC_REQUIRED
+# Briefly state what would need to change in Codex for this to become valid.
+
+Anti-Duplication Plan:
+- rg -n "from openai import OpenAI|import openai|OPENAI_API_KEY|_call_openai_|chat\\.completions|responses\\.create" /home/notsolikely/Ashby_Engine/ashby /home/notsolikely/Ashby_Engine/tests -S
+- rg -n "HTTPGatewayLLMService|LLMFormalizeRequest|STUART_LLM_GATEWAY_URL|/v1/formalize" /home/notsolikely/Ashby_Engine/ashby /home/notsolikely/Ashby_Engine/tests -S
+
+Placement Intent:
+- Layer: Stuart module + interface paths only
+- Targets: /home/notsolikely/Ashby_Engine/ashby/modules/meetings/** and /home/notsolikely/Ashby_Engine/ashby/interfaces/web/**
+
+
+================================================================================
+ATOMICITY CHECK (REQUIRED)
+================================================================================
+Atomicity Statement:
+Atomic: YES — independently verifiable removal of direct OpenAI call paths from Stuart and strict gateway seam enforcement.
+
+================================================================================
+RISK + CONSENT GATE (CONDITIONAL)
+================================================================================
+Risk: (R0 / R1 / R2)
+R1
+
+R2 Confirmation Artifact (REQUIRED if Risk = R2):
+# REQUIRED ONLY IF Risk = R2.
+# confirmations/CONFIRM_R2__<quest_id>__YYYY-MM-DD__<slug>.txt
+# The file must exist and contain:
+# CONFIRM: YES
+
+================================================================================
+STATE (BY LOCATION; CANON)
+================================================================================
+Canonical Quest Board locations:
+- BOARD:     Ashby_Data/Quest Board/
+- ACCEPTED:  Ashby_Data/Quest Board/Accepted/
+- COMPLETED: Ashby_Data/Quest Board/Completed/
+- ABANDONED: Ashby_Data/Quest Board/Abandoned/
+
+================================================================================
+DESCRIPTION (REQUIRED)
+================================================================================
+Eliminate direct OpenAI SDK usage from Stuart code paths and enforce that Stuart LLM requests flow through the D9A gateway contract via STUART_LLM_GATEWAY_URL.
+
+================================================================================
+SCOPE / OBJECTIVE (REQUIRED)
+================================================================================
+- Remove/replace all Stuart-side OpenAI references:
+  - from openai import OpenAI / import openai
+  - OPENAI_API_KEY reads in Stuart formalization paths
+  - _call_openai_minutes_json / _call_openai_journal_json and equivalents
+- Route calls through gateway seam with payload fields:
+  - mode, template_id=default, retention, profile, transcript_text
+- Enforce gateway response includes version=1, request_id, output_json.
+- Update tests to mock gateway seam (not _call_openai_* helpers).
+- Preserve profile behavior:
+  - LOCAL_ONLY never calls gateway
+  - CLOUD/HYBRID can call gateway when ASHBY_MEETINGS_LLM_ENABLED=1
+- Ensure llm_usage.json written only after valid schema acceptance.
+
+================================================================================
+OUT OF SCOPE (REQUIRED)
+================================================================================
+- No migration of non-Stuart modules (e.g., ashby/brain/*).
+- No Dungeon 10 cross-session memory/chat work.
+- No provider billing/routing redesign beyond existing gateway contract.
+
+================================================================================
+DEPENDENCIES (REQUIRED: LIST OR EXPLICIT NONE)
+================================================================================
+- QUEST_140-152 completed
+- Gateway process availability for runtime verification
+- Active env with required test modules
+
+================================================================================
+DOORS + TESTING LEVEL (CONDITIONAL: CODE/SOFTWARE)
+================================================================================
+Door Impact:
+MULTIPLE
+
+Testing Level (TL):
+TL3
+
+================================================================================
+VERIFICATION PLAN (REQUIRED BEFORE EXECUTION)
+================================================================================
+Verification Commands (copy/paste safe):
+- /home/notsolikely/Ashby_Data/tools/quest_run.sh cmd SIDE-QUEST_090 "cd /home/notsolikely/Ashby_Engine && rg -n 'from openai import OpenAI|import openai|OPENAI_API_KEY|_call_openai_|chat\\.completions|responses\\.create' ashby/modules/meetings ashby/interfaces/web tests -S"
+- /home/notsolikely/Ashby_Data/tools/quest_run.sh cmd SIDE-QUEST_090 "cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_formalize_minutes_json_profile_gated.py tests/test_meetings_formalize_journal_json_profile_gated.py"
+
+PASS/FAIL/BLOCKED Criteria:
+- PASS: no remaining direct OpenAI usage in Stuart target paths; profile-gated tests pass.
+- FAIL: any direct OpenAI Stuart path remains, or tests fail.
+- BLOCKED: missing dependency/env/gateway requirements prevent truthful verification.
+
+Expected Artifacts / Outputs:
+- Stuart code diffs removing direct OpenAI references
+- Updated tests and audit receipts
+
+Receipts:
+- Wrapper output in 06_TESTS.txt and 06_CHANGED_FILES.txt
+
+================================================================================
+EXECUTION NOTES (OPTIONAL)
+================================================================================
+- Non-negotiable process from Hands:
+  - all commands via /home/notsolikely/Ashby_Data/tools/quest_run.sh
+  - no heredocs inside wrapper commands
+  - do not mark completed without finalize PASS
+  - if blocked, record BLOCKED with receipts and stop
+
+================================================================================
+TALENT POINTS (REQUIRED: YES/NO)
+================================================================================
+Talent Point Awarded: (YES / NO)
+NO
+
+If YES:
+# State the capability unlocked/expanded so it can be logged in the Talent Tree.
+
+================================================================================
+EXECUTION AUDIT BUNDLE (REQUIRED ONCE ACCEPTED)
+================================================================================
+Execution Audits are mandatory when executing a Quest.
+See: Processes/SYNAPSE_GUILD__EXECUTION_AUDITS.txt
+
+Validation gate:
+- A Quest may NOT be accepted unless it passes quest validation.
+See: Quest Board/SYNAPSE_GUILD__QUEST_VALIDATION_RULES.txt
+
+Audit Bundle Folder Path (required once ACCEPTED):
+# REQUIRED ONCE ACCEPTED.
+# Ashby_Data/Audits/Execution/QUEST_###__YYYY-MM-DD__<short_slug>/
+
+Required files inside the bundle (canonical minimum):
+# 00_SUMMARY.md
+# 01_PREQUEST.md
+# 02_EXECUTION.md
+# 03_VERIFY.md
+# 04_OUTCOME.md
+
+MULTI-DAY / RETRY RULE:
+# If this Quest spans multiple Dailies (or requires retries), the audit bundle path above remains canonical.
+# Do NOT create a second audit bundle. Append new timestamped attempt entries inside the existing phase files.

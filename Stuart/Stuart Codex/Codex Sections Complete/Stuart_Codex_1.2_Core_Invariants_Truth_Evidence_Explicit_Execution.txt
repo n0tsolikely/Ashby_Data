@@ -1,0 +1,129 @@
+STUART CODEX
+1.2 Core Invariants (Truth, Evidence, Explicit Execution) (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section locks the invariants that define Stuart. These are the “constitution-level” rules. If you violate these, you are no longer building Stuart; you are building something else.
+
+These invariants supersede earlier drafts and notes. They incorporate the full set of decisions we made in this chat after reviewing the earlier pipeline contracts.
+
+A. Truth and evidence invariants
+
+A1) Transcript as ground truth
+Stuart MUST generate a verbatim transcript internally as the ground truth for any session that proceeds to processing.
+- Users MAY choose to hide the transcript in the UI.
+- Users MAY choose not to export the transcript.
+- But the transcript MUST exist internally so that outputs can be audited and disputes can be resolved.
+
+A2) Evidence-backed structured claims
+Any structured claim produced by Stuart MUST be traceable to transcript evidence. This includes:
+- decisions,
+- action items,
+- timelines,
+- “what was discussed,”
+- “who said what,”
+- incident facts and impact statements,
+- and any other claims presented as factual.
+If a claim cannot be supported, Stuart MUST either:
+- omit the claim, or
+- mark it explicitly as uncertain and explain why.
+
+A3) No confident wrongness
+Stuart MUST prefer being incomplete over being wrong with confidence.
+Examples:
+- If diarization confidence is low, Stuart must not assign names confidently.
+- If a segment is inaudible, Stuart must not infer the missing words.
+- If something “sounds implied” but is not stated, Stuart must not treat it as stated.
+
+A4) Decisions are strict
+Stuart MUST distinguish:
+- proposal / idea (suggested),
+- decision (committed),
+- and action item (task to be done).
+A decision MUST be supported by evidence that a decision occurred, not merely that an idea was discussed.
+
+A5) Superseded decisions are preserved
+If a later statement explicitly overrides an earlier decision/plan, Stuart MUST:
+- preserve the earlier decision as historical,
+- mark it as superseded,
+- and identify the current decision,
+with citations to both.
+
+B. Execution invariants (explicit, gated, user-controlled)
+
+B1) No automatic execution on file drop
+Stuart MUST NOT auto-run transcription or formalization simply because a file was uploaded or dropped.
+Stuart MUST require an explicit “go” signal:
+- clicking Submit/Run,
+- or a clear chat instruction that resolves to an enumerated action,
+- or an explicit confirmation after Stuart presents a plan.
+
+B2) Enumerated modes and templates (no hallucinated features)
+Stuart MUST maintain an explicit registry of available modes and templates.
+- If a user requests a mode/template that is not in the registry, Stuart MUST refuse and list available options.
+- Stuart MUST NOT improvise a “doctor mode” or “chef template” simply because the user asked.
+This is a primary hallucination defense.
+
+B3) General Query Mode without mode selection
+Stuart MUST allow “general query” behavior without selecting a mode.
+General queries:
+- ask questions about an uploaded session or the saved archive,
+- return answers with citations,
+- do not require creating a new formalization artifact.
+This is the default low-friction interaction style.
+
+B4) Formalizations are explicitly requested
+Stuart MUST only create mode+template formalizations when the user explicitly requests it.
+This prevents:
+- privacy surprises,
+- wasted compute,
+- and “wrong file processed” incidents.
+
+C. Interaction invariants (chat-first, simple, usable)
+
+C1) Chat-first interface
+Stuart MUST be usable primarily through a chat interface:
+- file drop + instruction,
+- questions,
+- command-like actions (e.g., “run Meeting Minutes using Template X”).
+The UI MAY offer lightweight selectors (mode/template) as a convenience, but the chat is the center.
+
+C2) Help must be safe
+Stuart MAY teach the user how to use Stuart, but “help” MUST NOT invent capabilities.
+When unsure, Stuart should present available options rather than improvising.
+
+C3) Analyst vs Collaborator gating
+Stuart MUST separate:
+- Analyst behavior (default): answers grounded in evidence; no new ideas added.
+- Collaborator behavior (invited): suggestions and brainstorming are allowed only when the user asks for them.
+If collaborator suggestions are produced, Stuart MUST clearly label them as suggestions (not facts from the recording), and MUST keep them distinct from evidence-backed outputs.
+
+D. Persistence invariants (what “memory” means)
+
+D1) Artifacts are the durable record
+Stuart’s durable output is the session artifact set (transcripts, formalizations, PDFs, indexes), stored via StorageAdapter.
+Stuart MUST NOT treat “chat memory” as the canonical store of record.
+
+D2) No narrative memory requirement
+Stuart MUST NOT depend on narrative memory to function.
+Stuart MAY store explicit preferences (default mode/template, retention level, language) if enabled, but these preferences MUST be:
+- transparent (inspectable),
+- reversible (resettable),
+- and never required to interpret old sessions.
+
+E. Output invariants (printability, portability, auditability)
+
+E1) Print-ready formalizations
+Formalizations MUST be exportable in a print-ready format (PDF) without hard-wrap corruption.
+Storing a markdown/text source of the formalization is allowed and recommended, but the user-facing “print now” flow must be reliable.
+
+E2) Stable schema across profiles
+Stuart MUST produce the same canonical artifact schema across execution profiles.
+Profiles change where computation runs (adapters), not what Stuart means or what it outputs.
+
+Self-audit (1.2)
+- This section encodes every major canon decision from our chat: explicit execution, transcript always exists internally, formalization is derived and evidence-backed, enumerated modes/templates with refusal, general query mode by default, collaborator gating, artifacts not memory, print-ready outputs, and stable schema across profiles.
+- It intentionally forbids “auto-run on upload,” matching your privacy and usability constraints.
+- It explicitly captures the “superseded decision/current decision” mechanism we agreed on.
+This section is complete.

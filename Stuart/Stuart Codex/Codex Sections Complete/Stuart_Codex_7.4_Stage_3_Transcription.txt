@@ -1,0 +1,166 @@
+STUART CODEX
+7.4 Stage 3: Transcription (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+Stage 3 converts speech into a timestamped transcript. This transcript is the ground truth text artifact for Stuart.
+
+The transcript must be:
+- as verbatim as possible (no aggressive cleanup),
+- timestamped for evidence and retrieval,
+- and stored as durable artifacts on disk (not trapped in chat output).
+
+Transcription is required for all formalizations and for content-based querying.
+
+1) Inputs
+
+Stage 3 consumes:
+- audio_manifest.json + normalized_audio.wav from Stage 1
+
+Optional inputs:
+- diarization.json from Stage 2 (not required for transcription, but may inform later alignment)
+- user language hints (language code)
+- user settings: “include disfluencies” preference (where supported)
+- chunk_plan.json / speech_segments.json (if available)
+
+Stage 3 must also know:
+- active profile (LOCAL_ONLY / HYBRID / CLOUD)
+- selected mode/template (because captions/translation needs may affect timestamp precision requirements)
+
+2) Outputs (minimum required)
+
+Stage 3 MUST produce:
+
+A) transcript.json (ground truth machine artifact)
+Contains:
+- metadata (language detected/declared, model used, config)
+- segments[] with stable segment IDs
+  Each segment includes at minimum:
+  - segment_id
+  - start_time, end_time
+  - text
+  - confidence (if available)
+  - contribution_id reference (for multi-contribution sessions)
+Optional but recommended:
+  - words[] with word-level timestamps (needed for high-quality captions and precise evidence)
+  - token/logprob diagnostics (adapter-dependent)
+
+B) transcript.txt (human artifact)
+- readable, not hard-wrapped
+- line breaks at speaker turns (once aligned) or at segment boundaries (pre-alignment)
+- includes timestamps in a consistent format if the user enables it
+
+C) transcription_report.json (recommended)
+- total duration processed
+- detected language and confidence
+- warnings (low-confidence stretches, missing audio, heavy noise)
+- suggested next steps (e.g., “re-run with higher accuracy adapter”)
+
+D) run record
+Stage 3 MUST create a run record:
+- run_type: transcribe
+- profile_used
+- adapters_used (ASR adapter)
+- inputs_used
+- outputs_created
+- config_snapshot (language settings, timestamp settings, chunking, etc.)
+
+3) Verbatim discipline (what “verbatim transcript” means here)
+
+“Verbatim” means:
+- do not intentionally paraphrase,
+- do not rewrite for readability,
+- do not collapse content into summaries,
+- preserve the words as spoken as faithfully as the ASR model can produce.
+
+The transcript is allowed to include:
+- filler words (“um”, “like”) if the ASR captures them
+- false starts and fragments
+- repeated phrases
+
+Stuart must not apply “cleanup” rules to the ground truth transcript.
+Cleanup may exist as a derived view (clean transcript), but it must be labeled derived and must not overwrite transcript.json.
+
+4) Timestamp requirements
+
+Time anchoring is non-negotiable.
+
+TS1) Segment timestamps required
+Every transcript segment must have start/end times.
+
+TS2) Word timestamps recommended
+Word-level timestamps are strongly recommended for:
+- captions generation,
+- precise evidence queries,
+- and high-trust dispute resolution.
+
+If word timestamps are not available in an adapter:
+- Stuart must disclose the limitation
+- and later stages must not pretend word-level precision exists.
+
+5) Long audio handling (avoid truncation by design)
+
+Stage 3 must support long recordings (e.g., 60+ minutes) without relying on a single giant context window.
+
+Canonical requirements:
+- chunk audio deterministically (time-based or VAD-based)
+- transcribe chunks incrementally
+- merge into a single transcript.json while preserving timestamps and segment IDs
+- write partial progress to disk so the run can resume after interruption
+
+This directly solves the “chat output limits” concern: the output is a stored artifact, not a single chat message.
+
+6) Language handling
+
+Stage 3 must support:
+- explicit language selection (user sets language)
+- auto language detection (adapter-dependent)
+
+The transcript metadata must record:
+- language detected/declared
+- whether detection was automatic or user-specified
+
+Translation is not part of Stage 3. Translation is a post-transcript step (Section 3.7).
+
+7) Profile behavior
+
+LOCAL_ONLY:
+- transcription runs entirely local using a local ASR adapter.
+- no network calls.
+
+HYBRID:
+- transcription may run local or remote, but any remote transcription must be disclosed and confirmed before execution.
+
+CLOUD:
+- remote transcription allowed, but run record must capture what was sent and which adapter was used.
+
+8) Relationship to diarization (speaker attribution is not done here)
+
+Stage 3 produces text + timestamps, not final speaker attribution.
+Speaker attribution is performed in Stage 4 (Alignment and Stitching), where transcript and diarization are merged.
+
+This matches the modular pipeline contract:
+- Diarizer(audio) -> diarization.json
+- Transcriber(audio) -> transcript.json
+- Aligner(diarization, transcript) -> aligned_transcript.json
+
+9) Failure behavior
+
+If transcription fails:
+- the run is marked failed,
+- partial artifacts may exist and must be labeled partial,
+- user must be offered recovery:
+  - resume run
+  - re-run with a different ASR adapter
+  - adjust settings (language, chunk size, etc.)
+
+Transcription failure must not generate formalizations.
+
+10) Self-audit (7.4)
+
+- This section locks transcription as ground truth and forbids “cleanup” from touching the canonical transcript artifacts.
+- It enforces timestamp anchoring and recommends word-level timestamps for captions and evidence precision.
+- It solves the long-meeting output-size problem by requiring chunked incremental transcription with on-disk artifacts, not one chat response.
+- It keeps pipeline modular (diarize -> transcribe -> align) consistent with earlier pipeline contract and our adapter-swappable design.
+This section is complete.

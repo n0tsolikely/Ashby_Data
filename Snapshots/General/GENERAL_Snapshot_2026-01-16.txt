@@ -1,0 +1,301 @@
+GENERAL CONTROL SYNC SNAPSHOT
+Synapse Guild Governance Expansion — Quest Board + Talent Tree
+
+Date: 2026-01-16
+Type: GENERAL Control Sync (governance / meta-system)
+Filing: Ashby Data/Snapshots/General/
+Canonical scope: This snapshot defines NEW governance law for Synapse Guild going forward.
+Relationship to project control syncs: This is not “Stuart work” or “Ashby work” directly; it’s the system we use to run ALL work.
+
+──────────────────────────────────────────────────────────────────────────────
+0) WHY THIS EXISTS (CONTEXT)
+──────────────────────────────────────────────────────────────────────────────
+During the Stuart v1 control sync and setup work, it became clear that:
+- Control Sync snapshots and Guild Orders alone are sufficient for continuity, but they require “archaeology”:
+  you have to reread long documents to understand what’s next.
+- We wanted a lightweight, game-native operational layer that makes “where are we?” instantly visible.
+
+This Control Sync introduced a new governance layer that is:
+- simpler to operate daily,
+- clearer to resume after time away,
+- more modular than “one giant plan doc,”
+- and compatible with the existing Synapse Guild system (Dailies, Snapshots, Guild Orders, Raids/Dungeons).
+
+This expansion is considered a major milestone. It changes how we pick and execute work moving forward.
+
+──────────────────────────────────────────────────────────────────────────────
+1) NEW GOVERNANCE PRIMITIVES INTRODUCED
+──────────────────────────────────────────────────────────────────────────────
+We introduced TWO new concepts that become core Synapse Guild governance artifacts:
+
+1.1 Quest Board (formerly “Decision Radar” concept)
+- Purpose: Capture and manage upcoming work/decisions as discrete, atomic items.
+- Properties:
+  - “Posted” quests can sit on the board without being committed.
+  - When a quest is accepted, it becomes an explicit commitment and is executed.
+  - Quests can be abandoned intentionally (and tracked as such).
+
+1.2 Talent Tree (formerly “Decision Ledger” concept; “Canon” rejected)
+- Purpose: Represent what the system has become — unlocked capabilities and binding system properties.
+- Properties:
+  - Talent Tree is not a task list.
+  - Talent Tree is a capability/state declaration (system identity).
+  - It changes only when a Talent Point is spent (usually on quest completion).
+  - Reversal exists but is ceremonial (Respec rules).
+
+We explicitly chose NOT to create “Completed Quests” as a separate meta artifact beyond the quest files themselves.
+(Quest state is represented by moving quest files between folders; no extra duplication.)
+
+──────────────────────────────────────────────────────────────────────────────
+2) NEW PROGRESSION LAW (LOCKED)
+──────────────────────────────────────────────────────────────────────────────
+This is now Synapse Guild law:
+
+- Completing a Quest awards +1 Talent Point.
+- That Talent Point must be spent into the Talent Tree.
+- Spending a Talent Point means adding (appending) a new Talent entry and logging it.
+
+This links execution → progression → identity:
+- Quest Board = what we might do / what we accept to do
+- Completed quests = proof of execution
+- Talent Tree = what the system is now capable of because of completed quests
+
+──────────────────────────────────────────────────────────────────────────────
+3) FILESYSTEM ORGANIZATION (CANONICAL LAYOUT)
+──────────────────────────────────────────────────────────────────────────────
+These governance artifacts live in Ashby Data (the unified audit timeline folder),
+NOT inside the code repo and NOT inside a single module.
+
+3.1 Create a top-level Governance folder inside Ashby Data
+Location:
+Ashby Data/
+  Governance/
+
+Rationale:
+- Governance is cross-project (Ashby, Stuart, future modules, future projects).
+- Keeps meta-system rules separate from project-specific docs.
+
+3.2 Quest Board folder structure (state machine via folders)
+Ashby Data/
+  Governance/
+    Quest Board/
+      Board/
+      Accepted/
+      Completed/
+      Abandoned/
+
+Meaning:
+- Board/     = posted quests, not committed yet (available)
+- Accepted/  = accepted quests (committed; being worked on)
+- Completed/ = finished quests (proof of completion; awards a Talent Point)
+- Abandoned/ = intentionally dropped quests (tracked explicitly)
+
+IMPORTANT NAMING DECISION:
+- We explicitly chose “Accepted” over “Active”.
+  Reason: “Active” is vague. “Accepted” reflects the commitment action.
+  (If any older template uses the word ACTIVE, interpret it as ACCEPTED and plan to rename in the next revision.)
+
+3.3 Talent Tree folder structure (three canonical files)
+Ashby Data/
+  Governance/
+    Talent Tree/
+      TALENT_TREE.txt
+      TALENT_LOG.txt
+      RESPEC_RULES.txt
+
+Meaning:
+- TALENT_TREE.txt = authoritative current capability list (append-only; curated)
+- TALENT_LOG.txt  = append-only progression history (XP bar + audit trail)
+- RESPEC_RULES.txt= respec ceremony rules (mostly static)
+
+We explicitly decided NOT to make a file per talent.
+Reason: that becomes file sprawl and reduces clarity. Talents are appended entries inside a single authoritative file.
+
+──────────────────────────────────────────────────────────────────────────────
+4) QUESTS: WHAT THEY ARE AND HOW THEY WORK
+──────────────────────────────────────────────────────────────────────────────
+4.1 Quests are atomic, executable targets
+A quest is:
+- a discrete unit of work,
+- with explicit scope and completion criteria,
+- that can be accepted, executed, completed, or abandoned.
+
+Quests are NOT:
+- brainstorming scraps,
+- vague “someday” ideas,
+- random notes.
+
+Those belong in To Do (sticky-note bucket), not the Quest Board.
+
+4.2 One quest = one file
+Each quest is an individual .txt file.
+
+State changes are performed by moving the quest file between folders:
+Board → Accepted → Completed
+Board → Accepted → Abandoned
+Board → Abandoned (if it was never accepted but we explicitly drop it)
+
+This “file = entity, folder = state” rule is mandatory.
+Reason: avoids giant rolling documents, reduces editing friction, and makes state visible at a glance.
+
+4.3 The Quest Template is mandatory for new quests
+We created a standardized quest template designed to be:
+- generic and universal,
+- fillable by a human,
+- fillable by any AI in a new chat,
+- and self-explanatory.
+
+The quest template includes guidance lines prefixed with #.
+Rule:
+- Lines beginning with # are comments / guidance.
+- Fields without # are the data to fill.
+
+Template fields include:
+- QUEST ID
+- Title
+- Context
+- Origin
+- Priority (P0/P1/P2, explained in-template)
+- Links (Guild Orders / Dungeons / Snapshots / related quests, explained in-template)
+- Status (Board/Accepted/Completed/Abandoned — “Accepted” is the canonical meaning)
+- Accepted On / Completed On
+- Description / Scope / Out of Scope / Dependencies / Execution Notes / Completion Criteria
+- Talent Point section (how the point is spent)
+
+4.4 Priority definition (locked)
+Priority is used to help decide what to accept first:
+- P0 = blocking / foundational (must happen before meaningful progress)
+- P1 = important but not blocking (high value)
+- P2 = nice-to-have / opportunistic (can wait)
+
+4.5 Links definition (locked)
+Links exist to keep quests navigable without rereading long archives.
+Examples:
+- “Guild Orders: Stuart v1 — Dungeon 5”
+- “Control Sync: 2026-01-16__STUART_V1”
+- “Related Quests: QUEST_012, QUEST_014”
+
+This makes a quest file a portable “context capsule.”
+
+──────────────────────────────────────────────────────────────────────────────
+5) TALENT TREE: WHAT IT IS AND HOW IT WORKS
+──────────────────────────────────────────────────────────────────────────────
+5.1 Talent Tree is system identity (capabilities), not tasks
+Talent Tree answers:
+- “What is the system now capable of?”
+- “What constraints must future work respect?”
+
+It does not answer:
+- “What should we do next?”
+That is the Quest Board.
+
+5.2 Talent Point workflow (locked)
+When a quest is completed:
+1) Move the quest file to Completed/
+2) Award +1 Talent Point
+3) Spend the point by:
+   - appending a new Talent entry to TALENT_TREE.txt
+   - appending a log entry to TALENT_LOG.txt
+   - referencing the completed quest ID as the source
+
+5.3 Respec (ceremonial reversal) rules (locked)
+Respec is allowed but intentionally expensive (in attention/ceremony):
+- Must be done during a Control Sync.
+- Must identify:
+  - which Talent changes,
+  - the reason,
+  - consequences,
+  - a plan/migration (if needed).
+- Respec is recorded in TALENT_LOG.txt (append-only). No silent edits.
+
+Purpose:
+- Prevent casual backsliding on core architectural commitments.
+- Keep system identity stable across time and across chats.
+
+──────────────────────────────────────────────────────────────────────────────
+6) INTEGRATION WITH EXISTING SYNAPSE GUILD SYSTEM (NO REPLACEMENTS)
+──────────────────────────────────────────────────────────────────────────────
+This governance expansion adds layers; it does not replace the old ones.
+
+Existing artifacts keep their roles:
+- Control Sync snapshots: alignment + decisions + rationale
+- Guild Orders: long-horizon objective + Dungeons for execution (Raids)
+- Snapshots (EOD/General): historical record and continuity
+- Dailies loop: Control Sync → scope → implementation → test → snapshot → stop
+
+New mapping:
+- Quest Board = operational visibility of “what is posted” and “what is accepted”
+- Accepted quests = the practical scope list for the day/week
+- Completed quests = proof of execution and trigger for Talent Points
+- Talent Tree = capability/state ledger (identity) that accumulates over time
+
+Practical daily usage (expected behavior):
+- During Control Sync, we can:
+  - review the Quest Board,
+  - decide which quests to accept (move to Accepted),
+  - decide which accepted quests are in today’s scope,
+  - execute those quests,
+  - and at completion, spend Talent Points.
+
+This reduces reliance on rereading long guild orders/snapshots to know “where we are.”
+
+──────────────────────────────────────────────────────────────────────────────
+7) FILES CREATED DURING THIS GOVERNANCE EXPANSION (ARTIFACT LIST)
+──────────────────────────────────────────────────────────────────────────────
+These are the core artifacts produced as part of this governance expansion:
+
+Quest template:
+- QUEST_TEMPLATE_V2.txt (self-explanatory template with # comments)
+  Note: Status label inside template should be interpreted as “Accepted” not “Active” going forward.
+  (If needed, future revision will rename ACTIVE → ACCEPTED.)
+
+Talent Tree starter files:
+- TALENT_TREE.txt   (v0.1 structure + format)
+- TALENT_LOG.txt    (append-only format)
+- RESPEC_RULES.txt  (ceremony definition)
+
+Optional pack created to bootstrap the Quest Board:
+- Quest pack generated from current Stuart v1 Guild Orders:
+  a set of quest files meant to be posted to the Board and later accepted intentionally by Peter.
+  (These are not automatically accepted; review first.)
+
+──────────────────────────────────────────────────────────────────────────────
+8) IMMEDIATE NEXT STEPS (POST-SNAPSHOT)
+──────────────────────────────────────────────────────────────────────────────
+1) Create the Governance folder structure in Ashby Data:
+   - Governance/Quest Board/{Board,Accepted,Completed,Abandoned}
+   - Governance/Talent Tree/
+
+2) Place:
+   - QUEST_TEMPLATE_V2.txt in an easy-to-copy location (recommended: Quest Board/Board/ or Quest Board root)
+   - Talent files in Governance/Talent Tree/
+
+3) Post initial quests:
+   - Put generated quest files into Quest Board/Board/
+
+4) In the NEXT CHAT:
+   - Review posted quests together
+   - Decide which to accept (move to Accepted/)
+   - Use Accepted quests to pick daily scope and begin implementation
+
+5) When a quest completes:
+   - Move quest file to Completed/
+   - Award +1 Talent Point
+   - Spend it (append Talent entry + log entry)
+
+──────────────────────────────────────────────────────────────────────────────
+9) HARD RULES SUMMARY (FAST REFERENCE)
+──────────────────────────────────────────────────────────────────────────────
+- Quests are individual files.
+- Quest state is folder location.
+- Board = posted, not committed.
+- Accepted = committed.
+- Completed = done; awards Talent Point.
+- Abandoned = dropped intentionally.
+- Completing a quest = +1 Talent Point.
+- Spending a talent point = append to TALENT_TREE + append to TALENT_LOG.
+- Respec is ceremonial and logged.
+- To Do remains sticky-note scraps; Quest Board is only for crystallized actionable quests.
+- This governance system is cross-project and lives under Ashby Data/Governance.
+
+END OF GENERAL CONTROL SYNC SNAPSHOT

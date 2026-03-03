@@ -1,0 +1,173 @@
+
+ASHPI PROJECT — RECONSTRUCTED PROGRESS SUMMARY (MAX DETAIL WITHIN LIMITS)
+
+This file summarizes the major decisions, architecture, designs, and plans discussed up to this point so the project can continue in a new chat without losing direction.
+
+---------------------------------------------------------
+1. CORE PROBLEM WE SOLVED
+---------------------------------------------------------
+The old routing system depended on brittle phrase-matching like "turn on captain" or "make it darker." It could not understand variations in human language. We decided to move AshPi to a real NLU (Natural Language Understanding) system that reads INTENT instead of raw text.
+
+This upgrade allows:
+- freeform language
+- synonyms
+- adjectives, verbs, pronouns
+- flexible phrasing
+- future-proof scaling
+- hybrid online/offline models
+
+---------------------------------------------------------
+2. NEW NLU ARCHITECTURE
+---------------------------------------------------------
+We introduced four new files:
+
+1) intent_schema.py  
+   - Standardized JSON-like structure for all intents.
+   - All components of the system use this.
+
+2) local_nlu.py  
+   - Lightweight, offline rule-based engine.
+   - Handles basic phrases (darker, brighter, max, cold, etc.)
+   - Returns unknown if not confidently matched.
+
+3) gpt_nlu.py  
+   - Uses GPT (gpt-4o-mini) to classify text into intents.
+   - Always returns JSON in the intent_schema format.
+   - Will handle the majority of natural language.
+
+4) nlu_manager.py  
+   - The orchestrator.
+   - Supports:
+        - GPT-only mode
+        - Local-only mode
+        - Hybrid mode (local first, fallback GPT)
+   - Router will call:
+         intent = extract_intent(text)
+
+---------------------------------------------------------
+3. WHY NLU MATTERS
+---------------------------------------------------------
+This eliminates:
+- manually coded phrases
+- long parsing logic
+- repeated patching whenever a new phrasing appears
+
+And moves AshPi into:
+- generalizable NLU
+- expandable home automation
+- future offline capabilities
+- plug-in skill modules
+
+---------------------------------------------------------
+4. ROUTER.PY (NEXT STEP)
+---------------------------------------------------------
+Router must be rewritten so it no longer manually parses text.  
+It will ONLY read:
+
+intent = extract_intent(text)
+
+Then branches according to:
+
+intent["type"]
+intent["group"]
+intent["brightness"]
+intent["delta"]
+intent["mode"]
+
+Lighting sessions and comfort sessions stay the same, but they’ll trigger based on intents — not regex or keywords.
+
+---------------------------------------------------------
+5. THE ASHPI DEVICES PROBLEM
+---------------------------------------------------------
+Your current ashpi_devices.py looked like this:
+
+DEVICES = {
+  "sky_bulb": {
+    "id": "...",
+    "type": "tuya_bulb",
+    "description": "...",
+    "room": "bedroom"
+  }
+}
+
+We realized:
+- This is NOT scalable across many homes.
+- Room and role shouldn't be stored inside the backend definition.
+- A device model should ALWAYS separate:
+     - backend (tuya, nest, etc.)
+     - category (bulb, plug, fan)
+     - type (model-specific)
+     - role (user-defined)
+     - room (user-defined)
+
+---------------------------------------------------------
+6. NEW DEVICE MODEL (STANDARDIZED)
+---------------------------------------------------------
+Each physical device should be represented as:
+
+{
+  "backend": "tuya",
+  "category": "bulb",
+  "type": "A19_800lm",
+  "id": "DEVICE_ID_HERE",
+  "room": "living_room",
+  "role": "accent_light"
+}
+
+This makes devices portable across homes and installer-friendly.
+
+---------------------------------------------------------
+7. INSTALLER WORKFLOW (PLANNED)
+---------------------------------------------------------
+We will build a small CLI/web-setup tool that:
+
+1. Fetches device list from Tuya
+2. Displays devices one-by-one
+3. Prompts installer for:
+    - Room assignment
+    - Role assignment
+4. Automatically writes proper Python device files
+
+Installers NEVER edit Python manually.
+
+---------------------------------------------------------
+8. ABOUT LARGE FILE GENERATION
+---------------------------------------------------------
+You asked if I could recognize when a file is too big for single-output generation. YES.
+
+Rules implemented:
+- If a file *should* exceed output limits, I will tell you.
+- I will automatically switch to multi-part file generation.
+- Each part will be appended together by you.
+
+This ensures:
+- scalable code
+- large personality modules
+- large device libraries
+- future scenes/memories modules
+
+---------------------------------------------------------
+9. WHAT STILL NEEDS TO BE DONE
+---------------------------------------------------------
+Immediate next steps:
+
+1. Finish NLU files.
+2. Rewrite router.py using the NLU.
+3. Update ash_core to integrate intent routing cleanly.
+4. Redesign ashpi_devices with the new backend/category/room/role structure.
+5. Build installer web-CLI system.
+6. Create GitHub repo.
+7. Create the README + AshPi Bible.
+
+---------------------------------------------------------
+10. WHERE WE STOPPED TODAY
+---------------------------------------------------------
+We left off at:
+
+- You created the ashpi_brain folder.
+- You added intent_schema.py, local_nlu.py, gpt_nlu.py, nlu_manager.py.
+- You were about to move to rewriting router.py for the new NLU.
+
+---------------------------------------------------------
+END OF SUMMARY
+---------------------------------------------------------

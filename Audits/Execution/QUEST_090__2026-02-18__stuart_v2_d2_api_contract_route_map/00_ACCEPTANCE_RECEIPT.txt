@@ -1,0 +1,4 @@
+QUEST_090 completed on 2026-02-18.
+Deliverables present in docs/stuart:
+- web_api_contract_v1.md
+- web_api_route_map_v1.md

@@ -1,0 +1,175 @@
+    QUEST TEMPLATE — SYNAPSE GUILD
+    ================================================
+
+    QUEST ID:
+    QUEST_100
+
+    Created By:
+    Ash (Brains)
+
+    Title:
+    Stuart v2 — D2 (11/12) — CHAT: Endpoints Scaffolding (/api/chat + /api/chat/global) (No LLM Yet)
+
+    Context:
+    Dungeon 2 contract includes:
+  - POST /api/chat (session scope)
+  - POST /api/chat/global (global scope; can ship later but design now)
+
+We are not wiring the real LLM brain in Dungeon 2. But we still need:
+  - stable endpoints so the UI can call something
+  - stable response schema so later LLM wiring can drop in without breaking UI
+  - safety rails so chat does NOT silently start runs
+
+Existing endpoint:
+  - POST /api/message (clarify_or_preview for pipeline control)
+
+Strategy for v1 scaffolding:
+  - Implement /api/chat as the canonical endpoint and keep /api/message as legacy alias.
+  - /api/chat can initially call the same clarify/preview logic (no LLM) and return a chat-shaped response.
+  - /api/chat/global can return NOT_IMPLEMENTED but with the correct schema, or implement read-only index search later.
+
+
+    Origin:
+    Guild Orders → Dungeon 2 CHAT contract + Codex chat-first UX.
+
+    Priority:
+    P1 — UI Chat tab exists early; but LLM intelligence comes later.
+
+    Links:
+    - GUILD ORDERS: Ashby_Data/Guild Orders/PAUSED/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt (Dungeon 2 CHAT contract)
+- CODEX: Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt (3.2 Upload≠Run + 3.4 Chat-first + 6.1 chat-first flow)
+- ENGINE ANCHOR: Ashby_Engine/ashby/interfaces/web/app.py (/api/message exists)
+- ENGINE ANCHOR: ashby/modules/meetings/clarify_or_preview.py (planner)
+
+    Status:
+    BOARD
+
+    Audit Bundle Path:
+    Ashby_Data/Audits/Execution/QUEST_100__2026-02-17__Stuart_v2_D2_Chat_Endpoints
+
+    Accepted On:
+    (blank)
+
+    Owner:
+    (blank)
+
+    Executor:
+    (blank)
+
+    ------------------------------------------------
+    DESCRIPTION
+    ------------------------------------------------
+    Create the stable chat endpoints without pretending we have LLM wired.
+
+Goal:
+- UI can send messages
+- backend responds with a deterministic structured reply and optional plan preview
+- no fake “LLM response” that invents content
+
+Later dungeons will replace the response generator with the real LLM + retrieval + citations.
+
+
+    ------------------------------------------------
+    SCOPE / OBJECTIVE
+    ------------------------------------------------
+    A) Implement POST /api/chat (session scope)
+
+   Request (ChatRequestV1):
+     {
+       "session_id": "ses_...",
+       "text": "string",
+       "attachments": [ {filename,mime_type,size_bytes,sha256}? ]  (optional)
+       "ui": { mode, template_id, retention, profile, ... }        (optional)
+       "client": { "tab": "chat|session|outputs", "ts": ... }      (optional)
+     }
+
+   Response (ChatResponseV1) — MUST be stable:
+     {
+       "ok": true,
+       "session_id": "...",
+       "scope": "session",
+       "reply": {
+         "text": "string",
+         "kind": "planner" | "system" | "not_implemented",
+         "citations": [],          # empty for now (LLM later)
+         "actions": [
+           # optional: structured suggested actions, NOT auto-executed
+           # e.g. {"type":"SUGGEST_RUN","endpoint":"/api/run","payload":{...}}
+         ]
+       },
+       "planner": { ... } | null,  # include clarify_or_preview result when used
+       "trace": { "request_id": "..." }
+     }
+
+   Implementation v1:
+     - Use existing clarify_or_preview for commands like “formalize”, “run”, “help”.
+     - Do NOT start runs inside /api/chat. It can only suggest /api/run payloads.
+
+   Legacy:
+     - Keep /api/message route as alias to /api/chat or keep old response but document deprecation.
+     - Prefer adding /api/chat and updating UI client to use it in Dungeon 3.
+
+B) Implement POST /api/chat/global
+
+   v1 behavior:
+     - Return ok=false NOT_IMPLEMENTED with correct envelope OR
+     - implement trivial read-only help response (no retrieval).
+
+   Must include:
+     - scope="global"
+     - clear disclosure that global chat is not implemented yet.
+
+C) Tests
+   - Test /api/chat returns ok=true and stable keys.
+   - Test it does NOT create runs as side effect.
+   - Test /api/chat/global returns NOT_IMPLEMENTED (or minimal ok=true system message).
+
+D) Docs update
+   - Contract doc includes chat request/response schema (even if not fully functional).
+
+
+    ------------------------------------------------
+    OUT OF SCOPE
+    ------------------------------------------------
+    - Real LLM wiring + retrieval + citations (later dungeons).
+- Global search / memory beyond session scope.
+
+
+    ------------------------------------------------
+    DEPENDENCIES
+    ------------------------------------------------
+    - Quest 091 envelope/models
+- /api/upload exists for attachments path
+
+
+    ------------------------------------------------
+    EXECUTION NOTES
+    ------------------------------------------------
+    - “Chat-first” does NOT mean “LLM makes shit up”. Keep it grounded.
+- If user asks for capabilities, respond with system help message.
+- All run execution must stay behind /api/run + explicit UI confirmation.
+
+
+    ------------------------------------------------
+    COMPLETION CRITERIA (DONE = PROOF)
+    ------------------------------------------------
+    DONE when:
+- POST /api/chat exists and returns stable schema.
+- POST /api/chat/global exists and returns stable schema (not implemented is acceptable).
+- Tests prove no surprise runs.
+- Docs updated.
+
+Proof:
+- pytest green
+- curl example for /api/chat
+
+
+    ------------------------------------------------
+    TALENT POINT (WHY THIS MATTERS)
+    ------------------------------------------------
+    This lets UI ship chat-first *without lying* about having the LLM wired. It’s honest scaffolding.
+
+    ------------------------------------------------
+    FINAL NOTES / HANDS DECISIONS
+    ------------------------------------------------
+    When the real LLM is wired later, it must still respect explicit execution gating and evidence requirements.

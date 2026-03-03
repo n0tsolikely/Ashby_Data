@@ -1,0 +1,213 @@
+ASHBY — End of Day Snapshot (MERGED)
+Date: 2025-12-16
+================
+
+PROJECT: ASHBY
+SNAPSHOT TYPE: End of Day (Merged, Deduplicated)
+================================================
+
+## STATUS
+
+Daily Dailies completed.
+This was NOT a Raid completion.
+Raid (Guild Orders) remains active.
+
+================================
+DAILIES FRAMEWORK (LOCKED IN)
+-----------------------------
+
+This workflow is permanent and must be followed every single work session, regardless of scope size:
+
+1. Ashby Control Sync
+2. Decide Scope
+3. Implement
+4. Test
+5. Snapshot (state + changes)
+6. Stop
+7. Resume next day from the list
+
+This loop is referred to internally as:
+
+* Our Dailies
+* Daily Quests
+
+Definitions:
+
+* Control Sync = strategic alignment + review
+* Guild Orders = scoped task list produced by Control Sync
+
+================================
+CONTROL SYNC SUMMARY (TODAY)
+----------------------------
+
+Control Sync was intentionally short due to late hour and limited time.
+
+Primary focus areas reaffirmed:
+
+* Lighting behavior correctness
+* Percent normalization accuracy
+* Execution truth and elimination of false-positive action claims
+
+Key design principles reaffirmed:
+
+* Ashby must NEVER claim an action occurred unless it verifiably executed.
+* Hallucination rejection is a core product feature.
+* Execution truth comes BEFORE conversational polish.
+* State awareness beats action logging alone.
+* Retry logic should be silent and automatic when possible.
+
+================================
+DECIDED SCOPE (TODAY)
+---------------------
+
+Phase 2 (partial)
+
+ONLY modified:
+
+* lights_tuya.py
+* device_control.py
+
+Explicitly deferred:
+
+* router.py refactors or logic changes
+* HouseState global panel
+* NLU / role / room inference expansion
+* Alias learning & patch system
+* External escalation (email / Telegram to Peter)
+* Approval queue for destructive changes
+
+================================
+WHAT WAS COMPLETED (CUMULATIVE)
+-------------------------------
+
+Carried forward from previous snapshot(s):
+
+* Lighting control pipeline stabilized (intent → execution → state awareness).
+* Session-aware lighting adjustments confirmed working.
+* Decision reaffirmed: router.py remains heavy temporarily by design.
+* Router refactor explicitly postponed to avoid cascading breakage.
+
+Completed today:
+
+* Percent normalization verified:
+
+  * 60% → 600 / 1000
+  * 100% → 1000 / 1000
+* Emphasis handling implemented and confirmed:
+
+  * "down" applies step decrement
+  * "way down" multiplies step correctly
+* Absolute brightness, delta-based adjustment, and emphasis now coexist correctly.
+* Interactive testing passed via ashpi_test.py.
+
+================================
+IMPLEMENTATION DETAILS
+----------------------
+
+1. lights_tuya.set_brightness()
+
+   * Now returns structured execution results instead of void.
+   * Returned structure includes:
+
+     * ok (bool)
+     * attempted (list)
+     * succeeded (list)
+     * failed (list)
+     * value (brightness level)
+
+2. device_control.set_group_brightness()
+
+   * Now propagates execution truth upward.
+   * Returns structured result including:
+
+     * group
+     * devices
+     * execution outcome from Tuya layer
+
+This establishes a hard execution-truth contract for higher layers.
+
+================================
+CONFIRMED WORKING BEHAVIOR
+--------------------------
+
+* Natural language brightness changes behave as expected.
+* Emphasis phrases correctly intensify adjustment.
+* Session inheritance works across consecutive commands.
+* Lights respond correctly to ON / OFF / ADJUST flows.
+
+================================
+TESTING
+-------
+
+* Manual execution performed.
+* Modules compile clean.
+* No runtime errors introduced.
+* Tuya dependency error when running file standalone is EXPECTED and NOT a regression.
+
+================================
+CURRENT STATE (END OF DAY)
+--------------------------
+
+System Status:
+
+* Execution layer now capable of reporting truth.
+* Router still assumes success (known issue, deferred).
+* No global HouseState yet (planned).
+* No auto-retry yet (planned).
+
+================================
+KNOWN BUGS / BLOCKERS (DO NOT CONTINUE RAID UNTIL FIXED)
+--------------------------------------------------------
+
+1. Action-Gated Truth Bug
+
+   * Router/chat may claim actions occurred even when execution failed or group was invalid.
+   * Must be fixed before expanding to multi-device or automation logic.
+
+2. Group / Target Resolution Bug
+
+   * Ambiguous phrases like "turn it back on" can misresolve to invalid groups.
+   * Requires explicit session-based or last-known-target resolution.
+
+3. Directional Delta Edge Cases
+
+   * Reversal or ambiguity in repeated phrases (e.g., "more more").
+
+4. Missing Persistent State Panel
+
+   * No per-device on/off/brightness state yet.
+
+================================
+NOTES / REMINDERS
+-----------------
+
+* Percent normalization logic currently lives in router.py.
+  This is acknowledged technical debt and will be moved later
+  when router is split into thinner orchestration layers.
+
+* No router refactor work should occur until execution-truth blockers are resolved.
+
+================================
+NEXT SESSION — START POINT
+--------------------------
+
+1. Ashby Control Sync
+2. Review Guild Orders
+3. Cross off completed Phase 2 items
+4. Decide next scope
+
+   * Router execution-truth gate
+   * Auto-retry logic
+   * Group / target resolution fixes
+
+================================
+STOP
+----
+
+System left in clean, stable state.
+No loose ends.
+Ready to resume next session.
+
+================================
+END OF MERGED SNAPSHOT
+======================

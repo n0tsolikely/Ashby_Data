@@ -1,0 +1,98 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+SIDE-QUEST_077
+
+Created By:
+Ash (Brains)
+
+Title:
+Platform Truth Gate integration: meetings module provides TruthPolicy; platform TruthGateJudge enforces
+
+Context: Stuart truth discipline / Ashby platform truth spine
+
+Origin:
+Control Sync — 2026-02-07 (Stuart v1: platform truth architecture decision)
+
+Priority: P0
+
+Links:
+- Ashby Batch 0 truth spine (reference): /mnt/data/Ashby_Data/Archive(IGNORE)/Ashby Execution Pack/
+  - ASHBY_TRUTH_GATE_SPINE_CONTRACT_2026-01-13.txt
+- Engine (platform truth spine): ashby/core/truth/{evidence.py,policy.py,judge.py}
+- Engine (meetings): ashby/modules/meetings/formalize/{minutes_json.py,journal_json.py}
+- Stuart Codex: truth discipline + evidence-backed claims
+
+Status: DONE
+
+Audit Bundle Path:
+  /mnt/data/Ashby_Data/Audits/Execution/SIDE-QUEST_077__2026-02-07__meetings_truth_policy_truth_gate_judge
+
+Accepted On:
+2026-02-07
+Accepted By:
+Hands (Peter)
+Completed On:
+2026-02-08
+Completed By:
+Ash (Brains)
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Stuart currently enforces “truth discipline” inside the meetings module via schemas + citation guards.
+That is good, but it is NOT the same as using the Ashby platform Truth Gate spine.
+
+Decision (locked by Hands):
+- The platform owns the Truth Gate judge.
+- Modules provide module-specific truth policies.
+- Modules may keep local data-validation guards, but “what counts as true” must be enforceable by the platform judge.
+
+This quest wires Stuart into the platform Truth Gate spine so future modules (Tori, etc.) can share the same truth architecture.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Implement a MeetingsTruthPolicy (and supporting evidence extraction) that can be executed by TruthGateJudge.
+- Build an EvidenceBundle from transcript/aligned transcript + minutes/journal claims/citations.
+- Run TruthGateJudge as a gating step during meetings formalization/rendering (before publishing MD/PDF outputs).
+- Record judge outcome in run artifacts/manifests in a deterministic, machine-readable way.
+
+Expected behavior:
+- If a claim lacks evidence → FAIL or DOWNGRADE (policy-defined), never silently pass.
+- If no decisions exist → minutes must explicitly say “No decisions recorded” (already required by QUEST_055).
+- If diarization confidence is low → uncertainty must be disclosed; policy must not assert speaker identity as fact.
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Centralizing truth gating for ALL modules at the core router layer.
+- Building a full “fact checker” or external verification.
+- UI changes (webapp/telegram) beyond what is necessary to surface a blocked output cleanly.
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_053 (evidence map v2 schema/builder)
+- QUEST_054 (citation rendering standard)
+- QUEST_055 (minutes truth guards)
+- SIDE-QUEST_076 (unified execution profile substrate)
+
+Recommended ordering:
+- Execute after QUEST_060 so D3+D4 foundations exist.
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Keep responsibilities separated:
+  - meetings module builds evidence bundles + provides MeetingsTruthPolicy
+  - platform truth judge executes policy + returns outcome
+- Avoid “god files.” Policy rules live in a dedicated module under meetings (e.g., meetings/truth/).
+- Ensure LOCAL_ONLY path remains deterministic: policy must never require remote calls.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] MeetingsTruthPolicy exists and is executed by platform TruthGateJudge
+- [ ] Minutes/journal outputs are gated by judge outcome (no silent publish on FAIL)
+- [ ] Run artifacts include a machine-readable judge report/outcome
+- [ ] Negative tests exist (at least one FAIL case) proving gating works
+- [ ] `python3 -m pytest -q` passes

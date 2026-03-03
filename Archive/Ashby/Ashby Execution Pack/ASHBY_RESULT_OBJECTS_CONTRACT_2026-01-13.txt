@@ -1,0 +1,102 @@
+ASHBY — RESULT OBJECTS CONTRACT (BATCH 0)
+Status: Canonical-for-execution (single-purpose contract for Batch 0)
+Date: 2026-01-13
+
+Purpose
+Batch 0 introduces platform-standard structured results so Ashby can enforce:
+- action-gated truth (Ashby does not claim actions without results)
+- artifact-gated truth (Ashby does not claim outputs without durable artifacts)
+- explicit failures (no silent or vibes-based success)
+
+These result objects are the “truth units” the platform uses to constrain language.
+They are generic and apply to ALL modules (lights, comfort, Stuart, cameras, etc).
+
+Non-goals (explicit)
+- Full policy engine
+- Full “Codex Truth Gate” rewrite across all modules
+- Deep telemetry stack
+
+Where this lives in the EXISTING Ashby Engine repo (repo-aware)
+Create:
+
+- <repo_root>/ashby/ashby/core/results.py
+- <repo_root>/ashby/tests/test_results_smoke.py
+
+results.py MUST NOT import any module-specific code.
+It is platform substrate.
+
+Canonical types
+Implement results as dataclasses (or TypedDicts) that are:
+- JSON-serializable via .to_dict() (required)
+- explicit about ok/failure
+- uniform across kinds
+
+Define these canonical classes:
+
+1) ErrorInfo
+Represents a machine-identifiable error.
+Fields (required):
+- code: str                 # e.g., "ASHBY_E_IO_PERMISSION"
+- message: str              # human readable
+- detail: dict[str, Any]    # optional structured info (exception type, etc)
+
+2) ResultBase
+Shared fields for all results:
+- ok: bool
+- kind: Literal["action","artifact","error"]
+- started_at: str | None    # ISO8601 UTC if applicable
+- ended_at: str | None      # ISO8601 UTC if applicable
+- correlation_id: str | None
+- errors: list[ErrorInfo]   # empty if ok
+
+3) ActionResult (kind="action")
+Represents execution that touches the world (devices/APIs).
+Required fields:
+- action_type: str          # e.g., "lights.set", "comfort.set_temp"
+- target: dict[str, Any]    # structured target info (group name, device ids, etc)
+- effects: dict[str, Any]   # what actually happened (brightness set, temp set, etc)
+
+Rules:
+- ok=True ONLY if execution succeeded (as verified by adapter)
+- effects must be “observed/returned”, not guessed
+- if ok=False, include ErrorInfo(s)
+
+4) ArtifactResult (kind="artifact")
+Represents durable artifacts produced by a module/pipeline.
+Required fields:
+- artifact_type: str        # e.g., "stuart.transcript", "stuart.minutes", "camera.event_index"
+- artifacts: dict[str,str]  # logical name -> relative path within storage namespace
+- metadata: dict[str, Any]  # schema versions, run_id/session_id, etc
+
+Rules:
+- ok=True ONLY if artifacts exist (or were written) and are internally consistent
+- artifacts must be durable (stored via StorageAdapter)
+- if ok=False, include ErrorInfo(s)
+
+5) ErrorResult (kind="error")
+Represents platform-level denial/failure not tied to one action/artifact.
+Required fields:
+- error: ErrorInfo
+Optional:
+- context: dict[str, Any]
+
+Rules:
+- ErrorResult is used for “blocked by profile”, “consent required”, “unsupported intent”, etc.
+
+Serialization contract
+All results must implement:
+- to_dict() -> dict[str, Any]
+- from_dict(d: dict[str, Any]) -> Result (optional in Batch 0, recommended)
+
+Minimal helper constructors (recommended)
+In results.py provide convenience functions:
+- ok_action(...)
+- ok_artifact(...)
+- err(code, message, **detail)
+
+Self-audit checklist (Batch 0 acceptance)
+Before declaring “Results done”:
+- test_results_smoke.py passes
+- dataclasses contain ONLY json-serializable types (dict/list/str/int/float/bool/None)
+- results.py does not import router, capabilities, control, or Stuart
+- naming is stable: ActionResult / ArtifactResult / ErrorResult / ErrorInfo

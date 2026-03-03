@@ -1,0 +1,61 @@
+ASHBY — CONTROL SYNC SNAPSHOT TEMPLATE
+Version: 1.0
+Purpose: Lightweight daily alignment log.
+This is NOT a task list, NOT Guild Orders, and NOT an End‑of‑Day Snapshot.
+
+Use this template as guidance only.
+Not every section must be filled every day.
+Empty sections are acceptable.
+
+Canonical zero‑update line (default):
+→ Control Sync held — no updates required.
+
+Optional variant (when useful):
+→ Control Sync held — continuing prior scope.
+
+────────────────────────────────────────
+CONTROL SYNC SNAPSHOT — YYYY‑MM‑DD
+────────────────────────────────────────
+
+RAID STATE
+(Only list what matters. If unchanged, say so.)
+- Active Raid(s):
+- Paused / Blocked Raid(s):
+- Halted Raid(s):
+
+DECISIONS LOCKED
+(Architectural or directional decisions made today.)
+- Example: Canonical root path locked as ~/ashby
+- Example: Router refactor deferred to later raid
+
+NEW CONSTRAINTS / RULES
+(Anything future work must now obey.)
+- Example: Zero behavior change during structural raid
+- Example: Stuart must remain a module, not a separate platform
+
+NOTES / DISCUSSION
+(Loose notes from the sync. Can be empty.)
+- Example: Identified legacy folders to archive later
+- Example: Noted potential risk, no action yet
+
+OPEN QUESTIONS / RISKS
+(Things acknowledged but not resolved.)
+- Example: Which venv is canonical (to be confirmed)
+- Example: Whether to relocate venv outside repo
+
+NEXT CONTROL SYNC FOCUS
+(What tomorrow’s sync should primarily cover.)
+- Example: Begin Phase 1 of Structural Realignment
+- Example: Review environment validation results
+
+DECIDED SCOPE
+(What we explicitly agreed to work on during this raid/day.)
+
+────────────────────────────────────────
+END OF CONTROL SYNC SNAPSHOT
+────────────────────────────────────────
+
+Notes:
+- If nothing meaningful occurred, write ONLY the date and the canonical line.
+- Brevity is preferred.
+- Presence of the snapshot matters more than length.

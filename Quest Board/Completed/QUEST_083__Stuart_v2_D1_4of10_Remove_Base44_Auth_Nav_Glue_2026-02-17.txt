@@ -1,0 +1,108 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_083
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v2 — D1 4of10: Remove/replace Base44 auth + navigation tracking wrappers
+
+Context: (Ashby / Stuart / System / Other)
+Stuart (Ashby) — Webapp Frontend
+
+Origin:
+Stuart Architecture Transcendence Protocol — Control Sync 2026-02-16 (Dungeon 1)
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- Guild Orders: Ashby_Data/Guild Orders/PAUSED/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt — Dungeon 1
+- Codex: Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt (Sections 1.2, 1.4, 2.1, 2.2, 2.5)
+- Docs: Ashby_Data/Stuart/Docs/STUART_Base44_UI_Code_Audit__2026-02-16.txt
+- Docs: Ashby_Data/Stuart/Docs/STUART_Base44_UI_Surgery_Checklist__2026-02-16.txt
+- Input: Ashby_Data/Stuart/Docs/stuart_app.zip (Base44 UI source pack)
+- Engine anchor: Ashby_Engine/ashby/interfaces/web/ (current FastAPI web door + /static + /templates)
+
+Status: BOARD | ACTIVE | COMPLETED | ABANDONED
+COMPLETED
+
+Audit Bundle Path: Quest Board/Quest Diff Audit Files/QUEST_###__AUDIT.txt
+Ashby_Data/Audits/Execution/QUEST_083__2026-02-17__stuart_v2_d1_4of10_remove_replace_base44_auth_navigation_tracking_wrappers
+
+Accepted On:
+2026-02-18
+
+Accepted By:
+Codex (GPT-5)
+
+Completed On:
+2026-02-18
+
+Completed By:
+Codex (GPT-5)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Strip or replace Base44 platform wrappers (AuthContext, NavigationTracker, app-params/me calls) so the UI renders in local/dev mode without any platform identity layer.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Identify platform glue modules (likely in src/lib/*): AuthContext, NavigationTracker, app-params, and any 'me()' user bootstrap calls.
+- Remove these wrappers from the app boot flow OR replace with local no-op providers that do not contact Base44 services.
+- Ensure the app can mount without requiring a user session/auth token from Base44.
+- Ensure any routing/analytics hooks tied to Base44 are removed or stubbed to no-op (no network).
+- Document what was removed/replaced in a small CHANGELOG entry inside the frontend root (e.g., 02_CHANGELOG.md).
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Implementing real auth for Stuart (not part of current scope).
+- Implementing chat/runs functionality (later dungeons).
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_082 (Base44 deps removed so imports are visible).
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Goal is: UI boots without Base44 identity. We are not adding a new auth system here.
+- If the UI expects a 'profile badge' (Local/Hybrid/Cloud), hardcode a local default for now (LOCAL_ONLY) but do not fake cloud compute.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] No Base44 auth/context modules are required for UI render.
+- [x] No platform 'me()' call remains in the boot path.
+- [x] UI mounts without crashing due to missing auth/session.
+- [x] 02_CHANGELOG.md updated with what wrappers were removed/replaced.
+
+────────────────────────────────────────────────────────
+TALENT POINT
+────────────────────────────────────────────────────────
+# On completion:
+# - Talent Point Awarded: YES / NO
+# - Talent Spent On: (TALENT ID — Name in Talent Tree)
+Talent Point Awarded: NO
+Talent Spent On: N/A
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+# Optional closing notes once the quest is completed or abandoned.
+Removed Base44 auth/nav glue from boot path and replaced with local no-op wrappers:
+- /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app/src/lib/AuthContext.jsx
+- /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app/src/lib/NavigationTracker.jsx
+- /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app/src/lib/app-params.js
+- /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app/src/lib/PageNotFound.jsx
+
+Canonical app boot no longer requires auth wrapper:
+- /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app/src/App.jsx
+
+Changelog updated:
+- /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/02_CHANGELOG.md

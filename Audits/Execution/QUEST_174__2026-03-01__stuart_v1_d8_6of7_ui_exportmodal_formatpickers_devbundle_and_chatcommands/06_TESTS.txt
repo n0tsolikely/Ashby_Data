@@ -1,0 +1,21 @@
+## Command Receipt Log
+WRAPPER: synapse_quest_run.sh
+ENGINE_ROOT: /home/notsolikely/Ashby_Engine
+DATA_ROOT: /home/notsolikely/Ashby_Data
+---
+FAIL: governance validation errors:
+- out-of-order execution: expected active quest QUEST_172, got QUEST_174
+- 06_TESTS.txt must contain at least one 'CMD:' receipt line (run commands via quest runner wrapper)
+- 03_VERIFY.md is placeholder-only; it must contain real verification content
+- 04_OUTCOME.md is placeholder-only; it must state what is now true + artifacts/paths
+BLOCKED: governance validate failed (see output above).
+CMD: cd /home/notsolikely/Ashby_Engine && npm --prefix webapp/stuart_frontend/stuart_app run build
+
+> stuart-frontend@0.0.0 build
+> vite build
+
+RC: 0
+PASS: governance validation OK for QUEST_174 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_174__2026-03-01__stuart_v1_d8_6of7_ui_exportmodal_formatpickers_devbundle_and_chatcommands
+OK: finalize complete (validation PASS recorded).
+PASS: governance validation OK for QUEST_174 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_174__2026-03-01__stuart_v1_d8_6of7_ui_exportmodal_formatpickers_devbundle_and_chatcommands
+OK: finalize complete (validation PASS recorded).

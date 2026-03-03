@@ -1,0 +1,104 @@
+STUART CODEX
+4.3 Retention Levels per Template (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section locks how retention levels (“the retention knob”) relate to templates. This was one of the key ideas in our chat: it prevents Stuart outputs from becoming generic summaries and allows creator-grade phrase preservation.
+
+1) What retention controls
+
+Retention controls how much original transcript phrasing is preserved in the formalization.
+
+It does not change:
+- the transcript itself (verbatim remains ground truth),
+- or the truth rules (no invention).
+
+It changes:
+- how aggressively language is consolidated,
+- how many near-verbatim blocks are included,
+- how much paraphrase is allowed.
+
+2) Retention is template-driven by default
+
+Each template MUST define a default_retention level.
+This ensures users can “just run it” without thinking, while still producing consistent outputs.
+
+Users MAY override retention per run, but templates define the defaults.
+
+3) Canonical retention levels (LOCKED)
+
+LOW
+- High abstraction.
+- Minimal quote blocks.
+- Consolidates repeated points.
+- Still must not invent.
+Use cases: “executive minutes,” quick incident summary.
+
+MED
+- Balanced detail.
+- Includes representative quotes.
+- Consolidates but preserves key wording.
+Use cases: typical meeting minutes, standard journals.
+
+HIGH
+- Detailed.
+- Preserves much of the original phrasing.
+- Many quote blocks or near-verbatim bullet items.
+Use cases: creator notes, detailed minutes, sensitive incident tracking.
+
+NEAR-VERBATIM
+- Minimal loss.
+- Removes disfluencies and obvious repetitions where possible.
+- Organizes transcript into structured form with minimal paraphrase.
+Use cases: creators/comedians where wording is payload; “organized transcript” outputs.
+
+4) Retention interacts with mode rules
+
+Retention cannot override truth rules:
+- A decision still requires evidence.
+- An action item still requires explicit assignment.
+- Root cause still must be stated.
+
+Retention only affects phrasing and level of consolidation, not factual claims.
+
+5) Retention interacts with printability
+
+Higher retention produces longer outputs.
+Therefore:
+- long outputs must be printable (PDF) without truncation,
+- and Stuart must support chunked/hierarchical formalization (defined later in Pipeline) so long meetings can be formalized safely.
+
+6) Recommendations by mode (defaults; templates may differ)
+
+Meeting minutes:
+- Detailed: HIGH
+- Quick: MED or LOW
+- Control Sync: HIGH
+
+Journal:
+- Diary: MED or HIGH
+- Book-style narrative: HIGH
+- Minimal daily log: MED or LOW
+
+Incident:
+- SEV report: MED or HIGH (depends on org)
+- Postmortem lite: MED
+
+Creator notes:
+- Idea clusters: HIGH
+- Near-verbatim hooks: NEAR-VERBATIM
+
+Captions:
+- Verbatim captions: HIGH
+- Clean captions: MED
+
+7) Self-audit (4.3)
+
+This section reflects our chat decisions:
+- retention is essential to avoid harmful over-summarization,
+- creator workflows often require near-verbatim preservation,
+- templates own defaults and users can override,
+- and retention must scale to long meetings via chunked formalization, not via “hope token limits are enough.”
+
+This section is complete.

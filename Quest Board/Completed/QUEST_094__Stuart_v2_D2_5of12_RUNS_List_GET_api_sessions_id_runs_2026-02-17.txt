@@ -1,0 +1,159 @@
+    QUEST TEMPLATE — SYNAPSE GUILD
+    ================================================
+
+    QUEST ID:
+    QUEST_094
+
+    Created By:
+    Ash (Brains)
+
+    Title:
+    Stuart v2 — D2 (5/12) — RUNS: List for Session (GET /api/sessions/{id}/runs) + UI Polling Fields
+
+    Context:
+    Dungeon 2 contract includes:
+  - GET /api/sessions/{session_id}/runs
+  - GET /api/runs/{run_id} (already exists)
+
+The UI needs:
+  - runs list for the current session
+  - run status polling payloads with stable progress/stage and deterministic downloads
+    (already partly implemented)
+
+This quest implements the missing session runs listing endpoint and ensures run detail payload
+contains the fields the UI needs for progress logs and downloads (without guessing filenames).
+
+    Origin:
+    Guild Orders → Dungeon 2 RUNS contract.
+
+    Priority:
+    P0 — Blocks Outputs tab + processing status UI.
+
+    Links:
+    - GUILD ORDERS: Ashby_Data/Guild Orders/PAUSED/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt (Dungeon 2 RUNS contract)
+- CODEX: Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt (3.5 Artifact-first + 4.3 Run immutability)
+- ENGINE ANCHOR: Ashby_Engine/ashby/interfaces/web/app.py (/api/runs/{run_id})
+- ENGINE ANCHOR: Ashby_Engine/ashby/modules/meetings/store.py (get_run_state)
+- ENGINE ANCHOR: Ashby_Engine/ashby/interfaces/web/runs.py (primary_downloads)
+
+    Status:
+    COMPLETED
+    Audit Bundle Path:
+    Ashby_Data/Audits/Execution/QUEST_094__2026-02-17__Stuart_v2_D2_Runs_List
+
+    Accepted On:
+    2026-02-18
+    Owner:
+    Hands (Peter)
+    Executor:
+    Codex (Brains)
+
+    Completed On:
+    2026-02-18
+
+    Completed By:
+    Codex (Brains)
+    ------------------------------------------------
+    DESCRIPTION
+    ------------------------------------------------
+    Implement GET /api/sessions/{session_id}/runs and ensure run detail payloads
+include stable polling fields required by the UI (progress, stage, downloads, artifacts).
+
+This endpoint is also used by other endpoints (transcripts/formalizations) as the base
+enumeration mechanism (v1 derived indices).
+
+    ------------------------------------------------
+    SCOPE / OBJECTIVE
+    ------------------------------------------------
+    A) Implement GET /api/sessions/{session_id}/runs
+
+   Endpoint:
+     GET /api/sessions/{session_id}/runs?limit=50&offset=0&status=<optional>&include_artifacts=false
+
+   Response:
+     {
+       "ok": true,
+       "session_id": "...",
+       "runs": [RunSummaryV1...],
+       "page": {...}
+     }
+
+   RunSummaryV1 minimum:
+     - run_id
+     - created_ts
+     - status, stage, progress
+     - mode/template_id/retention (derive from run.plan formalize step if present)
+     - has_transcript (artifact exists)
+     - has_formalization (primary_outputs contains pdf/md/json)
+     - downloads (optional in summary; include when include_artifacts=true)
+
+   Implementation:
+     - Enumerate runs by scanning lay.runs and filtering run.json['session_id'] == session_id
+       OR use sqlite index if it can list runs per session.
+     - Deterministic order: newest first.
+     - Keep bounded: only read enough run.json files to satisfy limit/offset.
+
+B) Ensure GET /api/runs/{run_id} returns the canonical fields:
+   - ok: true
+   - run_id
+   - state: run.json
+   - progress: poll_progress(run_id)
+   - downloads: primary_downloads(...)
+   - artifacts: list_run_artifacts(run_id)
+
+   If /api/runs/{run_id} is missing ok flag or envelope, refactor it.
+
+C) Tests
+   - Add tests for /api/sessions/{id}/runs listing and ordering.
+   - Ensure summary flags (has_transcript/has_formalization) behave on a run that succeeded.
+   - Ensure /api/runs/{run_id} response contains downloads.primary.pdf.url matching pointer.
+
+D) Docs update
+   - Add request/response example for runs list endpoint.
+
+
+    ------------------------------------------------
+    OUT OF SCOPE
+    ------------------------------------------------
+    - Transcript endpoints themselves (Quest 096)
+- Formalizations index endpoint (Quest 097)
+- Event streaming / websockets (later)
+
+
+    ------------------------------------------------
+    DEPENDENCIES
+    ------------------------------------------------
+    - Quest 091 envelope/models
+- Session detail (Quest 093) benefits from this but not required.
+
+
+    ------------------------------------------------
+    EXECUTION NOTES
+    ------------------------------------------------
+    - Do NOT guess artifact filenames. Use primary_outputs pointers and list directories.
+- Reading all runs for every call can become slow; keep it bounded by limit/offset.
+- If you need a lightweight index per session, create one under STUART_ROOT (runtime), not in repo.
+
+
+    ------------------------------------------------
+    COMPLETION CRITERIA (DONE = PROOF)
+    ------------------------------------------------
+    DONE when:
+- GET /api/sessions/{id}/runs exists and returns deterministic list.
+- /api/runs/{run_id} matches envelope conventions and has downloads/artifacts fields.
+- Tests prove correct behavior.
+
+Proof:
+- curl output for runs list
+- pytest green
+
+
+    ------------------------------------------------
+    TALENT POINT (WHY THIS MATTERS)
+    ------------------------------------------------
+    Runs are how users understand ‘what happened’. If runs list is missing, the app feels dead and confusing.
+
+    ------------------------------------------------
+    FINAL NOTES / HANDS DECISIONS
+    ------------------------------------------------
+    If we later add ‘processing log’ streaming, this endpoint still remains the canonical run enumeration.

@@ -1,0 +1,15 @@
+CONFIRM: YES
+
+R2 Consent Gate Record
+- Action: Apply Buff Pack (ASHBY_* timeless) + Updated Latest Rehydration Pack (2026-02-21) into REPO/CANON/Ashby_Data
+- Destructive/structural operations performed:
+  - Moved (archived) existing Buff files out of Ashby_Data/Buffs/ into Archive/Buffs History/2026-02-21/
+  - Moved (archived) existing Latest Rehydration Pack out of Ashby_Data/Latest Rehydration Pack/ into Archive/Latest Rehydration Pack History/2026-02-21/
+  - Installed new Buff files (ASHBY_*), and new Latest Rehydration Pack contents (2026-02-21)
+  - Rebuilt Monster brain/indexes/reports via MONSTER/tools/monster_update.py
+
+Authority:
+- Hands instruction (chat): "now you must take both packs ... add them into the ashby data for the new canon, archiving the old buff and rehydration pack ... then run the monster ... and give me the full monster"
+
+Notes:
+- This confirmation is recorded to satisfy the Synapse OS Risk Rubric R2 consent requirement.

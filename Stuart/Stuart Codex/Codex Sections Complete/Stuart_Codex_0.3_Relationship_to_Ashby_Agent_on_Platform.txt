@@ -1,0 +1,90 @@
+STUART CODEX
+0.3 Relationship to Ashby (Agent-on-Platform) (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-11
+
+This section defines how Stuart fits on top of Ashby. This is not optional context; it is an architectural boundary that prevents Stuart from becoming a parallel system.
+
+High-level relationship
+Ashby is the platform substrate (“the body”).
+Stuart is an agent/module (“an organ”) running within Ashby.
+
+Stuart must not be designed as a standalone product that duplicates Ashby’s responsibilities. Stuart must be designed as an Ashby-native agent that uses Ashby’s primitives and constraints.
+
+What Ashby provides (platform responsibilities)
+Ashby owns the shared, cross-agent substrate. Stuart consumes these platform responsibilities rather than re-implementing them:
+- Routing and orchestration primitives (the platform chooses how calls are executed and logged).
+- Policy gates and Truth discipline (preventing claims without evidence, disallowing silent failure).
+- Sessions and scoped execution context (what work is being done, for whom, under what profile).
+- Security boundaries and scopes (what data can be read/written).
+- Logging and audit patterns (traceability of actions and outputs).
+- Profile handling (LOCAL_ONLY / HYBRID / CLOUD as a platform concern).
+
+What Stuart provides (domain responsibilities)
+Stuart owns the meeting/audio domain logic:
+- Audio ingestion and normalization decisions (as a pipeline stage, via adapters).
+- Diarization and transcription orchestration (using enumerated adapters).
+- Alignment/stitching rules for producing citeable transcripts.
+- Mode+template formalization logic (meeting minutes, journal, incident report, creator notes, captions).
+- Evidence mapping and citation standards for its outputs.
+- Domain-specific query interpretation (what “decisions” or “action items” mean in this domain).
+- Indexing strategy for session recall (as an adapter, but driven by Stuart’s domain requirements).
+
+State, memory, and artifacts: the boundary
+Stuart’s durable outputs are artifacts, not “memory” in the conversational sense.
+- Transcript, formalizations, PDFs, evidence maps, and indexes are artifacts stored via StorageAdapter.
+- Ashby’s long-term “HouseState beliefs” (platform state) is not a dumping ground for transcripts and files.
+- If Stuart keeps any long-term state beyond artifacts, it is limited to explicit preferences (default template, retention setting, language preference). This is not narrative memory.
+
+This boundary exists to prevent:
+- hidden assumptions that cannot be audited,
+- uncontrolled drift in outputs,
+- and privacy surprises caused by ambiguous “memory.”
+
+Truth discipline: Ashby rules apply
+Stuart is held to Ashby’s truth standard. Practically, this means:
+- Stuart must disclose uncertainty (e.g., diarization confidence, inaudible segments).
+- Stuart must not claim “perfectly separated speakers” unless the evidence supports it.
+- Stuart must not present derived statements (decisions, actions, timelines) without citations.
+- Stuart must refuse nonexistent modes/templates rather than improvising them.
+
+In other words: Stuart is allowed to be imperfect. Stuart is not allowed to be confidently wrong.
+
+Profiles as a first-class platform concept
+Stuart does not create its own ad-hoc local/cloud switch.
+Stuart runs under Ashby execution profiles:
+- LOCAL_ONLY: no remote calls; all processing local.
+- HYBRID: some stages may run remote; Stuart must explicitly disclose what is sent and require confirmation.
+- CLOUD: remote-first; still produces canonical artifacts and preserves auditability.
+
+Stuart’s internal pipeline and output schema must remain stable across profiles. Only adapters change.
+
+Agent identity and UI
+“Stuart” is the domain identity that users see. Internally, Stuart is an agent/module registered with a module key.
+This allows:
+- consistent logging,
+- consistent routing,
+- stable storage namespaces,
+- and future coexistence with other agents without collision.
+
+“Thin orchestrator, no god files”
+Stuart must follow Ashby’s architectural discipline:
+- The orchestration layer is thin: it sequences stages and delegates.
+- Pipeline stages live in separate modules.
+- Adapters encapsulate implementation choice (local vs remote, provider selection).
+- No single file becomes a god object holding business logic, IO, UI, and policy.
+
+This is essential for maintainability and future growth (more modes/templates, new diarizers, new ASR models).
+
+Why this relationship matters for V1
+V1 must be easy to ship and hard to screw up:
+- chat-first UI that sits on Ashby’s interaction model,
+- explicit execution (no auto-processing surprises),
+- artifacts stored locally in deterministic session folders,
+- reliable printing/export (PDF) for formalizations,
+- and query across past sessions without inventing memory.
+
+Stuart’s success depends on staying “an Ashby agent” rather than becoming a parallel platform.
+
+This section is complete.

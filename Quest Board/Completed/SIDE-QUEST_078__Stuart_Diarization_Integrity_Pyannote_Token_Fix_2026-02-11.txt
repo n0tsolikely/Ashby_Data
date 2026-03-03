@@ -1,0 +1,75 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+SIDE-QUEST_078
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Side Quest: diarization integrity (pyannote token fix; restore real multi-speaker)
+
+Context: Stuart pipeline (diarization + speaker mapping)
+
+Origin:
+Control Sync — 2026-02-11 (Hands field report: diarization failing; overlays meaningless)
+
+Priority: P1
+
+Links:
+- QUEST_036 (pyannote adapter)
+- QUEST_068–069 (speaker overlay + web speaker mapping UI)
+- Stuart Codex: speaker identity discipline / overlays
+
+Status: COMPLETED
+Audit Bundle Path:
+  /mnt/data/Ashby_Data/Audits/Execution/SIDE-QUEST_078__2026-02-11__stuart_diarization_integrity_pyannote_token_fix
+Accepted On:
+2026-02-11
+Accepted By:
+Hands (Peter)
+Completed On:
+2026-02-12
+Completed By:
+Ash (Brains)
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Diarization is failing in real execution environments (pyannote auth arg mismatch), causing Stuart to fall back to stub diarization.
+This breaks the core value of D6 speaker mapping and leads to confusing output (single speaker, no overlay impact).
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Fix pyannote pipeline initialization to support current pyannote.audio API (token arg).
+- Ensure diarization stage succeeds when a valid HF token is available.
+- Keep deterministic fallback behavior if diarization truly cannot run (no crash), but surface a clear error reason.
+- Verify multi-speaker outputs:
+  - diarization.json contains real segments
+  - aligned_transcript.json contains speaker turns
+  - minutes.md renders participant names correctly when overlays are applied
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Building a full diarization evaluation suite
+- Improving diarization quality beyond “works reliably”
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- pyannote installed + HF token available in execution environment
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Do not silently pass: record diarization failure reason in artifacts when fallback is used.
+- Maintain LOCAL_ONLY determinism; no remote calls beyond model load.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] pyannote diarization runs without runtime TypeError for token/auth argument
+- [x] diarization.json includes real speaker segments when diarization is enabled
+- [x] A known multi-speaker file produces >1 speaker label in aligned_transcript.json
+- [x] Speaker overlay mapping (068/069) demonstrably changes minutes speaker names
+- [x] `python3 -m pytest -q` passes

@@ -1,0 +1,194 @@
+================================================================================
+END OF DAY SNAPSHOT
+================================================================================
+A) Header (required)
+- Subject: STUART
+- Date: 2026-03-02
+- Topic: Corrected full D7 closure snapshot (QUEST_160..QUEST_168) with final verification states
+- Snapshot Type: End_of_Day
+- World State: Fog Lifted
+- Codex Freeze status: PRESENT (/home/notsolikely/Ashby_Data/Codex/CODEX_FREEZE.md)
+
+B) Work Performed (Quest-by-Quest) (required)
+- Quest ID + Title: QUEST_160 — Stuart_v1_D7_2of10 — TemplateRegistry_v2_FrontMatter_Version_Defaults_Sections
+  - Status at end of day: COMPLETED
+  - Preconditions referenced: accepted quest + initialized execution audit bundle.
+  - Actions performed: implemented scoped changes and executed wrapped verification (see /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_160__2026-03-02__quest_160_stuart_v1_d7_2of10_templateregistry_v2_frontmatter_version_defaults_sections_2026_03_01/02_EXECUTION.md).
+  - Artifacts changed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_160__2026-03-02__quest_160_stuart_v1_d7_2of10_templateregistry_v2_frontmatter_version_defaults_sections_2026_03_01/06_CHANGED_FILES.txt
+  - Verification performed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_160__2026-03-02__quest_160_stuart_v1_d7_2of10_templateregistry_v2_frontmatter_version_defaults_sections_2026_03_01/06_TESTS.txt (19 passed in 0.05s; RC: 0; OVERALL: PASS)
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_160__2026-03-02__quest_160_stuart_v1_d7_2of10_templateregistry_v2_frontmatter_version_defaults_sections_2026_03_01/04_OUTCOME.md
+
+- Quest ID + Title: QUEST_161 — Stuart_v1_D7_3of10 — LLMFormalize_Contract_v2_Segments_TemplateText_TemplateSections
+  - Status at end of day: COMPLETED
+  - Preconditions referenced: accepted quest + initialized execution audit bundle.
+  - Actions performed: implemented scoped changes and executed wrapped verification (see /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_161__2026-03-02__quest_161_stuart_v1_d7_3of10_llmformalize_contract_v2_segments_templatetext_templatesections_2026_03_01/02_EXECUTION.md).
+  - Artifacts changed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_161__2026-03-02__quest_161_stuart_v1_d7_3of10_llmformalize_contract_v2_segments_templatetext_templatesections_2026_03_01/06_CHANGED_FILES.txt
+  - Verification performed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_161__2026-03-02__quest_161_stuart_v1_d7_3of10_llmformalize_contract_v2_segments_templatetext_templatesections_2026_03_01/06_TESTS.txt (14 passed in 0.44s; RC: 0; OVERALL: PASS)
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_161__2026-03-02__quest_161_stuart_v1_d7_3of10_llmformalize_contract_v2_segments_templatetext_templatesections_2026_03_01/04_OUTCOME.md
+
+- Quest ID + Title: QUEST_162 — Stuart_v1_D7_4of10 — LLMGatewayPrompt_v2_TemplateSchema_RawTemplate_AnchoredSegments
+  - Status at end of day: COMPLETED
+  - Preconditions referenced: accepted quest + initialized execution audit bundle.
+  - Actions performed: implemented scoped changes and executed wrapped verification (see /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_162__2026-03-02__quest_162_stuart_v1_d7_4of10_llmgatewayprompt_v2_templateschema_rawtemplate_anchoredsegments_2026_03_01/02_EXECUTION.md).
+  - Artifacts changed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_162__2026-03-02__quest_162_stuart_v1_d7_4of10_llmgatewayprompt_v2_templateschema_rawtemplate_anchoredsegments_2026_03_01/06_CHANGED_FILES.txt
+  - Verification performed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_162__2026-03-02__quest_162_stuart_v1_d7_4of10_llmgatewayprompt_v2_templateschema_rawtemplate_anchoredsegments_2026_03_01/06_TESTS.txt (11 passed in 0.45s; RC: 0; OVERALL: PASS)
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_162__2026-03-02__quest_162_stuart_v1_d7_4of10_llmgatewayprompt_v2_templateschema_rawtemplate_anchoredsegments_2026_03_01/04_OUTCOME.md
+
+- Quest ID + Title: QUEST_163 — Stuart_v1_D7_5of10 — FormalizePipeline_v2_AnnotatedSegments_TemplateSpec_Metadata
+  - Status at end of day: COMPLETED
+  - Preconditions referenced: accepted quest + initialized execution audit bundle.
+  - Actions performed: implemented scoped changes and executed wrapped verification (see /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_163__2026-03-02__quest_163_stuart_v1_d7_5of10_formalizepipeline_v2_annotatedsegments_templatespec_metadata_2026_03_01/02_EXECUTION.md).
+  - Artifacts changed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_163__2026-03-02__quest_163_stuart_v1_d7_5of10_formalizepipeline_v2_annotatedsegments_templatespec_metadata_2026_03_01/06_CHANGED_FILES.txt
+  - Verification performed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_163__2026-03-02__quest_163_stuart_v1_d7_5of10_formalizepipeline_v2_annotatedsegments_templatespec_metadata_2026_03_01/06_TESTS.txt (13 passed in 0.24s; RC: 0; OVERALL: PASS)
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_163__2026-03-02__quest_163_stuart_v1_d7_5of10_formalizepipeline_v2_annotatedsegments_templatespec_metadata_2026_03_01/04_OUTCOME.md
+
+- Quest ID + Title: QUEST_164 — Stuart_v1_D7_6of10 — Renderers_v2_ShowEmptySections_IncludeCitations
+  - Status at end of day: COMPLETED
+  - Preconditions referenced: accepted quest + initialized execution audit bundle.
+  - Actions performed: implemented scoped changes and executed wrapped verification (see /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_164__2026-03-02__quest_164_stuart_v1_d7_6of10_renderers_v2_showemptysections_includecitations_2026_03_01/02_EXECUTION.md).
+  - Artifacts changed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_164__2026-03-02__quest_164_stuart_v1_d7_6of10_renderers_v2_showemptysections_includecitations_2026_03_01/06_CHANGED_FILES.txt
+  - Verification performed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_164__2026-03-02__quest_164_stuart_v1_d7_6of10_renderers_v2_showemptysections_includecitations_2026_03_01/06_TESTS.txt (14 passed, 1 warning in 5.57s; RC: 0; OVERALL: PASS)
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_164__2026-03-02__quest_164_stuart_v1_d7_6of10_renderers_v2_showemptysections_includecitations_2026_03_01/04_OUTCOME.md
+
+- Quest ID + Title: QUEST_165 — Stuart_v1_D7_7of10 — TXT_Output_and_DownloadUX_PDF_MD_TXT_JSON_DevOnly
+  - Status at end of day: COMPLETED
+  - Preconditions referenced: accepted quest + initialized execution audit bundle.
+  - Actions performed: implemented scoped changes and executed wrapped verification (see /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_165__2026-03-01__stuart_v1_d7_7of10_txt_output_and_downloadux_pdf_md_txt_json_devonly/02_EXECUTION.md).
+  - Artifacts changed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_165__2026-03-01__stuart_v1_d7_7of10_txt_output_and_downloadux_pdf_md_txt_json_devonly/06_CHANGED_FILES.txt
+  - Verification performed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_165__2026-03-01__stuart_v1_d7_7of10_txt_output_and_downloadux_pdf_md_txt_json_devonly/06_TESTS.txt (5 passed, 1 warning in 7.27s; RC: 0; OVERALL: PASS)
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_165__2026-03-01__stuart_v1_d7_7of10_txt_output_and_downloadux_pdf_md_txt_json_devonly/04_OUTCOME.md
+
+- Quest ID + Title: QUEST_166 — Stuart_v1_D7_8of10 — DeleteOps_v1_RunDelete_SessionDeleteFix_IndexCleanup
+  - Status at end of day: COMPLETED
+  - Preconditions referenced: accepted quest + initialized execution audit bundle.
+  - Actions performed: implemented scoped changes and executed wrapped verification (see /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_166__2026-03-01__stuart_v1_d7_8of10_deleteops_v1_rundelete_sessiondeletefix_indexcleanup/02_EXECUTION.md).
+  - Artifacts changed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_166__2026-03-01__stuart_v1_d7_8of10_deleteops_v1_rundelete_sessiondeletefix_indexcleanup/06_CHANGED_FILES.txt
+  - Verification performed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_166__2026-03-01__stuart_v1_d7_8of10_deleteops_v1_rundelete_sessiondeletefix_indexcleanup/06_TESTS.txt (3 passed in 0.77s; RC: 0; OVERALL: PASS)
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_166__2026-03-01__stuart_v1_d7_8of10_deleteops_v1_rundelete_sessiondeletefix_indexcleanup/04_OUTCOME.md
+
+- Quest ID + Title: QUEST_167 — Stuart_v1_D7_9of10 — Delete_TranscriptVersion_Cascade_Warnings_IndexCleanup
+  - Status at end of day: COMPLETED
+  - Preconditions referenced: accepted quest + initialized execution audit bundle.
+  - Actions performed: implemented scoped changes and executed wrapped verification (see /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_167__2026-03-01__stuart_v1_d7_9of10_delete_transcriptversion_cascade_warnings_indexcleanup/02_EXECUTION.md).
+  - Artifacts changed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_167__2026-03-01__stuart_v1_d7_9of10_delete_transcriptversion_cascade_warnings_indexcleanup/06_CHANGED_FILES.txt
+  - Verification performed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_167__2026-03-01__stuart_v1_d7_9of10_delete_transcriptversion_cascade_warnings_indexcleanup/06_TESTS.txt (12 passed in 1.82s; RC: 0; OVERALL: PASS)
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_167__2026-03-01__stuart_v1_d7_9of10_delete_transcriptversion_cascade_warnings_indexcleanup/04_OUTCOME.md
+
+- Quest ID + Title: QUEST_168 — Stuart_v1_D7_10of10 — TL4_Proof_D7_Formalization_Template_Retention_Evidence_Deletion
+  - Status at end of day: COMPLETED
+  - Preconditions referenced: accepted quest + initialized execution audit bundle.
+  - Actions performed: implemented scoped changes and executed wrapped verification (see /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_168__2026-03-01__stuart_v1_d7_10of10_tl4_proof_d7_formalization_template_retention_evidence_deletion/02_EXECUTION.md).
+  - Artifacts changed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_168__2026-03-01__stuart_v1_d7_10of10_tl4_proof_d7_formalization_template_retention_evidence_deletion/06_CHANGED_FILES.txt
+  - Verification performed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_168__2026-03-01__stuart_v1_d7_10of10_tl4_proof_d7_formalization_template_retention_evidence_deletion/06_TESTS.txt (12 passed, 1 warning in 8.50s; RC: 0; OVERALL: PASS)
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_168__2026-03-01__stuart_v1_d7_10of10_tl4_proof_d7_formalization_template_retention_evidence_deletion/04_OUTCOME.md
+
+C) Completed Work Summary (required when anything completed)
+- QUEST_160 — Stuart_v1_D7_2of10 — TemplateRegistry_v2_FrontMatter_Version_Defaults_Sections
+  - Proof bundle: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_160__2026-03-02__quest_160_stuart_v1_d7_2of10_templateregistry_v2_frontmatter_version_defaults_sections_2026_03_01
+  - High-level outcome: completed and validated via governance guard.
+
+- QUEST_161 — Stuart_v1_D7_3of10 — LLMFormalize_Contract_v2_Segments_TemplateText_TemplateSections
+  - Proof bundle: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_161__2026-03-02__quest_161_stuart_v1_d7_3of10_llmformalize_contract_v2_segments_templatetext_templatesections_2026_03_01
+  - High-level outcome: completed and validated via governance guard.
+
+- QUEST_162 — Stuart_v1_D7_4of10 — LLMGatewayPrompt_v2_TemplateSchema_RawTemplate_AnchoredSegments
+  - Proof bundle: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_162__2026-03-02__quest_162_stuart_v1_d7_4of10_llmgatewayprompt_v2_templateschema_rawtemplate_anchoredsegments_2026_03_01
+  - High-level outcome: completed and validated via governance guard.
+
+- QUEST_163 — Stuart_v1_D7_5of10 — FormalizePipeline_v2_AnnotatedSegments_TemplateSpec_Metadata
+  - Proof bundle: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_163__2026-03-02__quest_163_stuart_v1_d7_5of10_formalizepipeline_v2_annotatedsegments_templatespec_metadata_2026_03_01
+  - High-level outcome: completed and validated via governance guard.
+
+- QUEST_164 — Stuart_v1_D7_6of10 — Renderers_v2_ShowEmptySections_IncludeCitations
+  - Proof bundle: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_164__2026-03-02__quest_164_stuart_v1_d7_6of10_renderers_v2_showemptysections_includecitations_2026_03_01
+  - High-level outcome: completed and validated via governance guard.
+
+- QUEST_165 — Stuart_v1_D7_7of10 — TXT_Output_and_DownloadUX_PDF_MD_TXT_JSON_DevOnly
+  - Proof bundle: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_165__2026-03-01__stuart_v1_d7_7of10_txt_output_and_downloadux_pdf_md_txt_json_devonly
+  - High-level outcome: completed and validated via governance guard.
+
+- QUEST_166 — Stuart_v1_D7_8of10 — DeleteOps_v1_RunDelete_SessionDeleteFix_IndexCleanup
+  - Proof bundle: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_166__2026-03-01__stuart_v1_d7_8of10_deleteops_v1_rundelete_sessiondeletefix_indexcleanup
+  - High-level outcome: completed and validated via governance guard.
+
+- QUEST_167 — Stuart_v1_D7_9of10 — Delete_TranscriptVersion_Cascade_Warnings_IndexCleanup
+  - Proof bundle: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_167__2026-03-01__stuart_v1_d7_9of10_delete_transcriptversion_cascade_warnings_indexcleanup
+  - High-level outcome: completed and validated via governance guard.
+
+- QUEST_168 — Stuart_v1_D7_10of10 — TL4_Proof_D7_Formalization_Template_Retention_Evidence_Deletion
+  - Proof bundle: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_168__2026-03-01__stuart_v1_d7_10of10_tl4_proof_d7_formalization_template_retention_evidence_deletion
+  - High-level outcome: completed and validated via governance guard.
+
+D) Incomplete / Failed / Blocked Work (required when relevant)
+- No Accepted quests remain open for the D7 wave (QUEST_160..QUEST_168 all in Completed).
+- Early QUEST_167 test failures were resolved same session; final verification is PASS.
+
+E) System Verification Performed (required when applicable)
+- QUEST_160
+  - Receipt: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_160__2026-03-02__quest_160_stuart_v1_d7_2of10_templateregistry_v2_frontmatter_version_defaults_sections_2026_03_01/06_TESTS.txt
+  - Verify: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_160__2026-03-02__quest_160_stuart_v1_d7_2of10_templateregistry_v2_frontmatter_version_defaults_sections_2026_03_01/03_VERIFY.md (OVERALL: PASS)
+  - Result: 19 passed in 0.05s; RC: 0
+
+- QUEST_161
+  - Receipt: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_161__2026-03-02__quest_161_stuart_v1_d7_3of10_llmformalize_contract_v2_segments_templatetext_templatesections_2026_03_01/06_TESTS.txt
+  - Verify: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_161__2026-03-02__quest_161_stuart_v1_d7_3of10_llmformalize_contract_v2_segments_templatetext_templatesections_2026_03_01/03_VERIFY.md (OVERALL: PASS)
+  - Result: 14 passed in 0.44s; RC: 0
+
+- QUEST_162
+  - Receipt: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_162__2026-03-02__quest_162_stuart_v1_d7_4of10_llmgatewayprompt_v2_templateschema_rawtemplate_anchoredsegments_2026_03_01/06_TESTS.txt
+  - Verify: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_162__2026-03-02__quest_162_stuart_v1_d7_4of10_llmgatewayprompt_v2_templateschema_rawtemplate_anchoredsegments_2026_03_01/03_VERIFY.md (OVERALL: PASS)
+  - Result: 11 passed in 0.45s; RC: 0
+
+- QUEST_163
+  - Receipt: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_163__2026-03-02__quest_163_stuart_v1_d7_5of10_formalizepipeline_v2_annotatedsegments_templatespec_metadata_2026_03_01/06_TESTS.txt
+  - Verify: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_163__2026-03-02__quest_163_stuart_v1_d7_5of10_formalizepipeline_v2_annotatedsegments_templatespec_metadata_2026_03_01/03_VERIFY.md (OVERALL: PASS)
+  - Result: 13 passed in 0.24s; RC: 0
+
+- QUEST_164
+  - Receipt: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_164__2026-03-02__quest_164_stuart_v1_d7_6of10_renderers_v2_showemptysections_includecitations_2026_03_01/06_TESTS.txt
+  - Verify: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_164__2026-03-02__quest_164_stuart_v1_d7_6of10_renderers_v2_showemptysections_includecitations_2026_03_01/03_VERIFY.md (OVERALL: PASS)
+  - Result: 14 passed, 1 warning in 5.57s; RC: 0
+
+- QUEST_165
+  - Receipt: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_165__2026-03-01__stuart_v1_d7_7of10_txt_output_and_downloadux_pdf_md_txt_json_devonly/06_TESTS.txt
+  - Verify: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_165__2026-03-01__stuart_v1_d7_7of10_txt_output_and_downloadux_pdf_md_txt_json_devonly/03_VERIFY.md (OVERALL: PASS)
+  - Result: 5 passed, 1 warning in 7.27s; RC: 0
+
+- QUEST_166
+  - Receipt: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_166__2026-03-01__stuart_v1_d7_8of10_deleteops_v1_rundelete_sessiondeletefix_indexcleanup/06_TESTS.txt
+  - Verify: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_166__2026-03-01__stuart_v1_d7_8of10_deleteops_v1_rundelete_sessiondeletefix_indexcleanup/03_VERIFY.md (OVERALL: PASS)
+  - Result: 3 passed in 0.77s; RC: 0
+
+- QUEST_167
+  - Receipt: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_167__2026-03-01__stuart_v1_d7_9of10_delete_transcriptversion_cascade_warnings_indexcleanup/06_TESTS.txt
+  - Verify: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_167__2026-03-01__stuart_v1_d7_9of10_delete_transcriptversion_cascade_warnings_indexcleanup/03_VERIFY.md (OVERALL: PASS)
+  - Result: 12 passed in 1.82s; RC: 0
+
+- QUEST_168
+  - Receipt: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_168__2026-03-01__stuart_v1_d7_10of10_tl4_proof_d7_formalization_template_retention_evidence_deletion/06_TESTS.txt
+  - Verify: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_168__2026-03-01__stuart_v1_d7_10of10_tl4_proof_d7_formalization_template_retention_evidence_deletion/03_VERIFY.md (OVERALL: PASS)
+  - Result: 12 passed, 1 warning in 8.50s; RC: 0
+
+F) Bugs / Weirdness / Discoveries
+- Resolved: QUEST_167 delete/session identity regression in `delete_ops.py` that caused two delete tests to fail initially.
+- Non-blocking: one Matplotlib deprecation warning (`get_cmap`) surfaced in proof runs; no behavior impact and no governance gate failure.
+
+G) Raid / Guild Orders status changes
+- Dungeon 7 wave closed at quest board level: QUEST_160 through QUEST_168 are in Completed.
+- D7 proof artifact present: `/home/notsolikely/Ashby_Data/Audits/Proofs/D7__Formalization_MVP__TL4__2026-03-02.md`.
+
+H) Talent Tree updates (mandatory when relevant)
+- No explicit Talent Tree files were updated in this session.
+- If capability ledger updates are required for D7 closure, update:
+  - `/home/notsolikely/Ashby_Data/Talent Tree/Stuart/TALENT_LOG.txt`
+  - `/home/notsolikely/Ashby_Data/Talent Tree/Stuart/TALENT_TREE.txt`
+
+I) Resume Instructions (required)
+- Next session must start with Control Sync and review:
+  1) latest Control Sync snapshot
+  2) this EOD snapshot
+  3) latest Continuity Lock in Latest Rehydration Pack
+- Accepted queue is empty; no execution until new acceptance/commitment.
+- Next move: decide next dungeon scope and accept next quest set.
+
+END OF SNAPSHOT

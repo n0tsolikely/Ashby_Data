@@ -1,0 +1,156 @@
+STUART — END OF DAY SNAPSHOT
+Date: 2026-02-12
+Scope: Dungeon 6 COMPLETE (QUEST_068 → QUEST_075) + Side Quests COMPLETE (SQ_078 → SQ_079)
+
+================================================================================
+0) PURPOSE
+================================================================================
+This snapshot is the authoritative closure record for:
+- Dungeon 6 Phase 1 (QUEST_068 → QUEST_070)
+- Dungeon 6 Phase 2 (QUEST_071 → QUEST_075)
+- Side Quest A (SQ_078): diarization integrity (pyannote auth kwarg drift)
+- Side Quest B (SQ_079): webapp UX/status/progress/output surfacing
+
+It exists so a future rehydration can reconstruct truth from artifacts, not memory.
+
+================================================================================
+1) CANON ROOTS (SINGLE SOURCE OF TRUTH)
+================================================================================
+- Governance: /mnt/data/Synapse_OS_Governance
+- Data:       /mnt/data/Ashby_Data
+- Engine:     /mnt/data/Ashby_Engine
+
+ZIP EXPORT LAW
+- The extracted folders are canon.
+- Zip files are inert exports.
+- Every mutation to Ashby_Data or Ashby_Engine ships as a new combined zip.
+
+================================================================================
+2) GOVERNANCE STATE (LOCKED)
+================================================================================
+- Control Sync: CLOSED
+- Execution authority: only from Quest Board/Accepted
+- Truth Gate posture: no “done” without receipts (diffs, commands, tests, artifacts)
+- Testing law: never claim tests passed unless executed and captured
+
+NO HEURISTICS — HARD RULE
+- Any reference to Codex / snapshots / audits / code must be verified by direct file inspection.
+- Heuristic guesses are not allowed; verification is mandatory.
+
+================================================================================
+3) DECISION ANCHORS
+================================================================================
+Baseline selection + D6 phasing decision:
+- /mnt/data/Ashby_Data/Snapshots/Control Sync/ASHBY_Control_Sync_Snapshot_2026-02-10__V25_BASELINE_SELECTED_AND_D6_PHASES_LOCKED.txt
+
+Phase 2 acceptance + side quest creation decision:
+- /mnt/data/Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-02-11__SIDEQUESTS_CREATED_PHASE2_ACCEPTED.txt
+
+Prior phase closures:
+- D6 Phase 1 closure:
+  /mnt/data/Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2026-02-11__Q068-Q070.txt
+- D5 closure:
+  /mnt/data/Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2026-02-09__Q061-Q067.txt
+
+================================================================================
+4) QUEST BOARD TRUTH
+================================================================================
+Accepted:
+- EMPTY (no active commitment stack)
+
+Completed (high-signal):
+- QUEST_061 → QUEST_067 (Dungeon 5: doors + consent + UX end-to-end)
+- QUEST_068 → QUEST_075 (Dungeon 6: overlays + speaker map + reformalize + harness + export + install)
+- SIDE-QUEST_078 (Diarization integrity: pyannote auth kwarg drift fix + overlay verification)
+- SIDE-QUEST_079 (Webapp UX: upload clarity + progress/status + output surfacing)
+
+================================================================================
+5) DUNGEON 6 — WHAT SHIPPED (EVIDENCE-BACKED)
+================================================================================
+5.1 Phase 1 (QUEST_068 → QUEST_070)
+- Speaker Map Overlay API + run-manifest snapshotting (immutable overlays)
+- Webapp speaker mapping UI + rerender (overlay → formalize-only rerun)
+- Formalize-only rerun reuses transcript artifacts (skips recompute; new run_id)
+Receipts:
+- /mnt/data/Ashby_Data/Audits/Execution/QUEST_068__2026-02-10__stuart_v1_d6_1of5_speaker_map_overlay_api_and_manifest_integration/
+- /mnt/data/Ashby_Data/Audits/Execution/QUEST_069__2026-02-10__stuart_v1_d6_2of5_webapp_speaker_mapping_ui_and_rerender/
+- /mnt/data/Ashby_Data/Audits/Execution/QUEST_070__2026-02-10__stuart_v1_d6_3of5_formalizeonly_run_reuse_transcript_json/
+
+5.2 Phase 2 (QUEST_071 → QUEST_075)
+- QUEST_071: webapp reformalize controls (template + retention controls; true reuse-run flow)
+  Receipts:
+  - /mnt/data/Ashby_Data/Audits/Execution/QUEST_071__2026-02-11__stuart_v1_d6_4of5_webapp_reformalize_controls_template_retention/
+
+- QUEST_072: Telegram speaker map + minimal reformalize loop
+  Receipts:
+  - /mnt/data/Ashby_Data/Audits/Execution/QUEST_072__2026-02-11__stuart_v1_d6_5of5_telegram_speaker_map_and_reformalize_minimal/
+
+- QUEST_073: test harness fixtures + golden assertions
+  Receipts:
+  - /mnt/data/Ashby_Data/Audits/Execution/QUEST_073__2026-02-11__stuart_v1_testharness_fixtures_and_golden_assertions/
+
+- QUEST_074: export bundle v1 (read-only session zip)
+  Receipts:
+  - /mnt/data/Ashby_Data/Audits/Execution/QUEST_074__2026-02-11__stuart_v1_export_bundle_v1_session_zip_readonly/
+
+- QUEST_075: install pack docs + dependency bands + preflight
+  (purpose: stop “missing dep whack-a-mole” and standardize reproducible setup)
+  Receipts:
+  - /mnt/data/Ashby_Data/Audits/Execution/QUEST_075__2026-02-11__stuart_v1_install_pack_docs_dep_pins_system_dependencies/
+
+================================================================================
+6) SIDE QUESTS — WHAT SHIPPED (EVIDENCE-BACKED)
+================================================================================
+6.1 SQ_078 — diarization integrity (pyannote token kwarg drift)
+- Fixes pyannote Pipeline auth kwarg drift by supporting BOTH:
+  - token=<HF_TOKEN> (new)
+  - use_auth_token=<HF_TOKEN> (legacy fallback)
+- Adds regression tests verifying diarization does NOT fall back silently.
+Receipts:
+- /mnt/data/Ashby_Data/Audits/Execution/SIDE-QUEST_078__2026-02-11__stuart_diarization_integrity_pyannote_token_fix/
+
+6.2 SQ_079 — webapp UX/status/progress/output surfacing
+- Improves upload clarity (file selected + upload complete indicators)
+- Improves run progress reporting (stage-based progression; no silent “stuck at 90%” UX)
+- Surfaces primary outputs directly in UI (MD/PDF/transcript/export bundle links)
+Receipts:
+- /mnt/data/Ashby_Data/Audits/Execution/SIDE-QUEST_079__2026-02-11__stuart_webapp_ux_status_clarity_progress_output_surfacing/
+
+================================================================================
+7) TEST RECEIPTS (REAL EXECUTION)
+================================================================================
+All verification logs are stored per-quest in:
+- /mnt/data/Ashby_Data/Audits/Execution/<QUEST_OR_SIDEQUEST>/06_PYTEST_-q.txt
+- /mnt/data/Ashby_Data/Audits/Execution/<QUEST_OR_SIDEQUEST>/07_PYTEST_EXIT_CODE.*
+
+Note: Some quests used grouped pytest execution due to runtime caps.
+Grouping is still evidence-backed via per-group exit code receipts.
+
+================================================================================
+8) REHYDRATION UPDATE (THIS EOD)
+================================================================================
+Latest Rehydration Pack has been updated to 2026-02-12:
+- BOOTSTRAP_PROMPT_2026-02-12.txt
+- CONTINUITY_LOCK_2026-02-12.txt
+
+Execution Pack:
+- Archived (no longer “active stack”).
+- A pointer/stub remains so future rehydrations can find the archived pack.
+
+================================================================================
+9) OPERATOR NOTES (POSTURE)
+================================================================================
+- Tomorrow’s plan (Hands):
+  - Open a new Control Sync
+  - Run real-world Stuart testing (web + telegram + CLI)
+  - Then update Guild Orders (scope for next cycle)
+
+Potential future improvement (not created as a quest tonight):
+- “Execution Transparency Mode” — runtime feature to ask/offer detailed explanation before/after quest execution.
+
+================================================================================
+10) NEXT SAFE MOVE
+================================================================================
+- Open a new Control Sync (tomorrow).
+- Run operator testing on Stuart v1.
+- Decide next Guild Orders revision based on real usage findings.

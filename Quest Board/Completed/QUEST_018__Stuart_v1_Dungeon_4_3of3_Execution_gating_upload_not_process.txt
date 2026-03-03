@@ -1,0 +1,62 @@
+QUEST ID: QUEST_018
+Title: Stuart v1 — Dungeon 4 (3 of 3): Execution gating (“upload ≠ process”)
+Context: Stuart
+Origin: Guild Orders: GUILD_ORDERS_STUART_V1_2026-01-16_REV3.txt (Dungeon 4)
+Priority: P0
+Links:
+- Guild Orders: Stuart v1 — Dungeon 4
+- Build Law B3: Explicit execution gating (privacy + correctness)
+- Supersedes (decomposition of): QUEST_005
+- Related: QUEST_017 (clarification + plan preview)
+Status: COMPLETED
+Accepted On: Completed On:
+Completed On: DESCRIPTION
+
+DESCRIPTION
+────────────────────────────────────────
+Enforce the v1 execution gating law: uploading a file does not automatically trigger heavy processing. Stuart must only run diarize/transcribe/formalize when an explicit “go” signal exists.
+
+SCOPE / OBJECTIVE
+────────────────────────────────────────
+Implement gating contract from Guild Orders:
+- Upload ≠ process.
+- Heavy work runs only when explicit “go” exists via:
+  - user instruction in chat that fully specifies intent, OR
+  - explicit Run/Confirm in webapp, OR
+  - Telegram button selections.
+
+Enforce plan preview whenever required input is ambiguous or coming from UI state.
+If the user’s message + attachment fully specifies the plan, the system may proceed without extra prompts.
+If relying on UI state or ambiguous info, require confirmation.
+
+OUT OF SCOPE
+────────────────────────────────────────
+Implementing the heavy pipeline itself (Dungeon 5).
+Accounts/auth and advanced permission systems.
+
+DEPENDENCIES
+────────────────────────────────────────
+- QUEST_017
+
+EXECUTION NOTES
+────────────────────────────────────────
+Gating is both privacy and correctness. It also prevents accidental compute burn.
+This quest is about enforcing the decision: the system must not “helpfully” process on upload.
+
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────
+- [x] Upload alone results in intake/storage only (session + contribution created) and no heavy processing starts automatically.
+- [x] If plan is fully specified, system can create an executable plan without additional clarification (plan/preview contract enforced).
+- [x] If required inputs are ambiguous, system emits clarify/preview outputs instead of executing; execution requires explicit go.
+- [x] Execution gating enforces explicit go via command/flag; door-specific Telegram button semantics are deferred to QUEST_010.
+- [x] All gating decisions are represented in structured plan/clarify outputs (no hidden side effects).
+
+TALENT POINT
+────────────────────────────────────────
+On completion:
+- Talent Point Awarded: YES
+- Talent Spent On: TALENT_STUART_EXECUTION_GATING_GO — Explicit Execution Gating (Upload ≠ Process)
+
+FINAL NOTES
+────────────────────────────────────────
+(optional)

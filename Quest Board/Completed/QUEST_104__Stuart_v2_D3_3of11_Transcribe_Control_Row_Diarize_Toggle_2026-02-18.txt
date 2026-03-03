@@ -1,0 +1,104 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+================================================
+
+QUEST ID:
+QUEST_104
+
+Created By:
+Codex (Brains)
+
+Title:
+Stuart v2 — D3 (3/11) — Session Tab Transcribe Controls (Transcribe + Diarization Toggle)
+
+Subject:
+Stuart
+
+Context: (Ashby / Stuart / System / Other)
+Ashby / Stuart
+
+Origin:
+Guild Orders ACTIVE REV4 -> Dungeon 3 Session tab locked requirements.
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- Guild Orders Dungeon 3 Session tab controls
+- Dungeon 5 dependency for diarization truth path
+
+Status: BOARD | ACTIVE | COMPLETED | ABANDONED
+COMPLETED
+
+Audit Bundle Folder Path:
+Ashby_Data/Audits/Execution/QUEST_104__2026-02-18__stuart_v2_d3_transcribe_controls_diarize_toggle
+
+Accepted On:
+2026-02-18
+
+Accepted By:
+Hands (Peter) via Codex (Brains)
+
+Completed On:
+2026-02-18
+
+Completed By:
+Codex (Brains)
+
+Change Class: (TRIVIAL / FEATURE / STRUCTURAL)
+FEATURE
+
+Vision Delta: (ALIGNED / VARIATION / SHIFT)
+ALIGNED
+
+System Context Statement:
+UI must expose explicit Transcribe action and diarization toggle side-by-side, with upload != run preserved.
+
+Anti-Duplication Plan:
+Bind existing run creation flow; do not create parallel transcribe state machines.
+
+Placement Intent:
+Session tab action row and run request builder.
+
+Codex Anchors (DRAFT):
+- Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_2.2_Explicit_Execution_Gating_Submit_Confirm.txt
+- Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_7.4_Stage_3_Transcription.txt
+- Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_7.3_Stage_2_Diarization.txt
+
+Codex Constraint Summary:
+- No implicit processing from upload.
+- Diarization belongs to transcribe path, not formalization.
+- UI controls must map cleanly to run request settings.
+
+Door Impact:
+Stuart web door (UI)
+
+Testing Level (TL):
+TL2
+
+Talent Point Awarded: (YES / NO)
+YES
+
+DESCRIPTION
+Implement transcribe controls in Session tab with diarization toggle physically adjacent and functionally wired.
+
+SCOPE / OBJECTIVE
+- Render Transcribe button.
+- Render diarization toggle beside Transcribe.
+- Ensure request payload reflects toggle state.
+
+OUT OF SCOPE
+- Diarization engine internals.
+- Speaker mapping editor.
+
+DEPENDENCIES
+- QUEST_102
+- QUEST_103
+- Dungeon 5 backend contract readiness
+
+EXECUTION NOTES
+If backend route differs, map via canonical client method names only.
+
+COMPLETION CRITERIA (REQUIRED)
+- [ ] Transcribe and diarization controls render beside each other.
+- [ ] Triggering transcribe sends explicit request with diarize true/false.
+- [ ] No auto-run happens on upload alone.

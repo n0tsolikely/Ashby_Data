@@ -1,0 +1,63 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+
+QUEST ID:
+PRE-QUEST_026
+
+Title:
+Stuart v1 — Telegram PDF Path Truth-Gate Fix
+
+Context: Stuart (in Ashby)
+
+Origin:
+Side-Control Sync: STUART_Control_Sync-2026-01-27
+
+Priority: P1
+
+Links:
+- (see audit bundle + code paths)
+
+Status: COMPLETED
+
+Audit Bundle Path: Quest Board/QUEST DIFF AUDIT FILES/PRE-QUEST_026__AUDIT.txt
+
+Accepted On:
+2026-01-27
+
+Completed On:
+2026-01-27
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+
+Fix return-contract mismatch so Telegram door can retrieve and send the PDF that already exists on disk.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Update _extract_pdf_path to prefer kind=formalized_pdf and fallback to any *.pdf artifact path.
+- Ensure run_default_pipeline returns a non-null pdf_path when PDF exists.
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+No UI changes, no model wiring, no Truth Gate redesign.
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+None. (Prereq for web door wiring.)
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+Scoped to ashby/interfaces/telegram/stuart_runner.py.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] pdf_path returned non-null and exists
+- [ ] Telegram door can send PDF
+- [ ] Audit bundle captured
+
+Completed: implemented extractor fix; audit bundle PRE-QUEST_026__AUDIT captured.

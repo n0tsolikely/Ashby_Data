@@ -1,0 +1,65 @@
+CONTROL SYNC SNAPSHOT — STUART
+Date: 2026-02-04
+Topic: Stuart v1 quest refactor (REV7) — renumber into executable order
+
+Attendees:
+- Hands (Peter)
+- Ash (Brains)
+
+Context
+- We’re resuming Stuart v1 from the current engine state (ASR/diarization wired; “formalization” is still placeholder templated transcript).
+- Goal remains: drop an audio file, choose mode (meeting/journal), speakers, retention, template; run; get minutes/journal outputs + ability to search later.
+- Hands explicitly put Ash in “pro mode” to fix/amend the accepted Stuart quests and get them in correct execution order.
+
+Decisions Made
+1) Quest numbering must match execution order
+- We renumbered the Stuart quest chain so that numeric order matches dependency order (no “do QUEST_052 before QUEST_051” nonsense).
+
+2) Formalizers must be Codex-true across execution profiles
+- QUEST_046 and QUEST_047 were amended to be **profile-gated**:
+  - LOCAL_ONLY: MUST NOT use a remote LLM. Must produce a deterministic/heuristic minutes/journal JSON output (can be “best-effort” but must be honest + cite transcript anchors).
+  - HYBRID/CLOUD: remote LLM may be used, but must be explicit + fail-safe fallback to deterministic output.
+
+3) Renderer quest needed inside the accepted block
+- JSON → MD renderers (QUEST_048) was previously sitting unaccepted on the board as QUEST_052.
+- To keep the accepted block end-to-end coherent, we pulled it into the accepted chain as QUEST_048.
+
+Changes Executed (artifacts)
+A) Quests renumbered + amended
+- Accepted quest set is now:
+  - QUEST_042 → QUEST_052 (inclusive)
+- Renumber map (canonical):
+  - Audits/Execution/QUEST_RENUMBER_MAP_2026-02-04_REV7.md
+
+B) Guild Orders updated
+- ACTIVE now points to REV7:
+  - Guild Orders/ACTIVE/GUILD_ORDERS_STUART_V1_2026-02-04_REV7.txt
+- REV6 moved to COMPLETED (history preserved):
+  - Guild Orders/COMPLETED/GUILD_ORDERS_STUART_V1_2026-02-04_REV6.txt
+- REV7 section E quest map updated to match actual quest filenames and dependencies.
+
+C) Audit bundles renumbered
+- Audit bundle folders in Audits/Execution were renamed to match new quest IDs.
+- New audit bundle created for QUEST_048 (renderers-only).
+
+D) Safety / Governance
+- Old quest files were preserved (inert) under:
+  - Archive(IGNORE)/Quest_Refactor__2026-02-04_PRO_MODE/Old_Quest_Files/
+
+Current Accepted Execution Order (next steps)
+1) QUEST_042 — Run params: retention/template validation + persisted
+2) QUEST_043 — Default templates (meeting/journal system prompts)
+3) QUEST_044 — minutes.json schema v1 + validator
+4) QUEST_045 — journal.json schema v1 + validator
+5) QUEST_046 — Formalize meeting → minutes.json (profile-gated)
+6) QUEST_047 — Formalize journal → journal.json (profile-gated)
+7) QUEST_048 — JSON → MD renderer functions (deterministic)
+8) QUEST_049 — Wire MD artifact naming minutes.md/journal.md into pipeline
+9) QUEST_050 — Wire PDF artifact naming minutes.pdf/journal.pdf into pipeline
+10) QUEST_051 — diarization.json contract alignment
+11) QUEST_052 — run manifest primary outputs pointers (mode-aware)
+
+Notes / Potential Future Ambiguities
+- If a future session asks “why is quest 048 renderers-only?”: because we split implementation (renderers) from pipeline wiring (49/50) to keep quests atomic.
+- If a future session asks “where did quest 052 go?”: it became quest 048; see renumber map.
+- If a future session asks “why profile-gated formalizers?”: Codex requires LOCAL_ONLY to avoid remote LLM; HYBRID/CLOUD may improve quality but must be explicit.

@@ -1,0 +1,107 @@
+--- webapp/main.py
++++ webapp/main.py
+@@ -2,10 +2,13 @@
+ from fastapi.responses import HTMLResponse
+ from fastapi.staticfiles import StaticFiles
+ from fastapi.templating import Jinja2Templates
++from pathlib import Path
+ 
+ app = FastAPI()
+-app.mount("/static", StaticFiles(directory="webapp/static"), name="static")
+-templates = Jinja2Templates(directory="webapp/templates")
++
++BASE = Path(__file__).resolve().parent
++app.mount("/static", StaticFiles(directory=str(BASE / "static")), name="static")
++templates = Jinja2Templates(directory=str(BASE / "templates"))
+ 
+ @app.get("/", response_class=HTMLResponse)
+ async def index(request: Request):
+--- webapp/templates/index.html
++++ webapp/templates/index.html
+@@ -24,11 +24,12 @@
+ <div class="bubble assistant">Sure. Upload the audio when ready.</div>
+ </section>
+ <footer class="inputbar">
+-<label class="attach">+<input type="file" hidden/></label>
++<label class="attach">+<input id="file-input" type="file" hidden/></label>
+ <input class="prompt" placeholder="Type a message…"/>
+ <button class="send">➤</button>
+ </footer>
+ </main>
+ </div>
++  <script src="/static/js/app.js"></script>
+ </body>
+ </html>
+--- webapp/static/js/app.js
++++ webapp/static/js/app.js
+@@ -0,0 +1,70 @@
++// webapp/static/js/app.js
++
++function qs(sel) { return document.querySelector(sel); }
++
++function addBubble(kind, text) {
++  const chat = qs(".chat");
++  const div = document.createElement("div");
++  div.className = `bubble ${kind}`;
++  div.textContent = text;
++  chat.appendChild(div);
++  chat.scrollTop = chat.scrollHeight;
++}
++
++async function uploadFile(file) {
++  const form = new FormData();
++  form.append("file", file);
++
++  const res = await fetch("/upload", { method: "POST", body: form });
++  if (!res.ok) {
++    const t = await res.text();
++    throw new Error(`Upload failed: ${res.status} ${t}`);
++  }
++  return await res.json();
++}
++
++document.addEventListener("DOMContentLoaded", () => {
++  const sendBtn = qs("button.send");
++  const prompt = qs("input.prompt");
++  const fileInput = qs("input#file-input");
++  const attachLabel = qs("label.attach");
++
++  async function sendMessage() {
++    const text = (prompt.value || "").trim();
++    if (!text) return;
++    addBubble("user", text);
++    prompt.value = "";
++    addBubble("assistant", "Got it. (UI scaffold — not yet wired to runs)");
++  }
++
++  sendBtn?.addEventListener("click", (e) => {
++    e.preventDefault();
++    sendMessage();
++  });
++
++  prompt?.addEventListener("keydown", (e) => {
++    if (e.key === "Enter") {
++      e.preventDefault();
++      sendMessage();
++    }
++  });
++
++  fileInput?.addEventListener("change", async () => {
++    const file = fileInput.files && fileInput.files[0];
++    if (!file) return;
++
++    addBubble("user", `Uploading: ${file.name} ...`);
++    try {
++      const out = await uploadFile(file);
++      addBubble("assistant", `Uploaded: ${out.filename}`);
++    } catch (err) {
++      addBubble("assistant", `Upload error: ${err.message || err}`);
++    } finally {
++      fileInput.value = "";
++    }
++  });
++
++  attachLabel?.addEventListener("click", () => {
++    fileInput?.click();
++  });
++});

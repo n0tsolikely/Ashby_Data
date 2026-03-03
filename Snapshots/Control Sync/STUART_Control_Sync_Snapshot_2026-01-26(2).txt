@@ -1,0 +1,39 @@
+STUART / ASHBY — CONTROL SYNC SNAPSHOT (BUGS & NEXT ACTIONS)
+Date: 2026-01-26
+Timestamp: 2026-01-26 22:30:20 UTC
+Scope: Stuart + Ashby Telegram PDF flow ONLY
+
+CURRENT STATE (VERIFIED)
+- Telegram bot runs and executes pipeline.
+- Audio upload → run succeeds.
+- Artifacts generated correctly:
+  - transcript.txt
+  - diarization_segments.json (stub)
+  - formalized.md
+  - evidence_map.json (stub)
+  - exports/formalized.pdf (exists)
+- Web/CLI paths function.
+
+ROOT CAUSE
+- PDF exists but Telegram reports “no PDF path returned”.
+- run_default_pipeline returned pdf_path=None because extractor did not read:
+  rn["state"]["artifacts"][kind="formalized_pdf"].path
+
+REQUIRED FIXES (ORDERED)
+1) Update _extract_pdf_path(rn) to:
+   - Read rn["state"]["artifacts"]
+   - Prefer kind=="formalized_pdf"
+   - Fallback to any *.pdf path
+2) Ensure run_default_pipeline returns pdf_path from extractor.
+3) Keep Telegram door logic unchanged.
+4) Optional safety: Telegram fallback scan of run_dir/exports/*.pdf.
+
+DEFERRED (NEXT QUEST)
+- Clean entrypoint hygiene:
+  - Remove PYTHONPATH workaround
+  - Avoid stdlib name collision with `io`
+- Wire Stuart outputs through Ashby Truth Gate.
+
+RESUME ANCHOR
+- Start by fixing extractor in ashby/interfaces/telegram/stuart_runner.py
+- Restart bot and verify PDF delivery

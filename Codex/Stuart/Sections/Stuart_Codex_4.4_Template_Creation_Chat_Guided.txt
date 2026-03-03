@@ -1,0 +1,102 @@
+STUART CODEX
+4.4 Template Creation (Chat-Guided) (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines how users create templates with Stuart via chat. This is important because we explicitly want to eliminate “prompt engineering” and make structure reusable. Templates must be creatable by normal humans, not only developers.
+
+In V1, template creation can be basic but must be real and safe.
+
+1) Goals of chat-guided template creation
+
+TCR1) Make templates easy to create
+A user should be able to say:
+- “I want meeting minutes formatted like this…”
+and Stuart should help translate that into a reusable template.
+
+TCR2) Avoid capability hallucination
+Template creation must still respect enumerated structures:
+- The system must be explicit about which mode the template belongs to.
+- The template must become a real, registered template once created.
+
+TCR3) Keep truth rules intact
+Creating a template must not weaken evidence rules (decisions still need citations, etc.).
+
+2) Minimal chat flow (recommended)
+
+Step 1: Choose mode
+User: “Create a new meeting minutes template.”
+Stuart: “Okay. This template will belong to Meeting Minutes mode. What should it be called?”
+
+Step 2: Name + description
+User provides:
+- name (“Knights of Columbus Minutes”)
+- description (optional)
+
+Step 3: Section structure
+Stuart asks:
+- what sections do you want?
+- which are required?
+- what order?
+
+Step 4: Defaults
+Stuart asks for:
+- default retention level (LOW/MED/HIGH/NEAR-VERBATIM)
+- evidence strictness (especially for decisions/actions)
+
+Step 5: Preview
+Stuart generates a preview skeleton (empty template) and asks for confirmation.
+
+Step 6: Save
+User confirms.
+Template is saved locally and registered.
+
+3) Template creation inputs (what the user can specify)
+
+Users may specify:
+- section headings
+- required vs optional
+- order
+- whether to include timestamps
+- whether to include quotes/near-verbatim blocks
+- how decisions/actions are displayed
+- how speaker names should be shown (labels vs mapped names)
+- any organization-specific fields
+
+Users do not need to specify prompt text. They specify structure and preferences.
+
+4) Safety rules
+
+SAFE1) Mode must be explicit
+Templates cannot be “mode-agnostic.” Stuart must ask the user which mode this template belongs to.
+
+SAFE2) Template must become enumerated
+Once created, it must appear in the list of available templates for that mode.
+
+SAFE3) Template must be versioned
+Any edits must create a new version, not silently mutate history.
+
+SAFE4) No hidden remote sharing
+Creating a template must not upload it anywhere unless the user explicitly requests sharing (future feature).
+In V1, templates are local.
+
+5) Editing templates
+
+Users should be able to:
+- edit a template via chat,
+- but edits should produce a new version.
+
+Example:
+“Add a section for ‘Follow-ups’ and make it required.”
+Result: template version increments, and prior sessions keep references to the version used.
+
+6) Self-audit (4.4)
+
+This section reflects our chat decisions:
+- templates should be creatable without prompt engineering,
+- template creation is chat-first,
+- templates are enumerated and versioned,
+- and template creation must not weaken truth rules or privacy expectations.
+
+This section is complete.

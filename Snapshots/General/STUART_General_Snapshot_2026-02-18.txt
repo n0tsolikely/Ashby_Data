@@ -1,0 +1,33 @@
+SNAPSHOT_TYPE: GENERAL
+SUBJECT: ASHBY / STUART
+DATE: 2026-02-18
+STATUS: RECORDED
+
+======================================================================
+CONTEXT
+======================================================================
+Hands requested: "end control sync".
+Runtime close attempt result: FAIL: Control Sync is not active.
+Hands decision: create General Snapshot instead.
+
+======================================================================
+STATE RECEIPT
+======================================================================
+- Control Sync runtime state was not active at time of close attempt.
+- No Control Sync close snapshot was generated.
+- General snapshot recorded as continuity receipt per Hands directive.
+
+======================================================================
+WORK CONTEXT (SAME SESSION)
+======================================================================
+- Dungeon 3 draft quests were created at:
+  /home/notsolikely/Ashby_Data/draft_quests
+- Draft quests created: QUEST_102 through QUEST_112 (11 files).
+
+======================================================================
+NEXT SAFE STEP
+======================================================================
+- If a formal Control Sync close artifact is required, open a Control Sync first, then close it.
+- Otherwise proceed with quest review/acceptance from draft_quests.
+
+END OF SNAPSHOT

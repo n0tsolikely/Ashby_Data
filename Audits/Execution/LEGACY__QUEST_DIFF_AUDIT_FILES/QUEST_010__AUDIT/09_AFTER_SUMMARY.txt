@@ -1,0 +1,16 @@
+QUEST_010 AFTER SUMMARY
+
+Quest file:
+- Moved: Quest Board/Accepted -> Quest Board/Completed
+- Status set to COMPLETED; criteria checked (optional search deferred by quest note)
+
+Engine changes:
+- Added: ashby/interfaces/telegram/stuart_door_core.py
+- Added: ashby/interfaces/telegram/stuart_runner.py
+- Modified: io/telegram/ashby_telegram_control.py (media + callback handlers; uses door core; runs default pipeline via runner)
+- Added tests: tests/test_telegram_stuart_door_core.py
+- Verification: pytest -q => 35 passed
+
+Talent:
+- Appended to Talent Tree/Stuart/TALENT_LOG.txt (QUEST_010)
+- Appended to Talent Tree/Stuart/TALENT_TREE.txt (TALENT_STUART_TELEGRAM_DOOR_MINIMAL)

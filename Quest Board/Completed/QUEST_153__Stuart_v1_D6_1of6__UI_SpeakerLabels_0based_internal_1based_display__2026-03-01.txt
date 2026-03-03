@@ -1,0 +1,139 @@
+QUEST TEMPLATE — SYNAPSE OS [v1.5]
+(duplicate this file for each new Quest)
+
+================================================================================
+QUEST ID: QUEST_153
+QUEST TITLE: Stuart v1 — Dungeon 6 (1/6): UI Speaker Labels (0-based internal / 1-based display)
+QUEST SUBTITLE: Display “Speaker-01”..“Speaker-NN” by default; display mapped name only when present
+PRIORITY: P0
+OWNER: OpenAI Codex (CLI Execution)
+STATUS: ACCEPTED (Ready for execution)
+CREATED: 2026-03-01
+LAST UPDATED: 2026-03-01
+================================================================================
+
+SUBJECT: ASHBY / STUART (Meetings Module)
+ORIGIN: Guild Orders REV14 — Dungeon 6 + Control Sync decision (D6 locked rule: internal 0-based, UI 1-based)
+LINKS:
+- /mnt/data/Ashby_Canon12_EXTRACTED/Ashby_Canon(12)/Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-25_REV14.txt  (sha256: d10c278cd45a543c32c27102a912ce6f1c0569401c5ec0e00f6dc1e5c5b9b094)
+- Dungeon 6 excerpt sha256: 6d0a02ce22d961dd4eb1fbb4bf0cab4be8d5f3f42bf4c577ceee5b4012af3816
+- /mnt/data/ANALYSIS__D6__MONSTER_ASHBY__2026-03-01.md  (sha256: a086f46d5bf54c4cf3267139f9d8d581f1ecb719dc4f6bceda80ff9a627ef5a9)
+- Monster workspace zip: /mnt/data/MONSTER_ASHBY__THE_MONSTER_WORKSPACE__20260301_012623.zip
+
+GOVERNANCE:
+- Synapse OS 5 governance (Quest Template v1.5, Truth Gate, Disclosure Gate)
+- “No zombie plumbing” constraint: build on existing Stuart UI + API; do not create parallel search/UI implementations.
+
+================================================================================
+CODEX ANCHORS (read these before making changes)
+- Ashby_Data/Codex/Stuart/Stuart_Codex_7.3_Stage_2_Diarization.txt  (speaker labels + diarization)
+- Ashby_Data/Codex/Stuart/Stuart_Codex_6.1_Session_Model.txt  (session vs transcript_version vs run separation)
+- Guild Orders REV14 — DUNGEON 6 (Speaker Map overlay + Attendee truth)
+
+================================================================================
+CONSTRAINTS (hard rules)
+- INTERNAL SPEAKER IDS STAY 0-BASED. Canonical diarization labels stay as: SPEAKER_00, SPEAKER_01, ...
+- UI DISPLAY IS 1-BASED. UI shows: Speaker-01, Speaker-02, Speaker-03, ...
+- When a mapped name exists, the transcript UI shows JUST the mapped name (e.g., “Greg”), not “Speaker-01 / Greg”.
+- Do NOT mutate transcript artifacts when mapping names. Mapping is an overlay (pointer-based).
+- Keep architecture clean: add a small reusable helper; don’t scatter label formatting across random components.
+
+================================================================================
+CHANGE CLASS: Modification (frontend only)
+RISK CLASS: R1 (UI display + labeling only)
+
+VISION DELTA:
+- Current UI shows raw SPEAKER_00 labels in transcript viewer and speaker map editor.
+- This quest makes the UI human-friendly and consistent with the D6 “0-based internal / 1-based UI” rule.
+
+================================================================================
+SYSTEM CONTEXT (repo truth)
+- Transcript UI component: Ashby_Engine/webapp/stuart_frontend/stuart_app/src/components/stuart/TranscriptViewer.jsx
+- Speaker map editor: Ashby_Engine/webapp/stuart_frontend/stuart_app/src/components/stuart/SpeakerMapper.jsx
+- These components currently show internal speaker IDs (SPEAKER_00) to the user.
+
+================================================================================
+ANTI-DUPLICATION PLAN (do this first)
+- Search for existing speaker label formatting helpers:
+  - rg -n "Speaker-0" Ashby_Engine/webapp/stuart_frontend/stuart_app/src
+  - rg -n "SPEAKER_0" Ashby_Engine/webapp/stuart_frontend/stuart_app/src
+  - rg -n "getSpeakerName" Ashby_Engine/webapp/stuart_frontend/stuart_app/src
+- If a helper already exists, extend it (don’t create a second one).
+
+================================================================================
+PLACEMENT INTENT (where code should live)
+- Add ONE helper module (preferred):
+  - Ashby_Engine/webapp/stuart_frontend/stuart_app/src/lib/speaker_labels.js
+- Update these UI files to use the helper:
+  - .../TranscriptViewer.jsx
+  - .../SpeakerMapper.jsx
+  - (Optional) any search/snippet UI that displays speaker labels
+
+================================================================================
+ATOMICITY STATEMENT
+This quest is atomic when:
+- UI label formatting is centralized in a single helper.
+- Transcript viewer + speaker mapper display the correct labels without requiring any backend changes.
+- No API contracts are changed in this quest.
+
+================================================================================
+SCOPE
+Implement UI-only speaker label formatting:
+1) Add a speaker label helper:
+   - speakerIdToDisplayLabel("SPEAKER_00") -> "Speaker-01"
+   - speakerIdToDisplayLabel("SPEAKER_09") -> "Speaker-10"
+   - speakerIdToDisplayLabel("SPEAKER_10") -> "Speaker-11"
+   - Unrecognized formats fall back to the original string (don’t crash).
+2) Add a helper for transcript display name:
+   - displayName = speakerMap[speakerId] if present and non-empty
+   - else displayName = speakerIdToDisplayLabel(speakerId)
+3) Update TranscriptViewer.jsx:
+   - Speaker label in the transcript uses the helper.
+   - When speakerMap contains a mapping, the UI shows the mapped name only.
+4) Update SpeakerMapper.jsx:
+   - The badge/label for each speaker uses Speaker-01 style, not SPEAKER_00.
+   - Keep internal keys as SPEAKER_00 in the underlying mapping object.
+
+OUT OF SCOPE
+- Any backend/API changes (those are QUEST_154+).
+- Any changes to diarization output formats.
+- Any search behavior changes (QUEST_157).
+
+================================================================================
+DEPENDENCIES
+- None. This can land first and is safe.
+
+================================================================================
+DOOR IMPACT
+- WebApp (Vite/React) only.
+
+================================================================================
+TESTING LEVEL
+- TL2 (manual UI verification + build/lint)
+
+================================================================================
+VERIFICATION PLAN (Codex must produce receipts)
+1) Static check:
+   - (from Ashby_Engine/webapp/stuart_frontend/stuart_app)
+   - npm run build  (or npm run lint if build isn’t configured)
+2) Manual check (dev server acceptable):
+   - Load a session with a transcript.
+   - Confirm transcript shows “Speaker-01” etc when unmapped.
+   - Apply a mapping (even if it’s local state) and confirm the transcript shows mapped names.
+
+================================================================================
+ACCEPTANCE CRITERIA (must all be true)
+- TranscriptViewer shows Speaker-01..Speaker-NN for unmapped speaker labels.
+- TranscriptViewer shows mapped name only when speakerMap provides a mapping.
+- SpeakerMapper shows Speaker-01..Speaker-NN labels for speaker entries, not raw SPEAKER_00.
+- No regressions: UI still renders and basic transcript viewing still works.
+
+================================================================================
+RECEIPTS REQUIRED (attach to quest completion)
+- Diff (git patch) for modified UI files + the new helper file.
+- Terminal output for npm run build (or lint) showing PASS.
+- 1–2 screenshots (or short gif) proving Speaker-01 labeling + mapped name display.
+
+================================================================================
+NOTES
+- Keep this clean. One helper file, not five random inline formatters. Don’t build sideways shit.

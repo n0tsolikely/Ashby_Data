@@ -1,0 +1,11 @@
+## Command Receipt Log
+WRAPPER: synapse_quest_run.sh
+ENGINE_ROOT: /home/notsolikely/Ashby_Engine
+DATA_ROOT: /home/notsolikely/Ashby_Data
+---
+CMD: PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_chat_truth_gate_citations_required.py tests/test_meetings_chat_truth_gate_invalid_citations_filtered.py tests/test_meetings_chat_truth_gate_session_scope_no_leak.py
+...                                                                      [100%]
+3 passed in 0.55s
+RC: 0
+PASS: governance validation OK for QUEST_185 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_185__2026-03-03__stuart_v1_dungeon_10_10_12_chat_truth_gates_citation_enforcement_scope_safety_rails
+OK: finalize complete (validation PASS recorded).

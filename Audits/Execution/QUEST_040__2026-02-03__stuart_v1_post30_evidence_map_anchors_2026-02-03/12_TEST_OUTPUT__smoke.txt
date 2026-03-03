@@ -1,0 +1,4 @@
+ok True
+claims_len 1
+anchors_len 2
+anchor0_seg_in_transcript True

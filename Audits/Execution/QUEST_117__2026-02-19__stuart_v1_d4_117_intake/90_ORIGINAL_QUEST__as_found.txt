@@ -1,0 +1,120 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_117
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 4 (4/15): Transcribe stage emits TranscriptVersion artifacts + updates active pointer
+
+Context: (Ashby / Stuart / System / Other)
+Stuart meetings — pipeline transcribe stage output
+
+Origin:
+Guild Orders — Dungeon 4 task #2; Dungeon 5 will later upgrade the ASR engine + diarization toggle
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- Guild Orders: Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt (Dungeon 4 + Dungeon 5 dependencies)
+- Stuart Codex (full): Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_7.4_Stage_3_Transcription.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_7.3_Stage_2_Diarization.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_6.2_Canonical_Artifacts_JSON_Markdown_PDF.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_8.1_Evidence_Anchors_and_Citations.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_3.2_Meeting_Minutes_Mode.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 30.1.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 28.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 8A.4.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 26.txt
+- Engine anchors:
+  - Ashby_Engine/ashby/modules/meetings/pipeline/transcribe.py
+  - Ashby_Engine/ashby/modules/meetings/pipeline/job_runner.py
+  - Ashby_Engine/ashby/modules/meetings/store.py (run creation + manifests)
+  - Ashby_Engine/ashby/modules/meetings/manifests.py (RunManifest shape)
+
+Status: ACTIVE
+
+Audit Bundle Path:
+  /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_117__2026-02-19__stuart_v1_d4_117_intake
+
+Accepted On:
+2026-02-19
+Accepted By:
+Hands (Peter) via Codex (Brains)
+Completed On:
+
+Completed By:
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Make transcript versions real: whenever the pipeline produces transcript substrates (transcript.json / aligned_transcript.json), it must also emit an immutable TranscriptVersion artifact under the session and set it active.
+
+This is the bridge between “runs” and “transcript versions”.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+Implement emission logic:
+
+- When a run produces transcript output (initially from pipeline/transcribe.py stub; later real ASR):
+  - Create a new transcript_version_id (trv_*).
+  - Write full TranscriptVersion artifact under sessions/{session_id}/transcripts/versions/{trv}.json (write-once).
+  - Append a summary row to sessions/{session_id}/transcripts/index.jsonl.
+
+- Populate required metadata:
+  - diarization_enabled: derive from plan params if available; else False for now (until Dungeon 5)
+  - asr_engine: "default" for now
+  - segments: use aligned_transcript.json if present, else transcript.json
+  - audio_ref: use inputs/resolved_input.json to extract contribution_id and safe relpaths where possible
+
+- Update session state:
+  - set_active_transcript_version(session_id, trv)
+
+- Record traceability in run.json:
+  - Add a field in RunManifest primary_outputs or artifacts such as:
+    - produced_transcript_version_id: trv_...
+  - Must not break older run.json readers.
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Implementing real ASR / diarization toggle (Dungeon 5).
+- Changing web endpoints (later quests).
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+QUEST_114, QUEST_116
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────
+Do NOT fabricate transcripts. Use only produced transcript files.
+
+Keep deterministic selection:
+- If both aligned_transcript.json and transcript.json exist, prefer aligned.
+- Segment IDs: keep the existing deterministic segment_id integers; do not randomize.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] A transcribe run produces a new TranscriptVersion artifact + index row
+- [ ] Session state active_transcript_version_id updates to the newly created transcript version
+- [ ] run.json records produced_transcript_version_id
+- [ ] pytest passes
+
+────────────────────────────────────────────────────────
+TALENT POINT
+────────────────────────────────────────────────────────
+# On completion:
+# - Talent Point Awarded: YES / NO
+# - Talent Spent On: (TALENT ID — Name in Talent Tree)
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+# Optional closing notes once the quest is completed or abandoned.

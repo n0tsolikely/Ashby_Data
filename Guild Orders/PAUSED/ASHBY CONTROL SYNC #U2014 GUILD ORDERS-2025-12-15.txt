@@ -1,0 +1,372 @@
+ASHBY CONTROL SYNC — GUILD ORDERS:
+
+This is the list you wanted. This is the authoritative plan based on everything we just agreed on.
+
+You can copy this and treat it as the working checklist.
+
+PHASE 1 — CORE TRUTH & STATE (NON-NEGOTIABLE)
+1️⃣ Implement a Global House State
+
+Ashby must maintain a live, queryable state of the house.
+
+At minimum:
+
+per-device:
+
+on/off
+
+brightness (0–1000)
+
+last verified update time
+
+per-system:
+
+active lighting sessions
+
+temperature setpoint
+
+last known temperature
+
+ignore devices that are off when summarizing state
+
+This state is:
+
+updated only from verified actions or verified device reads
+
+readable by Ashby at all times
+
+injectable into the LLM as facts, not assumptions
+
+This enables:
+
+“What’s the state of my house?”
+
+“I already turned that off”
+
+hallucination rejection
+
+retry decisions
+
+2️⃣ Action-Gated Truth (Hallucination Rejection)
+
+Ashby may only describe actions that are confirmed.
+
+Every device action must return an Action Result:
+
+attempted devices
+
+succeeded devices
+
+failed devices
+
+error (if any)
+
+Rules:
+
+If action succeeds → update house state → respond
+
+If action fails → auto-retry silently (1–2 times)
+
+If retry fails → report failure honestly
+
+Never say “done” unless state confirms it
+
+This is a core differentiator from Alexa/Google.
+
+PHASE 2 — DEVICE EXECUTION FIXES (TONIGHT’S WORK)
+3️⃣ Upgrade lights_tuya.set_brightness
+
+Change it so it:
+
+returns per-device success/failure
+
+detects API errors
+
+optionally verifies state via Tuya status endpoint
+
+updates local device state cache only on success
+
+No more “fire and forget.”
+
+4️⃣ Upgrade device_control.set_group_brightness
+
+Change it so it:
+
+propagates detailed action results back to router
+
+supports:
+
+group names
+
+lists of device keys (future-proofing for rooms/zones/roles)
+
+does not assume success
+
+PHASE 3 — TARGET RESOLUTION (USING DEVICES METADATA)
+5️⃣ Real Target Resolver (Stop Hard-Coding Groups)
+
+When the user says:
+
+“turn off the lights”
+
+“lights in the bedroom”
+
+“bed lamp”
+
+“I’m going to sleep”
+
+Ashby must resolve targets using:
+
+DEVICES.category
+
+DEVICES.room
+
+DEVICES.role
+
+(later) inferred context
+
+Rules:
+
+If resolvable → act
+
+If ambiguous → ask once
+
+Never pretend it acted if unresolved
+
+Groups become aliases, not the core mechanism.
+
+PHASE 4 — INTENT CONTINUITY & DIMMER LOGIC
+6️⃣ Intensity Multiplier (Actually Wire It In)
+
+Connect the existing multiplier logic so:
+
+“more” repeats last direction
+
+“more more / way more” increases magnitude
+
+“too bright / too dark” implies stronger correction
+
+direction is inherited unless explicitly reversed
+
+Result:
+Lights behave like a real dimmer, not a slot machine.
+
+7️⃣ Pending Target Merge (All Actions)
+
+Pending target logic must support:
+
+lights.on
+
+lights.off
+
+lights.adjust
+
+So:
+
+“Turn off the lights” → “Which ones?” → “Bedroom”
+always completes correctly
+
+PHASE 5 — HUMAN vs COMMAND MODE (LLM CONTROL)
+8️⃣ Two Interaction Modes
+
+Ashby must distinguish intent by phrasing, not just keywords.
+
+Command Mode
+
+“Turn the lights off.”
+
+Execute → short response
+
+Low token budget
+
+No follow-up questions
+
+Conversation Mode
+
+“Man it’s bright in here…”
+
+Ask, suggest, converse
+
+Normal token budget
+
+Human interaction
+
+Same brain. Different posture.
+
+PHASE 6 — SAFE SELF-MODIFICATION (FUTURE-READY)
+9️⃣ Config Patch System (No .py Rewrites)
+
+Ashby may:
+
+propose config changes
+
+write them to a patch queue (JSON/YAML)
+
+auto-apply safe changes (aliases, descriptions)
+
+require approval for destructive changes (removals, role changes)
+
+Examples:
+
+“boat lamp” alias
+
+“bed lamp is now a heating pad”
+
+“these lights are wall lights”
+
+Never let the LLM directly edit executable code.
+
+🔟 Human Escalation Path (You)
+
+Every Ashby instance knows:
+
+your name
+
+your contact info
+
+If something breaks:
+
+Ashby can offer to contact you
+
+send you a message/email/Telegram
+
+queue requests for approval
+
+report back approval/denial honestly
+
+Ashby never blames the user. Ever.
+
+DAILY LOOP (THE RITUAL)
+
+Ashby Control Sync
+
+Decide scope
+
+Implement
+
+Test
+
+Snapshot (state + changes)
+
+Stop
+
+Resume next day from the list
+
+No drift. No half-memory. No chaos.
+
+
+
+
+
+
+ADDED ORDERS |
+
+BUG A — Action-Gated Truth Violation (False state claims)
+
+Symptom (from Telegram):
+Ashby states “lights are off” / “lights are on” / “set to X%” without confirming via:
+
+a successful device action result, OR
+
+a live device state query.
+
+Impact:
+Ashby lies (unintentionally) and destroys trust. User corrections don’t reconcile internal state.
+
+Fix:
+Add a hard rule: No state assertions unless verified.
+
+After an action: only speak in the past tense if the action returned success.
+
+If no verification: speak as “last known state” or ask to confirm (“I don’t have a fresh state read — want me to check?”).
+
+If user contradicts: mark internal state as stale/unknown until refreshed.
+
+Acceptance test:
+If Ashby did not execute+confirm or query state, it must never say “definitely on/off” — only “last known” or “I’m not sure yet.”
+
+BUG B — HouseState authority / drift (state not treated as source of truth)
+
+Symptom:
+Chat layer improvises continuity (“it was off before we kicked it back up”) and doesn’t reconcile when the user reports reality (e.g., “it’s actually 100%”).
+
+Fix:
+Make HouseState the only source of truth for responses.
+
+Update HouseState only from action results and/or explicit get_state() reads.
+
+Add state_confidence (VERIFIED / LAST_KNOWN / UNKNOWN).
+
+Response templates must respect confidence.
+
+On user correction: set confidence to UNKNOWN and trigger a state refresh or ask.
+
+Acceptance test:
+When user says “it’s actually 100%,” Ashby replies like:
+“Yeah — my state was stale. Want me to query Thor right now to sync?”
+
+BUG C — “Again” / last_delta not applied correctly (repeat logic broken)
+
+Symptom (7:12 PM):
+User: “Again”
+Ashby repeats same brightness instead of applying the last delta direction/step.
+
+Fix:
+Store last_delta per user session (already in design) and apply it when intent is repeat/again/more/less with no new magnitude.
+
+If last_delta is None → default step (e.g., ±100 on 0–1000 scale).
+
+If last action was absolute set (e.g., “set to 30%”) then again should repeat the absolute OR apply the last delta? (Pick one rule and make it consistent — I recommend: again repeats last command type. If last was a set, repeat set; if last was delta, repeat delta.)
+
+Acceptance test:
+“More” then “Again” continues moving the same direction by the same step.
+
+BUG D — Command acknowledged but not executed (false success + execution failure not surfaced)
+
+Your correction: He said it’s on, but it didn’t turn on even after multiple tries.
+
+Likely causes (stacked):
+
+Target resolution failure (Thor vs thor / alias normalization / group lookup mismatch)
+
+Execution error swallowed (Tuya call failed but code still returns “success”)
+
+No verification (so it narrates success even if nothing happened)
+
+Fix (three-part, non-negotiable):
+
+Canonicalize device/group names
+
+Normalize text: lower, strip, collapse spaces, remove punctuation.
+
+Map aliases: “thor”, “Thor”, “THOR” → internal group_id.
+
+Treat “turn on Thor”, “turn Thor on”, “turn on the Thor lights” as the same target.
+
+Make execution return a hard success boolean + error reason
+
+execute_on(group_id) -> (ok: bool, err: str|None)
+
+Router must branch: if not ok → do not claim success; respond with failure + next action (“I didn’t reach Thor — want me to retry?”)
+
+Optional but strongly recommended: post-action verify
+
+If ok==True, do a fast get_state() and confirm new state; if mismatch, mark as “attempted but not confirmed.”
+
+Acceptance test:
+If the light doesn’t actually turn on, Ashby says:
+“I tried, but I didn’t get confirmation from Thor. I can retry or you can tell me if it changed.”
+
+BUG E — Redundant “ON” spam (no-op suppression)
+
+Symptom: Multiple “Turn on Thor” messages trigger repeated ON actions and repeated narration, even when already on.
+
+Fix:
+No-op detection using HouseState (when confidence VERIFIED/LAST_KNOWN).
+
+If already on and brightness unchanged → respond “already on” and don’t execute.
+
+If confidence UNKNOWN → execute or query first.
+
+Acceptance test:
+Saying “turn on Thor” twice doesn’t fire two device calls if state is already on.

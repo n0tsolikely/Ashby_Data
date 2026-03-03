@@ -1,0 +1,224 @@
+QUEST TEMPLATE — SYNAPSE OS
+Version: v1.5
+Last Updated: 2026-02-22
+Status: Canon Template (must comply with Quest Validation Rules)
+Subject Copy: Ashby_Data/Quest Board/QUEST_TEMPLATE.txt
+Provenance: Synapse OS governance/Quest Board/QUEST_TEMPLATE.txt (v1.5)
+
+
+(duplicate this file for each new Quest)
+
+CORE LAW Reminder:
+- Quest state is defined ONLY by WHERE THIS FILE LIVES (Quest Board folder), not by metadata.
+- This Quest file is the execution contract. It MUST be unambiguous enough to execute, audit, verify, and resume.
+- If any REQUIRED field is missing or ambiguous, the Quest MUST remain on BOARD (validation fails).
+- Verification is NOT optional:
+  - Execution MUST NOT begin until a Verification Plan exists.
+  - The Verification Plan may be recorded here OR deferred to the Pre-Quest Audit (01_PREQUEST.md).
+
+NOTE:
+- Do not "change status" in text. Move the file between folders.
+- Location wins over text. If this file claims a state that conflicts with its folder, the folder is authoritative.
+
+================================================================================
+IDENTITY (REQUIRED)
+================================================================================
+Quest ID:
+SIDE-QUEST_091
+
+Title:
+Stuart: Clean messy LLM minutes/journal output (JSON-as-string sanitizer + prompt tightening)
+
+Subject:
+STUART
+
+Origin:
+Hands directive on 2026-02-24: minutes/journal artifacts are messy due to JSON blobs serialized into text fields; markdown/pdf output becomes unreadable.
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- Depends on SIDE-QUEST_090 (OpenAI removal/gateway-only baseline)
+- Minutes formalizer: /home/notsolikely/Ashby_Engine/ashby/modules/meetings/formalize/minutes_json.py
+- Journal formalizer: /home/notsolikely/Ashby_Engine/ashby/modules/meetings/formalize/journal_json.py
+
+================================================================================
+CODEX ANCHORS + CONSTRAINT SUMMARY (DRAFT)
+================================================================================
+Codex Anchors (DRAFT):
+- Stuart Codex 5.3 evidence/traceability discipline
+- Stuart Codex schema-validation-before-artifact rule
+- Stuart Codex adapter isolation with gateway contract
+- Guild Orders REV5 quality/verification rails
+
+Codex Constraint Summary (DRAFT):
+- Text fields in artifacts must be human-readable strings, not serialized JSON blobs.
+- Raw LLM output must be retained for debugging receipts.
+- Sanitization occurs after gateway response and before writing validated artifacts.
+- Invalid/empty post-sanitize text in required contexts should fail loudly with receipts.
+
+
+================================================================================
+QUEST CREATION VISION ALIGNMENT (REQUIRED)
+================================================================================
+Change Class: (TRIVIAL / FEATURE / STRUCTURAL)
+FEATURE
+
+Vision Delta: (ALIGNED / VARIATION / SHIFT)
+ALIGNED
+
+System Context Statement:
+This quest improves output quality and validation safety within Stuart formalization stages. It does not introduce new doors or retrieval/chat memory behavior.
+
+If Vision Delta = VARIATION:
+# REQUIRED only if Vision Delta = VARIATION.
+# - Codex intent class it maps to: <e.g., Door: chat interface>
+# - Codification path: <SIDE-QUEST id or "TBD — requires Hands approval">
+# NOTE: Variations may be allowed to execute if anchored + oriented, but MUST spawn a Side-Quest to codify.
+
+If Vision Delta = SHIFT:
+# REQUIRED only if Vision Delta = SHIFT.
+# Write: BLOCKED — CONTROL_SYNC_REQUIRED
+# Briefly state what would need to change in Codex for this to become valid.
+
+Anti-Duplication Plan:
+- rg -n "minutes_llm_raw|journal_llm_raw|notes\\[\\]|narrative|text.*json|sanitize" /home/notsolikely/Ashby_Engine/ashby/modules/meetings/formalize /home/notsolikely/Ashby_Engine/tests -S
+- rg -n "retention_prompts|get_retention_prompt|gateway" /home/notsolikely/Ashby_Engine/ashby/interfaces/llm_gateway /home/notsolikely/Ashby_Engine/ashby/modules/meetings/formalize -S
+
+Placement Intent:
+- Layer: Stuart formalization module + gateway prompt policy + tests
+- Targets: /home/notsolikely/Ashby_Engine/ashby/modules/meetings/formalize/** and relevant Stuart tests
+
+
+================================================================================
+ATOMICITY CHECK (REQUIRED)
+================================================================================
+Atomicity Statement:
+Atomic: YES — one independently verifiable commitment: sanitize JSON-as-string artifacts and tighten prompt constraints so minutes/journal outputs remain readable and schema-valid.
+
+================================================================================
+RISK + CONSENT GATE (CONDITIONAL)
+================================================================================
+Risk: (R0 / R1 / R2)
+R1
+
+R2 Confirmation Artifact (REQUIRED if Risk = R2):
+# REQUIRED ONLY IF Risk = R2.
+# confirmations/CONFIRM_R2__<quest_id>__YYYY-MM-DD__<slug>.txt
+# The file must exist and contain:
+# CONFIRM: YES
+
+================================================================================
+STATE (BY LOCATION; CANON)
+================================================================================
+Canonical Quest Board locations:
+- BOARD:     Ashby_Data/Quest Board/
+- ACCEPTED:  Ashby_Data/Quest Board/Accepted/
+- COMPLETED: Ashby_Data/Quest Board/Completed/
+- ABANDONED: Ashby_Data/Quest Board/Abandoned/
+
+================================================================================
+DESCRIPTION (REQUIRED)
+================================================================================
+Prevent garbage minutes/journal rendering by rejecting or sanitizing gateway outputs where supposed plain-text fields contain serialized JSON content.
+
+================================================================================
+SCOPE / OBJECTIVE (REQUIRED)
+================================================================================
+- Tighten gateway prompt instructions so schema text fields must be plain human-readable text, never serialized JSON blobs.
+- Add sanitizer in Stuart post-gateway path, pre-write:
+  - detect JSON-looking string values in text fields (starts with "{" or "[" and parseable)
+  - extract/replace with readable plain text
+  - if sanitize result is invalid/empty in required contexts, fail as invalid output (with failure receipt)
+- Preserve raw gateway payload files:
+  - minutes_llm_raw.txt and journal_llm_raw.txt remain unmodified debugging receipts.
+- Add regression test:
+  - mocked gateway returns notes[].text with JSON-as-string
+  - saved minutes.json contains clean readable text
+  - schema validation passes.
+
+================================================================================
+OUT OF SCOPE (REQUIRED)
+================================================================================
+- No cross-session memory/chat expansion.
+- No redesign of markdown/pdf renderer architecture.
+- No provider replacement work beyond existing gateway contract.
+
+================================================================================
+DEPENDENCIES (REQUIRED: LIST OR EXPLICIT NONE)
+================================================================================
+- SIDE-QUEST_090 complete or equivalent gateway-only Stuart baseline enforced
+- Gateway seam and Stuart formalize tests operational
+
+================================================================================
+DOORS + TESTING LEVEL (CONDITIONAL: CODE/SOFTWARE)
+================================================================================
+Door Impact:
+MULTIPLE
+
+Testing Level (TL):
+TL4
+
+================================================================================
+VERIFICATION PLAN (REQUIRED BEFORE EXECUTION)
+================================================================================
+Verification Commands (copy/paste safe):
+- /home/notsolikely/Ashby_Data/tools/quest_run.sh cmd SIDE-QUEST_091 "cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_formalize_minutes_json_profile_gated.py tests/test_meetings_formalize_journal_json_profile_gated.py"
+- /home/notsolikely/Ashby_Data/tools/quest_run.sh cmd SIDE-QUEST_091 "cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_llm_gateway_evidence_map_persisted.py tests/test_llm_usage_receipt_no_leak.py <new_sanitizer_test>"
+- /home/notsolikely/Ashby_Data/tools/quest_run.sh cmd SIDE-QUEST_091 "<gateway+stuart real-formalize proof command set>"
+
+PASS/FAIL/BLOCKED Criteria:
+- PASS: sanitizer test passes; profile-gated tests pass; runtime proof shows clean minutes/journal (no JSON-as-string), llm_usage.json present, and readable MD/PDF.
+- FAIL: escaped JSON blobs remain in text fields or validation/rendering regresses.
+- BLOCKED: missing GEMINI_API_KEY, gateway unavailable, dependency/test environment missing, or runtime proof cannot be produced truthfully.
+
+Expected Artifacts / Outputs:
+- Sanitizer code + prompt adjustments + test updates
+- Runtime proof receipts and artifact checks in audit bundle
+
+Receipts:
+- Wrapper output in 06_TESTS.txt and changed-files receipt in 06_CHANGED_FILES.txt
+
+================================================================================
+EXECUTION NOTES (OPTIONAL)
+================================================================================
+- Non-negotiable process from Hands:
+  - all commands via /home/notsolikely/Ashby_Data/tools/quest_run.sh
+  - no heredocs inside wrapper commands
+  - do not move to Completed without finalize PASS
+  - if blocked, record BLOCKED with receipts and stop
+
+================================================================================
+TALENT POINTS (REQUIRED: YES/NO)
+================================================================================
+Talent Point Awarded: (YES / NO)
+NO
+
+If YES:
+# State the capability unlocked/expanded so it can be logged in the Talent Tree.
+
+================================================================================
+EXECUTION AUDIT BUNDLE (REQUIRED ONCE ACCEPTED)
+================================================================================
+Execution Audits are mandatory when executing a Quest.
+See: Processes/SYNAPSE_GUILD__EXECUTION_AUDITS.txt
+
+Validation gate:
+- A Quest may NOT be accepted unless it passes quest validation.
+See: Quest Board/SYNAPSE_GUILD__QUEST_VALIDATION_RULES.txt
+
+Audit Bundle Folder Path (required once ACCEPTED):
+# REQUIRED ONCE ACCEPTED.
+# Ashby_Data/Audits/Execution/QUEST_###__YYYY-MM-DD__<short_slug>/
+
+Required files inside the bundle (canonical minimum):
+# 00_SUMMARY.md
+# 01_PREQUEST.md
+# 02_EXECUTION.md
+# 03_VERIFY.md
+# 04_OUTCOME.md
+
+MULTI-DAY / RETRY RULE:
+# If this Quest spans multiple Dailies (or requires retries), the audit bundle path above remains canonical.
+# Do NOT create a second audit bundle. Append new timestamped attempt entries inside the existing phase files.

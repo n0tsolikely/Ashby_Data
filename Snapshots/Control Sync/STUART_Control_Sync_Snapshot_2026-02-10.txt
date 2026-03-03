@@ -1,0 +1,133 @@
+ASHBY — CONTROL SYNC SNAPSHOT
+Version: 1.0 (template-based, expanded)
+Local Date: 2026-02-10 (America/Toronto)
+Subject: Ashby (platform) — Module Focus: Stuart
+
+────────────────────────────────────────────────────────
+CONTROL SYNC SNAPSHOT — 2026-02-10
+────────────────────────────────────────────────────────
+
+CANONICAL STATE (THIS SESSION)
+- Governance (canonical): /mnt/data/Synapse_OS_Governance
+- Subject canonical baseline chosen: Ashby_CANON_2026-02-09_v25.zip
+- Canonical working trees (post-baseline switch):
+  - Data:   /mnt/data/Ashby_Data
+  - Engine: /mnt/data/Ashby_Engine
+- Inert exports retained (NOT canon, DO NOT reason from):
+  - /mnt/data/Ashby_CANON_2026-02-09_v31.zip
+  - /mnt/data/Ashby_CANON_2026-02-09_v31_UPDATED_2026-02-10.zip
+  - /mnt/data/Ashby_CANON_PAIR__v31Data__AshbyEngineZip__2026-02-11.zip
+  - /mnt/data/Ashby_Engine.zip
+  - /mnt/data/Ashby_CANON_2026-02-08_v16.zip
+
+RAID STATE
+- Active Raid(s): NONE (execution not started yet)
+- Paused / Blocked Raid(s): NONE
+- Halted Raid(s): N/A
+
+PURPOSE OF THIS CONTROL SYNC
+This Control Sync was explicitly used to:
+1) Reconstruct reality after a prior execution session failed/glitched mid-run (no proper EOD snapshot).
+2) Determine which canon snapshot is internally consistent (Data ↔ Engine) and usable as a baseline.
+3) Decide scope for tonight’s work, including how we proceed to complete Stuart v1.
+4) Lock decisions and stage acceptance of the next quest set without taking any execution credit.
+
+INCIDENT / “Fiasco” SUMMARY (WHAT WENT WRONG)
+- A prior attempt to execute Dungeon 6 (Stuart v1 finish line) was interrupted by a chat/runtime glitch.
+- Because execution was interrupted:
+  - No proper End-of-Day Snapshot was produced.
+  - Continuity Lock / Bootstrap were not updated to reflect reality.
+  - The extracted Engine state became internally inconsistent relative to the quest/audit claims.
+- Observed failure mode in the broken v31-derived state:
+  - Many “updated” files existed, but several “newly created modules” were missing from the extracted Engine.
+  - Imports referenced missing modules, causing import-time failures.
+  - This indicated packaging / sync integrity failure (partial landing of changes), not conceptual architecture failure.
+
+DISCUSSION / INVESTIGATION PERFORMED DURING THIS SYNC
+- We agreed on the proper forensic approach:
+  1) Reconstruct reality from Quest Board + Engine state (artifact truth).
+  2) Identify where execution actually stopped.
+  3) Classify quests as completed vs partial vs needs redo based on artifacts.
+  4) Only then regenerate a truthful Continuity Lock.
+- We explicitly chose NOT to rush a Continuity Lock update until after the system baseline is clean and an EOD Snapshot exists.
+
+ALIGNMENT AUDIT STRATEGY LOCKED
+- For each candidate canon zip, we run an “alignment audit”:
+  - Confirm Ashby_Engine contains ashby/ repo (not just env/archive).
+  - Set PYTHONPATH to repo root.
+  - Import smoke (import ashby).
+  - Pytest collect-only (catch import explosions).
+  - Spot-check known drift culprits (run_request, retention_registry, export, minutes_md, truth gate, etc.).
+- Goal: find the most recent “clean baseline” rather than resurrecting a corrupted state.
+
+RESULTS OF BASELINE SEARCH
+- We confirmed v16 is clean.
+- We attempted to pair an Engine-only zip with newer Data; this produced a Frankenstein mismatch (modules present but integration spine inconsistent).
+- We then searched backward from v31 and found a clean, internally consistent baseline:
+  ✅ Ashby_CANON_2026-02-09_v25.zip
+- v25 properties:
+  - Data ↔ Engine aligned.
+  - No “missing new module” failure mode.
+  - Test collection clean.
+  - Quest Board shows completion through QUEST_067.
+  - Dungeon 6 quests exist on board as BOARD status (not executed yet in this baseline).
+
+DECISIONS LOCKED (THIS CONTROL SYNC)
+1) Canon Baseline Decision (binding):
+   - We adopt Ashby_CANON_2026-02-09_v25.zip as the canonical baseline for continuing Stuart v1 work.
+   - All other extracted states are treated as superseded and must not influence execution decisions.
+
+2) Execution Plan Decision (binding):
+   - We will complete Dungeon 6 in TWO phases:
+     - Phase 1: QUEST_068 → QUEST_070
+     - Phase 2: QUEST_071 → QUEST_075
+   - Continuity Lock regeneration is deferred until after a successful EOD Snapshot following execution.
+
+3) Governance / Truth Discipline Decision (binding):
+   - No action claims without receipts.
+   - Quest Board is treated as the primary “work state machine” going forward.
+   - Continuity Lock is treated as a snapshot artifact that must be regenerated only from verified artifacts.
+
+NEW CONSTRAINTS / RULES ADDED TODAY
+- “Knowledge Cut” rule for this session:
+  - Only /mnt/data/Ashby_Data and /mnt/data/Ashby_Engine (v25 baseline) are valid for reasoning and execution.
+  - Do not import assumptions from v31/v16/engine-only zips.
+  - Any older zips are inert references only; no mixing of states.
+
+DECIDED SCOPE (TONIGHT)
+- Immediate scope after this Control Sync closes:
+  - Execute Phase 1 of Dungeon 6:
+    - QUEST_068
+    - QUEST_069
+    - QUEST_070
+  - Produce auditable receipts (diffs + tests).
+  - Produce End-of-Day Snapshot.
+  - Only after EOD: regenerate Continuity Lock.
+- Later tonight:
+  - Open a second Control Sync for Phase 2 planning/execution.
+
+QUEST STATE CHANGES PERFORMED DURING THIS CONTROL SYNC
+(Administrative only; no implementation credit.)
+- Accepted (Phase 1):
+  - QUEST_068 — Status set to ACTIVE; Accepted On: 2026-02-10; Accepted By: Hands (Peter)
+  - QUEST_069 — Status set to ACTIVE; Accepted On: 2026-02-10; Accepted By: Hands (Peter)
+  - QUEST_070 — Status set to ACTIVE; Accepted On: 2026-02-10; Accepted By: Hands (Peter)
+- Still on board (Phase 2):
+  - QUEST_071–QUEST_075 remain Status: BOARD
+- Audit bundle dirs created on acceptance:
+  - /mnt/data/Ashby_Data/Audits/Execution/QUEST_068__2026-02-10__stuart_v1_d6_1of5_speaker_map_overlay_api_and_manifest_integration
+  - /mnt/data/Ashby_Data/Audits/Execution/QUEST_069__2026-02-10__stuart_v1_d6_2of5_webapp_speaker_mapping_ui_and_rerender
+  - /mnt/data/Ashby_Data/Audits/Execution/QUEST_070__2026-02-10__stuart_v1_d6_3of5_formalizeonly_run_reuse_transcript_json
+
+OPEN QUESTIONS / RISKS
+- Ensure v25 baseline includes the exact Stuart Runtime expectations for D6; if not, handle via bounded patches during execution.
+- Ensure pytest suite expectations remain consistent; missing tests are acceptable, but import/runtime breaks are not.
+
+NEXT CONTROL SYNC FOCUS
+- Control Sync #2 (later tonight):
+  - Review Phase 1 results + receipts.
+  - Decide Phase 2 execution path and any side-quest needs.
+
+────────────────────────────────────────────────────────
+END OF CONTROL SYNC SNAPSHOT
+────────────────────────────────────────────────────────

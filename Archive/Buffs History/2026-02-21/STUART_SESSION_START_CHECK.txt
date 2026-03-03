@@ -1,0 +1,257 @@
+STUART SESSION START CHECK (BUFF)
+Version: 2026-02-18
+Status: Canonical (60-second Buff-Up / Ignition Key for the Stuart Subject)
+Purpose: Deterministic, auditable session start. Always Buff before a Raid.
+Governance Note:
+- This is a BUFF, not a Lock. If it conflicts with Codex/Locks/Governance → STOP.
+
+================================================================================
+REQUIRED VERIFY FIELDS (GOVERNANCE LAW)
+================================================================================
+VERIFY_SMOKE_CMD:
+  cd "$ENGINE_ROOT" && PYTHONPATH="$ENGINE_ROOT" python3 scripts/stuart_preflight.py --strict &&
+  PYTHONPATH="$ENGINE_ROOT" pytest -q tests/test_module_registry_smoke.py tests/test_profile_gate_smoke.py tests/test_results_smoke.py tests/test_truth_gate_spine_smoke.py
+
+VERIFY_FULL_CMD:
+  cd "$ENGINE_ROOT" && PYTHONPATH="$ENGINE_ROOT" pytest -q
+
+VERIFY_E2E_CMD:
+  cd "$ENGINE_ROOT" && PYTHONPATH="$ENGINE_ROOT" pytest -q tests/test_meetings_e2e_golden_harness.py
+
+NETWORK_POLICY:
+  NO_EGRESS (default) unless Hands explicitly authorizes HYBRID/CLOUD egress.
+
+EXECUTION_SURFACE:
+  LOCAL_RUNTIME (engine executes locally; artifacts written to STUART_ROOT outside repo).
+
+================================================================================
+0) RULES (NON-NEGOTIABLE)
+================================================================================
+- Do not start a Raid until this check is complete.
+- Produce terminal evidence for each step (command + output).
+- If any step fails or is ambiguous, STOP and ask Hands.
+- Governance is reviewed first (per Synapse law + Hands rule).
+- Buff Up means reading all three canonical Buffs in full (no skimming).
+
+================================================================================
+1) BUFF-UP ORDER (HIGH LEVEL)
+================================================================================
+1) Identify/confirm canonical roots (CANON_ROOT/DATA_ROOT/ENGINE_ROOT/GOVERNANCE_ROOT/STUART_ROOT)
+2) Review Synapse Governance (governance law)
+3) Read the canonical Buff set (3 files) in full
+4) Confirm canonical folders are present (DATA_ROOT + ENGINE_ROOT)
+5) Confirm session resume artifacts (Rehydration Pack) IF present
+6) Confirm Active Guild Orders (raid scope)
+7) Confirm Quest Board state (truth)
+8) Confirm latest snapshots (resume target)
+9) Run preflight + smoke tests
+10) Only then accept/execute quests
+
+================================================================================
+2) CANON ROOT DISCOVERY (DO THIS FIRST)
+================================================================================
+2.1 Set CANON_ROOT (the folder that contains Ashby_Data/ and Ashby_Engine/)
+
+Examples:
+- If you extracted “Ashby_CANON(4).zip” into /mnt/data/Ashby_CANON(4):
+  export CANON_ROOT="/mnt/data/Ashby_CANON(4)"
+- If you extracted elsewhere:
+  export CANON_ROOT="/your/path/Ashby_CANON(4)"
+
+2.2 Derived roots (do not guess)
+export DATA_ROOT="$CANON_ROOT/Ashby_Data"
+export ENGINE_ROOT="$CANON_ROOT/Ashby_Engine"
+
+2.3 Governance root (environment-specific; must be located)
+Set this to wherever the Synapse OS Governance pack is extracted:
+export GOVERNANCE_ROOT="/mnt/data/Synapse_OS_Governance"
+# If governance is stored under a different folder name, point there instead.
+
+2.4 Stuart runtime root (artifact output surface)
+Default behavior if unset:
+- STUART_ROOT defaults to: ~/ashby_runtime/stuart (engine side)
+Recommended explicit set (so sessions are deterministic):
+export STUART_ROOT="$HOME/ashby_runtime/stuart"
+
+================================================================================
+3) TERMINAL COMMAND BLOCKS (COPY/PASTE SAFE)
+================================================================================
+NOTE: Run these exactly and keep outputs as receipts.
+
+3.1 Confirm working directory + inventory
+pwd
+ls -la "$(dirname "$CANON_ROOT")" || true
+ls -la "$CANON_ROOT"
+
+3.2 Confirm canonical Data + Engine roots exist
+ls -la "$DATA_ROOT"
+ls -la "$ENGINE_ROOT"
+
+3.3 Review Synapse Governance (Tier 0)
+ls -la "$GOVERNANCE_ROOT" || true
+# Find the Buff law file (must exist):
+find "$GOVERNANCE_ROOT" -type f -iname "*BUFFS*" -maxdepth 5 -print | sort | head -n 50
+
+3.4 Read canonical Buffs (Tier 0) — NO SKIMMING
+ls -la "$DATA_ROOT/Buffs"
+sed -n '1,120p' "$DATA_ROOT/Buffs/STUART_EXECUTION_PROTOCOL.txt"
+sed -n '1,120p' "$DATA_ROOT/Buffs/STUART_DATA_DIRECTORY_MAP.txt"
+sed -n '1,120p' "$DATA_ROOT/Buffs/STUART_SESSION_START_CHECK.txt"
+# Then continue reading each file end-to-end before executing any raid work.
+
+3.5 Confirm Rehydration Pack (resume law) IF present
+ls -la "$DATA_ROOT/Latest Rehydration Pack" || true
+ls -la "$DATA_ROOT/Latest Rehydration Pack/execution pack" || true
+
+# Locate newest continuity/bootstrap by filename (names may vary):
+ls -1 "$DATA_ROOT/Latest Rehydration Pack" | grep -i "CONTINUITY_LOCK" | sort | tail -n 1 || true
+ls -1 "$DATA_ROOT/Latest Rehydration Pack" | grep -i "BOOTSTRAP_PROMPT" | sort | tail -n 1 || true
+
+# Read them (replace filenames with exact names on disk):
+# cat "$DATA_ROOT/Latest Rehydration Pack/CONTINUITY_LOCK_YYYY-MM-DD.txt"
+# cat "$DATA_ROOT/Latest Rehydration Pack/BOOTSTRAP_PROMPT_YYYY-MM-DD.txt"
+
+3.6 Confirm Guild Orders state
+echo "=== ACTIVE GUILD ORDERS ==="
+ls -la "$DATA_ROOT/Guild Orders/ACTIVE" || true
+echo "=== PAUSED GUILD ORDERS ==="
+ls -la "$DATA_ROOT/Guild Orders/PAUSED" || true
+
+3.7 Confirm Quest Board state (truth)
+echo "=== ACCEPTED ==="
+ls -la "$DATA_ROOT/Quest Board/Accepted" || true
+echo "=== COMPLETED (latest 20) ==="
+ls -la "$DATA_ROOT/Quest Board/Completed" | tail -n 20 || true
+echo "=== BOARD ROOT (inventory) ==="
+ls -la "$DATA_ROOT/Quest Board" | head -n 200
+
+3.8 Confirm latest snapshots (resume target)
+echo "=== CONTROL SYNC (latest 20) ==="
+ls -la "$DATA_ROOT/Snapshots/Control Sync" | tail -n 20 || true
+echo "=== END OF DAY (latest 20) ==="
+ls -la "$DATA_ROOT/Snapshots/End of Day" | tail -n 20 || true
+
+3.9 Preflight + smoke tests (minimum door check)
+cd "$ENGINE_ROOT"
+PYTHONPATH="$ENGINE_ROOT" python3 scripts/stuart_preflight.py --strict
+PYTHONPATH="$ENGINE_ROOT" pytest -q tests/test_module_registry_smoke.py tests/test_profile_gate_smoke.py tests/test_results_smoke.py tests/test_truth_gate_spine_smoke.py
+
+3.10 Optional: Start the current web door (python UI)
+# Default port 8844; override with STUART_WEB_PORT.
+export STUART_WEB_PORT="8844"
+PYTHONPATH="$ENGINE_ROOT" python3 scripts/stuart_web.py
+# Then open:
+#   http://127.0.0.1:8844/
+
+================================================================================
+4) STUART v2 RAID PRE-FLIGHT (UI PORT + API SURFACE)
+================================================================================
+This section is “tomorrow-proofing.” It does not execute anything by itself.
+
+4.1 Confirm UI source bundle is present (Base44 UI zip)
+ls -la "$DATA_ROOT/Stuart/Docs/stuart_app.zip"
+ls -la "$DATA_ROOT/Stuart/Docs/STUART_Base44_UI_Code_Audit__2026-02-16.txt"
+ls -la "$DATA_ROOT/Stuart/Docs/STUART_Base44_UI_Surgery_Checklist__2026-02-16.txt"
+
+4.2 Confirm the Stuart v2 Guild Orders are present (ACTIVE in current state)
+ls -la "$DATA_ROOT/Guild Orders/ACTIVE" | grep -i "TRANSCENDENCE" || true
+# File of interest:
+#   GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt
+
+4.3 Confirm current board truth for next phase intake
+# Accepted is expected to be empty before new scope acceptance:
+ls -la "$DATA_ROOT/Quest Board/Accepted" || true
+# Dungeon 3 intake set currently on board root:
+ls -la "$DATA_ROOT/Quest Board" | grep -E "QUEST_10[2-9]|QUEST_11[0-3]" || true
+# Dungeon 2 completion receipt in Completed:
+ls -la "$DATA_ROOT/Quest Board/Completed" | grep -E "QUEST_09[0-9]|QUEST_10[0-1]" || true
+
+4.4 Node/tooling readiness (needed for Vite+React app)
+node -v || true
+npm -v || true
+pnpm -v || true
+
+================================================================================
+5) STOP CONDITIONS
+================================================================================
+Stop immediately and ask Hands if:
+- Any canonical root is missing or ambiguous
+- Governance pack cannot be found AND this session expects governance review
+- Rehydration Pack is expected but missing
+- Active Guild Orders not found (and no explicit instruction to activate a paused raid)
+- Tests/preflight cannot run
+- Quest definitions are ambiguous
+- Any “maybe/probably/I think” enters decision-making
+
+================================================================================
+6) PROTOCOL MODE (VOICE TRIGGER) + CANONICAL ROOT LOCK
+================================================================================
+Trigger phrase:
+- "enter protocol mode"
+
+Definition:
+When Hands says "enter protocol mode", Brains behaves as if the following artifacts
+were freshly dropped and extracted as canonical inputs:
+1) Governance Canon (GOVERNANCE_ROOT)
+2) Data Canon (DATA_ROOT)
+3) Engine Canon (ENGINE_ROOT)
+
+Required actions (ORDERED):
+1) Review governance (BUFFS law, Control Sync law, Dailies, Quest law, Snapshots).
+2) Lock posture to governed mode (no silent execution).
+3) Review DATA_ROOT:
+   - Buffs
+   - Latest Control Sync snapshot
+   - Latest End-of-Day snapshot
+   - Quest Board (Accepted / Completed / Board)
+4) Review ENGINE_ROOT high-level (structure + recent diffs).
+5) Report readiness and explicitly state:
+   - Current execution state
+   - Active/Accepted quests
+   - Suggested next quest(s) OR need for Control Sync
+
+Control Sync behavior:
+- Entering protocol mode automatically OPENS a Control Sync.
+- Control Sync is discussion/decision-only (no execution).
+- Control Sync remains open until Hands explicitly closes it.
+
+Snapshot requirements:
+- On Control Sync close, generate a Control Sync Snapshot saved to:
+  DATA_ROOT/Snapshots/Control Sync/
+- Snapshot must capture decisions, deferred work, future Guild Orders, and resume anchors.
+- Execution performed outside the sync must NOT be logged retroactively.
+
+End-of-Day snapshot batching rule:
+- If exactly ONE accepted quest is executed → generate ONE EOD snapshot after completion.
+- If multiple accepted quests are executed in one run → generate ONE consolidated EOD after all complete.
+
+================================================================================
+7) DATA ROOT INVARIANT (SNAPSHOT PLACEMENT)
+================================================================================
+Canonical Data Root is:
+- DATA_ROOT (NOT nested)
+
+Rule:
+- NEVER create or write snapshots under nested paths such as:
+  DATA_ROOT/Ashby_Data/...
+
+If nested duplicates are discovered:
+1) Move valid contents into canonical DATA_ROOT tree
+2) Remove redundant nested directories when safe
+3) Record correction in the next snapshot
+
+================================================================================
+8) SELF-AUDIT (THIS DOCUMENT)
+================================================================================
+Checklist:
+[ ] VERIFY_* fields present (smoke/full/e2e + network policy + execution surface)
+[ ] Canon roots discovery is explicit
+[ ] Governance review is first
+[ ] Buffs read in full before raid execution
+[ ] Rehydration Pack check present (explicit)
+[ ] Guild Orders / Quest Board / Snapshots checks present
+[ ] Preflight + smoke tests included
+[ ] Stop conditions defined
+[ ] Protocol Mode + root lock defined
+
+END OF FILE.

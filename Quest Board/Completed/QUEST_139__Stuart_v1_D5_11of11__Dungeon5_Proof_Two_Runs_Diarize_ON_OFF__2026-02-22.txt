@@ -1,0 +1,132 @@
+================================================================================
+IDENTITY (REQUIRED)
+================================================================================
+Quest ID:
+QUEST_139
+
+Title:
+Stuart v1 — Dungeon 5 (11/11): Proof quest — two real transcribe runs (diarization ON/OFF) + audit receipts
+
+Subject:
+Ashby / Stuart
+
+Origin:
+Guild Orders Rev4 — Dungeon 5 Proof requirement.
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- Guild Orders Rev4 — Dungeon 5 (Proof section)
+- Stuart Codex: Ashby_Data/Codex/Stuart/Stuart_Codex_Full.txt (§7.3, §7.4, §7A)
+
+================================================================================
+CODEX ANCHORS + CONSTRAINT SUMMARY (DRAFT)
+================================================================================
+Codex Anchors (DRAFT):
+- Guild Orders Rev4 — Dungeon 5 Proof requirement
+- Stuart_Codex_Full.txt §7A (Transcript versions ON/OFF)
+
+Codex Constraint Summary:
+- Proof must demonstrate:
+  - diarization_enabled=true => speaker labels
+  - diarization_enabled=false => no speaker labels
+  - transcript versions exist and are selectable
+
+================================================================================
+QUEST BOARD FOLDER STATE
+================================================================================
+Quest Board Folder State: BOARD
+
+================================================================================
+DESCRIPTION
+================================================================================
+This is the Dungeon 5 closure proof quest.
+
+After implementing QUEST_129–138, produce evidence that the system works end-to-end on real audio.
+
+================================================================================
+SCOPE / OBJECTIVE
+================================================================================
+In the execution audit bundle for this quest:
+
+- Run A (FAST): diarization_enabled=false
+  - transcribe-only via UI or /api/transcribe
+  - confirm:
+    - transcript_version created
+    - transcript_version.diarization_enabled == false
+    - NO segment contains "speaker"
+
+- Run B (SLOW): diarization_enabled=true
+  - transcribe-only via UI or /api/transcribe
+  - confirm:
+    - transcript_version created
+    - transcript_version.diarization_enabled == true
+    - segments contain speaker labels (SPEAKER_00/01/...)
+
+Additional proof:
+- Switching active transcript version changes the visible transcript in the UI.
+- Formalization run consumes the selected transcript_version_id (no forced re-transcribe).
+
+================================================================================
+OUT OF SCOPE
+================================================================================
+None.
+
+================================================================================
+DEPENDENCIES
+================================================================================
+QUEST_129–138
+
+================================================================================
+RISK
+================================================================================
+Risk: R0
+
+================================================================================
+DOOR IMPACT
+================================================================================
+Door Impact:
+- WEB
+
+================================================================================
+TESTING LEVEL
+================================================================================
+Testing Level: TL3
+
+================================================================================
+VERIFICATION PLAN (DRAFT)
+================================================================================
+- Capture raw API responses and artifact payload excerpts in 03_VERIFY.md.
+- Include run IDs + transcript_version_ids.
+
+================================================================================
+CHANGE CLASS + VISION DELTA
+================================================================================
+Change Class: TRIVIAL
+Vision Delta: ALIGNED
+
+================================================================================
+SYSTEM CONTEXT STATEMENT
+================================================================================
+This quest is the proof capstone that demonstrates Dungeon 5 requirements are satisfied with real audio and deterministic artifacts.
+
+================================================================================
+ANTI-DUPLICATION PLAN
+================================================================================
+None (proof-only).
+
+================================================================================
+PLACEMENT INTENT
+================================================================================
+- Audits only.
+
+================================================================================
+TALENT POINT
+================================================================================
+Talent Point Awarded: NO
+
+================================================================================
+EXECUTION AUDIT BUNDLE
+================================================================================
+Audit Bundle Folder Path: (set when moving to ACCEPTED)

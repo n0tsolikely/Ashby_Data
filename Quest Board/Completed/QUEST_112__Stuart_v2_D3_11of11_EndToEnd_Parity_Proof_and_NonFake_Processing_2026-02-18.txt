@@ -1,0 +1,112 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+================================================
+
+QUEST ID:
+QUEST_112
+
+Created By:
+Codex (Brains)
+
+Title:
+Stuart v2 — D3 (11/11) — End-to-End UI Parity Proof + Non-Fake Processing Verification
+
+Subject:
+Stuart
+
+Context: (Ashby / Stuart / System / Other)
+Ashby / Stuart
+
+Origin:
+Guild Orders ACTIVE REV4 -> Dungeon 3 deliverables/proof section.
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- Dungeon 3 deliverables and proof requirements
+- Prior Dungeon 3 quests (102-111)
+
+Status: BOARD | ACTIVE | COMPLETED | ABANDONED
+COMPLETED
+
+Audit Bundle Folder Path:
+Ashby_Data/Audits/Execution/QUEST_112__2026-02-18__stuart_v2_d3_e2e_parity_proof
+
+Accepted On:
+2026-02-18
+
+Accepted By:
+Hands (Peter) via Codex (Brains)
+
+Completed On:
+2026-02-18
+
+Completed By:
+Codex (Brains)
+
+Change Class: (TRIVIAL / FEATURE / STRUCTURAL)
+FEATURE
+
+Vision Delta: (ALIGNED / VARIATION / SHIFT)
+ALIGNED
+
+System Context Statement:
+Dungeon 3 is not complete until end-to-end parity is demonstrated with real endpoints and artifact outputs.
+
+Anti-Duplication Plan:
+Reuse existing smoke/proof scripts and extend with UI parity checks.
+
+Placement Intent:
+Audit bundle receipts, optional scripts/docs, and deterministic operator runbook.
+
+Codex Anchors (DRAFT):
+- Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_1.4_Trust_Auditability_Anti_Hallucination_Rules.txt
+- Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_10.1_V1_Minimum_Shippable_Product_Definition.txt
+- Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_6.2_Canonical_Artifacts_JSON_Markdown_PDF.txt
+
+Codex Constraint Summary:
+- No fake processing evidence allowed.
+- Proof must include executable receipts and produced artifacts.
+- UI parity claims must map to objective checks.
+
+Door Impact:
+Stuart web door + web API door
+
+Testing Level (TL):
+TL3
+
+Talent Point Awarded: (YES / NO)
+YES
+
+DESCRIPTION
+Produce final Dungeon 3 proof pack demonstrating UI parity and real pipeline-backed behavior (no simulated outputs).
+
+SCOPE / OBJECTIVE
+- Verify header/session/chat/outputs parity checklist.
+- Verify real transcript/formalization/export flow in UI.
+- Capture terminal/API receipts and artifact paths.
+
+OUT OF SCOPE
+- Dungeon 4+ backend deep work not needed for proof baseline.
+- Production video polishing.
+
+DEPENDENCIES
+- QUEST_102
+- QUEST_103
+- QUEST_104
+- QUEST_105
+- QUEST_106
+- QUEST_107
+- QUEST_108
+- QUEST_109
+- QUEST_110
+- QUEST_111
+
+EXECUTION NOTES
+If any dependency is blocked, this quest remains BOARD/blocked and records gap disclosure.
+
+COMPLETION CRITERIA (REQUIRED)
+- [ ] E2E user flow works: session -> upload -> transcribe -> formalize -> outputs -> export.
+- [ ] Required Dungeon 3 controls present and wired.
+- [ ] Receipts include command logs + endpoint outputs + exported zip artifact path.
+- [ ] No fake processing behavior observed.

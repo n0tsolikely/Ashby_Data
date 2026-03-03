@@ -1,0 +1,116 @@
+================================================================================
+IDENTITY (REQUIRED)
+================================================================================
+Quest ID:
+QUEST_137
+
+Title:
+Stuart v1 — Dungeon 5 (9/11): Transcribe-only runs ingest into FTS (search works immediately)
+
+Subject:
+Ashby / Stuart
+
+Origin:
+Control Sync 2026-02-22: After transcribe, search should work without needing a formalization run.
+
+Priority: (P0 / P1 / P2)
+P1
+
+Links:
+- Engine: Ashby_Engine/ashby/modules/meetings/index.py (ingest_run)
+- Engine: Ashby_Engine/ashby/modules/meetings/pipeline/job_runner.py
+- Stuart Codex: Ashby_Data/Codex/Stuart/Stuart_Codex_Full.txt (search/query flows)
+
+================================================================================
+CODEX ANCHORS + CONSTRAINT SUMMARY (DRAFT)
+================================================================================
+Codex Anchors (DRAFT):
+- Stuart_Codex_Full.txt §7.4 (Transcript is the substrate for querying)
+
+Codex Constraint Summary:
+- Search should index transcript artifacts; it should not require formalization.
+
+================================================================================
+QUEST BOARD FOLDER STATE
+================================================================================
+Quest Board Folder State: BOARD
+
+================================================================================
+DESCRIPTION
+================================================================================
+job_runner currently ingests into SQLite FTS during the formalize path.
+
+Transcribe-only should also ingest so the transcript becomes searchable immediately.
+
+================================================================================
+SCOPE / OBJECTIVE
+================================================================================
+- Ensure transcribe-only handler calls ingest_run(run_id) after transcripts exist.
+- Write an ingest receipt artifact (write-once) just like the formalize flow.
+- Confirm that /api/search and session search features return results after transcribe-only.
+
+================================================================================
+OUT OF SCOPE
+================================================================================
+- Global search features
+
+================================================================================
+DEPENDENCIES
+================================================================================
+QUEST_129 (transcribe-only handler)
+
+================================================================================
+RISK
+================================================================================
+Risk: R0
+
+================================================================================
+DOOR IMPACT
+================================================================================
+Door Impact:
+- WEB
+
+================================================================================
+TESTING LEVEL
+================================================================================
+Testing Level: TL2
+
+================================================================================
+VERIFICATION PLAN (DRAFT)
+================================================================================
+- Manual:
+  - Run transcribe-only
+  - Confirm ingest receipt exists
+  - Run search query and confirm hits.
+
+================================================================================
+CHANGE CLASS + VISION DELTA
+================================================================================
+Change Class: FEATURE
+Vision Delta: ALIGNED
+
+================================================================================
+SYSTEM CONTEXT STATEMENT
+================================================================================
+Search is transcript-driven. Indexing after transcribe-only keeps the system usable without forcing a formalization run.
+
+================================================================================
+ANTI-DUPLICATION PLAN
+================================================================================
+- rg -n "fts_ingest" job_runner.py
+- Ensure we are reusing existing ingest logic, not duplicating it.
+
+================================================================================
+PLACEMENT INTENT
+================================================================================
+- job_runner.py (reuse existing fts ingest block)
+
+================================================================================
+TALENT POINT
+================================================================================
+Talent Point Awarded: NO
+
+================================================================================
+EXECUTION AUDIT BUNDLE
+================================================================================
+Audit Bundle Folder Path: (set when moving to ACCEPTED)

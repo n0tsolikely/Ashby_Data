@@ -1,0 +1,55 @@
+QUEST ID: QUEST_001
+Title: Governance Setup — Quest Board + Talent Tree (v0.1)
+Context: System
+Origin: Control Sync 2026-01-16 (Stuart v1 kickoff)
+Priority: P0
+Links:
+- Control Sync Snapshot: CONTROL_SYNC_2026-01-16__STUART_V1.txt
+- Quest Template: QUEST_TEMPLATE.txt
+- Talent Tree starter files: TALENT_TREE.txt, TALENT_LOG.txt, RESPEC_RULES.txt
+Status: COMPLETED
+Accepted On: 2026-01-18
+Completed On: 2026-01-18
+
+DESCRIPTION
+────────────────────────────────────────
+Stand up the Synapse Guild Governance layer so quests and talents become first-class, portable, and audit-friendly.
+This creates the folder structure + templates so future work is tracked consistently across chats, days, and machines.
+SCOPE / OBJECTIVE
+────────────────────────────────────────
+Governance folder exists and is usable immediately:
+- Quest Board has Board/Active/Completed/Abandoned with per-quest files.
+- Talent Tree has TALENT_TREE.txt, TALENT_LOG.txt, RESPEC_RULES.txt.
+- Quest Template V2 is the only template used going forward.
+OUT OF SCOPE
+────────────────────────────────────────
+Backfilling historical quests/talents from older work.
+Automation tooling for moving quests or auto-awarding talent points.
+DEPENDENCIES
+────────────────────────────────────────
+- None
+EXECUTION NOTES
+────────────────────────────────────────
+Rule locked: Completing a quest awards +1 Talent Point which must be spent into the Talent Tree.
+Talent Tree represents system capabilities (identity), not a to-do list.
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────
+- [x] Governance/Quest Board/Board folder created
+- [x] Governance/Quest Board/Active folder created
+- [x] Governance/Quest Board/Completed folder created
+- [x] Governance/Quest Board/Abandoned folder created
+- [x] QUEST_TEMPLATE.txt placed in Quest Board/Board (or a Templates subfolder if you prefer)
+- [x] Governance/Talent Tree folder created
+- [x] TALENT_TREE.txt placed
+- [x] TALENT_LOG.txt placed
+- [x] RESPEC_RULES.txt placed
+- [x] Team rule acknowledged: per-quest files move between folders; no mega “active quests.txt”
+TALENT POINT
+────────────────────────────────────────
+On completion:
+- Talent Point Awarded: NO
+- Talent Spent On: 
+
+
+────────────────────────────────────────
+(optional)

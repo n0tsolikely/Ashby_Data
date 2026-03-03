@@ -1,0 +1,95 @@
+STUART CODEX
+10.3 Explicit Non-Goals for V1 (Canonical)
+
+Status: Canonical (TOC-aligned v2)
+Last updated: 2026-01-12
+
+This section is the “do not accidentally build this in V1” list.
+
+It exists because you explicitly want Stuart to be buildable, not a dream that forces refactors.
+So we lock the perimeter: V1 is simple, reliable, high-trust for Meeting + Journal, and it prints.
+
+Chat-canon constraints enforced here:
+- Avoid complex UI navigation and “app store” features in V1.
+- Avoid live meeting join in V1.
+- Avoid hidden memory and background processing.
+- Avoid marketplace and background uploads.
+
+1) V1 is not a live meeting bot
+
+NG-1) No Teams/Zoom/RingCentral join in V1
+- No bot participant joining meetings.
+- No meeting platform integrations required to ship V1.
+
+NG-2) No real-time transcription guarantee in V1
+- V1 is offline processing after upload/capture-to-file.
+- Real-time is vNext.
+
+2) V1 is not a template marketplace
+
+NG-3) No marketplace / community store in V1
+- No background template uploads.
+- No public browsing of templates.
+- No “ratings” or ecosystem features.
+
+V1 can still support:
+- local template creation
+- local template import (document/image-based)
+But sharing is gated and off by default.
+
+3) V1 is not Ashby
+
+NG-4) No Ashby-like memory persona
+- Stuart does not try to remember long-term conversation context as “memory.”
+- Durability is in session artifacts and audit logs.
+
+NG-5) No “general life assistant”
+- Stuart can talk and explain how to use itself,
+- but its purpose is transcription + formalization + recall of artifacts.
+It is not a general “do everything chatbot.”
+
+4) V1 does not auto-run on upload
+
+NG-6) No automatic processing upon file drop
+- upload is only ingestion.
+- processing requires explicit Run (Submit/Confirm).
+
+NG-7) No silent retries that change privacy boundaries
+- if a run would switch from local to remote adapters, it must re-confirm.
+
+5) V1 does not promise impossible accuracy
+
+NG-8) No claim of “100% perfect transcription” across all audio
+- V1 promises “no invention” + uncertainty disclosure + evidence preservation + correction overlays.
+
+NG-9) No confident speaker identity without mapping
+- diarization labels are not names.
+- attendance/spoke claims require mapping or explicit participant metadata.
+
+6) V1 does not ship every mode
+
+NG-10) No “doctor/chef/student/apothecary mode” explosion in V1
+- V1 ships core modes only (Meeting + Journal; Incident optional).
+- Expanded modes ship later as enumerated additions.
+
+7) V1 does not require complex enterprise features
+
+NG-11) No enterprise admin console in V1
+- no org policies UI
+- no RBAC across many users
+V1 is single-user local-first.
+
+NG-12) No cross-device sync in V1
+- V1 stores artifacts locally.
+Sync can come later and must respect privacy boundaries.
+
+8) Self-audit (10.3 v2)
+
+Chat-canon alignment checklist:
+- V1 is kept small: no live meeting join, no marketplace, no mode explosion. (Maintained.)
+- Stuart is not Ashby: no memory persona; durability is artifacts. (Maintained.)
+- Explicit execution gating: no auto-run and no privacy-boundary surprises. (Maintained.)
+- Truth posture is honest: no impossible accuracy promises; no fake speaker identity. (Maintained.)
+- The result is buildable without refactors. (Maintained.)
+
+This section is complete.

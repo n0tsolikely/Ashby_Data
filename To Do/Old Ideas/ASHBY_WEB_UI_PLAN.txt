@@ -1,0 +1,83 @@
+ASHBY WEB UI – LOCKED DESIGN NOTE (v0)
+
+Status: Pinned for later. Do NOT implement yet.
+
+==================================================
+CORE DECISION (LOCKED)
+==================================================
+- Ashby runs locally (Pi / local machine).
+- Web UI does NOT own device logic.
+- Web UI connects to the user’s OWN Ashby instance.
+- Default model is OFFLINE-FIRST, LAN-FIRST.
+- One generic UI, many Ashby installations.
+
+==================================================
+v0 ARCHITECTURE (CHOSEN)
+==================================================
+Model:
+Local Ashby API + Generic Web UI
+
+- Ashby exposes a local HTTP API (example: http://ashby.local:PORT)
+- Web UI is a generic client, not tied to any specific house
+- UI does NOT auto-connect to anything by default
+
+==================================================
+CONNECTION FLOW (IMPORTANT)
+==================================================
+1. User opens Ashby Web UI
+2. UI prompts for Ashby address:
+   - ashby.local
+   - local IP
+   - tunnel URL (later)
+3. Pairing is REQUIRED:
+   - UI generates a pairing code
+   - User approves pairing in Ashby
+   - Ashby issues a token
+4. UI stores token locally (browser/device)
+
+Sharing the UI link alone does NOTHING without pairing.
+
+==================================================
+SECURITY PHILOSOPHY
+==================================================
+- UI link ≠ control
+- Control requires:
+  - Reachable Ashby instance
+  - Valid pairing token
+
+Planned roles:
+- Owner
+- Guest (limited permissions)
+- Read-only / demo
+
+==================================================
+OFFLINE MEANING (CLARIFIED)
+==================================================
+- “Offline” = no cloud dependency
+- UI + Ashby function fully on local network
+- Internet only required for:
+  - Optional remote access (Tailscale / Cloudflare)
+  - Future SaaS features
+
+==================================================
+FUTURE (NOT NOW)
+==================================================
+- Remote access via Tailscale or Cloudflare Tunnel
+- Public demo mode (simulated house)
+- Cloud account / broker (multi-tenant)
+- Replit-hosted UI pointing at user Ashby
+- GitHub-based distribution
+
+==================================================
+CURRENT ACTION
+==================================================
+- Do nothing yet
+- Revisit after:
+  - Ashby core API stabilizes
+  - Device state model is finalized
+  - Permissions system exists
+
+Reason:
+Avoid premature UI coupling and rework.
+
+ash

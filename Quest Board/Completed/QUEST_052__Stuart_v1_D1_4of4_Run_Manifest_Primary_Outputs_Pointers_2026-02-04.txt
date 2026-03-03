@@ -1,0 +1,71 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_052
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 1 (4/4): run manifest primary output pointers (mode-aware)
+
+Context: Stuart run manifest contract
+
+Origin:
+Control Sync — 2026-02-04 (Stuart v1 finish-line: REV7)
+
+Priority: P0
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV7.txt (Dungeon 1)
+- Engine: ashby/modules/meetings/pipeline/job_runner.py + storage run.json schema
+
+Status: COMPLETED
+Audit Bundle Path:
+Audits/Execution/QUEST_052__2026-02-04__stuart_v1_dungeon_1_4_4_run_manifest_primary_output_pointers_mode_aware_2026-02-04
+Accepted On:
+2026-02-04
+
+Accepted By:
+Hands (Peter)
+
+Completed On:
+2026-02-06
+
+Completed By:
+Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Doors must not hard-code filenames. Add explicit, mode-aware `primary_outputs` pointers into run.json (and/or run_state) so webapp/telegram/cli can deterministically fetch the right outputs for the run.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Define `primary_outputs` structure (md/pdf/json/evidence_map) in run.json
+- Populate pointers at the end of a run (after artifacts are written)
+- Add a small resolver helper: given run_id -> return primary outputs paths
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Door UX changes (Dungeon 5)
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_049
+- QUEST_050
+- QUEST_051
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Pointers should include sha256 + kind where possible, not just paths.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] run.json contains `primary_outputs` with correct mode-specific filenames
+- [ ] Resolver returns minutes outputs for meeting, journal outputs for journal
+- [ ] `python3 -m pytest -q` passes
+

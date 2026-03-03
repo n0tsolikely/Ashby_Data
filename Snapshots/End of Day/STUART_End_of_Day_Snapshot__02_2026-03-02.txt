@@ -1,0 +1,118 @@
+================================================================================
+END OF DAY SNAPSHOT
+================================================================================
+A) Header (required)
+- Subject: STUART
+- Date: 2026-03-02
+- Topic: D7 closure, proof completion, publish + packaging, governance EOD enforcement hardening
+- Snapshot Type: End_of_Day
+- World State: Fog Lifted
+- Codex Freeze status: PRESENT (/home/notsolikely/Ashby_Data/Codex/CODEX_FREEZE.md)
+
+B) Work Performed (Quest-by-Quest) (required)
+- Quest ID + Title: QUEST_167 — Stuart v1 D7 9of10 — Delete TranscriptVersion Cascade Warnings IndexCleanup
+  - Status at end of day: COMPLETED
+  - Preconditions referenced: D7 scope confirmed from Guild Orders + Stuart Codex + latest snapshots; quest accepted and audit bundle initialized at `/home/notsolikely/Ashby_Data/Audits/Execution/QUEST_167__2026-03-01__stuart_v1_d7_9of10_delete_transcriptversion_cascade_warnings_indexcleanup`.
+  - Actions performed:
+    - Implemented transcript-version delete cascade dependency checks and API surface.
+    - Added relaxed manifest parsing/session-id recovery in delete ops to handle minimal manifests used by tests.
+    - Added/updated transcript-version/delete tests and reran wrapped suite.
+    - Filled required governance verification/outcome files and completed quest through wrapper gate.
+  - Artifacts changed (key):
+    - `/home/notsolikely/Ashby_Engine/ashby/modules/meetings/delete_ops.py`
+    - `/home/notsolikely/Ashby_Engine/ashby/modules/meetings/transcript_versions.py`
+    - `/home/notsolikely/Ashby_Engine/ashby/modules/meetings/index/sqlite_fts.py`
+    - `/home/notsolikely/Ashby_Engine/ashby/interfaces/web/app.py`
+    - `/home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app/src/api/stuartClient.js`
+    - `/home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app/src/pages/Stuart.jsx`
+    - `/home/notsolikely/Ashby_Engine/tests/test_delete_transcript_version_cascade.py`
+  - Verification performed + receipts:
+    - Wrapped pytest run recorded in `06_TESTS.txt` with final pass: `12 passed` / `RC: 0`.
+    - Verification and outcome receipts: `03_VERIFY.md`, `04_OUTCOME.md` in quest bundle.
+  - Outcome: Transcript deletion behavior now supports 409 dependents on non-cascade and full dependent cleanup on cascade; quest validated and moved Accepted -> Completed.
+
+- Quest ID + Title: QUEST_168 — Stuart v1 D7 10of10 — TL4 Proof D7 Formalization Template Retention Evidence Deletion
+  - Status at end of day: COMPLETED
+  - Preconditions referenced: quest accepted with D7 proof requirements A/B loaded from quest file; bundle initialized at `/home/notsolikely/Ashby_Data/Audits/Execution/QUEST_168__2026-03-01__stuart_v1_d7_10of10_tl4_proof_d7_formalization_template_retention_evidence_deletion`.
+  - Actions performed:
+    - Mapped proof requirements to existing deterministic test surfaces.
+    - Ran targeted wrapped proof suite.
+    - Wrote deterministic proof artifact: `/home/notsolikely/Ashby_Data/Audits/Proofs/D7__Formalization_MVP__TL4__2026-03-02.md`.
+    - Wrote verify/outcome files and completed quest through governance wrapper.
+  - Artifacts changed (key):
+    - `/home/notsolikely/Ashby_Data/Audits/Proofs/D7__Formalization_MVP__TL4__2026-03-02.md`
+    - `03_VERIFY.md` + `04_OUTCOME.md` in QUEST_168 execution bundle.
+  - Verification performed + receipts:
+    - Wrapped pytest run recorded in `06_TESTS.txt`: `12 passed, 1 warning`, `RC: 0`.
+  - Outcome: D7 proof gate satisfied with receipts and requirement matrix; quest validated and moved Accepted -> Completed.
+
+- Operational/governance work after quest completion:
+  - Committed and pushed latest `Ashby_Engine` main commit `4397276` to `origin/main`.
+  - Built distribution archive `/home/notsolikely/Ashby_Canon(14).zip` including `Ashby_Engine` + `Ashby_Data` with junk exclusions (`.git`, venvs, node_modules, caches, logs, pycache).
+  - Implemented governance hardening in `/home/notsolikely/Synapse_OS/governance/tools/synapse_quest_run.sh` (v1.4): when Accepted queue drains, wrapper auto-writes detailed EOD and blocks/reverts completion if EOD fails.
+
+C) Completed Work Summary (required when anything completed)
+- QUEST_167 — Delete TranscriptVersion Cascade Warnings IndexCleanup
+  - Proof bundle: `/home/notsolikely/Ashby_Data/Audits/Execution/QUEST_167__2026-03-01__stuart_v1_d7_9of10_delete_transcriptversion_cascade_warnings_indexcleanup`
+  - What is now true: transcript-version deletion cascade behavior and index cleanup are validated and completed.
+
+- QUEST_168 — TL4 Proof D7 Formalization Template Retention Evidence Deletion
+  - Proof bundle: `/home/notsolikely/Ashby_Data/Audits/Execution/QUEST_168__2026-03-01__stuart_v1_d7_10of10_tl4_proof_d7_formalization_template_retention_evidence_deletion`
+  - TL4 proof artifact: `/home/notsolikely/Ashby_Data/Audits/Proofs/D7__Formalization_MVP__TL4__2026-03-02.md`
+  - What is now true: D7 10/10 proof pack is complete with deterministic test receipts.
+
+D) Incomplete / Failed / Blocked Work (required when relevant)
+- No Accepted quests remain open at end of day.
+- Earlier failed test attempts on QUEST_167 were resolved same session and are now superseded by final green receipts.
+
+E) System Verification Performed (required when applicable)
+- QUEST_167 wrapped verification run:
+  - Command receipt path: `/home/notsolikely/Ashby_Data/Audits/Execution/QUEST_167__2026-03-01__stuart_v1_d7_9of10_delete_transcriptversion_cascade_warnings_indexcleanup/06_TESTS.txt`
+  - Result: `12 passed`, `RC: 0`
+
+- QUEST_168 wrapped verification run:
+  - Command receipt path: `/home/notsolikely/Ashby_Data/Audits/Execution/QUEST_168__2026-03-01__stuart_v1_d7_10of10_tl4_proof_d7_formalization_template_retention_evidence_deletion/06_TESTS.txt`
+  - Result: `12 passed, 1 warning`, `RC: 0`
+
+- Repo publish verification:
+  - `Ashby_Engine` branch `main` commit `4397276` pushed to `origin/main`.
+
+- Packaging verification:
+  - Archive exists: `/home/notsolikely/Ashby_Canon(14).zip` (5.6M)
+  - Sanity exclusions check found no disallowed patterns (`node_modules`, `__pycache__`, `.venv`, `.git`, logs).
+
+F) Bugs / Weirdness / Discoveries
+- QUEST_167 encountered transient failures:
+  - `test_delete_run_removes_fs_and_index`
+  - `test_delete_session_removes_runs_and_index`
+  Root cause: delete/session identity extraction regression in `delete_ops.py`.
+  Resolution: restored robust `_run_session_id` path with relaxed manifest parsing; removed unreachable dead path; reran to green.
+
+- Non-blocking warning persisted in one proof run:
+  - Matplotlib deprecation warning (`get_cmap`) from dependency stack (`pyannote` path).
+  - Impact: warning only, no test or governance block.
+
+- Initial git push attempt failed due temporary DNS resolution failure; immediate retry with allowed network egress succeeded.
+
+G) Raid / Guild Orders status changes
+- Dungeon 7 execution wave closed via completed quests QUEST_167 and QUEST_168.
+- Quest Board state for this wave moved to Completed with governance validation pass for both quests.
+
+H) Talent Tree updates (mandatory when relevant)
+- No explicit Talent Tree log update was performed in this session.
+- If Talent Tree accounting is required for D7 closure, update:
+  - `/home/notsolikely/Ashby_Data/Talent Tree/Stuart/TALENT_LOG.txt`
+  - `/home/notsolikely/Ashby_Data/Talent Tree/Stuart/TALENT_TREE.txt`
+
+I) Resume Instructions (required)
+- Start next Control Sync by reviewing:
+  1) latest Control Sync snapshot under `/home/notsolikely/Ashby_Data/Snapshots/Control Sync/`
+  2) this End-of-Day snapshot
+  3) latest Continuity Lock in `/home/notsolikely/Ashby_Data/Latest Rehydration Pack/`
+- Accepted queue is currently empty; no quest execution is legal until new acceptance or new Control Sync commitment.
+- Next recommended action: run Control Sync, inspect Board backlog, and define next dungeon scope before accepting quests.
+- Resume anchors:
+  - D7 proof artifact: `/home/notsolikely/Ashby_Data/Audits/Proofs/D7__Formalization_MVP__TL4__2026-03-02.md`
+  - Latest code state pushed at `Ashby_Engine` commit `4397276`.
+
+END OF SNAPSHOT

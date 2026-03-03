@@ -1,0 +1,33 @@
+Your token was replaced with a new one. You can use this token to access HTTP API:
+8322481655:AAGi85c4YczU02Nu99un_DifFeoAFH5C6gI
+
+
+
+
+One-line command to start the bot properly
+
+If you want a single command that:
+
+activates the venv
+
+runs the Telegram bot
+
+Here it is:
+
+source ashpi-env/bin/activate && python3 ashpi_telegram_control.py
+
+
+You can even make it a shortcut command later if you want (we can do aliasing).
+
+🔥 Bonus (optional but useful)
+
+If you want to run the bot in the background so it keeps working even when you close SSH:
+
+nohup python3 ashpi_telegram_control.py &
+
+
+Then it will keep running until reboot.
+
+(You can kill it later with pkill -f ashpi_telegram_control.py)
+
+We don’t need to do this yet — unless you want it.

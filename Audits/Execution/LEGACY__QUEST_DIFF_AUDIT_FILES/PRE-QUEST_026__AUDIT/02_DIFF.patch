@@ -1,0 +1,31 @@
+--- /mnt/data/Ashby_Engine/Ashby_Engine/Ashby_Engine/ashby/interfaces/telegram/stuart_runner.py
++++ /mnt/data/Ashby_Engine/Ashby_Engine/Ashby_Engine/ashby/interfaces/telegram/stuart_runner.py
+@@ -32,16 +32,26 @@
+     st = run_state.get("state") if isinstance(run_state, dict) else None
+     if not isinstance(st, dict):
+         return None
++
+     artifacts = st.get("artifacts")
+     if not isinstance(artifacts, list):
+         return None
++
++    # Prefer canonical formalized PDF
+     for a in artifacts:
+-        if isinstance(a, dict) and a.get("kind") in ("pdf", "export_pdf"):
++        if isinstance(a, dict) and a.get("kind") == "formalized_pdf":
+             p = a.get("path")
+             if isinstance(p, str) and p:
+                 return p
++
++    # Fallback: any PDF artifact path
++    for a in artifacts:
++        if isinstance(a, dict):
++            p = a.get("path")
++            if isinstance(p, str) and p.lower().endswith(".pdf"):
++                return p
++
+     return None
+-
+ 
+ def run_default_pipeline(*, local_path: str, source_kind: str, mode: str, template: str = "default") -> Dict[str, Any]:
+     # 1) upload (creates session if none)

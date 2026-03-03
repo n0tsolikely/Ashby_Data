@@ -1,0 +1,71 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_061
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 5 (1/7): unify RunRequest contract across web + telegram + CLI
+
+Context: Stuart doors/run contract
+
+Origin:
+Control Sync — 2026-02-04 (Stuart v1 finish-line: REV5)
+
+Priority: P0
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV5.txt (Dungeon 5)
+- Engine: ashby/modules/meetings/router/router.py + interfaces/telegram/* + cli_stuart.py
+
+Status: COMPLETE
+
+Audit Bundle Path:
+  /mnt/data/Ashby_Data/Audits/Execution/QUEST_061__2026-02-09__runrequest_contract_unify_doors
+
+Accepted On:
+2026-02-09
+Accepted By:
+Hands (Peter)
+Completed On:
+2026-02-09
+
+Completed By:
+Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Define a single RunRequest contract (mode/speakers/template/retention/etc) and make every door produce that same structure before the router builds the run plan.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Create RunRequest schema/dataclass
+- Normalize field names (mode, speakers, retention, template_id)
+- Ensure router consumes RunRequest and validates
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Door UI polish
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_046
+- QUEST_045
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- This is the key to preventing web/telegram/cli drift.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] Web/Telegram/CLI can all construct a valid RunRequest
+- [x] Router consumes it without special-casing
+- [x] `python3 -m pytest -q` passes
+

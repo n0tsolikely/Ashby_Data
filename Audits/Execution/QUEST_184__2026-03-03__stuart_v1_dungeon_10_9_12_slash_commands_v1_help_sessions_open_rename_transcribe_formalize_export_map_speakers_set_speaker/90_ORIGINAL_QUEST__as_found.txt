@@ -1,0 +1,164 @@
+QUEST TEMPLATE — SYNAPSE OS [v1.5]
+
+========================================
+IDENTITY
+========================================
+QUEST ID: QUEST_184
+TITLE: Stuart v1 — Dungeon 10 (9/12) — Slash Commands v1 (/help, /sessions, /open, /rename, /transcribe, /formalize, /export, /map_speakers, /set_speaker)
+GUILD / DUNGEON: STUART v1 / DUNGEON 10 (9 of 12)
+PRIORITY: P0
+OWNER: OpenAI Codex (CLI execution) under Synapse OS governance
+STATE: ACCEPTED (place this file into Ashby_Data/Quest Board/Accepted)
+CREATED: 2026-03-03
+LAST UPDATED: 2026-03-03
+SOURCE SEED: Guild Orders Rev14 — Dungeon 10
+RISK CLASS: R1
+TESTING LEVEL (TL0–TL4): TL3
+DOOR IMPACT: chat command parsing + web API integration
+PERMISSION: N/A (standard Stuart dev permissions)
+
+========================================
+CANON LOCKS
+========================================
+SOURCE OF TRUTH (LOCKS):
+- Guild Orders (ACTIVE): /home/notsolikely/Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-25_REV14.txt
+  - sha256: d10c278cd45a543c32c27102a912ce6f1c0569401c5ec0e00f6dc1e5c5b9b094
+  - Dungeon 10 block sha256: a1336566007c90e0ff8518545d0381e78dc8d237ed1a9d1cc0572b7d754a7656
+- Codex Anchors (Stuart):
+  - /home/notsolikely/Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_2.1_Chat_First_Interface.txt
+    - sha256: 465d0c0b31ac581d67f8307d9d932021e770e07708a653ac47951cde13bffb71
+  - /home/notsolikely/Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_2.2_Explicit_Execution_Gating_Submit_Confirm.txt
+    - sha256: 322b838cce234e1c17d36f6a9a4c35a612dba211000b3ee8878be4e5dec6b602
+  - /home/notsolikely/Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_5.3_Evidence_and_Citation_Requirements.txt
+    - sha256: 95d2237444f12df57b3a81d166b521e40e24032aca0fa5d13497d9b33870c799
+  - /home/notsolikely/Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_6.1_Session_Model_Sessions_Contributions_Sources.txt
+    - sha256: 55a95019ca3d7b56ba1acfbb248d2583e93c9a00f4baeb3dd2631ed1a4e9eef9
+  - /home/notsolikely/Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_6.2_Canonical_Artifacts_JSON_Markdown_PDF.txt
+    - sha256: aaf3db33935220866ed5f48dc0bf5d0e95a92ea6f690fa008ff47e01bee5bfc0
+  - /home/notsolikely/Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_6.5_Artifact_Indexing_for_Recall_and_Search.txt
+    - sha256: 7167ab663b883f0210edd02538df832b4ff076aeb47f3276683259be0a4b5e17
+  - /home/notsolikely/Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_7.7_Stage_6_Indexing_and_Retrieval.txt
+    - sha256: 172cb662c787d6b65f9e9be4bfa18e4866cf9109188cf1d50d95664d052f863c
+- Monster (Canon 15 reference): MONSTER_ASHBY__THE_MONSTER_WORKSPACE__20260303_050600.zip
+  - routes index sha256: 5bd87ac821c3ef2a5479af94196d2ffa31855d56103e78f0da84361c0c73c47b
+
+========================================
+SYSTEM CONTEXT STATEMENT
+========================================
+Dungeon 10 requires a minimum slash command set so Stuart can be operated by chat without accidental execution.
+
+Key governance rule:
+- Planner/clarify is allowed ONLY for explicit action commands. Slash commands are explicit.
+
+We need deterministic parsing + predictable outcomes for:
+  /help
+  /sessions [search_terms]
+  /open <session_id|title>
+  /rename_session <session_id|current> "New Title"
+  /rename_formalization <run_id> "New Title"
+  /transcribe [args]
+  /formalize [args]
+  /export <session_id|current> [--formats pdf md txt]
+  /map_speakers <run_id>
+  /set_speaker <run_id> <speaker_label> "Name"
+
+Existing API pieces in Canon 15 that commands should reuse:
+- /api/sessions (list)
+- PATCH /api/sessions/{session_id} (rename)
+- PATCH /api/runs/{run_id} (formalization_title)
+- POST /api/run (start transcribe/formalize)
+- Speaker map endpoints under /api/runs/{run_id}/speaker_map (from Dungeon 6)
+
+========================================
+CONSTRAINT SUMMARY
+========================================
+- Slash commands are the only place where planner/clarify is allowed; do not leak planner behavior into normal Q&A.
+- Reuse existing API ops for rename/run/speaker_map; do not reimplement the same file I/O twice.
+
+========================================
+ANTI-DUP PLAN
+========================================
+Before writing new code, run a repo-wide scan to confirm what already exists and extend it instead of cloning it.
+Required scans:
+- rg -n "@app\.post\(\"/api/chat" ashby/interfaces/web/app.py
+- rg -n "chat" ashby/modules/meetings -S
+- rg -n "scope\s*===\s*'global'" webapp/stuart_frontend/stuart_app/src -S
+- rg -n "Global \(Not Implemented\)" webapp/stuart_frontend/stuart_app/src -S
+- rg -n "segments_fts|sqlite_fts\.search" ashby/modules/meetings -S
+
+========================================
+PLACEMENT INTENT
+========================================
+New code should be modular and placed close to the domain it serves:
+- Chat domain logic: ashby/modules/meetings/chat/ (new package)
+- Shared meeting schemas: ashby/modules/meetings/schemas/
+- Web door remains thin: ashby/interfaces/web/app.py calls into modules, not vice versa
+- Frontend wiring: webapp/stuart_frontend/stuart_app/src/components/stuart/ and src/pages/Stuart.jsx
+
+========================================
+ATOMICITY STATEMENT
+========================================
+This quest is complete when its acceptance criteria pass and it does not require uncommitted follow-up work to avoid breaking the build.
+
+========================================
+DEPENDENCIES
+========================================
+- QUEST_176 schema (reply/actions types) and QUEST_179/180 endpoint structure.
+
+========================================
+DELIVERABLES
+========================================
+- New chat commands module (ashby/modules/meetings/chat/commands.py) implementing deterministic parsing + handlers.
+- /api/chat and /api/chat/global use commands module for slash commands (planner/clarify path).
+- Tests for parsing and at least /sessions + /open command behavior (open_session action).
+
+========================================
+TASK BREAKDOWN
+========================================
+- Create ashby/modules/meetings/chat/commands.py:
+  - parse_command(text) -> Command(name, args)
+  - handle_command(cmd, ui_state, store/index) -> ChatReply (planner or assistant) + optional actions
+Keep this module deterministic and pure where possible.
+- Implement commands:
+  - /help: returns a compact help text listing commands and examples.
+  - /sessions [q]: call existing sessions listing (same logic as /api/sessions) and return top N with open_session actions.
+  - /open <ref>: resolve session ref and return open_session action (or clarify if ambiguous).
+  - /rename_session: call PATCH /api/sessions/{id} (or underlying function) and return confirmation.
+  - /rename_formalization: call PATCH /api/runs/{run_id} with {formalization_title}.
+  - /transcribe, /formalize:
+     - Either: (A) return planner preview requiring /confirm <id> to execute, OR (B) execute immediately since slash command is explicit.
+     - Pick ONE, document it in /help, and keep it consistent.
+     - Reuse existing run request schema + create_run/run_job.
+  - /export: return deterministic guidance and/or an export download URL.
+  - /map_speakers and /set_speaker: reuse existing speaker map endpoints/ops.
+- Wire commands into both /api/chat and /api/chat/global:
+  - If text starts with '/', bypass Q&A answerer and go through commands module.
+  - Ensure commands can return clarify prompts for ambiguity (ex: /open 'weekly sync' matches multiple sessions).
+- Tests:
+  - tests/test_meetings_chat_commands_parse.py
+  - tests/test_meetings_chat_commands_sessions_open.py (ensures open_session action payload)
+
+
+========================================
+ACCEPTANCE CRITERIA
+========================================
+- All listed commands are supported (at least minimally) and do not crash on malformed input.
+- /sessions returns open_session actions for results.
+- /open supports session_id and title references; ambiguous titles produce clarify reply.
+- Tests for parsing and /sessions,/open pass.
+
+========================================
+VERIFICATION PLAN
+========================================
+- pytest -q tests/test_meetings_chat_commands_parse.py tests/test_meetings_chat_commands_sessions_open.py
+- Manual smoke: /help prints commands; /sessions returns list; /open switches session in UI once action wiring exists.
+
+========================================
+ROLLBACK PLAN
+========================================
+- git restore --staged --worktree ashby/modules/meetings/chat/commands.py tests/test_meetings_chat_commands_* ashby/interfaces/web/app.py
+
+========================================
+AUDIT BUNDLE FOLDER PATH
+========================================
+/home/notsolikely/Ashby_Data/Audits/Execution/QUEST_184__<Codex fills on completion>/

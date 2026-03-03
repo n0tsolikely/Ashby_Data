@@ -1,0 +1,8 @@
+{
+  "sid_unmapped": "ses_01KJPGSV38CZD86D6G7VDTVTHN",
+  "sid_mapped": "ses_01KJPGSV4NY8WRV3NSVTR5DDWH",
+  "sid_mentioned_only": "ses_01KJPGSV503KTAG43MZ7A0BYBH",
+  "tv_unmapped": "trv_01KJPGSV3AFVDZKHDZ95CCKFQ0",
+  "tv_mapped": "trv_01KJPGSV4QESCK28JWX9XFHR9X",
+  "tv_mentioned_only": "trv_01KJPGSV511ST191C9WP2DYK1N"
+}

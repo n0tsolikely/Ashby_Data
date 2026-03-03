@@ -1,0 +1,210 @@
+QUEST TEMPLATE — SYNAPSE OS
+Version: v1.5
+Last Updated: 2026-02-22
+Status: Canon Template (must comply with Quest Validation Rules)
+Subject Copy: Ashby_Data/Quest Board/QUEST_TEMPLATE.txt
+Provenance: Synapse OS governance/Quest Board/QUEST_TEMPLATE.txt (v1.5)
+
+
+(duplicate this file for each new Quest)
+
+CORE LAW Reminder:
+- Quest state is defined ONLY by WHERE THIS FILE LIVES (Quest Board folder), not by metadata.
+- This Quest file is the execution contract. It MUST be unambiguous enough to execute, audit, verify, and resume.
+- If any REQUIRED field is missing or ambiguous, the Quest MUST remain on BOARD (validation fails).
+- Verification is NOT optional:
+  - Execution MUST NOT begin until a Verification Plan exists.
+  - The Verification Plan may be recorded here OR deferred to the Pre-Quest Audit (01_PREQUEST.md).
+
+NOTE:
+- Do not “change status” in text. Move the file between folders.
+- Location wins over text. If this file claims a state that conflicts with its folder, the folder is authoritative.
+
+================================================================================
+IDENTITY (REQUIRED)
+================================================================================
+Quest ID:
+QUEST_152
+
+Title:
+Dungeon 9B (9/9): TL4 Proof — meeting LOW vs HIGH + journal NEAR_VERBATIM via gateway; downloads + receipts
+
+Subject:
+STUART
+
+Origin:
+Origin: Guild Orders REV5 — Dungeon 9B (Stuart LLM routing integration).
+Canon: REV5 is authoritative; older Guild Orders are deprecated.
+Context: 9A gateway exists as a separate local process (binds 127.0.0.1, uses GEMINI_API_KEY).
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- Guild Orders (Canonical): GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-23_REV5.txt (SHA256 09f018aa3adcbcd068de33b4688aa6ae9f39414502c13d823d3c4dd804407f53)
+- Guild Orders Dungeon 9B excerpt SHA256: bfc320999b81a6d6c8f85c8c639295f9363f1254b86290f62103d5bce9a0b35f
+- Monster fingerprint repo_tree_sha256: None
+- Prereq: Dungeon 9A completed as QUEST_140–143 in repo state (local gateway available).
+
+================================================================================
+CODEX ANCHORS + CONSTRAINT SUMMARY (DRAFT)
+================================================================================
+Codex Anchors (DRAFT):
+- Stuart Codex 1.3 Profiles (LOCAL_ONLY / HYBRID / CLOUD) — LOCAL_ONLY forbids remote inference.
+- Stuart Codex 5.1 Retention knob semantics (semantic depth, not random text deletion).
+- Stuart Codex 5.3 Evidence discipline (no fabricated decisions; schema validation).
+- Stuart Codex 8.4 Adapters (provider isolation; swappable endpoints).
+
+Codex Constraint Summary (DRAFT):
+- No provider API keys in Stuart core or frontend bundles.
+- Formalization modules must not import provider SDKs directly (OpenAI/Gemini/etc).
+- All remote calls go through the 9A gateway URL configured by STUART_LLM_GATEWAY_URL.
+- LOCAL_ONLY never calls the gateway (deterministic fallback or BLOCKED per existing policy).
+- Gateway response must be version=1 and schema-valid before writing artifacts.
+- Retention must change prompt instructions (dev-editable) and produce measurably different outputs in proof run.
+
+
+================================================================================
+QUEST CREATION VISION ALIGNMENT (REQUIRED)
+================================================================================
+Change Class: (TRIVIAL / FEATURE / STRUCTURAL)
+FEATURE
+
+Vision Delta: (ALIGNED / VARIATION / SHIFT)
+ALIGNED
+
+System Context Statement:
+Dungeon 9B wires LLM-backed formalization into the existing Stuart pipeline (meeting/journal formalize stages).
+LLM chat over cross-session history is explicitly out-of-scope for 9B (belongs to Dungeon 10).
+
+If Vision Delta = VARIATION:
+# REQUIRED only if Vision Delta = VARIATION.
+# - Codex intent class it maps to: <e.g., Door: chat interface>
+# - Codification path: <SIDE-QUEST id or "TBD — requires Hands approval">
+# NOTE: Variations may be allowed to execute if anchored + oriented, but MUST spawn a Side-Quest to codify.
+
+If Vision Delta = SHIFT:
+# REQUIRED only if Vision Delta = SHIFT.
+# Write: BLOCKED — CONTROL_SYNC_REQUIRED
+# Briefly state what would need to change in Codex for this to become valid.
+
+Anti-Duplication Plan:
+rg -n "_call_openai_(minutes|journal)" Ashby_Engine/ashby/modules/meetings/formalize -S
+rg -n "ASHBY_MEETINGS_LLM_ENABLED" Ashby_Engine/ashby/modules/meetings/formalize -S
+rg -n "interfaces/llm_gateway" Ashby_Engine/ashby -S
+rg -n "STUART_LLM_GATEWAY_URL" Ashby_Engine/ashby -S
+
+Placement Intent:
+LLM client seam under: Ashby_Engine/ashby/modules/llm/ (new).
+Retention prompt policy under: Ashby_Engine/ashby/modules/meetings/formalize/retention_prompts.py (new, dev-editable).
+Minutes/journal formalizers call the seam; no provider SDK imports.
+
+
+================================================================================
+ATOMICITY CHECK (REQUIRED)
+================================================================================
+Atomicity Statement:
+Atomic: YES — do not mix cross-session chat/retrieval in 9B.
+
+================================================================================
+RISK + CONSENT GATE (CONDITIONAL)
+================================================================================
+Risk: (R0 / R1 / R2)
+R1
+
+R2 Confirmation Artifact (REQUIRED if Risk = R2):
+# REQUIRED ONLY IF Risk = R2.
+# confirmations/CONFIRM_R2__<quest_id>__YYYY-MM-DD__<slug>.txt
+# The file must exist and contain:
+# CONFIRM: YES
+
+================================================================================
+STATE (BY LOCATION; CANON)
+================================================================================
+Canonical Quest Board locations:
+- BOARD:     Ashby_Data/Quest Board/
+- ACCEPTED:  Ashby_Data/Quest Board/Accepted/
+- COMPLETED: Ashby_Data/Quest Board/Completed/
+- ABANDONED: Ashby_Data/Quest Board/Abandoned/
+
+================================================================================
+DESCRIPTION (REQUIRED)
+================================================================================
+Prove end-to-end LLM formalization works via gateway, and retention meaning changes outputs. Capture receipts via quest_run wrapper.
+
+================================================================================
+SCOPE / OBJECTIVE (REQUIRED)
+================================================================================
+- Start gateway as separate process: cd /home/notsolikely/Ashby_Engine && python -m ashby.interfaces.llm_gateway.app
+- Set ASHBY_EXECUTION_PROFILE=CLOUD and ASHBY_MEETINGS_LLM_ENABLED=1 and STUART_LLM_GATEWAY_URL=http://127.0.0.1:8787.
+- Run 3 formalizations: meeting LOW, meeting HIGH, journal NEAR_VERBATIM; ensure outputs differ and are downloadable (md/pdf if enabled).
+- Receipts must include: /api/runs/<id> JSON, artifact sha256, llm_usage.json, minutes/journal JSON.
+
+================================================================================
+OUT OF SCOPE (REQUIRED)
+================================================================================
+- No cross-session chat Q&A (Dungeon 10).
+
+================================================================================
+DEPENDENCIES (REQUIRED: LIST OR EXPLICIT NONE)
+================================================================================
+- Dungeon 9A complete (QUEST_140–143).
+- Dungeon 7 contract complete.
+
+================================================================================
+DOORS + TESTING LEVEL (CONDITIONAL: CODE/SOFTWARE)
+================================================================================
+Door Impact:
+WEB + API
+
+Testing Level (TL):
+TL4
+
+================================================================================
+VERIFICATION PLAN (REQUIRED BEFORE EXECUTION)
+================================================================================
+Verification Plan (TL4):
+- Use quest_run wrapper for commands and capture outputs.
+- Capture sha256 of minutes.json/journal.json and rendered outputs.
+- Confirm LOW vs HIGH differ in total characters and content density.
+
+================================================================================
+EXECUTION NOTES (OPTIONAL)
+================================================================================
+# OPTIONAL.
+# Constraints, implementation notes, reminders, discovered caveats.
+# (Detailed step-by-step execution receipts belong in the Execution Audit bundle.)
+
+================================================================================
+TALENT POINTS (REQUIRED: YES/NO)
+================================================================================
+Talent Point Awarded: (YES / NO)
+NO
+
+If YES:
+# State the capability unlocked/expanded so it can be logged in the Talent Tree.
+
+================================================================================
+EXECUTION AUDIT BUNDLE (REQUIRED ONCE ACCEPTED)
+================================================================================
+Execution Audits are mandatory when executing a Quest.
+See: Processes/SYNAPSE_GUILD__EXECUTION_AUDITS.txt
+
+Validation gate:
+- A Quest may NOT be accepted unless it passes quest validation.
+See: Quest Board/SYNAPSE_GUILD__QUEST_VALIDATION_RULES.txt
+
+Audit Bundle Folder Path (required once ACCEPTED):
+# REQUIRED ONCE ACCEPTED.
+# Ashby_Data/Audits/Execution/QUEST_###__YYYY-MM-DD__<short_slug>/
+
+Required files inside the bundle (canonical minimum):
+# 00_SUMMARY.md
+# 01_PREQUEST.md
+# 02_EXECUTION.md
+# 03_VERIFY.md
+# 04_OUTCOME.md
+
+MULTI-DAY / RETRY RULE:
+# If this Quest spans multiple Dailies (or requires retries), the audit bundle path above remains canonical.
+# Do NOT create a second audit bundle. Append new timestamped attempt entries inside the existing phase files.

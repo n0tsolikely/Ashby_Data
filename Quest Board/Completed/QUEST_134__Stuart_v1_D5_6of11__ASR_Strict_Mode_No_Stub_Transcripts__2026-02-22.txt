@@ -1,0 +1,132 @@
+================================================================================
+IDENTITY (REQUIRED)
+================================================================================
+Quest ID:
+QUEST_134
+
+Title:
+Stuart v1 — Dungeon 5 (6/11): ASR strict mode for Web Door (no stub transcripts allowed)
+
+Subject:
+Ashby / Stuart
+
+Origin:
+Control Sync 2026-02-22: Stub transcripts are useless; Stuart must not claim transcription without real ASR.
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- Engine: Ashby_Engine/ashby/modules/meetings/adapters/transcribe_faster_whisper.py
+- Engine: Ashby_Engine/ashby/modules/meetings/pipeline/transcribe.py
+- Engine: Ashby_Engine/ashby/modules/meetings/pipeline/job_runner.py
+
+================================================================================
+CODEX ANCHORS + CONSTRAINT SUMMARY (DRAFT)
+================================================================================
+Codex Anchors (DRAFT):
+- Stuart_Codex_Full.txt §7.4 (Transcription is ground truth; must come from audio)
+- Guild Orders Rev4 — Dungeon 5 (No LLM transcript fabrication; transcribe must be real)
+
+Codex Constraint Summary:
+- Do not fabricate.
+- If ASR is not available, fail fast with a clear error.
+
+================================================================================
+QUEST BOARD FOLDER STATE
+================================================================================
+Quest Board Folder State: BOARD
+
+================================================================================
+DESCRIPTION
+================================================================================
+Today transcribe_faster_whisper_or_stub() falls back to stub when ASHBY_ASR_ENABLE is not set or faster-whisper is missing.
+
+For Stuart Web Door, that is unacceptable: a “Transcribe” button must either produce a real transcript with timestamps or fail.
+
+================================================================================
+SCOPE / OBJECTIVE
+================================================================================
+Add a strict mode rail for Web Door transcription:
+
+Option (recommended):
+- New env var: ASHBY_ASR_STRICT=1
+- When strict:
+  - If adapter would fall back to stub, raise an error and fail run.
+  - If transcript.json segments contain only start_ms=end_ms=0 (timestampless), fail run.
+
+Where to enforce:
+- Prefer enforcing at job_runner level after transcribe returns, so tests can still use stub when strict is off.
+
+Error message requirements:
+- Must explain:
+  - ASR is disabled (ASHBY_ASR_ENABLE not set) OR
+  - faster-whisper not installed
+- Must state how to fix (install + enable).
+
+================================================================================
+OUT OF SCOPE
+================================================================================
+- Packaging/installing faster-whisper as part of a shipped installer.
+
+================================================================================
+DEPENDENCIES
+================================================================================
+QUEST_130/131 (transcribe endpoint + UI) can land without this, but this quest should be executed before shipping.
+
+================================================================================
+RISK
+================================================================================
+Risk: R1
+
+================================================================================
+DOOR IMPACT
+================================================================================
+Door Impact:
+- WEB
+
+================================================================================
+TESTING LEVEL
+================================================================================
+Testing Level: TL2
+
+================================================================================
+VERIFICATION PLAN (DRAFT)
+================================================================================
+- With ASHBY_ASR_STRICT=1 and ASHBY_ASR_ENABLE unset:
+  - transcribe run fails with clear message.
+- With ASHBY_ASR_ENABLE=1 and faster-whisper installed:
+  - transcribe run succeeds and transcript timestamps are non-zero.
+
+================================================================================
+CHANGE CLASS + VISION DELTA
+================================================================================
+Change Class: FEATURE
+Vision Delta: ALIGNED
+
+================================================================================
+SYSTEM CONTEXT STATEMENT
+================================================================================
+Stub transcripts are a development scaffold; Web Door must not present them as real transcription.
+
+================================================================================
+ANTI-DUPLICATION PLAN
+================================================================================
+- rg -n "ASHBY_ASR_STRICT" Ashby_Engine/
+- If it already exists, extend (don’t create a second strict flag).
+
+================================================================================
+PLACEMENT INTENT
+================================================================================
+- job_runner.py (enforce strictness after transcribe stage)
+- transcribe_faster_whisper.py (may include helper for availability messaging)
+
+================================================================================
+TALENT POINT
+================================================================================
+Talent Point Awarded: NO
+
+================================================================================
+EXECUTION AUDIT BUNDLE
+================================================================================
+Audit Bundle Folder Path: (set when moving to ACCEPTED)

@@ -1,0 +1,56 @@
+STUART — CONTROL SYNC SNAPSHOT
+Date: 2026-01-27
+Status: CLOSED
+Type: Planning / Decision Sync (no execution)
+
+SUMMARY
+This Control Sync focused on post-MVP planning for Stuart after confirming that
+the core pipeline (Telegram + Web upload → PDF) is conceptually operational.
+The session emphasized engineering discipline, truth gating, and execution order
+over UI polish.
+
+KEY DECISIONS
+
+1) Backbone Before UI
+- UI/UX issues were acknowledged but intentionally deferred.
+- Priority is correctness, truth gating, template/mode behavior, and stable runtime.
+- Stuart can be used minimally (drop file → get PDF) during this phase.
+
+2) UI Feedback Captured, Not Executed
+The following were discussed and recorded for future Guild Orders:
+- Web chat currently stubbed (no real LLM response as Stuart).
+- Poor mobile layout (small buttons, long scroll, no sticky input bar).
+- Session list UI is placeholder (cannot switch/rename sessions).
+These are not to be implemented until backbone contracts are stable.
+
+3) New Quest Required for Runtime Parity
+- Identified a new problem affecting both Telegram and Webapp runtimes
+  (import/runtime parity, stdlib shadowing, invocation consistency).
+- Agreed this requires a new quest and cannot be executed ad-hoc.
+
+4) Quest Created During Sync
+- QUEST_029__Engine_Runtime_Import_Parity_Telegram_Webapp
+  Status: BOARD
+  Purpose: unify and harden engine runtime/import behavior across entrypoints.
+
+5) Snapshot & Execution Discipline
+- Control Sync snapshots auto-generated on close.
+- End-of-Day snapshots generated per accepted quest batching rules.
+- Canonical roots (Governance/Data/Engine) treated as law after unzip.
+
+6) Guild Orders Not Finalized
+- New Guild Orders are required but not yet complete.
+- A draft was created in TO DO to preserve discussion context.
+- Formal Guild Orders will be generated in a future Control Sync.
+
+ARTIFACTS CREATED
+- Draft Guild Orders notes:
+  /mnt/data/Ashby_Data/TO DO/STUART_Guild_Orders_Draft_2026-01-27.txt
+- Quest on board:
+  /mnt/data/Ashby_Data/Quest Board/Board/QUEST_029__Engine_Runtime_Import_Parity_Telegram_Webapp.txt
+
+RESUME ANCHOR
+Next session should:
+1) Review QUEST_029 scope and accept when ready.
+2) Finalize new Guild Orders based on backbone-first strategy.
+3) Continue using minimal Stuart workflow while architecture stabilizes.

@@ -1,0 +1,271 @@
+CONTROL SYNC SNAPSHOT
+Stuart v1 / Ashby Platform — Control Sync
+
+Date: 2026-01-16 (chat started the prior night; continued into ~12:23 PM local)
+Participants: Peter (“n0tsolikely”), Ash (assistant)
+Scope note: This snapshot covers the Control Sync that began at: “Look through the repo quickly, check out the tree…”. Anything before that point was declared redundant and is excluded.
+
+Primary outcome: Stuart v1 Guild Orders were created and placed into Active Guild Orders. Work now proceeds by raiding Dungeons (sections) in any dependency-safe order.
+
+──────────────────────────────────────────────────────────────────────────────
+1) WHAT THIS CONTROL SYNC WAS FOR
+──────────────────────────────────────────────────────────────────────────────
+We aligned on:
+- How Stuart is built (as a module inside Ashby) without contaminating Ashby core/router.
+- How to keep architecture sane (Codex tree as zoning law, not literal folder names), while still keeping repo readable by “real dev” standards.
+- What Stuart v1 must do (demo-grade, reliable, consistent) and how users should interact (natural chat + file drop; webapp primary; Telegram as a thin door).
+- The exact UX contract for mode/speaker selection and confirmation gating.
+- Record-keeping refactor so audit trail doesn’t split across “Ashby vs Stuart” folders.
+
+Deliverables created during this Control Sync:
+- Stuart v1 Guild Orders (Rev3) with Dungeons, dependencies, and “build laws.”
+- Record-keeping convention locked (unified snapshots timeline under Ashby Data).
+
+──────────────────────────────────────────────────────────────────────────────
+2) REPO / FILES REVIEWED (GROUND TRUTH INPUTS)
+──────────────────────────────────────────────────────────────────────────────
+Input package: One zip upload (“Ashby.zip”) that contained:
+- Ashby Data (snapshots / notes / archives)
+- Ashby Engine (codebase snapshot)
+- Stuart Data (Codex + Canonical Vision + Execution Pack + snapshots)
+
+Important clarification:
+- The earlier reference to “normalized.py” was a mis-speak. The codebase contains ashby/core/normalize.py (lights normalization helpers). There is no normalized.py.
+
+Repo structure notes (as observed):
+- The repo root contains a Python package directory also named ashby/ (repo folder + python module folder). “ashby/ashby” is normal and not “two engines.”
+- Batch0 primitives exist in the codebase (StorageAdapter, Results objects, Profile gating, Truth spine, Module registry), but the currently-running Ashby behavior (lights/comfort) still uses a “thicker” router flow.
+
+──────────────────────────────────────────────────────────────────────────────
+3) ARCHITECTURE ALIGNMENT: CODEX TREE VS CURRENT ENGINE
+──────────────────────────────────────────────────────────────────────────────
+3.1 The mismatch concern
+Peter flagged that the Ashby Codex architecture tree (section 8 and 8A) does not literally match the current repo layout (e.g., Codex implies “engine/router” zone, but router currently lives at ashby/core/router.py). Concern: drift -> messy repo -> dev credibility loss.
+
+3.2 Decision: treat Codex architecture as zoning law, not naming law
+We aligned on:
+- The Codex architecture tree is the “responsibility map” and dependency-direction law (zoning), not necessarily a literal, current folder snapshot.
+- We do NOT rename the python package directory from ashby/ to engine/. That would be churn that breaks imports without improving architecture.
+- We do NOT do a repo-wide restructure right now as a prerequisite to Stuart v1.
+
+3.3 Practical mapping (Codex zones -> current repo)
+We explicitly recognized that the repo is “conceptually compliant-ish”:
+- “Router zone” exists but is implemented at ashby/core/router.py.
+- Intent/NLU zone exists under ashby/brain/nlu/.
+- Sessions exist under ashby/brain/sessions/.
+- Truth spine exists under ashby/core/truth/ (even if not fully wired end-to-end for all current behaviors).
+- Observability zone is not yet a dedicated subsystem.
+
+3.4 Router quarantine status (honest state)
+We checked whether the router is “thin” per Codex expectations:
+- Verdict: not fully. Router is still doing more than routing (embedded heuristics/policy/clarify-like logic, some memory pokes, style decisions).
+- Decision: do not refactor router during Stuart v1 work. Don’t make it worse. Keep Stuart decoupled.
+
+Whiteboard note for later (future Ashby work):
+“Ashby thin-router pass — extract policy/clarify/style from core/router; keep behavior identical; add tests.”
+
+3.5 A small “real dev” hygiene recommendation (not executed yet)
+To keep Codex useful and repo legible without forcing a big refactor:
+- Add a simple “architecture mapping” doc (Codex zones -> current paths) and/or ADRs for structural decisions.
+- This is recommended for auditability and future onboarding, but not required to start Stuart v1.
+
+──────────────────────────────────────────────────────────────────────────────
+4) STUART AS A MODULE (KEY DESIGN DECISIONS)
+──────────────────────────────────────────────────────────────────────────────
+4.1 Stuart is a module, not baked into Ashby core
+We aligned on the correct separation:
+- Ashby system router should only dispatch to modules (meetings module, inventory module, etc.).
+- Stuart’s domain logic must live inside its module. If Stuart is removed, Ashby should not have “dead Stuart logic” stuck in the router.
+
+4.2 Two-layer routing model
+We clarified the important architecture:
+- Platform routing (Ashby-level): decide which module handles the user request.
+- Module routing (Stuart/meetings-level): within the meetings domain, interpret intent (“search entries”, “formalize”, “edit template”, etc.)
+
+This prevents Ashby core from becoming a god-object and keeps modules removable.
+
+4.3 Module naming decision
+Decision: internal module key remains “meetings” (domain-based), while “Stuart” is the persona/UI name.
+Rationale:
+- Domain-based keys scale better than persona-based keys.
+- Keeps alignment with existing spec and avoids renaming churn.
+
+(Alternative considered: “records/logs” as broader domain name, but we stayed with meetings for v1 to remain consistent with existing canon.)
+
+4.4 Where Stuart will live
+Canonical location: ashby/modules/meetings/
+We add this module zone (additive change) rather than moving old Ashby code around.
+
+──────────────────────────────────────────────────────────────────────────────
+5) USER EXPERIENCE CONTRACT FOR STUART V1
+──────────────────────────────────────────────────────────────────────────────
+The biggest product decision of this Control Sync:
+Stuart v1 must not feel like “CLI commands and paths.” It must feel like a chat-first assistant (Ashby-like) with file drop, consistent behavior, and minimal learning curve.
+
+5.1 Primary interface: local webapp (ChatGPT-like)
+Decision: Webapp is the primary interface for v1.
+Expected UX:
+- Chat pane + session history (like ChatGPT).
+- User can select Mode + Speakers + Template in UI.
+- User can also simply speak naturally: “Formalize this as meeting mode.”
+- Chat commands must override UI state (and UI must update to match) to avoid “UI/backend mismatch” bugs.
+
+5.2 Telegram is a thin “door,” not the foundation
+Decision: Telegram is optional/secondary and exists mainly for:
+- remote demo
+- remote journaling/meeting capture from phone
+It must not drive product complexity or force weird grammar.
+
+5.3 Telegram interaction model (buttons)
+Decision: Telegram bot will use inline tappable buttons (not text command grammar), with a simple two-step flow:
+- Step 1: Mode selection (Journal/Diary vs Meeting)
+- Step 2: Speakers selection (Auto / 1 / 2 / 3+)
+Then it runs DEFAULT TEMPLATE ONLY and returns the PDF as a Telegram attachment.
+
+Template selection via Telegram is explicitly deferred (keeps Telegram dead simple).
+
+5.4 Speaker controls: user-friendly, no “diarization” term
+Decision: users select speakers in plain terms:
+- Just me (1)
+- Auto
+- 2
+- 3+
+Defaults:
+- Journal defaults to 1 speaker.
+- Meeting defaults to Auto.
+Users picking the wrong number is acceptable user error; we are not building “hero correction logic” for that.
+
+5.5 Execution gating / confirmation rules
+Key behavioral law:
+- Upload/drop ≠ run.
+- Stuart must have an explicit “go” signal before heavy processing.
+Go signals include:
+- user explicitly instructing in chat (mode/template/speakers specified), or
+- user confirming a plan in the webapp, or
+- user pressing Telegram buttons.
+
+Plan preview requirement:
+- If any part is ambiguous or comes from UI state that could be wrong, Stuart must plan-preview and require confirmation.
+- If the user fully specifies everything in the message, Stuart can proceed without a second confirm.
+
+5.6 Transcript handling
+Decision:
+- Transcript ALWAYS exists (ground truth).
+- Visibility can be toggled in webapp to avoid forcing transcripts into every UX, but user must be able to access it.
+
+5.7 Downloads (no folder spelunking)
+Decision:
+- User must be able to download outputs directly from the interface.
+- Webapp provides download buttons (PDF/MD/transcript as allowed).
+- Telegram returns artifacts as attachments.
+
+──────────────────────────────────────────────────────────────────────────────
+6) STUART ENGINE SHAPE (PIPELINE, ARTIFACTS, OVERLAYS, SEARCH)
+──────────────────────────────────────────────────────────────────────────────
+6.1 Artifact-first storage
+Decision:
+- Stuart stores canonical artifacts under a dedicated root (STUART_ROOT; default under runtime/stuart/).
+- Source media is stored internally for later reprocessing and retrieval.
+- For video uploads: extract and store canonical audio for processing; keep original when feasible.
+
+6.2 “One transcript, many formalizations”
+Decision:
+- A single ingested contribution produces a transcript artifact.
+- Multiple formalizations (different modes/templates later) reference that transcript without duplicating work.
+- Re-formalize later using the same stored artifacts; do not create a new session for each new formalization.
+
+6.3 Speaker mapping is a required capability
+Decision:
+- Initial outputs may use SPEAKER_00 / SPEAKER_01.
+- Users must be able to rename speakers (“SPEAKER_00 is Greg”) and have outputs re-render with names.
+- “Only Greg said” type extracts require speaker mapping.
+
+Implementation principle:
+- Speaker naming is an overlay on top of ground truth, not destructive edits.
+
+6.4 Minimal search/index layer is required in v1
+Decision:
+- We will not rely on the LLM scanning files.
+- We implement deterministic retrieval first (SQLite FTS minimum) that returns hits + snippets + citations.
+- LLM is used for intent parsing and presentation/rerank, not brute force.
+
+Example expectation:
+- “Find the journal entry where I talked about kimchi” returns matching sessions/snippets quickly and lets user export outputs.
+
+6.5 Door abstraction for clarifications
+Decision:
+- Engine emits a door-agnostic “clarify prompt” structure (question + options).
+- Telegram renders it as buttons.
+- This design is meant to be reusable for future doors (Discord, etc.) without rewriting engine logic.
+
+──────────────────────────────────────────────────────────────────────────────
+7) PROCESS / OPERATIONS CHANGES (RECORD KEEPING + SYSTEM HYGIENE)
+──────────────────────────────────────────────────────────────────────────────
+7.1 Unified audit trail (Ashby Data is the master timeline)
+Decision:
+- Stuart snapshots were moved into the unified Ashby Data snapshot folders:
+  - Control Sync
+  - End of Day
+  - General
+Rationale:
+- Avoid split-brain audit and missing context when resuming across days/chats.
+- Everything becomes “the system timeline,” and topic tagging happens in file naming.
+
+7.2 Snapshot naming convention
+Decision:
+- Use consistent prefixes + ISO date + topic tag in filenames:
+  CONTROL_SYNC_YYYY-MM-DD__TOPIC.txt
+  EOD_YYYY-MM-DD__TOPIC.txt
+  GENERAL_YYYY-MM-DD__TOPIC.txt
+Rationale:
+- Searchable by topic (“STUART”)
+- Sortable by date
+- Less friction resuming work (upload latest snapshot set and go)
+
+7.3 Windows folder sorting / ergonomics
+Peter updated Windows folder default sorting to “Date created” to keep snapshots in chronological order without manual re-sorting.
+
+7.4 Guild Orders system rule change
+Decision:
+- Guild Orders sections are now called DUNGEONS (not phases, not GO#).
+- A “Raid” is the act of executing the Guild Orders document.
+- Dungeons can be tackled in any dependency-safe order.
+
+7.5 Guild Orders created and filed
+Outcome:
+- Stuart v1 Guild Orders were created (Rev3) and Peter filed them under Active Guild Orders.
+
+──────────────────────────────────────────────────────────────────────────────
+8) DEFERRED / PARKED ITEMS (NOT PART OF THIS STUART V1 BUILD)
+──────────────────────────────────────────────────────────────────────────────
+These were discussed or acknowledged but explicitly deferred:
+- Ashby router thinning/refactor (tracked separately; do not mix into Stuart build)
+- Creator mode (deferred; v1 is Journal + Meeting only)
+- URL ingestion (YouTube/Twitch links) discussed as future; placeholder-ready only
+- Advanced UI knobs (retention / verbatim-ness dial) discussed as future; placeholder-ready only
+- Full multi-door expansion (Discord, etc.) not built now, but door abstraction is planned
+
+(These “future items” should live in a separate “To Do / Backlog” doc, not in the Guild Orders.)
+
+──────────────────────────────────────────────────────────────────────────────
+9) OPEN QUESTIONS / RISKS (ACKNOWLEDGED, NOT BLOCKING)
+──────────────────────────────────────────────────────────────────────────────
+- Exact diarization + ASR backend choice for Stuart v1 implementation (adapter-swappable by design; final selection not locked in this Control Sync).
+- Performance and dependency constraints (GPU vs CPU) will impact practical diarization/transcription speed; handled during implementation.
+- Webapp deployment topology (local-only vs LAN-accessible) will affect security model; execution gating and explicit confirmations mitigate risk.
+
+──────────────────────────────────────────────────────────────────────────────
+10) WHERE WE ARE NOW (HANDOFF SUMMARY)
+──────────────────────────────────────────────────────────────────────────────
+- Stuart v1 has a locked product contract:
+  - webapp primary, telegram door secondary
+  - natural language interaction
+  - explicit execution gating + plan previews
+  - two modes (journal + meeting)
+  - speaker controls (auto/1/2/3+)
+  - transcript ground truth + speaker map overlay + rerender
+  - minimal deterministic search/index required
+- Guild Orders are active and ready to raid.
+- Next work is pure execution: raid Dungeons per dependencies.
+
+END OF CONTROL SYNC SNAPSHOT

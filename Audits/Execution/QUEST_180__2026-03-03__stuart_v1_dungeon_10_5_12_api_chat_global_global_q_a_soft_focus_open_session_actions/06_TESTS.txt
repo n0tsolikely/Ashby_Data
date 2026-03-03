@@ -1,0 +1,11 @@
+## Command Receipt Log
+WRAPPER: synapse_quest_run.sh
+ENGINE_ROOT: /home/notsolikely/Ashby_Engine
+DATA_ROOT: /home/notsolikely/Ashby_Data
+---
+CMD: PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_chat_global_cold_start.py tests/test_meetings_chat_global_open_session_actions.py
+..                                                                       [100%]
+2 passed in 0.59s
+RC: 0
+PASS: governance validation OK for QUEST_180 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_180__2026-03-03__stuart_v1_dungeon_10_5_12_api_chat_global_global_q_a_soft_focus_open_session_actions
+OK: finalize complete (validation PASS recorded).

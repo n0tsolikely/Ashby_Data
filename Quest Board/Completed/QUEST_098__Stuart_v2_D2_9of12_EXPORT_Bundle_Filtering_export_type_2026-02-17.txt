@@ -1,0 +1,167 @@
+    QUEST TEMPLATE — SYNAPSE GUILD
+    ================================================
+
+    QUEST ID:
+    QUEST_098
+
+    Created By:
+    Ash (Brains)
+
+    Title:
+    Stuart v2 — D2 (9/12) — EXPORT: Bundle Filtering (export_type=full_bundle|transcript_only|formalization_only)
+
+    Context:
+    Dungeon 2 requires:
+  GET /api/sessions/{session_id}/export?export_type=...
+
+We already have:
+  export_session_bundle(session_id) in ashby/modules/meetings/export/bundle.py
+which produces a deterministic zip containing a broad set of session artifacts.
+
+But guild orders contract wants export_type variants:
+  - full_bundle
+  - transcript_only
+  - formalization_only
+
+This quest implements the bundle filtering logic at the export layer
+(NOT the web endpoint). The web endpoint is Quest 099.
+
+    Origin:
+    Guild Orders → Dungeon 2 EXPORT contract.
+
+    Priority:
+    P0 — Blocks export button and is part of product surface parity.
+
+    Links:
+    - GUILD ORDERS: Ashby_Data/Guild Orders/PAUSED/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt (Dungeon 2 EXPORT contract)
+- CODEX: Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt (3.5 artifact-first + 6.5 export controls)
+- ENGINE ANCHOR: Ashby_Engine/ashby/modules/meetings/export/bundle.py
+
+    Status:
+    COMPLETED
+    Audit Bundle Path:
+    Ashby_Data/Audits/Execution/QUEST_098__2026-02-17__Stuart_v2_D2_Export_Filtering
+
+    Accepted On:
+    2026-02-18
+    Owner:
+    Hands (Peter)
+    Executor:
+    Codex (Brains)
+
+    Completed On:
+    2026-02-18
+
+    Completed By:
+    Codex (Brains)
+    ------------------------------------------------
+    DESCRIPTION
+    ------------------------------------------------
+    Implement export_type filtering logic so we can create deterministic zip bundles:
+  - full_bundle: everything relevant to the session (receipts + artifacts)
+  - transcript_only: transcript substrates + receipts (no formalization outputs)
+  - formalization_only: formalization outputs + evidence + receipts (no raw transcript unless required as evidence)
+
+Determinism is mandatory:
+  - stable sort order
+  - stable timestamps (fixed)
+  - stable permissions
+
+
+    ------------------------------------------------
+    SCOPE / OBJECTIVE
+    ------------------------------------------------
+    A) Extend export module API
+
+   In ashby/modules/meetings/export/bundle.py:
+     - Add export_type parameter to export_session_bundle:
+         export_session_bundle(session_id, export_type="full_bundle", ...)
+
+     - Add helper that classifies files into categories:
+         - receipts/manifests (session.json, run.json, contribution.json, session_state.json, overlays)
+         - transcripts (transcript.json, aligned_transcript.json, diarization.json, segment maps)
+         - formalizations (output.json, output.md, output.pdf, evidence_map.json, exports/)
+         - run logs (events.jsonl, inputs/resolved_input.json)
+
+   Define exact inclusion rules (v1):
+     full_bundle:
+       - include everything currently included (except exports/ bundles recursion guard remains)
+     transcript_only:
+       - include session.json + session_state.json (pointer)
+       - include overlays (speaker map) (optional but recommended)
+       - include contribution source files + receipts (because transcript alone without source is less useful)
+       - include run.json + events.jsonl for runs that produced transcripts
+       - include transcript artifacts only (exclude exports pdf/md and formalization outputs)
+     formalization_only:
+       - include session.json + session_state.json
+       - include overlays (speaker map) (recommended)
+       - include run.json + events.jsonl for runs that produced formalizations
+       - include formalization artifacts: output.* + evidence maps + exports
+       - include resolved_input.json receipts (to prove which contribution it came from)
+       - (Optional) include aligned_transcript.json if evidence_map requires it; define the rule explicitly.
+
+   HARD RULE:
+     - No bundle should include a prior bundle zip (exports/ recursion guard).
+
+B) Add deterministic unit tests
+   - New test file suggested:
+     Ashby_Engine/tests/test_meetings_export_bundle_export_type_filters.py
+
+   Tests:
+     - Create fake session structure under tmp STUART_ROOT with:
+         - session.json
+         - one contribution with source
+         - one run with transcript artifacts
+         - one run with formalization outputs + primary_outputs
+     - Assert:
+         - transcript_only bundle includes transcript artifacts and excludes output.pdf/md/json
+         - formalization_only includes output artifacts and excludes transcript artifacts (unless rule says otherwise)
+         - full_bundle includes both sets
+     - Assert deterministic zip (same file list ordering; timestamp fixed)
+
+C) Docs update
+   - Ensure Quest 090 contract doc has the final inclusion rules.
+
+
+    ------------------------------------------------
+    OUT OF SCOPE
+    ------------------------------------------------
+    - Web endpoint implementation (Quest 099)
+- UI integration (Dungeon 3)
+
+
+    ------------------------------------------------
+    DEPENDENCIES
+    ------------------------------------------------
+    - Existing export module exists
+- Contract doc must define export_type semantics (Quest 090)
+
+
+    ------------------------------------------------
+    EXECUTION NOTES
+    ------------------------------------------------
+    - Keep the bundle filter logic in ONE place (export module).
+- Don’t re-implement file classification in the web layer; the web layer calls this.
+
+
+    ------------------------------------------------
+    COMPLETION CRITERIA (DONE = PROOF)
+    ------------------------------------------------
+    DONE when:
+- export_session_bundle supports export_type variants (full_bundle/transcript_only/formalization_only)
+- Unit tests verify correct inclusion/exclusion and determinism.
+
+Proof:
+- pytest green
+- (Optional) sample zip file path output shown in logs
+
+
+    ------------------------------------------------
+    TALENT POINT (WHY THIS MATTERS)
+    ------------------------------------------------
+    Export is the ‘I can trust this tool’ button. If export is sloppy, the whole product feels unsafe and amateur.
+
+    ------------------------------------------------
+    FINAL NOTES / HANDS DECISIONS
+    ------------------------------------------------
+    If evidence_map later requires transcript substrate, codify it now. Don’t ‘sometimes include transcript’ without a rule.

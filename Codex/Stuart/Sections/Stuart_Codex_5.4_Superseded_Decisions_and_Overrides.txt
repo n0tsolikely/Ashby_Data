@@ -1,0 +1,88 @@
+STUART CODEX
+5.4 Superseded Decisions and Overrides (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines how Stuart handles overrides and superseded decisions. We explicitly designed this in chat because collaboration and iterative planning are common, and it is dangerous to overwrite history.
+
+Core idea:
+- nothing is erased,
+- history is preserved,
+- the current state is clear,
+- and both are evidence-backed.
+
+1) Definitions
+
+Superseded decision
+A decision or plan that was explicitly replaced by a later decision/plan in the recording(s).
+
+Override event
+The moment in the transcript where someone explicitly changes course:
+- “Cancel that.”
+- “Actually, do this instead.”
+- “No, we’re not doing that.”
+- “We’re switching to plan B.”
+
+Not an override:
+- vague uncertainty,
+- alternative suggestions that were not adopted.
+
+2) Requirements
+
+OVR1) Preserve historical record
+Stuart must preserve the earlier decision/plan as historical.
+
+OVR2) Mark superseded status
+The earlier item must be marked as superseded, with:
+- citation(s) to the original decision evidence,
+- citation(s) to the override evidence.
+
+OVR3) Identify current decision/plan
+The newer item must be marked as current, with citations.
+
+OVR4) Do not invent override intent
+If someone says “maybe we should…” and later “let’s do…” it may be a decision, but not necessarily an override unless the earlier one was a committed decision.
+Stuart must apply strict decision definitions.
+
+3) Where this applies
+
+Meeting Minutes mode
+- track superseded decisions and action items (if explicitly replaced).
+
+Creator Notes mode
+- track superseded plans and evolving decisions across contributions.
+
+Incident mode
+- track superseded hypotheses vs confirmed facts, if the recording explicitly updates the status.
+
+Journal mode
+- superseded decisions are less common, but may appear if the user changes plans (“I was going to…, but now I’ll…”). Templates may choose whether to represent this.
+
+4) Presentation in outputs
+
+Templates should define how to show superseded items, but canonical requirements are:
+- superseded items remain visible or accessible,
+- current items are clearly marked,
+- citations exist for both.
+
+Example representation:
+- Decisions (Current)
+- Decisions (Superseded)
+or
+- Decision X (superseded by Decision Y at 37:12)
+
+5) Indexing implications
+
+Indexes should treat:
+- current decisions as the primary retrieval target,
+- but allow retrieval of superseded items when asked (“show previous plan”).
+
+This avoids misleading future searches.
+
+6) Self-audit (5.4)
+
+- This section encodes our chat-designed “superseded decision/current decision” mechanism.
+- It ensures Stuart behaves like a truthful recorder, not a rewriting assistant.
+- It supports multi-contribution collaboration without erasing history.
+This section is complete.

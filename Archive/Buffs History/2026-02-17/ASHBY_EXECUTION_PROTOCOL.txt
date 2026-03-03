@@ -1,0 +1,308 @@
+ASHBY EXECUTION PROTOCOL (BUFF)
+Version: 2026-02-06
+Status: Canonical (Session Operating Law)
+Audience: Brains (Assistant) + Hands (User)
+Purpose: Prevent drift, enforce truth, and make each Raid deterministic and auditable.
+NOTE: This is a Buff / execution protocol. It follows Governance law and does not redefine it.
+
+================================================================================
+0) PRIME DIRECTIVE
+================================================================================
+- Truth > vibes. Filesystem + repo state are the source of truth.
+- No silent assumptions. If something isn’t certain, STOP and ask Hands.
+- No stealth scope. Do only what is ordered by Guild Orders + Accepted Quests.
+- One canonical engine repo. No re-unzipping old engines to “continue work” on a fork.
+- Governance artifacts live in Ashby_Data. Rehydration packs are optional resume artifacts (update only by explicit Hands order).
+
+================================================================================
+1) CANONICAL AUTHORITY STACK (WHAT WINS WHEN CONFLICT EXISTS)
+================================================================================
+When two sources conflict, resolve in this order (top wins):
+1) Codex (Ashby Codex + Stuart Codex) — constitutional law
+2) Active Guild Orders — current raid scope + definition of done
+3) Continuity Lock + Bootstrap Prompt — session resume law (if provided for this session)
+4) Quest Template — required quest structure + fields
+5) Quest Board state (folder placement) — actual commitment state machine
+6) Snapshots — receipts (what we claimed happened and when)
+7) Repo reality — what exists and runs right now
+8) Everything else (notes, archived docs, old drafts) — non-authoritative reference
+
+Notes:
+- “Repo reality” and “Snapshots” must converge. If they don’t, we fix governance first.
+- Archive folders are superseded unless Hands explicitly orders reopening them.
+
+================================================================================
+2) CANONICAL LOCATIONS (FILES WE TOUCH VS REFERENCE)
+================================================================================
+All paths below are canonical under:
+  /mnt/data/Ashby_Data/
+
+2.1 Governance: Edited (Canonical)
+- Quest Board:
+  - /mnt/data/Ashby_Data/Quest Board/
+  - /mnt/data/Ashby_Data/Quest Board/Accepted/   (ACTIVE commitments)
+  - /mnt/data/Ashby_Data/Quest Board/Completed/  (DONE commitments)
+  - /mnt/data/Ashby_Data/Quest Board/Abandoned/  (requires Control Sync decision)
+  - /mnt/data/Ashby_Data/Quest Board/QUEST_TEMPLATE.txt
+
+- Guild Orders:
+  - /mnt/data/Ashby_Data/Guild Orders/PAUSED/
+  - /mnt/data/Ashby_Data/Guild Orders/ACTIVE/   (active raid orders)
+  - /mnt/data/Ashby_Data/Guild Orders/COMPLETED/ (history)
+
+- Snapshots:
+  - /mnt/data/Ashby_Data/Snapshots/
+  - /mnt/data/Ashby_Data/Snapshots/Control Sync/
+  - /mnt/data/Ashby_Data/Snapshots/End of Day/
+  (Snapshots are immutable receipts once written.)
+
+- Talent Tree:
+  - /mnt/data/Ashby_Data/Talent Tree/
+  - /mnt/data/Ashby_Data/Talent Tree/TALENT TREE GUIDE.txt   (canonical talent rules)
+  - /mnt/data/Ashby_Data/Talent Tree/Stuart/                 (Stuart-specific tracking)
+
+2.2 Canon: Referenced (Canonical reference, edited only by explicit order)
+- Stuart Codex:
+  - /mnt/data/Ashby_Data/Stuart/Stuart Codex/
+  - (Full codex file may be placed here: Stuart_Codex_FULL_All_Sections.txt)
+
+- Ashby Codex:
+  - /mnt/data/Ashby_Data/Codex/
+
+- Canonical Visions:
+  - /mnt/data/Ashby_Data/Docs/   (Ashby canonical vision + blueprint)
+  - /mnt/data/Ashby_Data/Stuart/Docs/ (Stuart canonical vision)
+
+2.3 Rehydration Packs: Optional resume artifacts (edit ONLY by explicit Hands order)
+- Canonical location:
+  - /mnt/data/Ashby_Data/Latest Rehydration Pack/
+
+Optional Pack Rule (binding):
+- Rehydration Packs + Execution Packs are ONLY present when there is a current active one.
+- If the folder exists but is empty (or missing continuity/bootstrap), that is NOT an error.
+  It means there is no active rehydration pack for the session.
+- If Hands expects a pack for this session and it is missing, STOP and ask.
+
+Authority:
+- When present, the Continuity Lock + Bootstrap Prompt inside the pack are authoritative resume law.
+- Historical module-level packs (e.g., under /mnt/data/Ashby_Data/Stuart/Docs/...) are NOT resume authority.
+
+Update policy:
+- Default: treat packs as read-only.
+- Allowed: update packs ONLY when Hands explicitly orders a rehydration refresh
+  (example: end of accepted quest stack; preparing to start a new chat).
+
+Note:
+- Canonical edits to Quest Board / Guild Orders / Snapshots still happen in their canonical roots.
+  The rehydration pack is a bundled resume kit, not the source-of-truth location for those artifacts.
+
+2.4 Engine Repo (Canonical codebase)
+All code changes must be made in the ONE canonical engine repo:
+  /mnt/data/Ashby_Engine/
+
+Zips are export artifacts only:
+  /mnt/data/zips/   (zip quarantine)
+Never unzip an old engine zip and start working in that folder unless Hands orders it.
+
+================================================================================
+3) DEFINITIONS (TERMS USED IN THIS PROTOCOL)
+================================================================================
+- Control Sync: Decision forum. Produces binding Guild Orders and/or governance changes.
+- Guild Orders: The ordered scope list for the current Raid. Defines “done.”
+- Raid: Executing Guild Orders across one or more Dailies loops.
+- Quest: Atomic commitment. One quest = one deliverable capability/change.
+- Quest Board: Filesystem state machine (BOARD → ACCEPTED → COMPLETED).
+- Snapshot: Ground-truth receipt. What happened, what changed, what is now true.
+- Execution Pack: Time-bound runbook/contract for deterministic implementation.
+- Canon: Codex + visions + governance rules; the law that prevents drift.
+- Talent: A new durable capability (not effort). See TALENT TREE GUIDE.
+
+================================================================================
+4) QUEST STATE MACHINE (BOARD → ACCEPTED → COMPLETED)
+================================================================================
+4.1 BOARD (Not yet committed)
+Location:
+  /mnt/data/Ashby_Data/Quest Board/   (root board area)
+Rules:
+- Not guaranteed to be implemented yet.
+- Can be modified freely (template-correct), or split into atomic quests by order.
+
+4.2 ACCEPTED (Committed; ACTIVE)
+Location:
+  /mnt/data/Ashby_Data/Quest Board/Accepted/
+Rules:
+- ACCEPTED = promise. Brains commits to implement.
+- Can accept multiple quests, but that’s a commitment stack (don’t accept 10 for fun).
+- Abandonment is only allowed via Control Sync decision, then move to Abandoned.
+
+Required fields when accepting:
+- Status: ACTIVE
+- Accepted Date: YYYY-MM-DD
+- Accepted By: Hands or Brains (explicit)
+- Dependencies: list as needed (but do not invent fake dependencies)
+
+4.3 COMPLETED (Done; verified)
+Location:
+  /mnt/data/Ashby_Data/Quest Board/Completed/
+Rules:
+- COMPLETED means DoD is fully satisfied and verified against repo reality.
+- No unchecked required boxes.
+- No contradictory metadata.
+
+Required fields when completing:
+- Status: COMPLETED
+- Completed Date: YYYY-MM-DD
+- Definition of Done: all required boxes checked, only if true
+- Talent Awarded: YES/NO (truthful; see TALENT TREE GUIDE)
+- Verification: tests/commands/artifacts created (real evidence, not claims)
+
+If a quest in Completed is found to be incomplete:
+- Move it back to Accepted and mark Status: ACTIVE again.
+- Fix truth. No pretending.
+
+================================================================================
+5) PRE-FLIGHT AUDIT (MANDATORY BEFORE TOUCHING CODE)
+================================================================================
+Before implementing any Accepted quest:
+1) Read the quest file end-to-end (no skimming).
+2) Read the relevant Codex sections for the area touched.
+3) Read the active Guild Orders for this raid (scope check).
+4) Read the Continuity Lock + Bootstrap Prompt for current resume law (if provided).
+5) Check Quest Board state (Accepted + Completed).
+6) Confirm canonical repo path: /mnt/data/Ashby_Engine/
+7) Confirm tests you will run.
+
+If any step reveals uncertainty or conflict:
+- STOP and ask Hands before writing code.
+
+================================================================================
+6) IMPLEMENTATION RULES (WHILE CODING)
+================================================================================
+6.1 Architectural discipline (non-negotiable)
+- Thin router / no god files / single-responsibility modules.
+- Separate stages: transcription, diarization, alignment, formalization, indexing, rendering.
+- Overlays never mutate ground truth artifacts.
+- Artifacts are memory; chat history is not canonical memory.
+- Truth discipline: no claims without evidence; no phantom actions.
+
+6.2 Evidence for work performed (always)
+For every meaningful change, produce:
+- a diff (git diff or unified diff)
+- and terminal output showing:
+  - the command you ran
+  - the result
+
+Additional Truth Gate (binding):
+- NEVER claim pytest/tests passed or failed without actually running them.
+- Always capture the full output (or store it in the audit bundle).
+
+6.3 No side-work rule
+Do not “also fix” unrelated issues unless:
+- the quest explicitly includes it, OR
+- Hands explicitly orders it, OR
+- you find a blocking defect and stop to ask Hands.
+
+================================================================================
+7) POST-FLIGHT AUDIT (MANDATORY BEFORE MARKING A QUEST COMPLETE)
+================================================================================
+Before moving a quest into Completed:
+1) Verify the capability exists in repo reality.
+2) Run tests / verification commands.
+3) Confirm no Codex invariants were violated.
+4) Confirm DoD is fully satisfied (checkbox-by-checkbox).
+5) Confirm Talent Awarded is truthful:
+   - Talent = new durable capability (not refactor, not docs).
+   - If YES, update the Talent Tree immediately.
+6) Update quest metadata (Completed Date, verification evidence).
+7) Only then move the quest into Completed.
+
+If the quest cannot be fully completed:
+- Leave it in Accepted with Status: ACTIVE.
+- Write what is blocked and why (truthfully).
+- Accept another quest only if it is clearly unblocked or Hands agrees.
+
+================================================================================
+8) TALENTS (CAPABILITY-ONLY, NO MERCY POINTS)
+================================================================================
+Talent rules are authoritative in:
+  /mnt/data/Ashby_Data/Talent Tree/TALENT TREE GUIDE.txt
+
+Protocol rule:
+- If a quest awards a talent (YES), update:
+  - /mnt/data/Ashby_Data/Talent Tree/Stuart/TALENT_TREE.txt
+  - /mnt/data/Ashby_Data/Talent Tree/Stuart/TALENT_LOG.txt
+- If no new capability, Talent Awarded MUST be NO and nothing is added.
+
+================================================================================
+9) SNAPSHOTS (RECEIPTS)
+================================================================================
+- Control Sync snapshots:
+  /mnt/data/Ashby_Data/Snapshots/Control Sync/
+- End of Day snapshots:
+  /mnt/data/Ashby_Data/Snapshots/End of Day/
+- General Snapshots
+  /mnt/data/Ashby_Data/Snapshots/General/
+
+Snapshot truth rule:
+- Do not claim implementation unless repo reality and tests verify it.
+
+================================================================================
+10) EXPORTS (END OF WORK BLOCK)
+================================================================================
+At the end of a work block (or when Hands requests):
+- Export updated Data:
+  Ashby_Data_UPDATED_YYYY-MM-DD.zip
+- Export updated engine repo:
+  Ashby_Engine_UPDATED_YYYY-MM-DD.zip
+
+Rule:
+- Exports are distribution artifacts only; canonical work remains in-place.
+
+================================================================================
+11) FAILURE/UNCERTAINTY KILL SWITCH
+================================================================================
+If ANY of the following occurs, STOP and ask Hands:
+- Unclear whether a change violates Codex invariants
+- A quest DoD is ambiguous
+- A dependency is missing or contradictory
+- A repo/test failure is not clearly attributable
+- A change would require editing non-canonical reference packs
+- Any “maybe / probably / I think” appears in reasoning about actions
+
+================================================================================
+12) SELF-AUDIT (THIS DOCUMENT)
+================================================================================
+Checklist:
+[ ] Authority stack includes Codex, Guild Orders, Continuity, Quests, Snapshots, Repo reality
+[ ] Canonical paths included for Quest Board, Guild Orders, Snapshots, Talent Tree, Engine repo
+[ ] Explicit pre-flight and post-flight audits defined
+[ ] Truth gate prevents premature completion claims
+[ ] Talent rules reference the Talent Tree Guide (no duplication)
+[ ] Rehydration packs explicitly marked as reference-only
+[ ] Export discipline defined (data + engine)
+[ ] Uncertainty kill switch defined
+
+End of document.
+
+
+────────────────────────────────────────────────────────
+SIDE-QUEST NAMING (EXECUTION DISCIPLINE)
+────────────────────────────────────────────────────────
+- Use "SIDE-QUEST_###" for ad-hoc quests not originating from Guild Orders.
+- Use "QUEST_###" only for quests derived from active Guild Orders.
+- Both require the same evidence/audit discipline.
+
+
+NOTE (Execution Audits — Canonical Layout):
+- New execution audits MUST be written under:
+  /mnt/data/Ashby_Data/Audits/Execution/<QuestID>__YYYY-MM-DD__slug/
+- Each quest has ONE audit bundle folder containing all phases.
+- Legacy locations (e.g., Quest Diff Audit Files) are read-only history.
+
+
+NOTE (Rehydration Packs):
+- Rehydration packs are reference-only.
+- Canonical location:
+  /mnt/data/Ashby_Data/Latest Rehydration Pack/
+- Do not edit files inside rehydration packs.
+

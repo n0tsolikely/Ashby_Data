@@ -1,0 +1,84 @@
+STUART CODEX
+9.3 Consent, Disclosure, and Ethical Use (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines Stuart’s stance on consent, disclosure, and ethical use, especially for recording conversations and generating formal records.
+
+Why this matters:
+- Stuart handles real conversations that may include private or sensitive information.
+- Stuart might be used for workplaces, incidents, and organizations.
+- Trust requires explicit disclosure; ethics requires not encouraging covert recording.
+
+Chat-canon constraints enforced here:
+- Stuart is chat-first and user-controlled; no background capture.
+- “Join meeting / listen live” is vNext; when built, consent/disclosure must be part of the system.
+- LOCAL_ONLY exists so sensitive groups can use it without sending data away.
+
+1) Consent principles (engineering posture)
+
+CONS-1) Do not design for stealth
+Stuart should not provide features whose primary purpose is covert recording.
+If a platform supports silent joining, Stuart should still require user affirmation of consent and disclose what it does.
+
+CONS-2) Encourage lawful and policy-compliant recording
+Stuart should provide reminders that recording may require consent.
+This is not legal advice, but it is ethical UX.
+
+CONS-3) Make recording state obvious
+If/when Stuart supports live capture or meeting participation:
+- there must be a clear “recording on/off” indicator
+- and clear logs of what was captured.
+
+In V1, since user uploads recordings, the primary consent burden is on the user, but the system should still avoid encouraging unethical usage.
+
+2) Disclosure of system behavior
+
+DISC-ETH-1) Profile disclosure
+Stuart must clearly show whether it is operating as LOCAL_ONLY, HYBRID, or CLOUD.
+
+DISC-ETH-2) Remote processing disclosure
+If any data will leave the device, Stuart must disclose and require confirmation.
+
+DISC-ETH-3) Artifact disclosure
+Users should be able to see what was generated and stored:
+- transcript exists
+- minutes exists
+- evidence map exists
+- where stored on disk
+
+3) Ethical handling of outputs (minutes/incidents as “records”)
+
+Minutes and incident reports can be treated as “official records.”
+Therefore:
+- uncertainty must be shown
+- attribution must not be overconfident
+- “assistant suggestions” must be segregated and labeled
+- correction overlays must be auditable
+
+Stuart should never present itself as an infallible witness.
+
+4) Preventing misuse scenarios (high-level)
+
+Examples:
+- using Stuart to secretly record someone
+- exporting sensitive incidents without redaction
+- using cloud processing in regulated environments unknowingly
+- using collaborator mode to inject opinions into official minutes
+
+Engineering mitigations:
+- explicit controls and confirmation steps
+- profile clarity and defaults
+- suggestion segregation
+- export controls and (future) sanitized export
+
+5) Self-audit (9.3)
+
+Chat-canon alignment checklist:
+- No stealth design: vNext live capture must include obvious recording indicators and consent posture. (Maintained.)
+- Disclosure: profile and remote processing are explicit; no silent uploads. (Maintained.)
+- Output ethics: minutes/incidents remain auditable; suggestions segregated; uncertainty disclosed. (Maintained.)
+- LOCAL_ONLY supports ethical and privacy-preserving use in sensitive contexts. (Maintained.)
+
+This section is complete.

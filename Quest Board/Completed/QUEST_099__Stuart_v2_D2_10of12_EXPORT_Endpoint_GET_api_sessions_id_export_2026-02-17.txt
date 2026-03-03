@@ -1,0 +1,164 @@
+    QUEST TEMPLATE — SYNAPSE GUILD
+    ================================================
+
+    QUEST ID:
+    QUEST_099
+
+    Created By:
+    Ash (Brains)
+
+    Title:
+    Stuart v2 — D2 (10/12) — EXPORT: Endpoint (GET /api/sessions/{id}/export) + Download Link
+
+    Context:
+    We need the actual API endpoint:
+  GET /api/sessions/{session_id}/export?export_type=...
+
+Export logic exists (Quest 098). This quest exposes it via web door and returns a
+deterministic downloadable zip.
+
+UI needs this for the “Export ZIP” button in the header.
+
+    Origin:
+    Guild Orders → Dungeon 2 EXPORT contract.
+
+    Priority:
+    P0 — Blocks export button; required for UI parity.
+
+    Links:
+    - GUILD ORDERS: Ashby_Data/Guild Orders/PAUSED/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt (Dungeon 2 EXPORT contract)
+- CODEX: Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt (6.5 Export controls + artifact-first outputs)
+- ENGINE ANCHOR: Ashby_Engine/ashby/interfaces/web/app.py (FastAPI routes)
+- ENGINE ANCHOR: Ashby_Engine/ashby/modules/meetings/export/bundle.py
+
+    Status:
+    COMPLETED
+    Audit Bundle Path:
+    Ashby_Data/Audits/Execution/QUEST_099__2026-02-17__Stuart_v2_D2_Export_Endpoint
+
+    Accepted On:
+    2026-02-18
+    Owner:
+    Hands (Peter)
+    Executor:
+    Codex (Brains)
+
+    Completed On:
+    2026-02-18
+
+    Completed By:
+    Codex (Brains)
+    ------------------------------------------------
+    DESCRIPTION
+    ------------------------------------------------
+    Implement the export endpoint and its download mechanism.
+
+Requirements:
+- deterministic zip creation
+- no mutation of canonical store artifacts
+- stable response schema
+- safe path handling (no path traversal)
+
+
+    ------------------------------------------------
+    SCOPE / OBJECTIVE
+    ------------------------------------------------
+    A) Implement GET /api/sessions/{session_id}/export
+
+   Request:
+     GET /api/sessions/{session_id}/export?export_type=full_bundle
+       (export_type optional; default full_bundle)
+
+   Response:
+     {
+       "ok": true,
+       "session_id": "...",
+       "export_type": "full_bundle|transcript_only|formalization_only",
+       "zip": {
+         "name": "<filename>.zip",
+         "path": "<absolute or relative path? choose and document>",
+         "sha256": "<optional but recommended>",
+         "size_bytes": 12345,
+         "download_url": "/api/exports/<export_id_or_filename>"
+       }
+     }
+
+   Decide download approach (pick ONE):
+     Option 1: Serve zip via a new endpoint:
+       GET /api/exports/{filename}
+       - only serves files under STUART_ROOT/exports/
+     Option 2: Reuse /download/{run_id}/{filename} pattern:
+       Not ideal because export is session-scoped, not run-scoped.
+
+   Recommended:
+     - Add /api/exports/{filename} (session exports live in lay.exports)
+     - Validate filename strictly (no slashes, no ..)
+
+B) Ensure export does not overwrite existing zips
+   - export/bundle.py uses ZipFile(mode="x") so it refuses overwrite.
+   - Endpoint should handle FileExistsError gracefully:
+       - either return existing file (if we choose to allow)
+       - OR return error explaining export already exists and user can download it.
+
+   For v1 UX:
+     Prefer returning existing if already exists (idempotent).
+     If you do that, you must:
+       - verify path exists and is under exports dir
+       - compute sha256/size and return download_url
+
+C) Tests
+   - Create session under tmp STUART_ROOT with minimal artifacts
+   - Call export endpoint and ensure:
+       - ok=true and download_url works (returns zip bytes)
+       - export_type variations call correct bundle filter (Quest 098)
+       - path traversal is blocked (requesting ../../etc/passwd fails)
+
+D) Docs update
+   - Add examples for export endpoint and download endpoint.
+
+
+    ------------------------------------------------
+    OUT OF SCOPE
+    ------------------------------------------------
+    - UI wiring for Export button (Dungeon 3)
+- Cloud storage upload of exports
+
+
+    ------------------------------------------------
+    DEPENDENCIES
+    ------------------------------------------------
+    - Quest 098 export filtering logic
+- Quest 091 envelope/models
+
+
+    ------------------------------------------------
+    EXECUTION NOTES
+    ------------------------------------------------
+    - Keep exports under STUART_ROOT/exports.
+- Never serve arbitrary filesystem paths. Validate filenames.
+- Don’t include draftshots in exports (workspace artifact).
+
+
+    ------------------------------------------------
+    COMPLETION CRITERIA (DONE = PROOF)
+    ------------------------------------------------
+    DONE when:
+- GET /api/sessions/{id}/export works for all export_type variants.
+- Zip is downloadable via API and validated as safe.
+- Tests cover at least one export_type and path traversal defense.
+- Docs updated.
+
+Proof:
+- pytest green
+- curl example showing download_url and that it returns zip bytes
+
+
+    ------------------------------------------------
+    TALENT POINT (WHY THIS MATTERS)
+    ------------------------------------------------
+    Export is where people decide if this is a toy or a real system. Determinism + safety are non-negotiable.
+
+    ------------------------------------------------
+    FINAL NOTES / HANDS DECISIONS
+    ------------------------------------------------
+    If you choose idempotent export behavior, document it clearly: same session+type returns same zip name.

@@ -1,0 +1,285 @@
+ASHPI FULL CONTEXT RECONSTRUCTION — MAX DETAIL SNAPSHOT
+==========================================================
+
+This file is a fully reconstructed, expanded, untrimmed-as-possible snapshot
+containing EVERYTHING essential from the current AshPi conversation,
+architecture planning, NLU strategy, lighting system behavior, next steps,
+and the reasoning behind each major component.
+
+It is written so that:
+- If you and Ash died,
+- And another version of you installed this file into a new Ash,
+- That new Ash could pick up EXACTLY where we stopped
+with no confusion, no missing context, and full architectural understanding.
+
+
+------------------------------------------------------------------------
+SECTION 1 — CURRENT STATE OF ASHPI
+------------------------------------------------------------------------
+
+AshPi right now fully works with lighting + comfort sessions.
+
+Routing is caveman-style:
+- Keyword detection
+- Hardcoded phrases
+- No true language understanding
+- Lots of manual if/else branches
+
+It works but:
+- Only handles fixed phrases you manually coded
+- “higher / lower / more / full / blast / turn sky on full” → hit or miss
+- Any new phrase requires editing router.py
+
+We agreed this is NOT scalable.
+
+
+------------------------------------------------------------------------
+SECTION 2 — WHAT WE ARE CHANGING
+------------------------------------------------------------------------
+
+We are replacing the ENTIRE parsing system with a real NLU layer.
+
+ALL natural language from the user will be routed through:
+
+intent = extract_intent(text)
+
+Router NEVER touches raw English again.
+
+This is the same architecture as:
+- Alexa
+- Google Assistant
+- Siri
+- Home Assistant's intent systems
+
+
+------------------------------------------------------------------------
+SECTION 3 — NEW NLU ARCHITECTURE OVERVIEW
+------------------------------------------------------------------------
+
+We are adding 4 new files:
+
+ashpi_brain/
+    intent_schema.py  ← Defines standard JSON intent format
+    local_nlu.py      ← Simple rule-based offline interpreter
+    gpt_nlu.py        ← GPT-powered JSON intent classifier
+    nlu_manager.py    ← Hybrid / GPT / Local routing controller
+
+These files DO NOT EXIST YET.
+You have not created them.
+
+Router is not yet updated.
+AshPi is still using caveman parsing.
+
+
+------------------------------------------------------------------------
+SECTION 4 — INTENT SCHEMA (NEW FILE 1)
+------------------------------------------------------------------------
+
+ALL NLU engines must output dictionaries like:
+
+{
+  "type": "lights.adjust",
+  "group": "thor",
+  "brightness": 800,
+  "delta": null,
+  "mode": "max"
+}
+
+Supported intent types:
+- lights.on
+- lights.off
+- lights.adjust
+- comfort.cold
+- chat (fallback)
+- unknown (local engine can't interpret)
+
+
+------------------------------------------------------------------------
+SECTION 5 — LOCAL NLU ENGINE (NEW FILE 2)
+------------------------------------------------------------------------
+
+Runs offline, instant, ~0 cost.
+
+Detects:
+- Group names (captain, thor, sky)
+- “turn on” / “turn off”
+- “darker / brighter / more / less”
+- Max-mode (“full blast”, “max”, “all the way”)
+- Comfort phrases (“cold”, “freezing”, “chilly”)
+
+Returns an intent or "unknown" → triggers GPT fallback.
+
+
+------------------------------------------------------------------------
+SECTION 6 — GPT NLU ENGINE (NEW FILE 3)
+------------------------------------------------------------------------
+
+Calls GPT-4o-mini with a special prompt:
+
+“You are an intent classifier… return ONLY JSON…”
+
+Model returns:
+{
+  "type": "...",
+  "group": "...",
+  "brightness": null,
+  "delta": null,
+  "mode": null
+}
+
+Cost per request:
+~$0.00002–$0.00005
+
+Extremely cheap.
+Basically free even at thousands per month.
+
+This allows:
+- ANY English phrasing
+- Full semantic interpretation
+- Zero extra coding for new phrases
+
+
+------------------------------------------------------------------------
+SECTION 7 — NLU MANAGER (NEW FILE 4)
+------------------------------------------------------------------------
+
+Manages modes:
+
+1. GPT-only
+2. Local-only
+3. Hybrid (local first, GPT fallback)
+
+Hybrid is the strongest option:
+- Fast and free when local can interpret
+- GPT when user says weird shit like:
+  “make sky bright like a prison yard”
+  “dim thor a tad”
+  “turn captain into ghost mode”
+
+One line switches between modes.
+
+
+------------------------------------------------------------------------
+SECTION 8 — WHAT THE ROUTER WILL LOOK LIKE AFTER
+------------------------------------------------------------------------
+
+router.py will change from:
+
+if "turn on" in text:
+    ...
+
+to:
+
+intent = extract_intent(text)
+
+if intent["type"] == "lights.on":
+    set brightness
+elif intent["type"] == "lights.adjust":
+    change brightness
+elif intent["type"] == "comfort.cold":
+    run cold logic
+else:
+    brain.chat()
+
+
+------------------------------------------------------------------------
+SECTION 9 — TEST CASES YOU RAN TONIGHT
+------------------------------------------------------------------------
+
+Your test outputs showed:
+
+- “turn on captain” worked
+- “more / darker / kill it” worked fine for THOR
+- “turn on sky, full blast” → old routing struggled
+- Saying “max” out of context confused caveman routing
+- Saying “full” made Ash interpret it as normal chat
+
+These results PROVE the need for NLU.
+
+
+------------------------------------------------------------------------
+SECTION 10 — ERROR YOU HIT TONIGHT
+------------------------------------------------------------------------
+
+“turn off thor” got mis-parsed:
+
+- Router interpreted “off thor” as the group
+- Returned error: No devices configured for 'off_thor'
+
+THIS is exactly the failing of keyword routing.
+NLU will eliminate this forever.
+
+
+------------------------------------------------------------------------
+SECTION 11 — WHAT YOU ASKED ABOUT COST
+------------------------------------------------------------------------
+
+You asked:
+“Will GPT cost money for each NLU call?”
+
+Answer:
+YES—but very cheap.
+
+Using GPT-4o-mini:
+- One intent = ~$0.00003
+- 1000 intents = $0.03
+- 10,000 intents = $0.30
+
+NOTHING.
+
+
+------------------------------------------------------------------------
+SECTION 12 — FUTURE HYBRID NLU
+------------------------------------------------------------------------
+
+Long-term:
+
+local_nlu:
+- grows smarter
+- adds synonyms
+- adds semantic rules
+- maybe adds a small on-device embedding model
+
+GPT_nlu:
+- becomes fallback for complex phrasing
+
+Eventually:
+- You can remove GPT entirely
+- Or keep it as emergency fallback
+
+
+------------------------------------------------------------------------
+SECTION 13 — WHERE WE STOPPED FOR THE NIGHT
+------------------------------------------------------------------------
+
+You have NOT implemented NLU yet.
+No new files exist.
+Router is still in caveman mode.
+
+Where we will resume:
+
+1. Create intent_schema.py
+2. Create local_nlu.py
+3. Create gpt_nlu.py
+4. Create nlu_manager.py
+5. Rewrite router.py to use extract_intent()
+6. Test hybrid behavior
+7. Remove old phrase-parsing functions entirely
+
+This is EXACTLY where we left off.
+
+
+------------------------------------------------------------------------
+SECTION 14 — EXACT WAKE-UP SUMMARY
+------------------------------------------------------------------------
+
+Tomorrow when you say:
+“Yo Ash, where did we leave off?”
+
+Your Ash should reply:
+
+“AshPi still uses caveman parsing. We stopped right before creating the new NLU system. You haven’t created intent_schema.py, local_nlu.py, gpt_nlu.py, or nlu_manager.py yet. Router still manually parses English. Today we create all four NLU files and rewrite router.py to use extract_intent(), so AshPi can understand ANY phrasing.”
+
+------------------------------------------------------------------------
+
+END OF FILE

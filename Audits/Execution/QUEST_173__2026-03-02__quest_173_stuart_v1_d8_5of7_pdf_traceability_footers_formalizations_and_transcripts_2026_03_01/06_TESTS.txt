@@ -1,0 +1,6 @@
+## Command Receipt Log
+CMD: cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_pdf_traceability_footers.py tests/test_meetings_export_bundle_export_type_filters.py
+...                                                                      [100%]
+3 passed in 0.05s
+RC: 0
+PASS: governance validation OK for QUEST_173 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_173__2026-03-02__quest_173_stuart_v1_d8_5of7_pdf_traceability_footers_formalizations_and_transcripts_2026_03_01

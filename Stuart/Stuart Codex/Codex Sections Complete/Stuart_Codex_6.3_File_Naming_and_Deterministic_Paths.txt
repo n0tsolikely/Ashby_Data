@@ -1,0 +1,145 @@
+STUART CODEX
+6.3 File Naming and Deterministic Paths (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines how Stuart stores session artifacts on disk so that:
+- users can find and print outputs quickly,
+- the system can reliably index and retrieve sessions,
+- paths are stable and deterministic,
+- and nothing depends on chat history.
+
+The exact root path is configurable. The structure under the root is canonical.
+
+1) Storage root
+
+Stuart must have a configurable storage root directory, called STUART_ROOT.
+Examples (not normative):
+- user home app data
+- a chosen folder like “StuartArchive”
+- an Ashby-managed data directory
+
+Rules:
+- The user must be able to see and change STUART_ROOT (with warnings).
+- Changing STUART_ROOT must not silently break old sessions (migration or multi-root support is required if changed).
+
+2) Canonical folder layout (under STUART_ROOT)
+
+Recommended canonical layout:
+
+STUART_ROOT/
+  sessions/
+    <session_folder>/
+      session.json
+      contributions/
+        <contribution_id>/
+          source.<ext>
+          source_metadata.json
+          normalized_audio.wav (optional)
+      processing/
+        diarization/
+          diarization.json
+        transcription/
+          transcript.json
+          transcript.txt
+        alignment/
+          alignment.json (optional)
+      formalizations/
+        <run_id>/
+          run.json
+          evidence_map.json
+          output.json
+          output.md
+          output.pdf
+          (optional language variants)
+      captions/
+        <run_id>/
+          run.json
+          captions.srt
+          captions.vtt (optional)
+      exports/
+        (user-triggered bundles, zips, etc.)
+      indexes/
+        (session-local indexes if any)
+  global_index/
+    (global indexes and metadata for searching across sessions)
+
+This layout is designed so:
+- contributions are preserved and separable,
+- processing outputs are organized by stage,
+- and formalizations are versioned by run_id.
+
+3) Session folder naming
+
+Session folder names must be:
+- unique,
+- stable,
+- OS-safe (no illegal characters),
+- and preferably human scan-friendly.
+
+Canonical recommendation:
+<YYYY-MM-DD>__<HHMMSS>__<session_id>__<slug>
+
+Example:
+2026-01-12__193045__01J0ABCDEF1234567890__Knights_of_Columbus
+
+Rules:
+- session_id is the true unique key; date/time/slug are for humans.
+- slug is optional and sanitized (spaces -> underscores, remove punctuation).
+- once created, session folder name should not change (renames create retrieval chaos).
+
+4) Run folder naming
+
+Formalizations and other runs are stored under run_id folders.
+run_id must be unique and stable within the session.
+
+A run_id may include:
+- timestamp + short random
+- or ULID
+- or UUID
+
+Key rule:
+- artifacts must reference run_id, not rely on “latest” without explicit resolution.
+
+5) Artifact file naming inside a run
+
+Inside formalizations/<run_id>/ the canonical names are:
+
+- run.json
+  Contains run metadata (mode, template, retention, profile, adapters).
+
+- evidence_map.json
+
+- output.json
+- output.md
+- output.pdf
+
+Optional:
+- output.<lang>.md/pdf for translations
+
+This consistent naming makes tooling easier and avoids template-specific filename chaos.
+
+6) Determinism and reproducibility
+
+Determinism means:
+- given session_id and run_id, the artifact paths are predictable.
+- the system can reconstruct the full session state from session.json + on-disk artifacts.
+
+Reproducibility means:
+- re-running with the same template/version/retention should produce a comparable structure, but the system still records a new run_id because it is a new execution event.
+
+7) Human-facing “Print Now” behavior
+
+Even though storage is structured, the UI must allow:
+- one-click printing of the most relevant PDF (e.g., latest meeting minutes run),
+without requiring users to browse folders.
+
+But folder structure must support power users who want to audit or print directly from disk.
+
+8) Self-audit (6.3)
+
+- This section encodes the “save it locally, printable, findable” requirements from our chat.
+- It preserves explicit versioning via run_id so that re-running templates doesn’t overwrite history.
+- It enforces OS-safe deterministic paths and avoids the hard-wrap problem by making PDFs primary for print.
+This section is complete.

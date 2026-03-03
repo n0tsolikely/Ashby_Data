@@ -1,0 +1,86 @@
+REHYDRATION PACK INDEX — 2026-02-18 (ASHBY / STUART)
+
+Purpose:
+- Deterministic zero-ambiguity re-entry pack for continuing Stuart execution.
+- Preserve exact continuity state, active constraints, and next legal actions.
+
+Governance relationship:
+- This pack is subject-state continuity, not constitutional governance.
+- Governance law is in: /home/notsolikely/Synapse_OS/governance
+- If any conflict exists, governance locks/processes win.
+
+================================================================================
+A) ACTIVE ARTIFACTS (THIS PACK)
+================================================================================
+- Bootstrap Prompt:
+  /home/notsolikely/Ashby_Data/Latest Rehydration Pack/BOOTSTRAP_PROMPT_2026-02-18.txt
+
+- Continuity Lock:
+  /home/notsolikely/Ashby_Data/Latest Rehydration Pack/CONTINUITY_LOCK_2026-02-18.txt
+
+- Execution Pack Index:
+  /home/notsolikely/Ashby_Data/Latest Rehydration Pack/execution pack/00_EXECUTION_PACK_INDEX__2026-02-18.txt
+
+================================================================================
+B) CURRENT CONTINUITY ANCHORS (AUTHORITATIVE)
+================================================================================
+- Latest Control Sync snapshot:
+  /home/notsolikely/Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-02-19.txt
+
+- Latest End-of-Day snapshot:
+  /home/notsolikely/Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2026-02-18.txt
+
+- Latest General snapshot:
+  /home/notsolikely/Ashby_Data/Snapshots/General/STUART_General_Snapshot_2026-02-18.txt
+
+- Active Guild Orders:
+  /home/notsolikely/Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt
+
+- Stuart Codex (constitutional subject law):
+  /home/notsolikely/Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt
+
+================================================================================
+C) STATE RECEIPT (AS OF 2026-02-18)
+================================================================================
+- Dungeon 2 quest stack QUEST_090..QUEST_101 is completed and in:
+  /home/notsolikely/Ashby_Data/Quest Board/Completed/
+
+- Dungeon 3 quest stack QUEST_102..QUEST_113 is completed and in:
+  /home/notsolikely/Ashby_Data/Quest Board/Completed/
+
+- Dungeon 4 intake quest set QUEST_114..QUEST_128 exists in board root:
+  /home/notsolikely/Ashby_Data/Quest Board/
+
+- Quest Board Accepted is currently empty.
+
+================================================================================
+D) REQUIRED READ ORDER (SESSION START)
+================================================================================
+1) Governance entry + routing:
+   - governance/README.txt
+   - governance/INDEX.txt
+   - governance/SYNAPSE_STATE.yaml
+
+2) Subject buffs:
+   - /home/notsolikely/Ashby_Data/Buffs/STUART_SESSION_START_CHECK.txt
+   - /home/notsolikely/Ashby_Data/Buffs/STUART_EXECUTION_PROTOCOL.txt
+   - /home/notsolikely/Ashby_Data/Buffs/STUART_DATA_DIRECTORY_MAP.txt
+
+3) This pack (in order):
+   - BOOTSTRAP_PROMPT_2026-02-18.txt
+   - CONTINUITY_LOCK_2026-02-18.txt
+   - execution pack/00_EXECUTION_PACK_INDEX__2026-02-18.txt
+
+4) Scope + canon:
+   - Active guild orders file above
+   - Stuart codex file above
+
+================================================================================
+E) NEXT SAFE ACTION
+================================================================================
+- Control Sync is OPEN for D4 state sync (do not close until directed by Hands).
+- Confirm D4 intake/acceptance scope from QUEST_114..QUEST_128.
+- Initialize audit bundles before acceptance.
+- Execute only accepted quests in order.
+
+END OF FILE

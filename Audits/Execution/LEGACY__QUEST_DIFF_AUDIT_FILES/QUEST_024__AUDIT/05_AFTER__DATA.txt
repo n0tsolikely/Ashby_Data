@@ -1,0 +1,98 @@
+== quest file (after) ==
+QUEST ID: QUEST_024
+Title: Stuart v1 — Dungeon 8 (1 of 2): Webapp scaffold + chat/session history + plan preview shell
+Context: Stuart
+Origin: Guild Orders: GUILD_ORDERS_STUART_V1_2026-01-16_REV3.txt (Dungeon 8)
+Priority: P0
+Links:
+- Guild Orders: Stuart v1 — Dungeon 8
+- Supersedes (decomposition of): QUEST_009
+- Related: QUEST_018 (execution gating), QUEST_017 (plan preview contract)
+Status: COMPLETED
+Audit Bundle Path: Quest Board/QUEST DIFF AUDIT FILES/QUEST_024__AUDIT/
+Accepted On: 2026-01-26
+Completed On: 2026-01-26
+DESCRIPTION
+────────────────────────────────────────
+Build the primary web door scaffold: ChatGPT-like UI structure with session history and chat pane, wired enough to display plan previews/clarify prompts from the engine.
+
+SCOPE / OBJECTIVE
+────────────────────────────────────────
+Implement webapp scaffold with:
+- session history list
+- chat pane
+- ability to display engine outputs:
+  - plan preview
+  - clarification prompts/options (rendered in UI)
+
+This quest establishes the UI shell and engine integration for messaging/plan display.
+It does not require full pipeline execution or downloads yet (handled in QUEST_025).
+
+OUT OF SCOPE
+────────────────────────────────────────
+Full upload-to-run flow and artifact downloads (QUEST_025).
+Accounts/auth (v1 may be local-only).
+Template editor UI.
+
+DEPENDENCIES
+────────────────────────────────────────
+- QUEST_018
+- QUEST_013
+
+EXECUTION NOTES
+────────────────────────────────────────
+Door law: UI is transport + rendering. Business logic remains in meetings module engine.
+Ensure the UI can render enumerated options without re-implementing decision logic.
+
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────
+- [x] Webapp displays session history and chat pane.
+- [x] Webapp can send a user message to the module router and render the returned plan/clarify structures.
+- [x] Plan preview is displayed when engine returns one; enumerated options are displayed when engine returns clarifications.
+- [x] UI does not hardcode modes/templates; it renders allowed values supplied by the engine/registry.
+- [x] No default mode is preselected on fresh load (aligns with Guild Orders).
+
+TALENT POINT
+────────────────────────────────────────
+On completion:
+- Talent Point Awarded: YES
+- Talent Spent On: TALENT_STUART_WEB_DOOR_SCAFFOLD — Web Door Scaffold (Session List + Chat + Plan/Clarify Rendering)
+
+FINAL NOTES
+────────────────────────────────────────
+(optional)
+
+
+FINAL NOTES
+────────────────────────────────────────
+Implementation notes:
+- Web door implemented as FastAPI + Jinja + static JS/CSS under ashby/interfaces/web/.
+- UI pulls allowed modes/templates from engine registries via /api/registry (no hardcoding).
+- Message flow uses meetings clarify_or_preview() to render plan preview or enumerated clarify options.
+- Run locally: python scripts/stuart_web.py (port 8844 by default).
+
+== talent log tail ==
+2026-01-25
+Quest Completed: QUEST_022
+Talent Point Awarded: YES
+Talent Spent On: TALENT_STUART_SQLITE_FTS_INDEX — SQLite FTS Index + Ingestion
+Notes: (see quest file for details)
+
+2026-01-25
+Quest Completed: QUEST_023
+Talent Point Awarded: YES
+Talent Spent On: TALENT_STUART_SEARCH_RANKED_CITATIONS — Ranked Search Results + Citations
+Notes: (see quest file for details)
+
+2026-01-25
+Quest Completed: QUEST_010
+Talent Point Awarded: YES
+Talent Spent On: TALENT_STUART_TELEGRAM_DOOR_MINIMAL — Telegram Door (Buttons + File→PDF)
+Notes: Thin door-only adapter (mode/speakers buttons, file upload, default pipeline, PDF return).
+
+2026-01-26
+Quest Completed: QUEST_024
+Talent Point Awarded: YES
+Talent Spent On: TALENT_STUART_WEB_DOOR_SCAFFOLD — Web Door Scaffold (Session List + Chat + Plan/Clarify Rendering)
+Notes: Web UI shell + engine-integrated plan/clarify rendering; no pipeline execution yet (QUEST_025).
+

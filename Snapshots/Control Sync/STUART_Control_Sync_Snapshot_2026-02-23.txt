@@ -1,0 +1,134 @@
+STUART — CONTROL SYNC SNAPSHOT (RETROFIT) — Control Sync CLOSED
+Snapshot Type: Control Sync
+Date: 2026-02-23
+Timezone: America/Toronto
+Participants: Peter (Hands), Ash (Brains)
+
+Purpose
+- Retrofit a Control Sync to formalize the current plan:
+  1) Freeze the authoritative Dungeon 6/7/8 quest packs (template-match-full) as the “correct” versions to avoid confusion.
+  2) Plan to split Dungeon 9 (LLM routing) into two dungeons:
+     - Dungeon 9A: Local SaaS-simulated LLM Gateway (Gemini API key held locally, HTTP service, no hosting cost)
+     - Dungeon 9B: Stuart LLM Routing integration (provider seam + profile routing + retention semantics + audit logging), consuming the gateway.
+  3) Execute 9A first via Codex, then rehydrate back here with updated canon and Monster refresh.
+
+World State / Legality
+- Fog Lifted is assumed only if CODEX_FREEZE.md exists in Ashby_Data/Codex/ (verify in repo at execution time).
+- This Control Sync does not accept quests or authorize execution by itself. Quest acceptance/execution will be performed by Hands via Codex with audits.
+
+Rehydration Anchors (evidence references)
+- Active Guild Orders:
+  - Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt
+- Stuart Codex:
+  - Ashby_Data/Codex/Stuart/Stuart_Codex_Full.txt
+  - Ashby_Data/Codex/Stuart/TOC.md
+- Quest Template (v1.5 subject copy):
+  - Ashby_Data/Quest Board/QUEST_TEMPLATE.txt
+
+Binding Decisions (LAW)
+1) Canonical Dungeon 6/7/8 Quest Packs
+- The following packs are designated as the ONLY canonical quest packs for D6–D8 as of this Control Sync:
+  - ASHBY_QUESTS__DUNGEON_6__QUEST_140-146__TEMPLATE_MATCH_FULL__2026-02-23.zip
+  - ASHBY_QUESTS__DUNGEON_7__QUEST_147-152__TEMPLATE_MATCH_FULL__2026-02-23.zip
+  - ASHBY_QUESTS__DUNGEON_8__QUEST_153-157__TEMPLATE_MATCH_FULL__2026-02-23.zip
+- Bundle zip created for convenience:
+  - ASHBY_QUEST_PACKS__D6_D7_D8__TEMPLATE_MATCH_FULL__2026-02-23__BUNDLE.zip
+  - SHA256: 818c08fd1252b9c42a6cc2f3893ee7dceb5a676b78f17d4d515073c3d2386c7a
+- Any earlier variants are non-canonical and MUST NOT be used.
+
+2) Dungeon 9 Split Plan (LAW)
+- Dungeon 9 is split into:
+  - Dungeon 9A — LLM Gateway Infrastructure (Local SaaS simulation)
+  - Dungeon 9B — Stuart LLM Routing integration
+- Rationale:
+  - Avoid hosting costs while preserving SaaS-like call architecture.
+  - Keep API keys out of client/UI; gateway holds Gemini key locally.
+  - Make later swap to hosted SaaS a URL/config change, not a refactor.
+
+3) Execution Order (LAW)
+- Execution order is:
+  - (Optional later) D6 → D7 → D8 (packs frozen above)
+  - NOW: Implement Dungeon 9A first, then Dungeon 9B.
+- No attempt to execute 9B before 9A is proven working.
+
+4) Governance Constraints (LAW)
+- No fabricated audits/receipts (per Synapse governance hardening applied in Synapse_OS).
+- Any proof/UI quests requiring a running Stuart surface must be marked BLOCKED if the surface isn’t available; no fake completion.
+
+Deferred / Not Decided
+- No decision yet on quotas/billing enforcement. Token usage may be logged later for CLOUD mode; LOCAL mode is subscription flat-rate.
+- No decision yet on whether the gateway returns only structured JSON or also provides a “rendered markdown” convenience output.
+
+Next Actions (Resume Point)
+1) Hands edits Guild Orders:
+   - Split Dungeon 9 section into Dungeon 9A and Dungeon 9B in the active Guild Orders file.
+2) Brains generates Dungeon 9A quest pack (template-match-full) based on the updated Guild Orders.
+3) Hands drops 9A pack into Quest Board and has Codex execute 9A with full audits.
+4) Hands exports updated canon + Monster refresh back into this chat for rehydration and to draft 9B.
+
+Artifacts Produced in this Control Sync
+- Quest pack bundle zip:
+  - ASHBY_QUEST_PACKS__D6_D7_D8__TEMPLATE_MATCH_FULL__2026-02-23__BUNDLE.zip
+- This snapshot:
+  - STUART_Control_Sync_Snapshot__04_2026-02-23.txt
+
+
+======================================================================
+CONTROL SYNC UPDATE — Dungeon 9A Pack Generated + Versioned Contract Decision
+======================================================================
+
+Decision Summary
+----------------
+Following the split of Dungeon 9 into 9A (LLM Gateway Infrastructure) and 9B (Stuart LLM Routing Integration), we have now:
+
+1) Generated the official Dungeon 9A quest pack:
+   - ASHBY_QUESTS__DUNGEON_9A__QUEST_158-161__TEMPLATE_MATCH_FULL__2026-02-23.zip
+
+2) Added an explicit contract version requirement:
+   - Gateway response MUST include: "version": 1 at top-level.
+   - This ensures forward compatibility for future API changes (v2, v3).
+   - Prevents silent contract drift.
+   - Enables future hosted SaaS swap without refactor.
+
+Rationale
+---------
+- Synapse Runtime will eventually rely on stable LLM gateway contracts.
+- Early versioning prevents schema breakage later.
+- The LLM gateway is infrastructure only (no routing yet).
+- Keys remain isolated in gateway process (env var only).
+- No Gemini/OpenAI provider code exists in Stuart core.
+
+Architectural State Now
+-----------------------
+Dungeon 6–8:
+- Frozen canonical packs (template-match-full).
+- Held aside pending execution.
+
+Dungeon 9A:
+- Gateway scaffold
+- Gemini provider adapter
+- Schema validation
+- Proof quest
+- Versioned response contract enforced
+
+Dungeon 9B:
+- Not yet drafted or executed.
+- Will integrate Stuart routing + retention semantics.
+
+Binding Notes
+-------------
+- Canonical Guild Orders = REV5.
+- Older Guild Orders inside Ashby_Data are deprecated.
+- Control Sync remains OPEN.
+- No execution of 9A has occurred yet.
+- Next action is to execute Dungeon 9A via Codex.
+
+Resume Point
+------------
+Hands will:
+1) Drop 9A pack into Quest Board.
+2) Execute via Codex with full audit bundles.
+3) Return updated canon + Monster refresh for rehydration.
+4) Draft 9B under updated state.
+
+End of Control Sync Update.

@@ -1,0 +1,179 @@
+    QUEST TEMPLATE — SYNAPSE GUILD
+    ================================================
+
+    QUEST ID:
+    QUEST_093
+
+    Created By:
+    Ash (Brains)
+
+    Title:
+    Stuart v2 — D2 (4/12) — SESSIONS: Detail (GET /api/sessions/{id}) + PATCH title (metadata overlay)
+
+    Context:
+    The UI needs to open a session and show its data. Dungeon 2 requires:
+  GET /api/sessions/{session_id}
+  PATCH /api/sessions/{session_id} (optional initially)
+
+We must respect immutability:
+- session.json is write-once.
+So we cannot PATCH session.json directly. We need a metadata overlay/state file.
+
+We already have session_state.json (mutable pointers) in:
+  ashby/modules/meetings/session_state.py
+
+This quest implements:
+- GET session detail from immutable manifests + derived indexes
+- PATCH session metadata stored in session_state.json (or a new session_meta.json)
+  without corrupting truth artifacts.
+
+
+    Origin:
+    Guild Orders → Dungeon 2 SESSIONS contract (detail + optional patch).
+
+    Priority:
+    P0 — Blocks “open session” UI + editing title UX.
+
+    Links:
+    - GUILD ORDERS: Ashby_Data/Guild Orders/PAUSED/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt (Dungeon 2)
+- CODEX: Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt (3.5 Artifact-first + 4.1 Session + 4.8 Overlays)
+- ENGINE ANCHOR: Ashby_Engine/ashby/modules/meetings/session_state.py
+- ENGINE ANCHOR: Ashby_Engine/ashby/interfaces/web/sessions.py
+
+    Status:
+    BOARD
+
+    Audit Bundle Path:
+    Ashby_Data/Audits/Execution/QUEST_093__2026-02-17__Stuart_v2_D2_Session_Detail_Patch
+
+    Accepted On:
+    (blank)
+
+    Owner:
+    (blank)
+
+    Executor:
+    (blank)
+
+    ------------------------------------------------
+    DESCRIPTION
+    ------------------------------------------------
+    Implement session detail and safe session metadata patching.
+
+This is where we make session UX feel like a product:
+- open a session → see runs/transcripts/formalizations
+- rename a session title without breaking truth invariants
+
+
+    ------------------------------------------------
+    SCOPE / OBJECTIVE
+    ------------------------------------------------
+    A) Implement GET /api/sessions/{session_id}
+
+   Response:
+     {
+       "ok": true,
+       "session": SessionDetailV1
+     }
+
+   SessionDetailV1 minimum:
+     - session_id, created_ts, mode, title (effective title)
+     - title_source: "session_manifest" | "state_override" (debug)
+     - state: session_state.json content (at least active_speaker_overlay_id)
+     - contributions: derived list (from contributions manifests) OR index-backed list
+     - runs: summary list (run_id, created_ts, status, stage, progress)
+     - counts: { contributions: N, runs: N, transcripts: N, formalizations: N }
+
+   Determinism:
+     - contributions sorted by created_ts desc then contribution_id
+     - runs sorted by created_ts desc then run_id
+
+   IMPORTANT:
+     - Do NOT create sessions/runs as side effects.
+     - Fail with 404/NOT_FOUND if session does not exist.
+
+B) Implement PATCH /api/sessions/{session_id} (optional but we WILL implement it)
+
+   Purpose:
+     - update title (and maybe tags later)
+
+   Payload (v1):
+     { "title": "New Title" }
+
+   Storage strategy (must be explicit and deterministic):
+     Option 1 (recommended): extend session_state.json to include:
+       - title_override: string|null
+       - updated_ts
+     Option 2: create session_meta.json in session folder (mutable):
+       - version
+       - session_id
+       - title_override
+       - updated_ts
+
+   Rule:
+     - This is metadata overlay only; does not alter transcript truth.
+     - Keep it minimal and consistent.
+
+   Response:
+     { "ok": true, "session_id": "...", "title": "...", "title_source": "state_override" }
+
+   Error cases:
+     - invalid payload → 400/INVALID_REQUEST
+     - session not found → 404/NOT_FOUND
+
+C) Tests
+   - New tests to cover:
+     - GET detail returns ok and correct IDs
+     - PATCH title persists and GET returns updated effective title
+     - PATCH does not modify session.json (immutability rail)
+
+D) Docs update
+   - Update API contract doc with detail + patch examples.
+
+
+    ------------------------------------------------
+    OUT OF SCOPE
+    ------------------------------------------------
+    - Speaker mapping overlay endpoints (Dungeon 6)
+- Transcript versioning emission (Dungeon 4/5)
+- Cloud auth/tenancy
+
+
+    ------------------------------------------------
+    DEPENDENCIES
+    ------------------------------------------------
+    - Quest 091 envelope/models (or ensure consistency manually)
+- Sessions list endpoint (Quest 092) should exist but not strictly required.
+
+
+    ------------------------------------------------
+    EXECUTION NOTES
+    ------------------------------------------------
+    - Remember: session.json is write-once by manifests.save_manifest_write_once.
+  If you overwrite it, you violated the system’s constitution. Don’t.
+- Prefer reading contributions by scanning contributions manifests filtered by session_id
+  (bounded by limit) unless sqlite index already supports it.
+
+
+    ------------------------------------------------
+    COMPLETION CRITERIA (DONE = PROOF)
+    ------------------------------------------------
+    DONE when:
+- GET /api/sessions/{id} returns full detail object with deterministic ordering.
+- PATCH /api/sessions/{id} updates title overlay and GET reflects it.
+- Tests prove immutability (session.json unchanged) and correct behavior.
+
+Proof:
+- pytest green for new tests
+- curl examples in docs or audit bundle
+
+
+    ------------------------------------------------
+    TALENT POINT (WHY THIS MATTERS)
+    ------------------------------------------------
+    This keeps Stuart truth-safe while still letting humans name their shit. Overlay is the only sane way.
+
+    ------------------------------------------------
+    FINAL NOTES / HANDS DECISIONS
+    ------------------------------------------------
+    If we later add tags, store them in the same overlay file. Keep all mutable session metadata in ONE place.

@@ -1,0 +1,46 @@
+QUEST ID: QUEST_002
+Title: Stuart v1 — Dungeon 1: Module scaffold + final-shape directories
+Context: Stuart
+Origin: Guild Orders: GUILD_ORDERS_STUART_V1_2026-01-16_REV3.txt
+Priority: P0
+Links:
+- Guild Orders: Stuart v1 — Dungeon 1
+- Control Sync Snapshot: CONTROL_SYNC_2026-01-16__STUART_V1.txt
+Status: COMPLETED
+Accepted On: 2026-01-19
+Completed On: 2026-01-19
+
+DESCRIPTION
+────────────────────────────────────────
+Create the canonical Stuart module zone so all Stuart work lands in the correct place from day 1.
+Stuart is a module (domain key: meetings), persona name is Stuart.
+SCOPE / OBJECTIVE
+────────────────────────────────────────
+Add ashby/modules/meetings/ with final-shape subpackages (router/pipeline/schemas/templates/render/index/adapters/errors)
+and minimal module metadata so imports/registration are stable.
+OUT OF SCOPE
+────────────────────────────────────────
+Refactoring Ashby core/router now.
+Implementing full Stuart functionality (that’s later dungeons).
+DEPENDENCIES
+────────────────────────────────────────
+- None
+EXECUTION NOTES
+────────────────────────────────────────
+Hard law: No Stuart domain logic inside ashby/core/router.py.
+All Stuart work lives under ashby/modules/meetings/.
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────
+- [x] ashby/modules/meetings/ exists with subdirectories: router, pipeline, schemas, templates, render, index, adapters, errors
+- [x] Module metadata exists (module_key, display name, version, supported modes)
+- [x] Module imports cleanly (smoke test)
+- [x] No Stuart-specific code added to ashby/core/router.py
+TALENT POINT
+────────────────────────────────────────
+On completion:
+- Talent Point Awarded: YES
+- Talent Spent On: TALENT_STUART_FOUNDATION_MASONRY — Stuart Foundation Masonry (Core Systems)
+
+FINAL NOTES
+────────────────────────────────────────
+(optional)

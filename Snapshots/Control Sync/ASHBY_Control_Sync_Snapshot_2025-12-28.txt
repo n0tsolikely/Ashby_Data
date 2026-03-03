@@ -1,0 +1,77 @@
+ASHBY — CONTROL SYNC SNAPSHOT
+DATE: 2025-12-29
+TIMEZONE: America/Toronto
+RAID: Ashby Structural Realignment (Emergency) — ACTIVE (Target: CLOSE TONIGHT)
+OPERATOR: notsolikely
+CANONICAL ROOT: ~/ashby
+CANONICAL ENV: ashby-env
+
+================================================================================
+RAID LAW (NON-NEGOTIABLES)
+================================================================================
+1) ZERO behavior change during structural work.
+2) One step at a time.
+   After each step: compile + quick sanity test (Thor).
+3) No secrets printed, logged, or pasted.
+4) Router can stay ugly temporarily — but must become thin to close the raid.
+
+================================================================================
+CANONICAL ARCHITECTURE RULES (LOCKED)
+================================================================================
+- One Router Doctrine: single canonical orchestrator router.
+- WHAT vs HOW remains absolute (platform principles unchanged).
+- IO stays a gateway: it should not become the brain.
+
+================================================================================
+CURRENT STATE (VERIFIED)
+================================================================================
+- Lights handler exists and contains the full lights ON/OFF/ADJUST logic.
+- Router dispatch calls lights handler for lights.* intents.
+- Legacy lights blocks still exist in router (intentional duplication from safety step).
+- Comfort session + comfort.cold logic still live inside router (not extracted yet).
+- IO entrypoints import through a compatibility router wrapper path.
+- Multiple compatibility wrapper modules exist (re-export style “zombie” files).
+- “AshPi” naming drift still exists in logs/strings in multiple files.
+
+================================================================================
+TONIGHT’S SCOPE (LOCKED)
+================================================================================
+A) Finish router thinning:
+   A1) Remove legacy lights ON/OFF/ADJUST blocks from canonical router.
+   A2) Extract comfort capability into handler + wire dispatch.
+   A3) Remove comfort logic from router after verification.
+B) Import migration:
+   B1) Update IO scripts (CLI + Telegram) to import canonical router directly.
+C) Zombie cleanup:
+   C1) Delete compatibility wrapper files AFTER grep confirms nothing imports them.
+D) Final naming hygiene:
+   D1) Final sweep: remove "ASHPI"/"AshPi" in filenames + code strings + log labels.
+E) Full sanity pass:
+   - compile
+   - CLI harness (Thor)
+   - Telegram gateway (Thor)
+F) End-of-day snapshot written with exact resume steps or closure statement.
+
+================================================================================
+STOP CONDITIONS
+================================================================================
+If any of these fail at any step:
+- py_compile fails
+- “turn on thor” fails
+- “set thor to 30%” regresses
+- “more” / “again” regresses
+- Telegram fails to respond / control lights
+THEN:
+- STOP immediately
+- revert last step
+- do not continue
+
+================================================================================
+ACCEPTANCE TO CLOSE EMERGENCY RAID
+================================================================================
+- Router contains no capability execution logic (thin orchestrator only).
+- Lights + comfort capability handlers exist and are used.
+- CLI + Telegram import canonical router directly.
+- Compatibility wrappers removed (no zombie re-exports).
+- No "ASHPI"/"AshPi" drift remains in codebase.
+- Sanity tests pass (compile + CLI + Telegram).

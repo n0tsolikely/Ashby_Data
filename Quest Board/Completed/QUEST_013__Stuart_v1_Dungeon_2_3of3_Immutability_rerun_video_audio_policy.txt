@@ -1,0 +1,62 @@
+QUEST ID: QUEST_013
+Title: Stuart v1 — Dungeon 2 (3 of 3): Immutability + rerun behavior + video→audio policy
+Context: Stuart
+Origin: Guild Orders: GUILD_ORDERS_STUART_V1_2026-01-16_REV3.txt (Dungeon 2)
+Priority: P0
+Links:
+- Guild Orders: Stuart v1 — Dungeon 2
+- Stuart Execution Pack: artifact immutability + overlays law
+- Supersedes (decomposition of): QUEST_003
+- Related: QUEST_012 (manifest schemas + ULIDs + hashing)
+Status: COMPLETED
+Accepted On: 2026-01-19
+Completed On: 2026-01-19
+
+DESCRIPTION
+────────────────────────────────────────
+Enforce the immutability contract and rerun behavior so canonical artifacts are never silently overwritten. Also lock the v1 media-handling rule: video uploads produce a canonical extracted audio file for processing.
+
+SCOPE / OBJECTIVE
+────────────────────────────────────────
+Implement and enforce:
+- No silent overwrite of canonical artifacts (especially transcripts/formalizations and their manifests).
+- Rerun creates a new run_id output path (new run folder) instead of overwriting.
+- Session may point to “latest” artifacts via pointers, but old artifacts remain preserved.
+
+Media handling (v1):
+- Accept audio and video uploads.
+- If input is video: extract audio to a canonical audio file stored within the contribution.
+- Keep the original uploaded file when feasible.
+
+This quest does not implement transcription itself; it enforces the storage and rerun semantics that transcription/formalization stages will rely on.
+
+OUT OF SCOPE
+────────────────────────────────────────
+Implementing diarization/transcription/formalization logic (Dungeon 5).
+Cloud storage, remote sync, multi-user auth.
+Automatic speaker naming.
+
+DEPENDENCIES
+────────────────────────────────────────
+- QUEST_012
+
+EXECUTION NOTES
+────────────────────────────────────────
+Immutability is a trust contract. If this is violated, Stuart becomes un-auditable.
+Overlays are separate artifacts; never mutate ground truth to “fix” it.
+
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────
+- [x] Two runs created for the same session/contribution do not overwrite each other; each has a unique run_id folder.
+- [x] Attempting to write to an existing canonical artifact path fails loudly or routes to a new path (no silent overwrite).
+- [x] Session can reference a “latest run” pointer without deleting prior run data.
+- [x] Video upload preserves original media and reserves derived_audio_path for later extraction (policy rail locked; extraction staged in later pipeline).
+- [x] Contribution manifest reserves fields for original media → derived audio relationship (pointers/paths) without overwriting originals.
+
+TALENT POINT
+────────────────────────────────────────
+On completion:
+- Talent Point Awarded: YES
+- Talent Spent On: TALENT_STUART_IMMUTABILITY_DISCIPLINE — Immutability Discipline (Truth Law)
+────────────────────────────────────────
+(optional)

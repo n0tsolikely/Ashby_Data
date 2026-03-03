@@ -1,0 +1,68 @@
+STUART CODEX
+3.7 Translation (Post-Transcript Step) (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines translation as a post-transcript capability. Translation is not its own pipeline; it is an operation performed on the transcript and/or formalizations once ground truth exists.
+
+This was a key decision in our chat:
+- keep truth anchored in the original language,
+- then translate derived artifacts as needed.
+
+1) Translation is post-transcript
+
+Translation MUST occur after the transcript exists.
+Stuart must not replace transcription with translation.
+
+Flow:
+Audio -> Transcript (original language) -> Optional Formalizations -> Optional Translations
+
+2) What can be translated
+
+Stuart may translate:
+- transcript text (producing translated transcript views),
+- formalizations (meeting minutes, journals, incident reports, creator notes),
+- captions/subtitles files.
+
+Translated artifacts must be clearly labeled and must not overwrite originals.
+
+3) Truth and auditability across languages
+
+Translation introduces risk of meaning drift.
+
+Rules:
+T1) Preserve original artifacts
+Original-language transcript and formalizations remain the canonical reference.
+
+T2) Provide traceability
+Translated outputs should preserve linkage to original transcript timestamps.
+Even if the translated sentence differs, it must map back to the original evidence.
+
+T3) Label translation as derived
+Users must understand that translation is a derived view.
+
+4) Profile implications
+
+In LOCAL_ONLY:
+- translation must run locally (local translation model) or be unavailable.
+In HYBRID/CLOUD:
+- translation may use remote adapters, but must disclose data sent and require confirmation.
+
+5) Use cases
+
+- Translate a meeting minutes document into Spanish for stakeholders.
+- Translate captions for a video into French and Spanish.
+- Support users who speak languages other than English (e.g., Latvian) for transcription and formalization in that language, if ASR supports it.
+
+Language support is adapter-dependent. Stuart’s meaning is stable; adapter capability determines which languages are available.
+
+6) Self-audit (3.7)
+
+This section reflects our chat decisions:
+- translation is a post-step, not a replacement for transcription,
+- original truth remains the anchor,
+- translations are derived and labeled,
+- profile constraints apply to remote translation.
+
+This section is complete.

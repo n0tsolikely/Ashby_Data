@@ -1,0 +1,7 @@
+[smoke] STUART_ROOT=/tmp/stuart_smoke_root_iLm64a
+[smoke] server did not become ready at http://127.0.0.1:8844 within timeout
+[smoke] server log tail:
+INFO:     Started server process [81835]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8844 (Press CTRL+C to quit)

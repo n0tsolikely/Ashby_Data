@@ -1,0 +1,148 @@
+# QUEST_ID: QUEST_172
+# TITLE: Stuart v1 — Dungeon 8 (4/7): Export Builder v2 (USER_EXPORT vs DEV_EXPORT, new structure, determinism)
+# DATE: 2026-03-01
+# STATUS: ACCEPTED
+# PRIORITY: P0
+# OWNER: OpenAI Codex (CLI)
+# RISK_CLASS: R1
+
+## EXECUTIVE SUMMARY
+Dungeon 8 requires a user-facing export zip structure and a dev export variant — both deterministic and traceable — while avoiding zombie export plumbing.
+
+The repo already has an export implementation (`ashby/modules/meetings/export/bundle.py`), but it exports the **internal** storage layout and always includes raw JSON + dev artifacts.
+
+This quest replaces/extends export builder behavior to produce:
+- USER_EXPORT: user-facing bundle (no raw JSON outputs)
+- DEV_EXPORT: same user-facing layout + a `dev/` folder with receipts/evidence/raw JSON
+
+## CANONICAL ANCHORS
+- Guild Orders REV14 — DUNGEON 8: exact folder structure + content policy.
+  - `Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-25_REV14.txt`
+
+## DEPENDS ON
+- QUEST_154 (SessionState v2 speaker overlay pointers) from D6 pack — for selecting correct overlay per transcript_version.
+- QUEST_169/170 (formalization titles) — optional but recommended so exports can include titles.
+
+## REPO REALITY CHECK
+- Existing export module:
+  - `Ashby_Engine/ashby/modules/meetings/export/bundle.py` (exports internal layout)
+- Storage layout helper:
+  - `Ashby_Engine/ashby/modules/meetings/layout.py`
+- Transcript versions are JSON segments:
+  - `Ashby_Engine/ashby/modules/meetings/transcript_versions.py`
+- Overlays live at:
+  - `Ashby_Engine/ashby/modules/meetings/overlays.py`
+
+## HARD REQUIREMENTS (DUNGEON 8)
+### Bundle classes
+- USER_EXPORT:
+  - include user-facing artifacts only
+  - exclude raw JSON outputs (minutes.json, transcript_version.json, evidence_map, llm usage receipt, run manifests)
+
+- DEV_EXPORT:
+  - includes everything in USER_EXPORT
+  - plus `dev/` folder containing:
+    - evidence_map.json
+    - llm_usage_receipt.json
+    - run manifests/logs
+    - raw JSON outputs
+
+### Zip structure
+- `session.json` (session_id + session_title)
+- `audio/`
+- `transcripts/<transcript_version_id>/`
+- `formalizations/<formalization_id>/`
+- `overlays/` (speaker_map overlays; active overlay included)
+- `dev/` (DEV_EXPORT only)
+
+### Determinism
+- No absolute paths inside zip.
+- Stable ordering.
+- No recursive inclusion of previous exports.
+- Deterministic bytes where feasible (avoid writing export-time timestamps into content).
+
+## IMPLEMENTATION PLAN
+### A) Create a v2 builder (recommended)
+- Create a new module:
+  - `ashby/modules/meetings/export/bundle_v2.py`
+- Keep `bundle.py` only if still used anywhere. Otherwise delete or convert to wrapper calling v2.
+
+### B) Deterministic zip writer helper
+- Implement a small helper class (e.g., `ZipDeterministicWriter`) that can:
+  - add bytes with stable ZipInfo timestamps
+  - add files by reading bytes and using file mtime
+  - enforce sorted iteration
+
+### C) USER_EXPORT content generation
+1) `session.json`
+- Generate minimal JSON:
+  - `session_id`
+  - `session_title` (title_override if present else session_id)
+
+2) `audio/`
+- Include all contribution files tied to the session (deterministic naming).
+- Suggested naming inside zip:
+  - `audio/<contribution_id>__<original_filename>`
+
+3) `transcripts/<transcript_version_id>/`
+- Transcript versions are stored as JSON segments. USER_EXPORT needs text artifacts.
+- For each transcript_version:
+  - generate `transcript.txt` if `txt` requested
+  - generate `transcript.md` if `md` requested
+  - generate `transcript.pdf` if `pdf` requested
+
+Formatting rules:
+- Use speaker overlay mapping for that transcript_version_id (SessionState v2 mapping).
+- Speaker display:
+  - if mapped: show mapped name only
+  - if not mapped: show `Speaker-01`, `Speaker-02`, ... (UI 1-based)
+
+4) `formalizations/<formalization_id>/`
+- Include formalization outputs for each run that produced a formalization:
+  - `minutes.md/pdf` and/or `journal.md/pdf` based on requested `formalization_formats`
+- Exclude minutes.json/journal.json in USER_EXPORT.
+
+5) `overlays/`
+- Include at least:
+  - active overlay mapping(s) needed to reproduce the included transcript text.
+
+Suggested structure:
+- `overlays/transcripts/<transcript_version_id>/speaker_map.json`
+
+### D) DEV_EXPORT additions
+- Add `dev/` containing:
+  - `dev/formalizations/<formalization_id>/evidence_map.json`
+  - `dev/formalizations/<formalization_id>/llm_usage_receipt.json`
+  - `dev/formalizations/<formalization_id>/run.json`
+  - `dev/formalizations/<formalization_id>/events.jsonl`
+  - `dev/transcripts/<transcript_version_id>/transcript_version.json`
+  - plus raw minutes.json/journal.json if present
+
+### E) Traceability metadata inside exported artifacts
+Dungeon 8 demands ID traceability.
+
+Implement in export-generated artifacts (recommended):
+- MD: add an HTML comment header (invisible to rendered markdown) like:
+  - `<!-- session_id: ...; transcript_version_id: ...; formalization_id: ...; generated_at: ... -->`
+- TXT: add a small visible header block (first lines) with IDs.
+- PDF:
+  - transcripts: if you generate via reportlab, add a small footer line with IDs.
+  - formalizations: update the PDF render path to include a footer (see QUEST_173 if you prefer separating).
+
+**generated_at MUST be stable** (use artifact created_ts or run created_ts), not export-time.
+
+## TESTING LEVEL
+TL3 (bundle build + content verification)
+
+## ACCEPTANCE CRITERIA
+- USER_EXPORT zip matches the required directory structure.
+- USER_EXPORT excludes raw JSON outputs and dev artifacts.
+- DEV_EXPORT includes USER_EXPORT plus a `dev/` folder with required dev artifacts.
+- Transcript export supports txt/md/pdf and applies overlay mapping (mapped names shown).
+- Export zips contain no absolute paths and do not include prior exports.
+
+## RECEIPTS REQUIRED
+- `unzip -l` output for a USER_EXPORT and DEV_EXPORT.
+- Diff of export builder modules.
+- A short note confirming how determinism is handled (timestamps + no volatile fields).
+

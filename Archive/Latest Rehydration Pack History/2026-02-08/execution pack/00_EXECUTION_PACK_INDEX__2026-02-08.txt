@@ -1,0 +1,16 @@
+STUART — EXECUTION PACK INDEX
+Date: 2026-02-08
+
+This folder contains the active execution packs used to resume work cleanly.
+If you only read ONE thing in here, read the REV9 Phase pack.
+
+READ ORDER (FAST)
+1) STUART_EXECUTION_PACK__REV9__PHASE_COMPLETE__NEXT_D5__2026-02-08.txt
+2) STUART_EXECUTION_PACK__REV9__TRUTH_SPINE_OPERATIONS__2026-02-08.txt
+3) STUART_EXECUTION_PACK__REV9__INDEX_RETRIEVAL_OPERATIONS__2026-02-08.txt
+4) STUART_EXECUTION_PACK__REV9__SMOKE_TEST_GATES__2026-02-08.txt
+
+NOTES
+- BUFFS (Tier 0 law) still override packs:
+  - /mnt/data/Ashby_Data/Buffs/ASHBY_EXECUTION_PROTOCOL.txt
+  - /mnt/data/Ashby_Data/Buffs/ASHBY_PLATFORM_TRUTH_AND_PROFILE_LOCK.txt

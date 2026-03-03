@@ -1,0 +1,170 @@
+STUART CODEX
+11.4 Scalability and Performance Evolution (Canonical Appendix)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This appendix section specifies how Stuart scales from:
+- a single user processing a few meetings
+to:
+- many users processing many long meetings and incidents,
+while preserving the trust contract (truth, evidence, explicit execution) and avoiding refactors.
+
+Chat-canon drivers:
+- You want long meeting support with no truncation.
+- You want recall across many saved sessions.
+- You want LOCAL_ONLY to remain viable.
+- You also want the option to use more horsepower (remote) when privacy allows.
+
+1) Scaling dimensions (what can grow)
+
+SCL-1) Session length
+10 minutes → 3 hours.
+
+SCL-2) Session count
+10 sessions → 10,000+ sessions.
+
+SCL-3) Concurrent processing
+one meeting at a time → multiple runs simultaneously.
+
+SCL-4) Template count
+a few templates → thousands.
+
+SCL-5) Hardware diversity
+CPU-only laptops → GPU desktops → remote clusters.
+
+2) Pipeline scalability strategy (no refactor foundation)
+
+The core strategy is already encoded in earlier sections:
+- artifacts on disk
+- chunking + resumability
+- adapter-swappability
+- deterministic merging
+- strict audit logs
+
+This means scaling is mostly:
+- optimizing adapters and concurrency,
+not changing the trust model.
+
+3) Performance tiers (local)
+
+Tier L1: CPU-only, LOCAL_ONLY
+- chunk sizes smaller
+- diarization may be slower or optional
+- UI emphasizes progress and resumability
+- “degraded mode” is honest when diarization is skipped
+
+Tier L2: GPU-accelerated local
+- faster ASR/diarization/formalization
+- larger chunk sizes possible
+- better overlap handling depending on models
+
+Tier L3: Local network workstation (still “local to org”)
+- Stuart can run on a stronger internal machine
+- users can move contributions/runs to that machine (still offline from public internet if desired)
+
+4) Performance tiers (remote)
+
+Tier R1: HYBRID remote assist
+- user transcribes locally but formalizes remotely (or vice versa)
+- requires explicit disclosure + confirmation
+- redaction available
+
+Tier R2: CLOUD remote-first
+- fastest turnaround
+- strongest requirement for audit logging of what left the machine
+
+These tiers are selected via profile + adapter choice.
+
+5) Concurrency and scheduling
+
+To scale processing:
+- Stuart should treat each run as a job with stages.
+- chunk-level parallelism is allowed, but merging must remain deterministic.
+
+Scheduling policies:
+- cap CPU/GPU usage (user-configurable)
+- prioritize interactive tasks (e.g., quick transcription for a short file)
+- allow background processing only if user enables it (explicit)
+
+Even if concurrency exists, explicit execution gating remains:
+- jobs are created by user action.
+
+6) Caching and reuse (avoid recompute)
+
+Key scaling lever:
+- reuse transcript artifacts for multiple formalizations.
+
+Examples:
+- user runs transcription once
+- then re-runs formalization with different templates/retention without re-transcribing
+
+Similarly:
+- indexing can be incremental
+- rendering can be re-run without re-formalizing if only PDF fails
+
+Caches must be:
+- artifact-based
+- invalidated by explicit changes (new corrections overlays, new template version, etc.)
+
+7) Index scaling
+
+For small-scale V1:
+- SQLite FTS is sufficient.
+
+As sessions grow:
+- maintain incremental indexing
+- store per-session indexes if needed for performance
+- add embeddings as optional enhancement
+
+Regardless of index type:
+- results must map to evidence segments and timestamps
+- semantics remain enforced (attendance vs mention vs spoke)
+
+8) Storage growth management
+
+As sessions grow, storage becomes a practical concern.
+Scaling approach:
+- keep raw sources + transcripts + formalizations as canonical artifacts
+- allow user-configurable archival policies:
+  - compress old audio
+  - keep transcripts and PDFs
+  - optionally remove intermediate artifacts (but preserve audit logs)
+- never delete anything automatically without explicit user policy
+
+This matches your “archive the first pipeline?” instinct: archiving must be explicit and reversible.
+
+9) UI scaling (template selection and recall)
+
+As templates grow:
+- mode-scoped template lists
+- search/filter in template dropdown
+- pinned favorites
+- recent templates
+
+As sessions grow:
+- chat-driven recall remains primary
+- provide “recent sessions” list for convenience
+- allow export/print directly from retrieval results
+
+The UI should remain simple even as the system scales.
+
+10) Observability without violating privacy
+
+Stuart can track performance metrics locally (optional):
+- time per stage
+- chunk throughput
+- failure rates
+But must not upload raw content.
+If telemetry exists later, it must be opt-in and content-free.
+
+11) Self-audit (11.4)
+
+Chat-canon alignment checklist:
+- Scaling is achieved via chunking/resumability/artifacts, not by relying on chat output limits. (Maintained.)
+- Adapter-swappability supports hardware tiers and remote horsepower without refactors. (Maintained.)
+- Explicit execution gating remains even with concurrency (jobs start from user actions). (Maintained.)
+- Index scaling preserves evidence and honest semantics. (Maintained.)
+- Storage growth management is explicit (user policy), not silent deletion. (Maintained.)
+
+This section is complete.

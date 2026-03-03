@@ -1,0 +1,147 @@
+    QUEST TEMPLATE — SYNAPSE GUILD
+    ================================================
+
+    QUEST ID:
+    QUEST_096
+
+    Created By:
+    Ash (Brains)
+
+    Title:
+    Stuart v2 — D2 (7/12) — TRANSCRIPTS: Endpoints (GET /api/sessions/{id}/transcripts + GET /api/transcripts/{id})
+
+    Context:
+    Dungeon 2 requires transcript endpoints so the UI can show:
+  - a transcript version selector dropdown
+  - a transcript viewer with segments + timestamps + optional speakers
+
+We have internal transcript version derivation (Quest 095).
+This quest exposes it over the web door API with stable schemas and tests.
+
+    Origin:
+    Guild Orders → Dungeon 2 TRANSCRIPTS contract.
+
+    Priority:
+    P0 — Blocks Session tab transcript viewer.
+
+    Links:
+    - GUILD ORDERS: Ashby_Data/Guild Orders/PAUSED/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt (Dungeon 2 TRANSCRIPTS contract)
+- CODEX: Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt (3.1 Truth locked, 3.6 conservative speaker attribution, 6.3 transcript visibility)
+- ENGINE ANCHOR: Ashby_Engine/ashby/interfaces/web/app.py (FastAPI routes)
+- ENGINE ANCHOR: (new) transcripts service from Quest 095
+
+    Status:
+    COMPLETED
+    Audit Bundle Path:
+    Ashby_Data/Audits/Execution/QUEST_096__2026-02-17__Stuart_v2_D2_Transcript_Endpoints
+
+    Accepted On:
+    2026-02-18
+    Owner:
+    Hands (Peter)
+    Executor:
+    Codex (Brains)
+
+    Completed On:
+    2026-02-18
+
+    Completed By:
+    Codex (Brains)
+    ------------------------------------------------
+    DESCRIPTION
+    ------------------------------------------------
+    Implement transcript endpoints required by Dungeon 2 contract:
+  - GET /api/sessions/{session_id}/transcripts
+  - GET /api/transcripts/{transcript_version_id}
+
+Endpoints must:
+- return deterministic ordering
+- never fabricate transcript content
+- include enough metadata for UI (diarization flag, segment timestamps, speaker labels if present)
+
+
+    ------------------------------------------------
+    SCOPE / OBJECTIVE
+    ------------------------------------------------
+    A) Add routes to web door
+
+   Option 1 (recommended): add new module:
+     ashby/interfaces/web/transcripts.py
+   and import into app.py to mount routes.
+
+   Endpoints:
+
+   1) GET /api/sessions/{session_id}/transcripts?limit=50&offset=0
+      Response:
+        { "ok": true, "session_id": "...", "transcripts": [TranscriptVersionSummaryV1...], "page": {...} }
+
+   2) GET /api/transcripts/{transcript_version_id}
+      Response:
+        { "ok": true, "transcript": TranscriptVersionV1 }
+
+   Errors:
+     - session not found: 404/NOT_FOUND
+     - transcript_version not found: 404/NOT_FOUND
+     - malformed id: 400/INVALID_REQUEST
+
+B) Ensure response schemas match the contract doc and Quest 091 models.
+
+C) Tests
+   - Add tests for:
+     - list transcripts returns ok=true and list is deterministic
+     - get transcript returns segments array with stable timestamps
+     - get unknown transcript returns 404 with error envelope
+
+   Test strategy:
+     - Use tmp_path + monkeypatch STUART_ROOT.
+     - Create a fake session + fake run folder with run.json + artifacts/transcript.json in place.
+     - Verify endpoints read those files.
+
+D) Docs update
+   - Update contract doc with request/response examples for both endpoints.
+
+
+    ------------------------------------------------
+    OUT OF SCOPE
+    ------------------------------------------------
+    - Speaker map overlay application to transcript display (Dungeon 6).
+- Transcript editing/corrections overlay (future).
+
+
+    ------------------------------------------------
+    DEPENDENCIES
+    ------------------------------------------------
+    - Quest 095 transcript version service
+- Quest 091 envelope/models
+
+
+    ------------------------------------------------
+    EXECUTION NOTES
+    ------------------------------------------------
+    - Do NOT convert transcript into markdown or other formats here. This is pure JSON substrate.
+- Ensure segment_id is stable: if transcript artifact already includes ids, preserve them;
+  if not, create stable ids deterministically (e.g., hash of (start_ms,end_ms,text) within that version).
+
+
+    ------------------------------------------------
+    COMPLETION CRITERIA (DONE = PROOF)
+    ------------------------------------------------
+    DONE when:
+- Both endpoints exist and return correct envelopes and schemas.
+- Tests cover success and failure paths.
+- Docs updated.
+
+Proof:
+- pytest green
+- curl output example
+
+
+    ------------------------------------------------
+    TALENT POINT (WHY THIS MATTERS)
+    ------------------------------------------------
+    Without transcripts endpoints, the UI is just a shell. This makes session reality visible and auditable.
+
+    ------------------------------------------------
+    FINAL NOTES / HANDS DECISIONS
+    ------------------------------------------------
+    If we later add streaming transcript rendering, keep this endpoint as the canonical 'fetch transcript version' API.

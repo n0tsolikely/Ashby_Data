@@ -1,0 +1,290 @@
+STUART — END OF DAY SNAPSHOT
+Date: 2026-02-18
+Scope: Dungeon 2 (QUEST_090 → QUEST_101) execution + governance execution-audit completion
+
+================================================================================
+0) PURPOSE
+================================================================================
+This snapshot records the full execution block where Dungeon 2 quests (090–101) were implemented in order,
+with quest-level execution audits written under canonical `Audits/Execution`.
+
+This is a continuity receipt, not a planning note.
+
+================================================================================
+1) CANON ROOTS (VERIFIED)
+================================================================================
+- Data canon:   /home/notsolikely/Ashby_Data
+- Engine canon: /home/notsolikely/Ashby_Engine
+- Snapshot path (this file):
+  /home/notsolikely/Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2026-02-18__DUNGEON2_EXECUTION_AND_AUDITS.txt
+
+================================================================================
+2) GOVERNANCE / QUEST BOARD TRUTH
+================================================================================
+Quest Board state at close:
+- `/home/notsolikely/Ashby_Data/Quest Board/Accepted` is EMPTY.
+- QUEST_090..QUEST_101 files remain in board root (`/home/notsolikely/Ashby_Data/Quest Board/`).
+- These quest files were NOT moved to Completed in this execution block.
+
+Execution reality:
+- Work for QUEST_090..QUEST_101 was executed and audited (see Section 4 + 8).
+- This creates a board-state mismatch (implemented/audited vs board file placement).
+- No retroactive falsification performed.
+
+================================================================================
+3) DUNGEON 2 OUTCOME SUMMARY
+================================================================================
+Status: IMPLEMENTED WITH RECEIPTS
+
+Implemented in-order:
+- QUEST_090: API contract doc + route map doc
+- QUEST_091: shared envelope + shared API models + key endpoint normalization
+- QUEST_092: sessions list endpoint contract uplift (paging/filtering/derived fields)
+- QUEST_093: session detail + PATCH title overlay (state-overlay, immutable manifest preserved)
+- QUEST_094: runs list endpoint contract uplift + run detail envelope alignment
+- QUEST_095: transcript version ID strategy service (`tv__{run_id}` reversible)
+- QUEST_096: transcript list + transcript get endpoints
+- QUEST_097: formalizations index contract uplift
+- QUEST_098: export bundle filtering (`full_bundle|transcript_only|formalization_only`)
+- QUEST_099: session export endpoint + safe exports download endpoint
+- QUEST_100: chat scaffold endpoints (`/api/chat`, `/api/chat/global`) without run side effects
+- QUEST_101: smoke script + contract tests + proof artifacts
+
+================================================================================
+4) WHAT SHIPPED (FILES)
+================================================================================
+Core docs:
+- /home/notsolikely/Ashby_Engine/docs/stuart/web_api_contract_v1.md
+- /home/notsolikely/Ashby_Engine/docs/stuart/web_api_route_map_v1.md
+
+Core backend modules:
+- /home/notsolikely/Ashby_Engine/ashby/interfaces/web/app.py
+- /home/notsolikely/Ashby_Engine/ashby/interfaces/web/http_envelope.py
+- /home/notsolikely/Ashby_Engine/ashby/interfaces/web/api_models_v1.py
+- /home/notsolikely/Ashby_Engine/ashby/interfaces/web/transcripts.py
+- /home/notsolikely/Ashby_Engine/ashby/modules/meetings/export/bundle.py
+
+Scripts/tests:
+- /home/notsolikely/Ashby_Engine/scripts/smoke_stuart_web_api_v1.sh
+- /home/notsolikely/Ashby_Engine/tests/test_meetings_web_api_contract_minimum_v1.py
+- /home/notsolikely/Ashby_Engine/tests/test_meetings_export_bundle_export_type_filters.py
+- /home/notsolikely/Ashby_Engine/tests/test_meetings_web_api_envelope_consistency.py
+
+================================================================================
+5) API SURFACE DELTA (POST-DUNGEON2)
+================================================================================
+Verified routes added/present in `app.py`:
+- GET    /api/sessions/{session_id}
+- PATCH  /api/sessions/{session_id}
+- GET    /api/transcripts/{transcript_version_id}
+- GET    /api/sessions/{session_id}/export
+- GET    /api/exports/{filename}
+- POST   /api/chat
+- POST   /api/chat/global
+
+Transcript version strategy:
+- `transcript_version_id = tv__{run_id}`
+- reversible mapping helper implemented in `ashby/interfaces/web/transcripts.py`
+
+Export filtering:
+- `export_session_bundle(..., export_type=...)` now supports:
+  - `full_bundle`
+  - `transcript_only`
+  - `formalization_only`
+
+================================================================================
+6) VALIDATION RECEIPTS (TRUTH)
+================================================================================
+Compile checks:
+- `python3 -m py_compile` on touched backend files: PASS (exit code 0).
+- Receipts copied to per-quest bundles as `06_PYCOMPILE.txt`.
+
+Targeted pytest:
+- Command:
+  `PYTHONPATH=. pytest -q tests/test_meetings_web_api_contract_minimum_v1.py tests/test_meetings_export_bundle_export_type_filters.py`
+- Result: PASS (`3 passed`).
+- Receipt:
+  `/home/notsolikely/Ashby_Data/Audits/Execution/QUEST_101__2026-02-18__stuart_v2_d2_smoke_tests_contract_proof/06_PYTEST_contract_and_export_filters.txt`
+
+Smoke script:
+- Script created and executed:
+  `/home/notsolikely/Ashby_Engine/scripts/smoke_stuart_web_api_v1.sh`
+- Result in this environment: DID NOT COMPLETE (server readiness check failed to connect despite uvicorn startup log).
+- Receipt:
+  `/home/notsolikely/Ashby_Data/Audits/Execution/QUEST_101__2026-02-18__stuart_v2_d2_smoke_tests_contract_proof/06_SMOKE_SCRIPT_OUTPUT.txt`
+
+================================================================================
+7) NON-REGRESSION STATUS (UI/BACKEND BRIDGE)
+================================================================================
+Preserved in this execution block:
+- Existing frontend compatibility paths were not intentionally removed.
+- Export endpoint includes compatibility mode (`format=zip`) for existing frontend blob download behavior.
+- Legacy `/api/message` remains present while `/api/chat` was added.
+
+Known integration caution:
+- The newly envelope-wrapped responses include `trace` + `ok`; client parsing should remain tolerant.
+
+================================================================================
+8) EXECUTION AUDIT BUNDLES (COMPLETED)
+================================================================================
+Per-governance execution audits created/filled:
+- /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_090__2026-02-18__stuart_v2_d2_api_contract_route_map
+- /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_091__2026-02-18__stuart_v2_d2_api_schemas_envelope
+- /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_092__2026-02-18__stuart_v2_d2_sessions_list_index
+- /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_093__2026-02-18__stuart_v2_d2_session_detail_patch_title
+- /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_094__2026-02-18__stuart_v2_d2_runs_list
+- /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_095__2026-02-18__stuart_v2_d2_transcript_version_strategy
+- /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_096__2026-02-18__stuart_v2_d2_transcript_endpoints
+- /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_097__2026-02-18__stuart_v2_d2_formalizations_index
+- /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_098__2026-02-18__stuart_v2_d2_export_filtering
+- /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_099__2026-02-18__stuart_v2_d2_export_endpoint_download
+- /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_100__2026-02-18__stuart_v2_d2_chat_endpoints_scaffold
+- /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_101__2026-02-18__stuart_v2_d2_smoke_tests_contract_proof
+
+Each bundle includes:
+- `00_SUMMARY.md`
+- `01_PREQUEST.md`
+- `02_EXECUTION.md`
+- `03_VERIFY.md`
+- `04_OUTCOME.md`
+- `00_ACCEPTANCE_RECEIPT.txt`
+- `90_ORIGINAL_QUEST__as_found.txt`
+- proof artifacts where applicable (`06_*`)
+
+================================================================================
+9) OPEN ISSUES / FOLLOW-UPS
+================================================================================
+1) Quest board placement mismatch:
+- If governance requires strict board-state alignment, QUEST_090..101 file placement should be reconciled
+  (accepted/completed workflow) in a controlled governance pass.
+
+2) Smoke script runtime behavior:
+- Investigate why readiness curl could not connect in this execution environment while uvicorn startup was logged.
+- Keep script as proof harness; rerun on target host where Stuart is normally booted.
+
+3) Async test plugin gap:
+- `tests/test_meetings_web_api_envelope_consistency.py` is present, but async pytest plugin availability is env-dependent.
+
+================================================================================
+10) NEXT SAFE MOVE
+================================================================================
+- Run Stuart on the target machine via canonical launcher:
+  `/home/notsolikely/Ashby_Engine/scripts/stuart_up.sh`
+- Execute endpoint smoke checks against live server and store outputs into QUEST_101 audit bundle.
+- Reconcile Quest Board state transition if required by current governance decision.
+
+END OF SNAPSHOT
+
+================================================================================
+11) LATE ADDENDUM — CONTINUITY + GOVERNANCE HARDENING (APPENDED)
+================================================================================
+Date/Time: 2026-02-18 (late session addendum)
+
+A) Rehydration pack modernization and rollover
+- Fully re-reviewed prior active pack artifacts from 2026-02-17 for structure/detail parity.
+- Rebuilt active pack as 2026-02-18 set with current state truth:
+  - /home/notsolikely/Ashby_Data/Latest Rehydration Pack/00_REHYDRATION_PACK_INDEX__2026-02-18.txt
+  - /home/notsolikely/Ashby_Data/Latest Rehydration Pack/BOOTSTRAP_PROMPT_2026-02-18.txt
+  - /home/notsolikely/Ashby_Data/Latest Rehydration Pack/CONTINUITY_LOCK_2026-02-18.txt
+  - /home/notsolikely/Ashby_Data/Latest Rehydration Pack/execution pack/00_EXECUTION_PACK_INDEX__2026-02-18.txt
+  - /home/notsolikely/Ashby_Data/Latest Rehydration Pack/execution pack/STUART_EXECUTION_PACK__V2_REV2__RAID_GUARDRAILS__2026-02-18.txt
+  - /home/notsolikely/Ashby_Data/Latest Rehydration Pack/execution pack/STUART_EXECUTION_PACK__V2_REV2__SESSION_START_SCRIPT__2026-02-18.txt
+  - /home/notsolikely/Ashby_Data/Latest Rehydration Pack/execution pack/STUART_INSTALL_PACK__V2_REV2__FULLSTACK_DEPENDENCIES_PREFLIGHT__2026-02-18.txt
+  - /home/notsolikely/Ashby_Data/Latest Rehydration Pack/execution pack/STUART_EXECUTION_PACK__V2_REV2__DUNGEON3_RUNBOOK__2026-02-18.txt
+  - /home/notsolikely/Ashby_Data/Latest Rehydration Pack/execution pack/STUART_EXECUTION_PACK__V2_REV2__DUNGEON3_QUEST_INTAKE_AND_EXECUTION__2026-02-18.txt
+  - /home/notsolikely/Ashby_Data/Latest Rehydration Pack/execution pack/STUART_EXECUTION_PACK__V2_REV2__SMOKE_TEST_GATES__2026-02-18.txt
+
+- Retired 2026-02-17 pack artifacts archived to:
+  - /home/notsolikely/Ashby_Data/Archive/Latest Rehydration Pack History/2026-02-18/
+  - /home/notsolikely/Ashby_Data/Archive/Latest Rehydration Pack History/2026-02-18/execution pack/
+
+B) Buff alignment refresh
+- Updated Buffs to current state and bumped versions where needed:
+  - /home/notsolikely/Ashby_Data/Buffs/STUART_DATA_DIRECTORY_MAP.txt
+  - /home/notsolikely/Ashby_Data/Buffs/STUART_SESSION_START_CHECK.txt
+
+- Buff updates include:
+  - Active Guild Orders state reflected (ACTIVE path)
+  - Current quest truth reflected (D2 completed + D3 intake on board root)
+  - Latest snapshot anchors updated to current files
+
+C) Dungeon 3 scope truth update
+- Confirmed QUEST_113 exists and normalized continuity references from QUEST_102..112 to QUEST_102..113 across active Buff/Pack docs.
+- Normalized D3 quest links to ACTIVE guild orders path where stale PAUSED links were present.
+
+D) Final handoff integrity check (pass)
+- Accepted count: 0
+- D3 intake set present on board root: QUEST_102..QUEST_113
+- D2 closure set present in Completed: QUEST_090..QUEST_101
+- Active rehydration pack contains only 2026-02-18 active artifacts
+- No stale continuity references found in active Buff/Pack documents
+
+END ADDENDUM
+
+================================================================================
+12) LATE ADDENDUM — DUNGEON 3 QUEST EXECUTION CLOSEOUT
+================================================================================
+Date/Time: 2026-02-18 (late execution addendum)
+
+A) Execution summary
+- Executed Dungeon 3 quest line from Accepted state and completed quest state transitions.
+- Quest files moved to Completed with completion metadata populated.
+
+Completed quest set:
+- QUEST_102
+- QUEST_103
+- QUEST_104
+- QUEST_105
+- QUEST_106
+- QUEST_107
+- QUEST_108
+- QUEST_109
+- QUEST_110
+- QUEST_111
+- QUEST_112
+- QUEST_113
+
+Quest board truth at addendum close:
+- `/home/notsolikely/Ashby_Data/Quest Board/Accepted` is EMPTY.
+- The above D3 quests are in `/home/notsolikely/Ashby_Data/Quest Board/Completed/`.
+
+B) Implemented frontend scope (canonical workspace)
+- `Ashby_Engine/webapp/stuart_frontend/stuart_app/src/pages/Stuart.jsx`
+- `Ashby_Engine/webapp/stuart_frontend/stuart_app/src/components/stuart/RunControls.jsx`
+- `Ashby_Engine/webapp/stuart_frontend/stuart_app/src/components/stuart/TranscriptViewer.jsx`
+- `Ashby_Engine/webapp/stuart_frontend/stuart_app/src/components/stuart/ChatInterface.jsx`
+- `Ashby_Engine/webapp/stuart_frontend/stuart_app/src/components/stuart/FormalizationOutput.jsx`
+- `Ashby_Engine/webapp/stuart_frontend/stuart_app/src/components/stuart/ModeTemplateConfig.jsx`
+- `Ashby_Engine/webapp/stuart_frontend/stuart_app/src/components/stuart/SessionCard.jsx`
+- `Ashby_Engine/webapp/stuart_frontend/stuart_app/src/api/stuartClient.js`
+
+Delivered behavior highlights:
+- Chat-first shell behavior and D3 product-surface wiring.
+- Transcript version selector + deterministic timestamp rendering.
+- Explicit transcribe/formalization controls with diarization toggle pathing.
+- Speaker mapping, outputs views, markdown/pdf actions, and export parity wiring.
+- Chat scope toggle (session/global) + attachment affordance.
+- Profile-truth handling (no deceptive cloud support state).
+
+C) Verification receipts (Truth Gate)
+- Frontend build receipt:
+  `/tmp/stuart_d3_frontend_build_2026-02-18.log`
+- API smoke receipt:
+  `/tmp/stuart_d3_smoke_2026-02-18.log`
+- Full E2E probe receipt (session->upload->run->poll->transcripts->formalizations->export):
+  `/tmp/stuart_d3_e2e_2026-02-18.log`
+- E2E terminal status in receipt: `FINAL_STATUS=succeeded`
+
+D) Execution audits written
+- Per-quest execution audits were written under canonical paths in:
+  `/home/notsolikely/Ashby_Data/Audits/Execution/QUEST_102__...`
+  through
+  `/home/notsolikely/Ashby_Data/Audits/Execution/QUEST_113__...`
+- QUEST_112 specific audit path:
+  `/home/notsolikely/Ashby_Data/Audits/Execution/QUEST_112__2026-02-18__stuart_v2_d3_e2e_parity_proof/EXECUTION_AUDIT.md`
+
+E) Non-regression checks
+- Base44/InvokeLLM grep in Stuart frontend `src/`: clean (no hits).
+- No governance artifacts were placed in `Ashby_Engine` as part of this D3 execution block.
+
+END OF LATE ADDENDUM (DUNGEON 3)

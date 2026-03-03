@@ -1,0 +1,23 @@
+STUART CONTROL SYNC SNAPSHOT
+Date: 2026-02-22
+
+Change: Stuart Codex canonicalization + Monster Door Reachability law
+
+Why:
+- Avoid UI-first misinterpretation (not everything must be in Web UI).
+- Make Stuart Codex discoverable under Ashby_Data/Codex/Stuart/ without breaking legacy references.
+
+What changed:
+- NEW canonical Stuart Codex location:
+  - Ashby_Data/Codex/Stuart/TOC.md
+  - Ashby_Data/Codex/Stuart/Sections/
+  - Ashby_Data/Codex/Stuart/Stuart_Codex_Full.txt
+- Legacy Stuart codex location retained for compatibility:
+  - Ashby_Data/Stuart/Stuart Codex/...
+- Codex freeze marker updated to include canonical Stuart codex pointers:
+  - Ashby_Data/Codex/CODEX_FREEZE.md
+- Monster docs updated: UI-first -> Door Reachability + UI-intended subset
+
+Notes:
+- No engine behavior changes in this snapshot.
+- Rehydration Pack remains compatible because legacy codex paths still exist.

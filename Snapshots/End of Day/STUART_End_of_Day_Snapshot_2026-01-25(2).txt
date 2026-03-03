@@ -1,0 +1,45 @@
+STUART END-OF-DAY SNAPSHOT — 2026-01-25 (CHAT WRAP)
+Timestamp: 2026-01-26 01:25:50
+Hands: Peter
+Operator: Ash
+
+WHAT CHANGED TODAY (HIGH LEVEL)
+- Governance audit performed: verified “Full Governance” PDF completeness against governance ZIP; generated a fully audited governance compilation PDF from ZIP.
+- Protocol alignment: reinforced BUFFS execution transparency and artifact-based completion rules.
+- Stuart v1 progress: QUEST_022 deliverables produced as updated Engine/Data ZIP artifacts (SQLite FTS index schema + ingestion + test) with receipts embedded in Data pack.
+
+DELIVERABLE ARTIFACTS (DOWNLOADABLE)
+- Synapse_Guild_FULL_Governance_FROM_ZIP_2026-01-25_AUDITED.pdf
+  - SHA256: b4276530cb0724f708ec2a83f04e1a7150df2fe8bbab2f4dc47c479d2dd7e335
+- Ashby_Engine_UPDATED_2026-01-25.zip
+  - SHA256: ecd8bd67e96dd12009bf44b7857387a6641d5953a87201a0bd1ffea40725415d
+- Ashby_Data_UPDATED_2026-01-25.zip
+  - SHA256: 97dd38ebb17efb474300191d1aa5dde1670afd62c9b2c1bd56e92c389659689e
+
+EVIDENCE POINTERS (INSIDE UPDATED ZIP ARTIFACTS)
+Engine ZIP adds:
+- ashby/modules/meetings/index/sqlite_fts.py
+- ashby/modules/meetings/index/ingest.py
+- ashby/modules/meetings/index/__init__.py
+- tests/test_meetings_sqlite_fts_index_ingestion.py
+
+Data ZIP updates include:
+- Quest file moved to Completed:
+  - Quest Board/Completed/QUEST_022__Stuart_v1_Dungeon_7_1of2_SQLite_FTS_index_schema_ingestion.txt
+- Stuart rehydration quests mirror updated:
+  - Stuart/Docs/Latest Rehyration Pack/quests/QUEST_022__...
+- Talent Tree / Log updated under:
+  - Talent Tree/Stuart/TALENT_TREE.txt
+  - Talent Tree/Stuart/TALENT_LOG.txt
+- Quest audit receipt present:
+  - Ashby_Data/Quest Board/QUEST_AUDIT_DIFFS_2026-01-25.txt
+
+NOTES / CORRECTIONS RECORDED
+- Memory-saving is disabled in this chat session; governance “memory lines” must be stored via Custom Instructions or in a new chat.
+- Environment persistence is inconsistent; treat all work as artifact-output and always checkpoint by ZIP.
+
+RESUME ANCHOR (NEXT SESSION)
+- Rehydrate order: Governance ZIP → Ashby_Data_UPDATED ZIP → Ashby_Engine_UPDATED ZIP.
+- Review: latest Control Sync + latest EOD snapshot in Data pack; confirm accepted quest list.
+- Next work item (pending Hands acceptance): QUEST_023 (Dungeon 7, 2/2).
+- Also create “Dependency Truth / Smoke Test Runbook” + dependency manifest + smoke runner before web UI work.

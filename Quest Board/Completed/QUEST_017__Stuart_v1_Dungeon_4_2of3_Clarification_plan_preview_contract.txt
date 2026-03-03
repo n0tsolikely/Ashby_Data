@@ -1,0 +1,61 @@
+QUEST ID: QUEST_017
+Title: Stuart v1 — Dungeon 4 (2 of 3): Clarification + plan preview contract
+Context: Stuart
+Origin: Guild Orders: GUILD_ORDERS_STUART_V1_2026-01-16_REV3.txt (Dungeon 4)
+Priority: P0
+Links:
+- Guild Orders: Stuart v1 — Dungeon 4
+- Supersedes (decomposition of): QUEST_005
+- Related: QUEST_016 (intent + plan object)
+Status: COMPLETED
+Accepted On: Completed On:
+Completed On: DESCRIPTION
+
+DESCRIPTION
+────────────────────────────────────────
+Implement the clarification and plan-preview behavior so Stuart asks only when needed, lists enumerated options, and makes defaults explicit.
+
+SCOPE / OBJECTIVE
+────────────────────────────────────────
+Implement clarification contract from Guild Orders:
+- If mode missing: ask mode (journal/meeting).
+- If speakers missing: use mode default and state it in the plan preview.
+- If template missing: use default template and state it in the plan preview.
+- If Telegram: never ask for template (default only; template requests must be rejected/clarified).
+
+Plan preview requirements:
+- preview must show chosen mode/template/speakers (including defaults)
+- preview must show the ordered execution steps that will run
+- preview must list any ambiguity and what user must choose
+
+OUT OF SCOPE
+────────────────────────────────────────
+The actual execution gating signal/confirmation mechanism (QUEST_018).
+Door/UI rendering specifics beyond returning a structured “clarify prompt” object.
+
+DEPENDENCIES
+────────────────────────────────────────
+- QUEST_016
+
+EXECUTION NOTES
+────────────────────────────────────────
+Clarification must be enumerated (list allowed values).
+No hidden defaults; defaults must be disclosed in the plan preview.
+
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────
+- [x] When mode is missing, the engine emits a clarification prompt listing allowed modes.
+- [x] When speakers are missing, the engine applies mode default and includes it explicitly in the plan preview.
+- [x] When template is missing, engine applies default template and includes it explicitly in the plan preview.
+- [x] A structured clarify prompt object exists that doors (web/telegram) can render without embedding business logic.
+- [x] Door contract supports telegram door hinting (v1 defaults-only behavior disclosed; full Telegram door is QUEST_010).
+
+TALENT POINT
+────────────────────────────────────────
+On completion:
+- Talent Point Awarded: YES
+- Talent Spent On: TALENT_STUART_CLARIFY_PREVIEW_CONTRACT — Clarification + Plan Preview Contract
+
+FINAL NOTES
+────────────────────────────────────────
+(optional)

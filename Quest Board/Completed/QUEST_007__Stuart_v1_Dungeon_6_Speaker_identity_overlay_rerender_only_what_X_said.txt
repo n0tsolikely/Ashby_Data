@@ -1,0 +1,44 @@
+QUEST ID: QUEST_007
+Title: Stuart v1 — Dungeon 6: Speaker identity overlay + rerender + “only what X said”
+Context: Stuart
+Origin: Guild Orders: GUILD_ORDERS_STUART_V1_2026-01-16_REV3.txt
+Priority: P1
+Links:
+- Guild Orders: Stuart v1 — Dungeon 6
+Status: COMPLETED
+Accepted On: 2026-01-24
+Completed On: 2026-01-25
+
+DESCRIPTION
+────────────────────────────────────────
+Support mapping SPEAKER_00 -> Greg (etc.) as a non-destructive overlay and rerender outputs with names.
+Unlock extract-only outputs like “only what Greg said.”
+SCOPE / OBJECTIVE
+────────────────────────────────────────
+Implement overlay artifacts under overlays/; session points to active overlay; rerender uses overlay without mutating ground truth.
+OUT OF SCOPE
+────────────────────────────────────────
+Automatic speaker name detection (future).
+UI for editing speaker map beyond basic chat commands.
+DEPENDENCIES
+────────────────────────────────────────
+- None (legacy QUEST_006 reference superseded by completed Dungeon 5 foundation)
+EXECUTION NOTES
+────────────────────────────────────────
+Overlay law: store each speaker mapping as a new overlay file (append-only lineage).
+Rerender should not require re-transcription.
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────
+- [x] User command “SPEAKER_00 is Greg” creates a new overlay artifact
+- [x] Session tracks which overlay is active
+- [x] Re-rendered outputs show speaker names where applicable
+- [x] “Only what Greg said” produces an export artifact with citations
+TALENT POINT
+────────────────────────────────────────
+On completion:
+- Talent Point Awarded: YES
+- Talent Spent On: TALENT_STUART_SPEAKER_OVERLAY_EXTRACT — Speaker Overlay + Rerender + Extract-Only
+
+FINAL NOTES
+────────────────────────────────────────
+(optional)

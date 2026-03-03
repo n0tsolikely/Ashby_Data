@@ -1,0 +1,114 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+================================================
+
+QUEST ID:
+QUEST_107
+
+Created By:
+Codex (Brains)
+
+Title:
+Stuart v2 — D3 (6/11) — Formalization Config Panel + Run Trigger Wiring
+
+Subject:
+Stuart
+
+Context: (Ashby / Stuart / System / Other)
+Ashby / Stuart
+
+Origin:
+Guild Orders ACTIVE REV4 -> Dungeon 3 formalization config panel requirements.
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- API: POST /api/run
+- Dungeon 4 transcript_version_id requirement
+
+Status: BOARD | ACTIVE | COMPLETED | ABANDONED
+COMPLETED
+
+Audit Bundle Folder Path:
+Ashby_Data/Audits/Execution/QUEST_107__2026-02-18__stuart_v2_d3_formalization_config_run_wiring
+
+Accepted On:
+2026-02-18
+
+Accepted By:
+Hands (Peter) via Codex (Brains)
+
+Completed On:
+2026-02-18
+
+Completed By:
+Codex (Brains)
+
+Change Class: (TRIVIAL / FEATURE / STRUCTURAL)
+FEATURE
+
+Vision Delta: (ALIGNED / VARIATION / SHIFT)
+ALIGNED
+
+System Context Statement:
+Formalization execution must be explicit and parameterized by mode/template/retention/profile and transcript version.
+
+Anti-Duplication Plan:
+Use single run request composer for all formalization paths.
+
+Placement Intent:
+Session tab formalization config component + run invocation handler.
+
+Codex Anchors (DRAFT):
+- Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_4.1_Mode_vs_Template_Separation.txt
+- Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_5.1_Retention_Knob_LOW_MED_HIGH_NEAR_VERBATIM.txt
+- Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_7.6_Stage_5_Formalization.txt
+
+Codex Constraint Summary:
+- Mode and template are distinct and explicit.
+- Retention must be selectable and auditable.
+- Formalization must consume explicit transcript_version_id.
+
+Door Impact:
+Stuart web door (UI)
+
+Testing Level (TL):
+TL2
+
+Talent Point Awarded: (YES / NO)
+YES
+
+DESCRIPTION
+Implement the full formalization config panel and wire it to canonical run creation with explicit transcript_version_id.
+
+SCOPE / OBJECTIVE
+- UI includes mode/template/retention/profile selectors + Formalize button.
+- Run submission payload includes selected transcript_version_id.
+- Upload remains distinct from formalize execution.
+
+OUT OF SCOPE
+- Template marketplace creation.
+- Chat parser for formalization commands.
+
+DEPENDENCIES
+- QUEST_105
+- Dungeon 2 run/formalization endpoints
+
+EXECUTION NOTES
+Backend rejections (missing params/profile violations) must surface clearly in UI.
+
+COMPLETION CRITERIA (REQUIRED)
+- [ ] Formalization config controls render and are usable.
+- [ ] Formalize submits explicit run payload with transcript_version_id.
+- [ ] UI reflects submission success/failure deterministically.
+
+
+ENFORCEMENT ADDENDUM (BINDING — NO DRIFT ALLOWED):
+- Formalize request MUST include the currently selected transcript_version_id.
+  (No defaulting, no "latest", no guessing. If none selected, UI must block formalize.)
+- Formalize request MUST include: mode, template_id, retention_level, processing_profile.
+- Formalize action MUST NOT trigger transcription or diarization.
+  It consumes an existing transcript version only.
+- UI must display which transcript_version is being used (visible confirmation).
+- If processing_profile is LOCAL_ONLY and a remote LLM would be required, UI must hard-block and show the policy reason.
+- Output must be treated as an artifact-driven result (not a chat string): UI must poll run status and load formalization outputs from the formalizations index / run downloads.

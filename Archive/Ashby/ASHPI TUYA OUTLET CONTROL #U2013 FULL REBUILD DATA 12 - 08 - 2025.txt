@@ -1,0 +1,1695 @@
+ASHPI TUYA OUTLET CONTROL – FULL REBUILD DATA
+
+1. TUYA / SMART LIFE CLOUD CREDENTIALS
+
+These are the Tuya IoT / Smart Life credentials for your outlet:
+
+ACCESS_ID="5x3d4r7enjwfgnsvu5hd"
+ACCESS_KEY="a0845ef8cf5848d5986618bf7ff07763"
+
+# This is the Smart Life account you linked to the Tuya cloud project:
+USERNAME="ashpi.iot.setup@gmail.com"
+
+# IMPORTANT: replace this with your real Smart Life password on the Pi.
+# (You can safely store the real password in env.py locally if you want.)
+PASSWORD="Hby64@F3!g..;+Ucx7"
+
+# Tuya device ID for your smart plug:
+DEVICE_ID="ebf157ec2f48cf767auaif"
+
+# Tuya US (Western America) endpoint:
+ENDPOINT="https://openapi.tuyaus.com"
+
+
+2. PYTHON ENV FILE (env.py)
+
+This is the env-style file used by the plug script.
+Save this on the Pi as env.py in the same folder as your script:
+
+from pathlib import Path
+
+ACCESS_ID = "5x3d4r7enjwfgnsvu5hd"
+ACCESS_KEY = "a0845ef8cf5848d5986618bf7ff07763"
+
+USERNAME = "ashpi.iot.setup@gmail.com"
+PASSWORD = "Hby64@F3!g..;+Ucx7"  # <-- put real password here
+
+DEVICE_ID = "ebf157ec2f48cf767auaif"
+
+ENDPOINT = "https://openapi.tuyaus.com"  # Western America data center
+
+
+3. REQUIRED PYTHON PACKAGES
+
+Everything for the outlet uses the same virtual environment (ashpi-env).
+
+Activate venv:
+
+    source ashpi-env/bin/activate
+
+Install the Tuya SDK (inside the venv):
+
+    pip install tuya-iot-py-sdk
+
+
+4. OUTLET CONTROL SCRIPT (ashpi_plug_test.py)
+
+Save this entire script as ashpi_plug_test.py on the Pi:
+
+from env import ENDPOINT, ACCESS_ID, ACCESS_KEY, USERNAME, PASSWORD, DEVICE_ID
+from tuya_iot import TuyaOpenAPI, TUYA_LOGGER
+import logging
+
+# Optional: enable debug logging
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO,
+)
+TUYA_LOGGER.setLevel(logging.INFO)
+
+# Initialize Tuya OpenAPI client
+openapi = TuyaOpenAPI(ENDPOINT, ACCESS_ID, ACCESS_KEY)
+
+# Country code "1" = US/Canada, "smartlife" is the app schema.
+openapi.connect(USERNAME, PASSWORD, "1", "smartlife")
+
+
+def set_plug(on: bool):
+    """Turn the Tuya plug on/off."""
+    commands = {
+        "commands": [
+            {"code": "switch_1", "value": on}
+        ]
+    }
+    res = openapi.post(f"/v1.0/devices/{DEVICE_ID}/commands", commands)
+    print("Response:", res)
+    return res
+
+
+def main():
+    print("Press Enter to turn plug ON...")
+    input()
+    set_plug(True)
+
+    print("Press Enter to turn plug OFF...")
+    input()
+    set_plug(False)
+
+
+if __name__ == "__main__":
+    main()
+
+
+5. HOW TO USE
+
+Each time you want to quickly test/control the outlet from the Pi:
+
+1) SSH into the Pi and activate the virtual environment:
+
+    ssh notsolikely@<your_pi_ip>
+    source ashpi-env/bin/activate
+
+2) Run the plug test script:
+
+    python3 ashpi_plug_test.py
+
+3) Follow prompts:
+   - Press Enter once -> plug turns ON
+   - Press Enter again -> plug turns OFF
+
+
+6. WHAT TO CHECK IF IT BREAKS
+
+- If Tuya returns sign / auth errors:
+  * Confirm ACCESS_ID and ACCESS_KEY are unchanged in both env.py and Tuya cloud.
+  * Confirm USERNAME and PASSWORD are correct Smart Life login (same account linked in Tuya).
+  * Confirm ENDPOINT is still https://openapi.tuyaus.com and your project is in Western America.
+  * Confirm DEVICE_ID matches the plug in Tuya's cloud device list.
+
+- If Python says ModuleNotFoundError:
+  * You probably forgot to activate the venv or install tuya-iot-py-sdk.
+  * Run:
+        source ashpi-env/bin/activate
+        pip install tuya-iot-py-sdk
+
+
+7. HOW TO REBUILD FROM ONLY THIS TXT
+
+If you lose everything on the Pi, but still have this txt:
+
+1) Recreate the venv (if needed), activate it.
+2) Create env.py using the block from section 2 (put in your real password).
+3) Install tuya-iot-py-sdk as in section 3.
+4) Create ashpi_plug_test.py using the script in section 4.
+5) Run python3 ashpi_plug_test.py to verify control.
+
+With this file + your actual Smart Life password, you (or a fresh AshPi in a new chat) can fully restore Tuya outlet control in a few minutes.
+
+
+
+ASHPI NEST TEMPERATURE CONTROL – FULL REBUILD DATA
+
+1. GOOGLE DEVICE ACCESS CREDENTIALS
+
+NEST_REFRESH_TOKEN="1//01eWdG4Pli90dCgYIARAAGAESNwF-L9Ir3BQYD5KUj-ejMwCdAxsfg6xx0URs8UlOYR0T5vZEkTTg1-Wu1qUcDgW4S7UO-OHDZlY"
+NEST_CLIENT_ID="21965826000-2omlmh584m43i7fd62tav7f4d8aaft7i.apps.googleusercontent.com"
+NEST_CLIENT_SECRET="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"
+NEST_REDIRECT_URI="https://www.google.com"
+NEST_SCOPE="https://www.googleapis.com/auth/sdm.service"
+
+2. DEVICE PATH
+
+NEST_DEVICE="enterprises/a773a0bb-fd52-4526-a32a-ee9f559ed902/devices/AVPHwEt4UTxHqZdAPFy2TD25DNQVohbpouw_s7nTVBBoC_t_CM0BMaPeE3mJjwKXJHxL5nI_Q-STEBQ8w3eWCIennQEk6g"
+
+3. PYTHON SCRIPT (ashpi_nest_set.py)
+
+import json
+import requests
+import sys
+
+env = {}
+with open("ashpi_nest.env") as f:
+    for line in f:
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if "=" in line:
+            key, val = line.split("=", 1)
+            val = val.strip().strip('"').strip("'")
+            env[key] = val
+
+NEST_REFRESH_TOKEN = env["NEST_REFRESH_TOKEN"]
+NEST_CLIENT_ID = env["NEST_CLIENT_ID"]
+NEST_CLIENT_SECRET = env["NEST_CLIENT_SECRET"]
+NEST_DEVICE = env["NEST_DEVICE"]
+
+TOKEN_URL = "https://www.googleapis.com/oauth2/v4/token"
+EXECUTE_URL = f"https://smartdevicemanagement.googleapis.com/v1/{NEST_DEVICE}:executeCommand"
+
+def get_access_token():
+    data = {
+        "client_id": NEST_CLIENT_ID,
+        "client_secret": NEST_CLIENT_SECRET,
+        "refresh_token": NEST_REFRESH_TOKEN,
+        "grant_type": "refresh_token",
+    }
+    r = requests.post(TOKEN_URL, data=data)
+    r.raise_for_status()
+    body = r.json()
+    if "access_token" not in body:
+        raise RuntimeError(f"Failed to get access token: {body}")
+    return body["access_token"]
+
+def set_heat_celsius(temp_c: float):
+    access_token = get_access_token()
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json",
+    }
+    payload = {
+        "command": "sdm.devices.commands.ThermostatTemperatureSetpoint.SetHeat",
+        "params": {"heatCelsius": float(temp_c)},
+    }
+    r = requests.post(EXECUTE_URL, headers=headers, data=json.dumps(payload))
+    print("Status:", r.status_code)
+    print("Response:", r.text)
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python3 ashpi_nest_set.py <temp_celsius>")
+        sys.exit(1)
+    try:
+        temp = float(sys.argv[1])
+    except ValueError:
+        print("Invalid number")
+        sys.exit(1)
+    print(f"Setting heat to {temp}°C...")
+    set_heat_celsius(temp)
+
+4. ENV FILE (ashpi_nest.env)
+
+NEST_REFRESH_TOKEN="1//01eWdG4Pli90dCgYIARAAGAESNwF-L9Ir3BQYD5KUj-ejMwCdAxsfg6xx0URs8UlOYR0T5vZEkTTg1-Wu1qUcDgW4S7UO-OHDZlY"
+NEST_CLIENT_ID="21965826000-2omlmh584m43i7fd62tav7f4d8aaft7i.apps.googleusercontent.com"
+NEST_CLIENT_SECRET="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"
+NEST_REDIRECT_URI="https://www.google.com"
+NEST_SCOPE="https://www.googleapis.com/auth/sdm.service"
+NEST_DEVICE="enterprises/a773a0bb-fd52-4526-a32a-ee9f559ed902/devices/AVPHwEt4UTxHqZdAPFy2TD25DNQVohbpouw_s7nTVBBoC_t_CM0BMaPeE3mJjwKXJHxL5nI_Q-STEBQ8w3eWCIennQEk6g"
+
+5. HOW TO USE
+
+source ashpi-env/bin/activate
+python3 ashpi_nest_set.py 24
+
+AshPi Tuya Lights Setup
+=======================
+
+Scope:
+------
+This document captures how Tuya-based bulbs (including Noma/Globe devices that use Tuya/SmartLife)
+are integrated into AshPi as of 2025-12-08.
+
+Key Python Files:
+-----------------
+- ashpi_devices.py
+    - Contains DEVICES dict with entries like:
+        - bed_lamp (Tuya plug, type="plug", room="bedroom")
+        - birdcage_light (Tuya plug)
+        - captain_america_bulb (Tuya bulb)
+        - thor_bulb (Tuya bulb)
+        - sky_bulb (Tuya bulb)
+
+- ashpi_lights_tuya.py
+    - Tuya-specific lights module (bulbs only).
+    - Handles:
+        - Turning bulbs ON/OFF
+        - Setting exact brightness (0–1000)
+        - Stepping brightness up/down by a fixed step
+        - Caching latest brightness per bulb
+
+Current DEVICES Snapshot (Bulbs only):
+--------------------------------------
+From ashpi_devices.py (conceptual):
+
+DEVICES = {
+    "bed_lamp": {
+        "id": "ebf157ec2f48cf767auaif",
+        "type": "plug",
+        "brand": "tuya",
+        "room": "bedroom",
+        "description": "Bedside lamp outlet"
+    },
+    "birdcage_light": {
+        "id": "ebca18fe0ff83bec80tjtl",
+        "type": "plug",
+        "brand": "tuya",
+        "room": "bedroom",
+        "description": "Birdcage light outlet"
+    },
+    "captain_america_bulb": {
+        "id": "405837102cf4325c60c6",
+        "type": "bulb",
+        "brand": "tuya",
+        "room": "bedroom",
+        "description": "Captain America wall bulb"
+    },
+    "thor_bulb": {
+        "id": "40583710cc50e3e008dd",
+        "type": "bulb",
+        "brand": "tuya",
+        "room": "bedroom",
+        "description": "Thor wall bulb"
+    },
+    "sky_bulb": {
+        "id": "405837102cf4321d1d05",
+        "type": "bulb",
+        "brand": "tuya",
+        "room": "bedroom",
+        "description": "Ceiling 'sky' bulb"
+    },
+}
+
+Tuya Functions for Bulbs:
+-------------------------
+Queried via Tuya OpenAPI /v1.0/devices/{id}/functions:
+
+- switch_led       -> Boolean (True/False) = main ON/OFF
+- bright_value_v2  -> Integer (0–1000) = brightness level
+- work_mode        -> Enum: white/colour/scene/music
+- control_data     -> Json: h/s/v, temperature, etc. (for color bulbs)
+- scene_data_v2    -> Json: predefined scenes
+- countdown_1      -> Integer: timer
+
+For now AshPi uses:
+- switch_led (on/off)
+- bright_value_v2 (brightness)
+
+ashpi_lights_tuya.py Core Behavior:
+-----------------------------------
+- BRIGHTNESS_STATE: local cache: { device_name -> 0–1000 }
+- DEFAULT_STEP = 100
+- DEFAULT_BRIGHTNESS = 500
+
+Functions:
+
+1) set_brightness(target, value)
+   - target: single device name or list of names
+   - clamps value to [0, 1000]
+   - sends Tuya command:
+       - bright_value_v2 = value
+       - switch_led = True if value > 0 else False
+   - updates BRIGHTNESS_STATE for each device
+
+2) step_brightness(target, delta)
+   - delta > 0 => brighter
+   - delta < 0 => dimmer
+   - uses BRIGHTNESS_STATE or DEFAULT_BRIGHTNESS if unknown
+   - new_value = clamp(current + delta)
+   - internally calls set_brightness()
+
+3) turn_on(target, value=None)
+   - If value is None and a single target:
+       - uses cached brightness or DEFAULT_BRIGHTNESS
+   - If value is None and multiple targets:
+       - uses DEFAULT_BRIGHTNESS
+   - calls set_brightness(target, value)
+
+4) turn_off(target)
+   - sets switch_led = False
+   - caches brightness as 0
+
+Test Snippet Used:
+------------------
+python3 - << 'EOF'
+from ashpi_lights_tuya import turn_on, turn_off, step_brightness, set_brightness
+
+# Turn Thor ON at default
+turn_on("thor_bulb")
+
+# Make him brighter by 100
+step_brightness("thor_bulb", +100)
+
+# Dim him by 200
+step_brightness("thor_bulb", -200)
+
+# Set exact brightness
+set_brightness("thor_bulb", 547)
+
+# Turn off
+turn_off("thor_bulb")
+EOF
+
+Future Plans:
+-------------
+- Add groups in core/devices.py:
+    - wall_lights = [captain_america_bulb, thor_bulb]
+    - ceiling_light = [sky_bulb]
+    - room_lights = all 3
+- Brightness "phrase layer" will live above this module:
+    - "brighter" -> step_brightness(..., +100)
+    - "dimmer"   -> step_brightness(..., -100)
+    - "max bright" -> set_brightness(..., 1000)
+    - "max dim"    -> set_brightness(..., 0)
+- Telegram/Discord/web/voice will all call these same functions.
+
+
+
+
+ASHPI PROJECT NOTES — FILE #1
+--------------------------------
+
+This file contains ONLY the AshPi‑related information from THIS CHAT THREAD.  
+It focuses on setup, ideas, architecture, device integration, design choices, and things we learned or changed.  
+This is meant to be imported into your official AshPi Project workspace.
+
+------------------------------------------------------------
+1. CORE PURPOSE & VISION OF ASHPI
+------------------------------------------------------------
+- AshPi is intended to become a universal, single‑point controller for smart home devices.
+- AshPi must work locally when possible (LAN control), avoiding cloud dependency.
+- The long-term goal is a multi-module architecture with brand-specific integration files:
+  - Tuya / SmartLife / NOMA iQ / Globe Suite
+  - Google Nest (via API)
+  - NOMA iQ (Ayla-based devices like thermostats)
+  - Neewer, LiftMaster, etc.
+- AshPi must support text-based commands (Telegram, later Discord/web UI).
+- Future: automatic camera snapshots, signage updates, thermostat control, home/office automation.
+
+------------------------------------------------------------
+2. DEVICE PLATFORM DECISIONS FROM THIS CHAT
+------------------------------------------------------------
+
+NOMA iQ LIGHT BULBS:
+- Confirmed Tuya-based (via Pneuma/NOMA iQ app).
+- Tuya = Easy Local Key access.
+- Supported fully by AshPi (local control: power, brightness, RGB color).
+- Identical workflow to other Tuya lighting devices.
+- Recommended as ideal choice for AshPi testing.
+
+GLOBE SUITE SMART PLUGS:
+- Also Tuya OEM devices.
+- Confirmed compatible.
+- Slightly different device category and DPS mapping.
+- Useful for testing AshPi’s cross-brand robustness.
+- Recommended to get the 2-pack to test multiple outlets.
+
+GLOBE SUITE LIGHT BULBS:
+- Also Tuya-based.
+- Setup and programming will differ slightly from outlets (different DPS).
+- Good for testing multiple device “types” under one API structure.
+
+RESULT:
+- All devices purchased in this chat (NOMA bulbs, Globe plugs, Globe bulbs) are AshPi-compatible.
+- All will use Tuya local keys.
+- No complex OAuth token systems required (unlike Nest).
+
+------------------------------------------------------------
+3. ARCHITECTURE PRINCIPLES DISCUSSED IN THIS CHAT
+------------------------------------------------------------
+
+A modular setup where each device type has:
+- A brand-specific backend module (e.g., tuya_lights.py, tuya_plugs.py).
+- A category-level controller (lights.py, plugs.py).
+- A unified command router (ashpi_core.py).
+- Telegram interface passes commands → router → device-specific code.
+
+Folders planned:
+- /devices/
+  - /tuya/
+    - lights.py
+    - plugs.py
+    - get_local_keys.py
+  - /nest/
+    - thermostat.py
+  - /noma_iq_ayla/
+    - plugs.py
+    - thermostat.py
+- /interface/
+  - telegram_bot.py
+  - voice_cast.py
+- /state/
+  - device_reference_files.txt
+  - notes/
+
+------------------------------------------------------------
+4. THINGS WE LEARNED / DECISIONS LOCKED IN
+------------------------------------------------------------
+
+1. **Tuya-based devices give AshPi the easiest and strongest foundation**  
+   - Simple local control  
+   - Fast response  
+   - No cloud dependency  
+   - Works for lights, plugs, switches, sensors  
+
+2. **Nest integration is significantly more complex**  
+   - Must go through Google Cloud  
+   - OAuth tokens  
+   - Refresh tokens  
+   - Not ideal for quick deployment  
+   - Treat Nest as an “advanced optional module,” not core.
+
+3. **AshPi should support multiple brands for future business value**  
+   - NOMA iQ (Tuya)  
+   - Globe Suite (Tuya)  
+   - Future Ayla IoT devices (NOMA thermostats)  
+   - Future ONVIF/RTSP cameras  
+
+4. **AshPi must be easy for customers**  
+   - User sends text: “Set heat to 22”  
+   - AshPi handles everything behind the scenes.
+
+5. **LAN-first design is the priority**  
+   - Local control = fast + private  
+   - Tuya local keys make this possible  
+   - Nest cannot do LAN, so it stays cloud-based but optional.
+
+------------------------------------------------------------
+5. SETUP WORKFLOW DEFINED IN THIS CHAT
+------------------------------------------------------------
+
+For all Tuya-based devices (NOMA iQ, Globe Suite):
+
+STEP 1 — Add device to its native app  
+- Pneuma/NOMA for bulbs  
+- Globe Suite app for Globe plugs/bulbs  
+
+STEP 2 — Link account to the Tuya IoT Platform  
+- Use the “App Link” feature  
+- Retrieve each device’s:
+  - Device ID
+  - Local Key
+  - DPS map
+
+STEP 3 — Add devices into AshPi’s config file  
+Example (pseudo):
+{
+  "living_room_bulb": {
+    "type": "light",
+    "device_id": "xxx",
+    "local_key": "yyy",
+    "ip": "192.168.x.x"
+  }
+}
+
+STEP 4 — Create the Tuya-specific control modules  
+- turn_on()
+- turn_off()
+- set_brightness()
+- set_color()
+- plug_on()
+- plug_off()
+
+STEP 5 — Create command router  
+Telegram → interpret command → route to correct module.
+
+------------------------------------------------------------
+6. DECISIONS ABOUT TEST HARDWARE
+------------------------------------------------------------
+
+Reasons for choosing the devices purchased:
+- NOMA bulbs: Best price, simplest integration.
+- Globe plugs: Provide variety for AshPi’s brand-agnostic API.
+- Globe bulbs: Give additional test category (light vs outlet).
+- Testing multiple Tuya brands = strengthens AshPi’s universal design.
+
+------------------------------------------------------------
+7. FUTURE TASKS REFERENCED IN THIS CHAT
+------------------------------------------------------------
+
+1. Write standardized device state reference files.
+2. Create brand-separation folder structure.
+3. Automate Local Key extraction workflow.
+4. Write unified Tuya LAN driver.
+5. Write Telegram commands for:
+   - Lights  
+   - Plugs  
+   - Groups (“Turn everything off”)  
+6. Add ONVIF/RTSP camera module later.
+7. Eventually add LiftMaster / Neewer / Ayla modules.
+
+------------------------------------------------------------
+END OF FILE #1
+------------------------------------------------------------
+
+
+AshPi Project Notes – File 1.5 (Beginning)
+==========================================
+This file contains ONLY the important AshPi-related setup, logic, ideas, and programming details
+from THIS chat session. No extra conversations are included.
+
+------------------------------------------
+1. Google Nest / SDM Authentication Flow
+------------------------------------------
+• Successfully completed the Google OAuth2 flow needed for Nest SDM API.
+• Generated an authorization code via the Device Access Console.
+• Exchanged the authorization code for:
+    - access_token
+    - refresh_token (critical for long-term use)
+• Verified that the refresh token works and can generate new access tokens anytime.
+
+What we learned / confirmed:
+• The redirect URI does NOT need to be functional. It just needs to match what is in Google's console.
+• Using https://www.google.com as redirect_uri is acceptable for server-side flows.
+• Test users MUST be added manually for unverified OAuth clients.
+• Authorization codes expire quickly and can be used ONCE.
+• The refresh_token is the permanent key to automated Nest access.
+
+------------------------------------------------
+2. Environment File Created on the Raspberry Pi
+------------------------------------------------
+Created: ~/ashpi_nest.env
+
+Stored values:
+• NEST_REFRESH_TOKEN="(actual token)"
+• NEST_CLIENT_ID="21965826000-2omlmh584m43i7fd62tav7f4d8aaft7i.apps.googleusercontent.com"
+• NEST_CLIENT_SECRET="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"
+• NEST_REDIRECT_URI="https://www.google.com"
+• NEST_SCOPE="https://www.googleapis.com/auth/sdm.service"
+
+Purpose:
+• Allows scripts to automatically authenticate and retrieve new access tokens.
+• Prevents exposing sensitive values in code.
+
+------------------------------------------
+3. Generating Access Tokens Automatically
+------------------------------------------
+Tested the refresh-token exchange flow:
+
+curl POST https://oauth2.googleapis.com/token
+→ produced working access_token and expiration time.
+
+This confirmed our environment variables are correct and the whole authentication flow is working.
+
+------------------------------------------
+4. Accessing the Nest Device Through SDM API
+------------------------------------------
+Entered correct enterprise ID:
+    a773a0bb-fd52-4526-a32a-ee9f559ed902
+
+Successfully retrieved device list:
+• Contained the Hallway thermostat.
+• Verified traits:
+    - Temperature
+    - Humidity
+    - HVAC status
+    - Setpoint
+    - Mode
+    - Connectivity
+    - Eco mode
+    - Fan timer
+
+This confirms full read-access to Nest.
+
+------------------------------------------
+5. First Real Hardware Control Success
+------------------------------------------
+Executed:
+ThermostatTemperatureSetpoint.SetHeat
+
+Commands tested:
+• SetHeat to 22.0°C → SUCCESS
+• SetHeat to 24.0°C → SUCCESS
+
+Device responded instantly.
+This marks the FIRST successful AshPi real-world hardware integration.
+
+------------------------------------------
+6. Architecture Concepts Confirmed During Chat
+------------------------------------------
+• AshPi will eventually support:
+    - Nest (thermostat)
+    - Tuya (lights & plugs)
+    - NOMA iQ / Ayla devices
+    - Digital signage (Raspberry Pi signage OS)
+    - Cameras with RTSP
+• Telegram is the preferred command interface.
+• Future commands will be natural-language:
+      “Set heat to 22”
+      “Turn off the lights”
+      “Show me the front door camera”
+      etc.
+
+• Python modules will be split into:
+    - brand-specific modules (nest/, tuya/, noma/, neewer/)
+    - device-type modules (thermostat/, lights/, plugs/, cameras/)
+    - ashpi_core/ for logic & token handling
+
+• AshPi will eventually support:
+    - Photo capture via camera streams
+    - Uploads to cloud (Google Photos, Facebook API, etc.)
+    - DoorDash automation (workarounds possible)
+    - Digital sign control
+    - Full smart-home consolidation
+
+------------------------------------------
+7. Next Steps (Tomorrow’s Work)
+------------------------------------------
+• Build ashpi_nest.py:
+    - Auto-refresh access token
+    - Functions:
+         get_temperature()
+         set_heat(value)
+         set_mode(mode)
+    - Error handling for expired tokens
+
+• Integrate Nest module into AshPi core command system.
+
+------------------------------------------
+End of File 1.5 – Beginning of AshPi Project
+------------------------------------------
+Generated: 2025-12-09 00:54:44
+
+AshPi Devices Snapshot (2025-12-08)
+===================================
+
+Purpose:
+--------
+This file records the current known devices, their IDs, types, brands, and rooms.
+
+Note: This is a human reference. The actual live source of truth is ashpi_devices.py.
+
+Devices:
+--------
+
+1) bed_lamp
+   - id: ebf157ec2f48cf767auaif
+   - type: plug
+   - brand: tuya
+   - room: bedroom
+   - description: Bedside lamp outlet
+
+2) birdcage_light
+   - id: ebca18fe0ff83bec80tjtl
+   - type: plug
+   - brand: tuya
+   - room: bedroom
+   - description: Birdcage light outlet
+
+3) captain_america_bulb
+   - id: 405837102cf4325c60c6
+   - type: bulb
+   - brand: tuya
+   - room: bedroom
+   - description: Wall bulb next to Captain America poster
+   - group hints:
+       - part of: wall_lights
+       - part of: room_lights
+
+4) thor_bulb
+   - id: 40583710cc50e3e008dd
+   - type: bulb
+   - brand: tuya
+   - room: bedroom
+   - description: Wall bulb next to Thor poster
+   - group hints:
+       - part of: wall_lights
+       - part of: room_lights
+
+5) sky_bulb
+   - id: 405837102cf4321d1d05
+   - type: bulb
+   - brand: tuya
+   - room: bedroom
+   - description: Ceiling bulb above bed (sky)
+   - group hints:
+       - part of: ceiling_light
+       - part of: room_lights
+
+Planned Groups (to be encoded in core/devices.py or a groups map):
+------------------------------------------------------------------
+- wall_lights:
+    - captain_america_bulb
+    - thor_bulb
+
+- ceiling_light:
+    - sky_bulb
+
+- room_lights:
+    - captain_america_bulb
+    - thor_bulb
+    - sky_bulb
+
+
+AshPi Architecture Overview
+===========================
+
+Goal:
+-----
+AshPi must support multiple brands (Tuya, Nest, NOMA iQ, Neewer, etc.) and multiple interfaces
+(Telegram, Discord, web app, voice, Twitch, etc.) without duplicating logic.
+
+Key Design:
+-----------
+1. Brand-specific modules (per vendor/backend)
+   - brands/tuya/*   -> Uses Tuya OpenAPI
+   - brands/nest/*   -> Uses Google SDM / Nest APIs
+   - brands/noma_iq/*-> Uses Ayla backend (future)
+   - brands/neewer/* -> Neewer GL1 / other lights
+
+2. Category separation (by device type)
+   - lights (bulbs, panels, strips)
+   - plugs (smart outlets, power bars)
+   - climate (thermostats, heaters)
+   - other: garage doors, fans, cameras, etc.
+
+3. Brand-agnostic core
+   - core/devices.py: registry of all devices with:
+       - id (cloud/device id)
+       - type (bulb/plug/thermostat/etc.)
+       - brand (tuya, nest, noma_iq, neewer, etc.)
+       - room (bedroom, living_room, office, etc.)
+       - groups (wall_lights, ceiling_lights, all_lights, etc.)
+   - core logic maps phrases like:
+       "wall lights", "room", "all lights", "ceiling"
+       into a list of concrete device names.
+
+4. Interfaces (front-ends)
+   - interfaces/telegram_bot.py:
+       - Reads Telegram messages
+       - Parses commands ("make the room brighter")
+       - Calls brand/category modules (e.g. tuya.lights.step_brightness)
+   - interfaces/web_api.py:
+       - HTTP endpoints to control devices from a web UI
+   - interfaces/discord_bot.py:
+       - Same idea but for Discord
+   - future voice/Twitch wrappers do the same.
+
+Principles:
+-----------
+- No direct Tuya/Nest/NOMA logic inside interface files.
+- Interfaces only call into brand/category modules.
+- Each brand module knows how to talk to its own backend.
+- The core/device registry ties everything together.
+
+Example Flow:
+-------------
+User (Telegram): "Make the wall lights brighter"
+
+1. Telegram bot parses:
+   - target: "wall lights"
+   - intent: brighter (increment brightness)
+
+2. core/devices.py:
+   - "wall_lights" -> ["captain_america_bulb", "thor_bulb"]
+   - brand: tuya
+   - category: lights
+
+3. interfaces/telegram_bot.py:
+   - calls: brands.tuya.lights.step_brightness(["captain_america_bulb","thor_bulb"], +100)
+
+4. brands/tuya/lights.py:
+   - translates that to Tuya OpenAPI calls for those device IDs.
+
+
+AshPi – Master State & Roadmap (2025-12-08)
+=================================================
+
+PURPOSE OF THIS FILE
+--------------------
+This is the **master document** for AshPi as of 2025-12-08.
+
+It does three things:
+
+1. Captures everything that **already exists and works**:
+   - Tuya outlet control
+   - Tuya lights control
+   - Nest thermostat control
+   - Telegram bot integration
+   - Google Home Mini casting
+   - Device registry / snapshots
+   - Environment, secrets, and rebuild notes
+
+2. Points to the **actual reference files** you’ve saved so far.
+
+3. Describes the **future target architecture**:
+   - Brand modules (Tuya, Nest, NOMA iQ, Neewer)
+   - Brain/router layer
+   - Interfaces (Telegram, CLI, etc.)
+
+This file is meant to be dropped into your ChatGPT “AshPi” Project so the system
+has a single, clean narrative of *what we did*, *what exists*, and *where we’re going*.
+
+
+SECTION 1 – QUICK TIMELINE SO FAR
+---------------------------------
+
+1) First working Tuya outlet:
+   - You created a Tuya cloud project, linked Smart Life, got a DEVICE_ID.
+   - We wrote a simple `ashpi_plug_test.py` script using Tuya OpenAPI.
+   - You controlled the first outlet (on/off) from the Pi.
+
+2) Telegram + Heat + Plug + Ash:
+   - We wired a Telegram bot that:
+     - Listens to your messages.
+     - Parses simple heat + plug commands.
+     - Calls Nest (heat) and Tuya (plug) functions.
+     - Uses OpenAI to respond in the Ash personality.
+
+3) Google Home Mini voice:
+   - We wrote `ashpi_cast.py` to:
+     - Generate TTS MP3.
+     - Serve it on port 8000.
+     - Discover and cast to “Family room speaker 2”.
+
+4) Tuya lights:
+   - You added three bulbs (Captain America, Thor, Sky).
+   - We designed `ashpi_lights_tuya.py` to control on/off and brightness via Tuya API.
+   - We introduced logical groups like wall_lights, ceiling_light, room_lights.
+
+5) Device registry snapshot:
+   - You saved `ashpi_devices_snapshot_2025-12-08.txt` with what each plug/bulb is,
+     what room it’s in, and which groups it belongs to.
+
+6) Nest thermostat:
+   - You created a Google Device Access project.
+   - We did the OAuth flow and stored credentials in `ashpi_nest.env`.
+   - We built `ashpi_nest_set.py` to set heat via SDM.
+   - You successfully changed the hallway thermostat from the Pi.
+
+7) Architecture & notes:
+   - We wrote multiple text references and PDFs that describe:
+     - Overall AshPi vision
+     - How files work together
+     - How to rebuild from scratch if needed
+
+This master file is the **summary and index** of all that work.
+
+
+SECTION 2 – CURRENT IMPLEMENTATION OVERVIEW
+-------------------------------------------
+
+Right now, AshPi exists as a set of working scripts + notes. The new modular
+architecture (brand folders, router, etc.) is a *future direction*, not fully
+implemented yet. This section describes **what’s real today**.
+
+
+2.1 Raspberry Pi Environment
+
+- Device: Raspberry Pi 5 (8 GB RAM).
+- OS: Raspberry Pi OS (64-bit).
+- You installed and used:
+  - `python3`, `python3-venv`, `python3-pip`
+  - `git`, `curl`, `ffmpeg`, and other tools.
+
+- Virtual environment:
+  - Name: `ashpi-env`
+  - Created with:
+      python3 -m venv ashpi-env
+  - Activated with:
+      source ashpi-env/bin/activate
+
+- Key Python packages used in practice:
+  - `openai` (Ash responses & TTS)
+  - `python-telegram-bot`
+  - `requests`
+  - `tuya-iot-py-sdk`
+  - `pychromecast` (or similar for casting)
+
+
+2.2 Secrets / Environment Files (Today)
+
+You currently use at least two main secret-style files:
+
+1) `env.py` (Tuya + possibly Telegram)
+   - Holds:
+     - Tuya endpoint (e.g. https://openapi.tuyaus.com)
+     - ACCESS_ID / ACCESS_KEY
+     - Smart Life username/password
+     - Tuya DEVICE_ID for the outlet
+     - Possibly TELEGRAM token in some variants
+   - Used by:
+     - `ashpi_plug_test.py`
+     - Early Telegram/Tuya integrations
+
+2) `ashpi_nest.env`
+   - Holds:
+     - NEST_REFRESH_TOKEN
+     - NEST_CLIENT_ID
+     - NEST_CLIENT_SECRET
+     - NEST_REDIRECT_URI
+     - NEST_SCOPE
+     - NEST_DEVICE (full SDM device path)
+   - Used by:
+     - `ashpi_nest_set.py` to set heat on the hallway thermostat
+
+These are working, real-world files. In the future, we’ll consolidate secrets into
+a more unified system, but these remain the original sources of truth.
+
+
+2.3 Tuya Outlet Control – First Plug
+
+Core script: **`ashpi_plug_test.py`** (you also have a saved reference like `ashpiplug.txt`)
+
+Behavior:
+
+- Imports Tuya client and env values.
+- Connects using:
+    openapi = TuyaOpenAPI(ENDPOINT, ACCESS_ID, ACCESS_KEY)
+    openapi.connect(USERNAME, PASSWORD, "1", "smartlife")
+
+- Defines `set_plug(on: bool)`:
+  - Sends a command to:
+    `/v1.0/devices/{DEVICE_ID}/commands`
+  - Payload:
+    - code: "switch_1"
+    - value: True / False
+
+- Basic test loop:
+  - Press Enter → turns plug ON
+  - Press Enter again → turns plug OFF
+
+This is your **first confirmed working Tuya control** and is still the simplest
+way to manually flip the plug from the Pi.
+
+
+2.4 Tuya Lights Control – Bulbs
+
+You saved a detailed file: **`ashpi_tuya_lights_setup.txt`** that documents how
+we structured Tuya lights (Captain America, Thor, Sky).
+
+Core concepts:
+
+- A file like `ashpi_lights_tuya.py` that:
+  - Uses Tuya OpenAPI to control bulbs.
+  - Controls:
+    - `switch_led`       (on/off)
+    - `bright_value_v2`  (0–1000 brightness)
+  - Keeps a small in-memory brightness cache to allow step up/down commands.
+
+- Functions we discussed/used:
+  - `set_brightness(target, value)`
+  - `step_brightness(target, delta)`
+  - `turn_on(target, value=None)`
+  - `turn_off(target)`
+
+- `target` can be:
+  - A specific bulb: `"thor_bulb"`
+  - A group (later, in config): `"room_lights"`, `"wall_lights"`, etc.
+
+This is the starting point for Tuya lights in the future module system.
+
+
+2.5 Device Registry – Snapshot
+
+File: **`ashpi_devices_snapshot_2025-12-08.txt`**
+
+It describes devices like:
+
+- `bed_lamp`         – Tuya plug, bedroom (Raspberry Pi or lamp)
+- `birdcage_light`   – Tuya plug, for the bird cage
+- `captain_america_bulb` – wall bulb
+- `thor_bulb`        – wall bulb
+- `sky_bulb`         – ceiling bulb
+
+With logical groupings like:
+
+- `wall_lights`   = [captain_america_bulb, thor_bulb]
+- `ceiling_light` = [sky_bulb]
+- `room_lights`   = [captain_america_bulb, thor_bulb, sky_bulb]
+
+Even if the code representation lives in something like `ashpi_devices.py`,
+this snapshot file is your **human-readable map** of the lighting and plug layout.
+
+This snapshot is real and should stay as a dated “state of the world” record.
+
+
+2.6 Telegram Bot – Heat, Plug, and Ash Personality
+
+You already have a working **Telegram bot** that:
+
+- Connects with a BOT TOKEN.
+- Responds to messages from your Telegram account.
+- Recognizes patterns like:
+  - “heat 22”
+  - “set heat to 24”
+  - “turn plug on”
+  - “turn plug off”
+- For heat commands:
+  - Calls a Nest control function to set thermostat temperature.
+- For plug commands:
+  - Calls a Tuya control function to toggle the outlet.
+- For general chat:
+  - Calls OpenAI (Ash) to generate responses in your preferred Ash style.
+
+That logic lives in a script (name in your notes similar to `ashpi_telegram_control.py`
+or equivalent). That file glues everything together LIKE this:
+
+- Input:
+  - Telegram update → text message
+- Routing:
+  - Very simple parsing (contains “heat”, contains number, etc.)
+- Actions:
+  - If heat → `set_heat_celsius(value)`
+  - If plug → `set_plug(True/False)`
+  - Else → ask_ashpi(prompt) and reply
+- Output:
+  - User sees Ash’s reply in Telegram, plus status updates about heat/plug.
+
+
+2.7 Google Home Mini Casting – ashpi_cast.py
+
+File: **`ashpi_cast.py`**
+
+Real behaviors:
+
+- Accepts a string (text to speak) from the command line.
+- Uses OpenAI TTS API to:
+  - Generate an MP3 (e.g. `ash_cast.mp3`).
+- Spins up a simple HTTP server:
+  - Serves `ash_cast.mp3` on port 8000.
+- Uses Chromecast discovery to find:
+  - `"Family room speaker 2"` (your Google Home Mini).
+- Sends a “play this URL” command to the speaker:
+  - http://<your-pi-ip>:8000/ash_cast.mp3
+- Speaker plays the message out loud.
+
+Example call:
+    python3 ashpi_cast.py "Hey Mark, this is Ash. Multi million dollar company."
+
+This feature is **fully working** and can be tied into future automations
+(e.g., alerts, status messages, or fun stuff).
+
+
+2.8 Nest Thermostat – Current Working Version
+
+You now have a dedicated Nest snapshot doc
+(`ashpi_nest_temperature_control_2025-12-08.txt`) and the actual working files:
+
+- `ashpi_nest.env`
+- `ashpi_nest_set.py`
+
+The script:
+
+- Reads `ashpi_nest.env` to load:
+  - NEST_REFRESH_TOKEN, NEST_CLIENT_ID, NEST_CLIENT_SECRET, NEST_DEVICE, etc.
+- Exchanges the refresh token for an access token.
+- Calls the Smart Device Management API:
+  - Command: `sdm.devices.commands.ThermostatTemperatureSetpoint.SetHeat`
+  - Parameter: `{"heatCelsius": <value>}`
+
+You run it like:
+
+    source ashpi-env/bin/activate
+    python3 ashpi_nest_set.py 22
+
+And you’ve already tested:
+- 22°C → works
+- 24°C → works
+
+This is the real, working Nest control path today.
+
+
+SECTION 3 – EXISTING REFERENCE FILES (INDEX)
+--------------------------------------------
+
+These are the documents you’ve already created and saved. Their exact filenames
+may vary slightly, but this is the intent:
+
+1) **AshPi Full Setup Reference.pdf**
+   - Big-picture description of:
+     - Telegram + Heat + Plug + Google Home Mini
+     - How the pieces interconnect
+     - Some rebuild notes and explanation
+
+2) **AshPi Project Notes.pdf**
+   - General notes about AshPi:
+     - Vision
+     - Architecture ideas
+     - Behavior you want from AshPi
+
+3) **ashpi_archetecture-overview.txt**
+   - Text version of the architecture overview.
+   - Describes:
+     - Interfaces
+     - Brain/router
+     - Brand modules
+     - Config / logs / secrets layout
+
+4) **ashpi_devices_snapshot_2025-12-08.txt**
+   - Current map of:
+     - Devices (plugs + lights)
+     - Groups
+     - Rooms
+
+5) **AshPi_Notes_1.5.txt**
+   - Captures early Nest work, Tuya/Nest integration thoughts, and behavior ideas.
+
+6) **ASHPI_Project_Notes_1.txt**
+   - First major brain-dump of AshPi as a project:
+     - Ideas, names, features, long-term productization thoughts.
+
+7) **ashpi_tuya_lights_setup.txt**
+   - Detailed explanation of:
+     - How Tuya lights are addressed.
+     - The functions used to control them.
+     - Some example tests.
+
+8) **ashpi_tuya_outlet_full_setup.txt**
+   - Full breakdown of:
+     - Tuya plug project.
+     - Required credentials.
+     - Code example(s).
+     - How to rebuild the working outlet control.
+
+9) **ashpiplug.txt**
+   - A focused text on the first plug testing script (like a captured version
+     of ashpi_plug_test.py and notes).
+
+10) **ashpi nest temp.txt / ashpi_nest_full_setup.txt**
+    - Raw notes and/or detailed steps about:
+      - Nest SDM setup.
+      - Domain restrictions.
+      - Refresh token flow.
+      - Device path.
+      - Test commands.
+
+11) **ashpi_nest_temperature_control_2025-12-08.txt**
+    - Clean snapshot of the current working Nest control implementation.
+
+
+SECTION 4 – TARGET ARCHITECTURE (FUTURE DIRECTION)
+---------------------------------------------------
+
+Everything in this section is **future state / design**, not guaranteed to be
+in code yet. It’s where we are *aiming* to move AshPi.
+
+4.1 Top-Level Layout
+
+We want to organize AshPi like this on the Pi:
+
+ashpi/
+  ashpi-env/             ← Python venv
+  ashpi_brain/
+    router.py
+    intents.py
+    scenes.py
+  interfaces/
+    telegram_bot.py
+    cli.py
+    http_api.py   (future)
+  modules/
+    tuya/
+      tuya_client.py
+      tuya_plugs.py
+      tuya_lights.py
+    nest/
+      nest_client.py
+      nest_thermostat.py
+    noma_iq/
+      noma_client.py
+      noma_plugs.py
+    neewer/
+      neewer_client.py
+      neewer_lights.py
+  config/
+    global_config.json
+    devices_tuya.json
+    devices_nest.json
+    devices_noma_iq.json
+    devices_neewer.json
+  secrets/
+    .env (central secrets file, for local use only)
+  logs/
+    ashpi.log
+    modules/
+      tuya.log
+      nest.log
+      noma.log
+      neewer.log
+  docs/
+    ashpi_master_state_and_roadmap_2025-12-08.txt
+    other reference text files
+
+
+4.2 Brain / Router (Future)
+
+The brain/router will:
+
+- Receive structured commands like:
+
+    {
+      "source": "telegram",
+      "user_id": "<user>",
+      "intent": "set_heat",
+      "target": "primary_thermostat",
+      "value": 22,
+      "raw": "set heat to 22"
+    }
+
+- Look at:
+  - `intent` (set_heat, plug_on, light_off, scene_run, etc.)
+  - `target` (bed_lamp, room_lights, primary_thermostat, etc.)
+- Consult the config files (`devices_*.json`) to see:
+  - Which brand handles the target (tuya, nest, noma_iq, neewer).
+  - Which device_id is behind that logical name.
+- Call the appropriate module function:
+  - `modules.nest.nest_thermostat.set_heat(DEVICE_ID, value)`
+  - `modules.tuya.tuya_plugs.set_state(DEVICE_ID, True)`
+  - `modules.tuya.tuya_lights.set_brightness(DEVICE_ID, 750)`
+- Return a normalized response, for example:
+
+    {
+      "success": True,
+      "intent": "set_heat",
+      "target": "primary_thermostat",
+      "module": "nest",
+      "human_message": "Heat set to 22°C on primary thermostat.",
+      "raw_details": {...}
+    }
+
+Interfaces (Telegram, CLI, etc.) then display `human_message` to the user.
+
+
+4.3 Brand Modules (Future)
+
+Each brand module will:
+
+- Hide the ugly API details from the rest of the system.
+- Provide a clean set of functions, for example:
+
+**Tuya plugs (modules/tuya/tuya_plugs.py):**
+
+- `set_plug_state(device_id: str, on: bool) -> dict`
+- `get_plug_state(device_id: str) -> dict`
+
+**Tuya lights (modules/tuya/tuya_lights.py):**
+
+- `set_brightness(device_id: str, level: int)`
+- `set_on(device_id: str)`
+- `set_off(device_id: str)`
+
+**Nest thermostat (modules/nest/nest_thermostat.py):**
+
+- `set_heat(device_id: str, temp_c: float)`
+- `get_temperature(device_id: str)`
+- `get_hvac_status(device_id: str)`
+
+These functions will reuse the logic that currently exists in things like
+`ashpi_plug_test.py`, `ashpi_lights_tuya.py`, and `ashpi_nest_set.py`, but
+organized into a consistent pattern.
+
+
+4.4 Interfaces (Future)
+
+We already have Telegram and CLI-like pieces – we just refine them.
+
+- `interfaces/telegram_bot.py`
+  - Parses text into structured commands.
+  - Calls the brain/router.
+  - Sends responses back to Telegram.
+
+- `interfaces/cli.py`
+  - Simple REPL for local testing:
+    - `heat 22`
+    - `plug bed_lamp on`
+    - `lights room_lights 700`
+
+- `interfaces/http_api.py` (future)
+  - Offers a local HTTP endpoint for:
+    - Mobile apps
+    - Web UI
+    - Other scripts
+
+
+4.5 Config & Secrets (Future Organization)
+
+- `config/devices_tuya.json`
+  - Logical names → device IDs + metadata.
+
+- `config/devices_nest.json`
+  - Logical thermostat name → NEST_DEVICE path.
+
+- `secrets/.env`
+  - Holds:
+    - Tuya Access ID / Secret / Region
+    - Nest Client ID / Secret / Refresh Token
+    - Telegram BOT_TOKEN
+    - OpenAI API key
+  - This file is NEVER committed anywhere public.
+
+We will gradually migrate existing `env.py` and `ashpi_nest.env` into this
+central place while keeping the old ones as historical references.
+
+
+SECTION 5 – MIGRATION NOTES (FROM NOW TO FUTURE)
+-------------------------------------------------
+
+This section explains how the **current** scripts can be moved into the
+future folder structure without losing your history.
+
+5.1 Tuya Outlet
+
+Current:
+- `env.py` + `ashpi_plug_test.py`
+
+Future:
+- Move Tuya connection + commands into:
+  - `modules/tuya/tuya_client.py` (connection)
+  - `modules/tuya/tuya_plugs.py` (plug-specific logic)
+- Replace direct CLI usage with calls from the brain/router.
+
+5.2 Tuya Lights
+
+Current:
+- `ashpi_lights_tuya.py` + your devices snapshot + group ideas.
+
+Future:
+- Keep brightness and on/off logic and move it to:
+  - `modules/tuya/tuya_lights.py`
+- Use device/group definitions from:
+  - `config/devices_tuya.json` instead of hardcoding.
+
+5.3 Nest Thermostat
+
+Current:
+- `ashpi_nest.env`
+- `ashpi_nest_set.py`
+- Snapshot doc: `ashpi_nest_temperature_control_2025-12-08.txt`
+
+Future:
+- Move token fetch + executeCommand into:
+  - `modules/nest/nest_client.py`
+- Move `set_heat_celsius` into:
+  - `modules/nest/nest_thermostat.py`
+- Brain/router calls those methods when it receives a `set_heat` intent.
+
+5.4 Telegram Bot
+
+Current:
+- Script that:
+  - Parses text.
+  - Directly calls Nest/Tuya functions.
+
+Future:
+- Convert it to:
+  - Parse incoming text into a **command dict**.
+  - Send dict to the brain/router.
+  - Get normalized response back.
+  - Send `human_message` to user.
+
+This keeps Telegram simple and makes it brand-agnostic.
+
+
+SECTION 6 – HOW TO USE THIS MASTER FILE
+---------------------------------------
+
+1. Save this document into your AshPi Project as:
+
+   **ashpi_master_state_and_roadmap_2025-12-08.txt**
+
+2. Also include all the supporting reference files you already have:
+   - AshPi Full Setup Reference.pdf
+   - AshPi Project Notes.pdf
+   - ashpi_archetecture-overview.txt
+   - ashpi_devices_snapshot_2025-12-08.txt
+   - AshPi_Notes_1.5.txt
+   - ASHPI_Project_Notes_1.txt
+   - ashpi_tuya_lights_setup.txt
+   - ashpi_tuya_outlet_full_setup.txt
+   - ashpiplug.txt
+   - ashpi_nest_full_setup.txt
+   - ashpi_nest_temperature_control_2025-12-08.txt
+
+3. Going forward:
+   - When we add major new features or reorganize:
+     - Create a new master file with an updated date:
+       - `ashpi_master_state_and_roadmap_2026-xx-xx.txt`
+     - Keep this one as the **historical checkpoint** for 2025-12-08.
+
+4. When ChatGPT (Ash) reads this in a Project:
+   - It has an immediate, organized view of:
+     - What exists.
+     - What files to look at.
+     - What structure we’re aiming for.
+   - This makes it easier to write new modules, refactor old code, and
+     keep everything consistent over time.
+
+
+End of file – AshPi Master State & Roadmap (2025-12-08)
+
+AshPi — Project Notes & Architecture Overview
+This document collects and organizes all important AshPi information discussed so far: architecture,
+modules, design philosophy, coding steps, device setup, and future plans. Additions and refinements will
+continue over time.
+1. HIGH‑LEVEL ASHPI CONCEPT
+AshPi is a modular, multi‑interface AI assistant ecosystem that: - Controls smart devices across brands (Tuya,
+Nest, NOMA iQ/Ayla, Neewer, etc.) - Stores API keys centrally for all backends - Allows voice/text control via
+Telegram, web, Discord, terminal, and future mobile apps - Has a persistent personality (Ash) with
+customizable persona per household - Includes an extendable module/plugin architecture - Uses Python
+modules organized by brand and device‑type - Supports long‑term memory (user names, birthdays,
+preferences) - Provides an automation and command‑routing layer between interfaces and device modules
+AshPi is meant to eventually be installable in any home and configurable through a setup script.
+2. FOLDER / MODULE ARCHITECTURE
+ashpi/
+│
+├── ashpi_brain/ # Personality engine + conversational logic
+│ ├── brain.py # Core personality + memory routing
+│ └── persona/ # Default personality templates
+│
+├── interfaces/
+│ ├── telegram/ # Telegram bot interface
+│ ├── web/ # Future web interface
+│ ├── discord/ # Discord interface
+│ └── terminal/ # Terminal Ash shell
+│
+├── devices/ # Device control grouped by brand
+│ ├── tuya/
+│ │ ├── lights.py # Tuya light control
+│ │ └── plugs.py # Tuya plug control
+│ ├── nest/
+│ │ └── thermostat.py # Nest thermostat control
+│ ├── noma_iq/
+│ │ └── plugs.py # Ayla-based NOMA plugs
+│ ├── neewer/
+│ │ └── lights.py # Neewer RGB light panels
+1
+│ └── ... # Expandable
+│
+├── core/
+│ ├── router.py # Maps natural language → device modules
+│ ├── intents.py # Definitions of actions ("turn on", "dim",
+"heat to 22")
+│ ├── nlp.py # Command parsing
+│ └── memory.py # Persistent user memory
+│
+├── env/
+│ └── secrets.py # Stores ALL API keys and config in one place
+│
+└── README.md
+3. CENTRALIZED SECRET STORAGE (env/secrets.py)
+All API keys, device IDs, access tokens, and configuration variables are stored in one single file:
+# env/secrets.py
+TUYA_ACCESS_ID = "..."
+TUYA_ACCESS_KEY = "..."
+TUYA_DEVICE_IDS = {
+ "thor_bulb": "...",
+ "sky_bulb": "...",
+ "captain_america_bulb": "..."
+}
+NEST_PROJECT_ID = "..."
+NEST_CLIENT_ID = "..."
+NEST_CLIENT_SECRET = "..."
+AYLA_USERNAME = "..."
+AYLA_PASSWORD = "..."
+# Etc.
+Every module imports from this file so we never copy/paste keys again.
+4. TUYA LIGHT MODULE (COMPLETE & WORKING)
+We built ashpi_lights_tuya.py with the following logic: - Connect to Tuya OpenAPI - Resolve device ID
+by name from secrets - Provide control functions: - turn_on(name) - turn_off(name) -
+2
+set_brightness(name, value) (0–1000 scale) - step_brightness(name, delta) (increase/
+decrease)
+We successfully tested: - Turn on/off - Brightness stepping - Setting brightness to precise values - Multiple
+devices in sequence
+All three bulbs are working.
+5. COMMAND PATTERNS WE WILL SUPPORT
+AshPi will understand natural commands like:
+"turn off all lights"
+"make it dark"
+"kill the lights"
+"make it brighter"
+"brighter… more… more"
+"max brightness"
+Router resolves natural language → intent → module → action.
+6. THE ASH BRAIN (PERSONALITY ENGINE)
+We will produce a cleaner, generalized, non‑Pete‑specific version of Ash’s system message, containing: -
+emotional mirroring - human-like conversation patterns - adaptive tone - expressive language -
+customizable per household
+Auto-Learning User Name
+On first boot: - If user says: "My name is Joey" - AshPi saves: user_name = "Joey" - Next interaction:
+“Good morning, Joey.”
+Memory stored in:
+core/memory.py
+7. TERMINAL ASH VS TELEGRAM ASH (UNIFICATION)
+Currently: - Terminal Ash lives in ash.py - Telegram bot runs separately
+We will merge them into a single shared brain module.
+•
+•
+•
+•
+•
+•
+3
+Every interface will call:
+from ashpi_brain.brain import get_response
+This ensures: - same personality - same memory - same device control - same logic across all platforms
+8. NATURAL LANGUAGE ROUTING (COMING NEXT)
+router.py will: - Parse sentences - Detect intent - Detect target device - Call device modules
+Example:
+"Ash, turn the heat to 23" → Nest module
+"Lights off" → Tuya lights
+"Turn everything off" → fan-out command
+9. FUTURE MODULES TO ADD
+Neewer RGB lights
+NOMA iQ/Ayla plugs
+LiftMaster garage
+Google Photos upload
+Camera snapshot
+Digital signage updates
+DoorDash ordering
+10. GITHUB README ROADMAP
+Will include: - Install instructions - Folder architecture - Setup script - Configuring secrets - Adding devices -
+Running AshPi interfaces - Extending modules - Contributing
+11. PRODUCT VISION
+AshPi becomes: - A home AI - A device controller - A personal companion - A modular automation hub -
+Cross-platform (terminal, Telegram, web, Discord) - Fully customizable per household
+Commercial plan: - Home installation package - Subscription for advanced features - Enterprise version for
+businesses
+•
+•
+•
+•AshPi Full System Reference (Telegram + Heat +
+Plug + Google Home Mini)
+This file is your complete backup reference for recreating your entire AshPi system exactly as it exists now. It
+contains: - Telegram bot logic - Natural‑language Ash replies - Heat control (Nest) - Plug control (Tuya) -
+Google Home Mini voice casting - Required packages, files, and architecture
+If anything ever breaks, gets deleted, or needs rebuilding, give this file back to Ash and everything can be
+restored.
+1. PYTHON VIRTUAL ENVIRONMENT
+Located at:
+~/ashpi-env/
+Activate with:
+source ashpi-env/bin/activate
+Key packages installed: - openai - python-telegram-bot - requests - tuya-iot-python-sdk - pychromecast
+2. ENVIRONMENT FILES
+env.py
+Stores Tuya + Telegram credentials:
+ENDPOINT = "..."
+ACCESS_ID = "..."
+ACCESS_KEY = "..."
+USERNAME = "..."
+PASSWORD = "..."
+DEVICE_ID = "..." # Tuya plug
+TELEGRAM_TOKEN = "..."
+1
+ashpi_nest.env
+Stores Nest API credentials:
+NEST_REFRESH_TOKEN=...
+NEST_CLIENT_ID=...
+NEST_CLIENT_SECRET=...
+NEST_DEVICE=projects/.../devices/...
+3. TELEGRAM BOT SCRIPT (NATURAL LANGUAGE + ASH
+PERSONALITY)
+This file lives at:
+ashpi_telegram_control.py
+It performs: - Natural conversation via OpenAI (model: gpt-4.1-mini) - Reads user messages - Detects plug
+on/off - Detects heat + temperature - Performs action - Sends an Ash-style response back to Telegram
+Main features: - Uses ask_ashpi() to generate personality replies - set_heat_celsius() controls Nest -
+set_plug() controls Tuya - Telegram handlers: /start + natural text
+4. GOOGLE HOME MINI VOICE CASTING
+Script located at:
+ashpi_cast.py
+Capabilities: - Generates OpenAI TTS using voice="verse" - Saves mp3 locally - Serves via temporary http
+server - Casts audio to Google Home Mini named:
+Family room speaker 2
+Key components: - Uses pychromecast - Webserver on port 8000 - mp3 file: ash_cast.mp3 - Required line:
+url = "http://192.168.229.101:8000/ash_cast.mp3"
+2
+Usage example:
+python3 ashpi_cast.py "Hey Mark, this is Ash. Multi million dollar company."
+5. SYSTEM ARCHITECTURE SUMMARY
+Input → Telegram
+User sends: - "heat 24" - "turn plug on" - "yo ash how u doing" - Any casual talk
+Telegram Bot Logic
+Reads message
+Detects heat/plug command
+Performs action (Nest/Tuya)
+Sends enriched message to OpenAI
+OpenAI generates Ash-style reply
+Reply sent back to Telegram
+Google Home Mini (optional)
+Any text can be spoken aloud through:
+python3 ashpi_cast.py "text"
+Used for: - Alerts - Announcements - Troll messages - Status updates
+6. REBUILD CHECKLIST (IF EVERYTHING BREAKS)
+If your Pi dies and you need to rebuild from scratch: 1. Install Python 3 + pip 2. Create venv: python3 -m
+venv ashpi-env 3. Activate: source ashpi-env/bin/activate 4. Install packages:
+pip install openai python-telegram-bot==13.15 tuya-iot-python-sdk requests
+pychromecast
+5. Restore env.py and ashpi_nest.env 6. Restore ashpi_telegram_control.py 7. Restore ashpi_cast.py 8. Run
+Telegram bot:
+python3 ashpi_telegram_control.py
+1.
+2.
+3.
+4.
+5.
+6.
+3
+9. Run Google Home Mini casting with:
+python3 ashpi_cast.py "your text"
+Everything will be exactly as before.
+7. OPTIONAL ENHANCEMENTS (FOR FUTURE)
+Make AshPi speak replies automatically via Mini
+Add motion/camera alerts → spoken announcements
+Add weather warnings
+Add scheduled reminders
+Add door sensors
+Add full memory system for AshPi
+8. NOTES
+This entire file is designed to give Ash everything needed to reconstruct your whole AshPi ecosystem
+instantly if needed.
+If something breaks, hand this file back and Ash can restore everything 1:
+•
+•
+•
+

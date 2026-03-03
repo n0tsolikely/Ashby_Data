@@ -1,0 +1,167 @@
+ASHBY CODEX — 16.6
+TRANSPORT-LEVEL CONSISTENCY
+
+Transports are the channels through which Ashby receives commands and produces outputs.
+
+Examples (representative):
+- chat interface
+- voice interface
+- mobile app UI
+- API calls
+- automation triggers
+
+Transport-level consistency is the law that ensures:
+Ashby behaves the same under all transports,
+except where the transport provides explicitly different affordances.
+
+If law differs by transport, Ashby is not a platform.
+It is multiple inconsistent systems with the same name.
+
+──────────────────────────────────────────────────────────────────────────────
+WHAT MUST BE CONSISTENT ACROSS TRANSPORTS
+──────────────────────────────────────────────────────────────────────────────
+
+The following must be identical across transports:
+
+- scope law
+- target resolution priority order
+- ambiguity handling (clarify, never guess)
+- policy outcomes (ACT/CLARIFY/CONFIRM/REFUSE/CHAT)
+- truth posture and language constraints
+- ActionRequest/ActionResult semantics
+- failure taxonomy
+- verification semantics
+- secrets and privacy constraints
+- audit logging requirements
+
+Transport changes how input is provided and how output is rendered.
+Transport must not change what Ashby is.
+
+──────────────────────────────────────────────────────────────────────────────
+WHAT TRANSPORTS MAY LEGITIMATELY CHANGE
+──────────────────────────────────────────────────────────────────────────────
+
+Transports may change only:
+
+1) INPUT MODALITY
+- voice transcription artifacts
+- UI selection events
+- structured parameter input
+
+2) OUTPUT PRESENTATION
+- visual formatting
+- spoken summarization
+- use of UI affordances (buttons for confirm/cancel)
+
+3) SAFE AFFORDANCES
+Some transports can provide stronger confirmation:
+- explicit button press is unambiguous consent
+- UI can present bounded target lists cleanly
+
+These are allowed only if:
+- they feed into the same canonical decision pipeline
+- they do not bypass scope/policy/truth gate
+- they remain auditable
+
+Transport can improve clarity.
+Transport cannot change law.
+
+──────────────────────────────────────────────────────────────────────────────
+CANONICAL NORMALIZATION PIPELINE
+──────────────────────────────────────────────────────────────────────────────
+
+All transports must normalize input into the same canonical internal representation.
+
+Rules:
+- voice text becomes input text
+- UI selections become explicit target references (within scope)
+- API payloads become canonical intent structures
+- automation triggers become actor-context inputs
+
+After normalization:
+- the engine applies the same target resolution and policy steps
+
+No transport is allowed a private resolution path.
+
+Normalization is how “many channels” becomes “one Ashby.”
+
+──────────────────────────────────────────────────────────────────────────────
+CONFIRMATION AND CLARIFICATION ACROSS TRANSPORTS
+──────────────────────────────────────────────────────────────────────────────
+
+Gates must behave consistently.
+
+Rules:
+- confirmation gates exist regardless of transport
+- clarification gates exist regardless of transport
+
+Transport may change how the gate is presented:
+- voice: spoken question and verbal confirmation
+- UI: confirm/cancel buttons
+- chat: text question
+
+But the underlying gate object, expiry, and consent rules must be identical.
+
+Consent must never be weaker in one channel.
+A channel that weakens consent is unsafe.
+
+──────────────────────────────────────────────────────────────────────────────
+SESSION CONSISTENCY ACROSS TRANSPORTS
+──────────────────────────────────────────────────────────────────────────────
+
+Sessions must remain consistent across transports.
+
+Rules:
+- session creation and expiry rules are platform law
+- session selection must be deterministic
+- transports must not create “sticky sessions” that only exist in that channel
+- sessions must not leak across scopes due to channel switching
+
+If a user moves from voice to chat:
+- the active scope and session context may persist only if policy permits
+- but must remain explicit and auditable
+- and must not create new authority
+
+Transport switching must not become a loophole.
+
+──────────────────────────────────────────────────────────────────────────────
+TRANSPORT-SPECIFIC FAILURE MODES (HANDLED SAFELY)
+──────────────────────────────────────────────────────────────────────────────
+
+Transports have unique failure modes:
+- voice transcription errors
+- UI latency
+- API client retries
+
+These must not degrade truth posture.
+
+Rules:
+- transcription ambiguity must trigger clarification, not guessing
+- UI retries must not cause duplicate execution without idempotency controls
+- API retries must be deduplicated using correlation identifiers
+
+Transport failures must be made visible in logs.
+They must not become hidden sources of drift.
+
+──────────────────────────────────────────────────────────────────────────────
+ABSOLUTE CONSTRAINTS
+──────────────────────────────────────────────────────────────────────────────
+
+Transport-level consistency must:
+- keep core law identical across transports
+- use a canonical normalization pipeline
+- preserve gate behavior and consent strength
+- preserve deterministic session behavior
+- remain auditable across channel switching
+
+Transport-level consistency must never:
+- allow a transport to bypass policy or truth gate
+- weaken confirmation/clarification requirements
+- introduce transport-private resolution heuristics
+- allow retries to create duplicate execution silently
+- change voice or UI “tone” into different governance
+
+Ashby is one system.
+Transports are just doors.
+
+END OF 16.6

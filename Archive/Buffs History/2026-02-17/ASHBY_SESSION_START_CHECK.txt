@@ -1,0 +1,363 @@
+ASHBY SESSION START CHECK (BUFF)
+Version: 2026-02-06
+Status: Canonical (60-second Buff-Up / Ignition Key)
+Purpose: Deterministic, auditable session start. Always Buff before a Raid.
+NOTE: This is a Buff / ignition checklist. It follows Governance law and does not redefine it.
+
+================================================================================
+0) RULES (NON-NEGOTIABLE)
+================================================================================
+- Do not start a Raid until this check is complete.
+- Produce terminal evidence for each step (command + output).
+- If any step fails or is ambiguous, STOP and ask Hands.
+- Synapse Governance is reviewed first (per Hands’ rule).
+
+================================================================================
+1) BUFF-UP ORDER (HIGH LEVEL)
+================================================================================
+1) Review Synapse Governance (governance law)
+2) Confirm canonical folders are present (Ashby_Data + Ashby_Engine)
+3) Confirm session resume artifacts (Rehydration Pack) IF present
+
+NOTE (Rehydration Pack Location):
+- Rehydration packs are subject-level.
+- Canonical location:
+  /mnt/data/Ashby_Data/Latest Rehydration Pack/
+- Module-level packs may exist historically but are not used for new sessions.
+
+IMPORTANT (Optional Pack Rule):
+- Rehydration Packs + Execution Packs are ONLY present when there is a current active one.
+- If the folder exists but is empty (or missing continuity/bootstrap files), that is NOT an error.
+  It means there is no active rehydration pack for the session.
+- If Hands expects a pack for this session and it is missing, STOP and ask.
+
+Confirm Continuity Lock + Bootstrap Prompt (resume law)
+4) Confirm Active Guild Orders (current raid scope)
+5) Confirm Quest Board state (Accepted + Completed truth)
+6) Confirm latest snapshots (resume target)
+7) Confirm tests runnable
+8) Only then accept/execute quests
+
+================================================================================
+2) TERMINAL COMMAND BLOCKS (COPY/PASTE)
+================================================================================
+NOTE: Run these exactly. Paste outputs back as evidence in the session.
+
+2.1 Confirm working directory + inventory
+pwd
+ls -la /mnt/data
+
+2.2 Review Synapse Governance (Tier 0)
+ls -la "/mnt/data/Synapse_OS_Governance"
+# Optional quick index view:
+find "/mnt/data/Synapse_OS_Governance" -maxdepth 3 -type f -name "*.txt" -print | sort
+
+2.3 Confirm canonical governance tree exists
+ls -la "/mnt/data/Ashby_Data"
+ls -la "/mnt/data/Ashby_Data/Quest Board"
+ls -la "/mnt/data/Ashby_Data/Guild Orders"
+ls -la "/mnt/data/Ashby_Data/Snapshots"
+ls -la "/mnt/data/Ashby_Data/Talent Tree"
+ls -la "/mnt/data/Ashby_Data/Buffs"
+
+2.4 Confirm canonical engine repo exists
+ls -la "/mnt/data/Ashby_Engine"
+
+2.5 Confirm Continuity Lock + Bootstrap Prompt (resume law)
+# Canonical rehydration pack location (subject-level):
+ls -la "/mnt/data/Ashby_Data/Latest Rehydration Pack"
+
+# Confirm the two required files exist (names may vary, list them):
+ls -la "/mnt/data/Ashby_Data/Latest Rehydration Pack" | grep -i "continuity\|bootstrap" || true
+
+# If multiple versions exist, choose the newest files by filename date:
+ls -1 "/mnt/data/Ashby_Data/Latest Rehydration Pack" | grep -i "CONTINUITY_LOCK" | sort | tail -n 1 || true
+ls -1 "/mnt/data/Ashby_Data/Latest Rehydration Pack" | grep -i "BOOTSTRAP_PROMPT" | sort | tail -n 1 || true
+
+# Execution Pack folder (optional; may be empty by design):
+ls -la "/mnt/data/Ashby_Data/Latest Rehydration Pack/execution pack" || true
+
+# Read them:
+# Replace filenames with exact names on disk.
+# cat "/mnt/data/Ashby_Data/Latest Rehydration Pack/CONTINUITY_LOCK_YYYY-MM-DD.txt"
+# cat "/mnt/data/Ashby_Data/Latest Rehydration Pack/BOOTSTRAP_PROMPT_YYYY-MM-DD.txt"
+
+# NOTE: Historical module-level packs may exist under:
+#   /mnt/data/Ashby_Data/Stuart/Docs/Latest Rehydration Pack
+# Do NOT use those for new sessions; canonical resume authority is:
+#   /mnt/data/Ashby_Data/Latest Rehydration Pack/
+
+2.6 Confirm Active Guild Orders (current raid scope)
+ls -la "/mnt/data/Ashby_Data/Guild Orders/ACTIVE"
+# If there is exactly one active file, open it:
+# sed -n '1,200p' "/mnt/data/Ashby_Data/Guild Orders/ACTIVE/<ACTIVE_FILE>.txt"
+
+2.7 Confirm Quest Board state (truth)
+echo "=== ACCEPTED ==="
+ls -la "/mnt/data/Ashby_Data/Quest Board/Accepted"
+echo "=== COMPLETED ==="
+ls -la "/mnt/data/Ashby_Data/Quest Board/Completed"
+echo "=== BOARD (root) ==="
+ls -la "/mnt/data/Ashby_Data/Quest Board" | sed -n '1,200p'
+
+2.8 Confirm latest snapshots (resume target)
+ls -la "/mnt/data/Ashby_Data/Snapshots/Control Sync" | tail -n 20
+ls -la "/mnt/data/Ashby_Data/Snapshots/End of Day" | tail -n 20
+
+2.9 Confirm Buffs are present (protocol + map + start check)
+ls -la "/mnt/data/Ashby_Data/Buffs"
+
+2.10 Confirm tests runnable (minimum)
+cd "/mnt/data/Ashby_Engine"
+PYTHONPATH="/mnt/data/Ashby_Engine" python3 -m pytest -q
+
+================================================================================
+3) ACCEPT QUESTS (ONLY AFTER BUFF-UP)
+================================================================================
+3.1 Rule
+- Accepting a quest is a commitment.
+- Multiple quests can be accepted, but that is a commitment stack.
+
+3.2 Acceptance steps
+1) Choose quest(s) from Board root
+2) Move into Accepted/
+3) Fill fields:
+   - Status: ACTIVE
+   - Accepted Date: YYYY-MM-DD
+   - Accepted By: Hands or Brains (explicit)
+
+4) Pre-flight audit
+- Read quest, relevant codex sections, guild orders, continuity + bootstrap.
+- Only then touch code.
+
+================================================================================
+4) STOP CONDITIONS
+================================================================================
+Stop immediately and ask Hands if:
+- Canonical folders are missing
+- Continuity lock/bootstrap prompt cannot be found AND Hands expects a current rehydration pack
+- Active Guild Orders not found
+- Tests cannot run
+- Quest definitions are ambiguous
+- Any “maybe / probably / I think” enters decision-making
+
+================================================================================
+5) SELF-AUDIT (THIS DOCUMENT)
+================================================================================
+Checklist:
+[ ] Synapse Governance review is first step (per Hands)
+[ ] Canonical folder existence checks are listed
+[ ] Continuity Lock + Bootstrap Prompt confirmation is listed (explicit)
+[ ] Active Guild Orders and Quest Board truth checks are listed
+[ ] Latest snapshots checks are listed
+[ ] Tests runnable check included
+[ ] Stop conditions included
+
+End of document.
+
+
+────────────────────────────────────────────────────────
+PROTOCOL MODE (VOICE TRIGGER)
+────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────
+DATA ROOT INVARIANT (SNAPSHOT PLACEMENT)
+────────────────────────────────────────────────────────
+Canonical Data Root (absolute):
+- /mnt/data/Ashby_Data/
+
+Rule:
+- NEVER create or write snapshots under any nested path such as:
+  /mnt/data/Ashby_Data/Ashby_Data/...
+
+Snapshot paths are always rooted at:
+- /mnt/data/Ashby_Data/Snapshots/Control Sync/
+- /mnt/data/Ashby_Data/Snapshots/End of Day/
+- /mnt/data/Ashby_Data/Snapshots/General/
+
+Session Start Check (required):
+- If /mnt/data/Ashby_Data/Ashby_Data/Snapshots exists, treat it as drift.
+  Move its contents into the canonical /mnt/data/Ashby_Data/Snapshots tree
+  and remove the redundant nested directories.
+
+Trigger Phrase:
+- "enter protocol mode"
+
+Definition:
+When Hands says "enter protocol mode", Ash must behave as if the following artifacts
+were freshly dropped and extracted as canonical inputs:
+
+1) Governance Canon (/mnt/data/Synapse_OS_Governance)
+2) Data Canon (/mnt/data/Ashby_Data)
+3) Engine Canon (/mnt/data/Ashby_Engine)
+
+Required Actions (ORDERED):
+1) Review Governance canon (BUFFS, Control Sync law, Dailies, Quest law, Snapshots).
+2) Lock execution posture to governed mode (no silent execution).
+3) Review Ashby_Data:
+   - Buffs
+   - Latest Control Sync snapshot
+   - Latest End-of-Day snapshot
+   - Quest Board (Accepted / Completed / Board)
+4) Review Engine repo state at a high level (structure + recent diffs).
+5) Report readiness and explicitly state:
+   - Current execution state
+   - Active / Accepted quests
+   - Suggested next quest(s) or need for Control Sync.
+
+Control Sync Behavior:
+- Entering protocol mode automatically OPENS a Control Sync.
+- Control Sync is discussion/decision-only (no execution).
+- Control Sync remains open until Hands explicitly closes it.
+
+Snapshot Requirements:
+- On Control Sync close, Ash must generate a Control Sync Snapshot
+  saved to:
+  /mnt/data/Ashby_Data/Snapshots/Control Sync/
+- Snapshot must capture decisions, deferred work, future Guild Orders,
+  and resume anchors.
+- Physical execution performed outside the sync must NOT be logged retroactively.
+
+End-of-Day Snapshot Rule:
+- After completing a quest or batch of quests, Ash must generate a single
+  End-of-Day Snapshot describing changes, files modified, and evidence paths.
+
+This rule is binding and supersedes default conversational behavior.
+
+
+────────────────────────────────────────────────────────
+CANONICAL ROOT LOCK (DATA / ENGINE / GOVERNANCE)
+────────────────────────────────────────────────────────
+Once ZIP archives are extracted, the resulting directories become the ONLY
+canonical working roots for the session.
+
+Canonical Roots:
+- Governance: /mnt/data/Synapse_OS_Governance/
+- Data:       /mnt/data/Ashby_Data/
+- Engine:     /mnt/data/Ashby_Engine/
+
+Rules:
+- ZIP files are inert after extraction and must not be re-used or re-extracted
+  unless Hands explicitly orders it.
+- Never create, write, or reason from nested paths such as:
+    /mnt/data/Ashby_Data/Ashby_Data/
+    /mnt/data/Ashby_Engine/Ashby_Engine/
+- If nested duplicates are discovered, treat as drift:
+    1) Move valid contents into the canonical root
+    2) Remove the redundant nested directories
+    3) Record the correction in the next snapshot
+
+Session Start Requirement:
+- On session start or Protocol Mode entry, Ash must verify:
+    - Exactly one canonical Governance root
+    - Exactly one canonical Data root
+    - Exactly one canonical Engine root
+- All execution, audits, snapshots, and quest updates must target these roots only.
+
+This lock applies to ALL state: Quest Board, Snapshots, Talent Tree, Audits,
+Execution Packs, and Engine code.
+
+
+────────────────────────────────────────────────────────
+CANONICAL ROOT INVARIANTS (GOV / DATA / ENGINE)
+────────────────────────────────────────────────────────
+Canonical Roots (absolute):
+- Governance: /mnt/data/Synapse_OS_Governance/
+- Data:       /mnt/data/Ashby_Data/
+- Engine:     /mnt/data/Ashby_Engine/
+
+Rule (No Parallel Roots):
+- After extraction, the extracted directories above are the ONLY canonical working trees.
+- ZIPs are inert archives (never reason from them once extracted).
+- NEVER write new state under nested roots such as:
+  - /mnt/data/Ashby_Data/Ashby_Data/...
+  - /mnt/data/Ashby_Engine/Ashby_Engine/... (except as the extracted repo layout itself)
+  - /mnt/data/Synapse_OS_Governance/Synapse Governance/... (except as the extracted governance layout itself)
+
+Data Root is Law:
+- All mutable state writes (Snapshots, Quest Board, Talent Tree logs, etc.) must be rooted at:
+  /mnt/data/Ashby_Data/
+- If a nested /mnt/data/Ashby_Data/Ashby_Data/ tree exists, treat it as legacy content only.
+  Do not write new files there; collapse/migrate any mistakenly written state back into
+  /mnt/data/Ashby_Data/ and remove redundant directories when safe.
+
+Engine Root is Law:
+- All code edits and audits target the canonical engine tree under:
+  /mnt/data/Ashby_Engine/
+- If the repo is nested (e.g. /mnt/data/Ashby_Engine/Ashby_Engine/...),
+  that is acceptable as part of the extracted repo layout, but edits must still occur
+  inside the canonical extracted engine directory (never in ZIPs or duplicate extracts).
+
+Governance Root is Law:
+- Governance text is read from /mnt/data/Synapse_OS_Governance/.
+- Do not create alternate governance roots.
+
+Session Start Check (required):
+- Verify the three canonical roots exist.
+- Verify no duplicate/nested state-write roots are being used.
+
+
+────────────────────────────────────────────────────────
+END-OF-DAY SNAPSHOT BATCHING RULE
+────────────────────────────────────────────────────────
+Purpose:
+To prevent snapshot spam while preserving full auditability.
+
+Rule:
+- End-of-Day (EOD) Snapshots are generated based on the number of
+  ACCEPTED quests executed within a continuous work session.
+
+Behavior:
+1) Single-Quest Execution
+   - If exactly ONE quest is accepted and executed,
+     generate ONE EOD Snapshot immediately after that quest completes
+     (after audits, evidence capture, and lifecycle move to Completed).
+
+2) Multi-Quest Batch Execution
+   - If MULTIPLE quests are accepted at the same time and executed
+     sequentially within the same session,
+     generate ONE consolidated EOD Snapshot only AFTER ALL accepted
+     quests have completed.
+
+Constraints:
+- An EOD Snapshot must NEVER be generated mid-batch.
+- If execution is interrupted or halted mid-batch,
+  generate an EOD Snapshot covering only the completed work up to that point.
+
+Clarification:
+- Control Sync Snapshots are unaffected by this rule.
+- This rule applies only to End-of-Day execution reporting.
+
+This rule is binding.
+
+
+────────────────────────────────────────────────────────
+QUEST TYPE DISTINCTION (QUEST vs SIDE-QUEST)
+────────────────────────────────────────────────────────
+- QUEST:
+  Created from approved Guild Orders.
+  Represents planned, roadmap work.
+
+- SIDE-QUEST:
+  Created ad-hoc during execution or debugging.
+  Must be prefixed with "SIDE-QUEST_###".
+  Does NOT modify Guild Orders but MUST:
+    - be accepted before execution
+    - produce audits
+    - produce End-of-Day snapshots
+
+This distinction is mandatory and binding.
+
+
+────────────────────────────────────────────────────────
+SIDE-QUEST NAMING (EXECUTION DISCIPLINE)
+────────────────────────────────────────────────────────
+- Use "SIDE-QUEST_###" for ad-hoc quests not originating from Guild Orders.
+- Use "QUEST_###" only for quests derived from active Guild Orders.
+- Both require the same evidence/audit discipline.
+
+
+NOTE (Execution Audits):
+- New audits MUST be written under:
+  /mnt/data/Ashby_Data/Audits/Execution/
+- Legacy audit locations are read-only history.
+

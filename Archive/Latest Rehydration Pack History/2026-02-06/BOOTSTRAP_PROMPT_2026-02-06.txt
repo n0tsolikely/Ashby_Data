@@ -1,0 +1,99 @@
+STUART — BOOTSTRAP PROMPT (NEW CHAT)
+Date: 2026-02-06
+Owner: Hands (Peter) / Brains (Ash)
+Scope: Stuart v1 (Meetings + Journal) — REV7 post-stack rehydrate
+
+PURPOSE
+- Rehydrate a brand new chat into the exact governed state of the Stuart v1 raid.
+- This prompt is NOT permission to execute; it is permission to become consistent.
+
+CANONICAL ROOTS (ABSOLUTE)
+- Governance: /mnt/data/Synapse_OS_Governance
+- Data:       /mnt/data/Ashby_Data
+- Engine:     /mnt/data/Ashby_Engine
+
+OPTIONAL PACK RULE (IMPORTANT)
+- Rehydration Packs + Execution Packs are ONLY present when there is a current active one.
+- If a pack folder exists but is empty, that is NOT an error — it means no active pack.
+- For THIS session, the pack IS present and is authoritative resume law.
+
+DO NOT USE
+- Any older “engine zip” working copies.
+- Module-level historical rehydration packs under:
+  /mnt/data/Ashby_Data/Stuart/Docs/Latest Rehydration Pack
+  (Those are historical reference; canonical session resume is THIS folder.)
+
+MANDATORY READ ORDER (SESSION START)
+1) Synapse Governance (Tier 0)
+   - /mnt/data/Synapse_OS_Governance/README.txt
+   - /mnt/data/Synapse_OS_Governance/INDEX.txt
+   - /mnt/data/Synapse_OS_Governance/Processes/SYNAPSE_GUILD__THE_LOOP.txt
+   - /mnt/data/Synapse_OS_Governance/Processes/SYNAPSE_GUILD__TRUTH_GATE.txt
+
+2) Subject Buffs (Ashby) — Tier 0
+   - /mnt/data/Ashby_Data/Buffs/ASHBY_SESSION_START_CHECK.txt
+   - /mnt/data/Ashby_Data/Buffs/ASHBY_EXECUTION_PROTOCOL.txt
+   - /mnt/data/Ashby_Data/Buffs/ASHBY_DATA_DIRECTORY_MAP.txt
+
+3) Continuity Lock (THIS folder) — binding resume law
+   - /mnt/data/Ashby_Data/Latest Rehydration Pack/CONTINUITY_LOCK_2026-02-06.txt
+
+4) Codex freeze marker (execution authorization)
+   - /mnt/data/Ashby_Data/Codex/CODEX_FREEZE.md
+
+5) Active Guild Orders (current raid scope)
+   - /mnt/data/Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS_STUART_V1_2026-02-04_REV7.txt
+
+6) Quest Board truth (commitment state machine)
+   - /mnt/data/Ashby_Data/Quest Board/Accepted/
+   - /mnt/data/Ashby_Data/Quest Board/Completed/
+   - /mnt/data/Ashby_Data/Quest Board/   (board root for unaccepted quests)
+
+7) Latest snapshots (resume anchors)
+   - Latest Control Sync:
+     - /mnt/data/Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-02-04__REV7_Quest_Refactor.txt
+   - Latest End-of-Day:
+     - /mnt/data/Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2026-02-06__Q042-Q052.txt
+
+CURRENT RAID INTENT (WHAT STUART V1 MUST DO)
+Goal: Stuart v1 should accept an audio file and produce:
+- diarization.json (speaker segments + confidence)
+- transcript.json (verbatim transcript)
+- aligned_transcript.json (speaker-tagged transcript w/ diarization source)
+- minutes.json (v1, citations anchored to segment_id) + minutes.md + exports/minutes.pdf
+- journal.json (v1, citations anchored to segment_id) + journal.md + exports/journal.pdf
+- run.json now includes primary_outputs pointers so Doors don’t hardcode filenames
+
+Truth discipline requirements:
+- No hallucinated templates: template_id MUST validate against registry.
+- Formalizers must not invent decisions/actions. If not supported, lists stay empty.
+- If remote LLM is used, it must be profile-gated and explicitly enabled.
+
+RUNTIME ROOT (IMPORTANT)
+- Stuart’s runtime outputs (runs, artifacts, exports) live under STUART_ROOT (outside the repo).
+- Config:
+  - env var: STUART_ROOT
+  - default: ~/ashby_runtime/stuart
+
+CANONICAL RULES (NON-NEGOTIABLE)
+- No God files. Each file does one job.
+- Quests are atomic. Execute only Accepted quests.
+- Truth Gate: every “done” claim requires real receipts (diffs, commands, tests, artifacts).
+- Testing law: NEVER claim pytest passed/failed without running it and capturing the output.
+- Snapshots:
+  - Control Sync snapshots capture decisions.
+  - End-of-day snapshot only when the accepted quest stack is complete OR the session explicitly ends.
+
+WHERE WE LEFT OFF (STATE)
+Active Guild Orders:
+- GUILD_ORDERS_STUART_V1_2026-02-04_REV7.txt is ACTIVE.
+
+Quest Board:
+- ACCEPTED: none (no active commitment stack right now)
+- COMPLETED: QUEST_042 → QUEST_052 (REV7 phase stack finished)
+- BOARD (unaccepted): QUEST_053+ exist but are NOT authorized until accepted
+
+NEXT ACTION (DO NOT EXECUTE UNTIL HANDS SAYS GO)
+- Start in Control Sync mode to decide next scope (Dungeon 3 / integration / retrieval).
+- Once Hands accepts the next quest stack, generate/update the execution pack and proceed.
+

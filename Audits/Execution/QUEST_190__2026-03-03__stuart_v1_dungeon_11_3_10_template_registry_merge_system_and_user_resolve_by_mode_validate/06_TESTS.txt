@@ -1,0 +1,71 @@
+## Command Receipt Log
+WRAPPER: synapse_quest_run.sh
+ENGINE_ROOT: /home/notsolikely/Ashby_Engine
+DATA_ROOT: /home/notsolikely/Ashby_Data
+---
+CMD: cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_template_registry_merges_system_and_user.py tests/test_meetings_template_registry.py
+.........F                                                               [100%]
+=================================== FAILURES ===================================
+____________ test_validate_template_rejects_malformed_front_matter _____________
+
+tmp_path = PosixPath('/tmp/pytest-of-notsolikely/pytest-48/test_validate_template_rejects0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72d55d4cecf0>
+
+    def test_validate_template_rejects_malformed_front_matter(tmp_path, monkeypatch):
+        monkeypatch.setattr(
+            "ashby.modules.meetings.template_registry._SYSTEM_DIR",
+            tmp_path / "system",
+        )
+        bad = tmp_path / "system" / "meeting"
+        bad.mkdir(parents=True, exist_ok=True)
+        # starts front matter but never closes it
+        (bad / "default.md").write_text("---\ntemplate_version: 2\n", encoding="utf-8")
+>       v = validate_template("meeting", "default")
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_meetings_template_registry.py:84: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+ashby/modules/meetings/template_registry.py:251: in validate_template
+    allowed: List[str] = allowed_templates_for_mode(mode)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ashby/modules/meetings/template_registry.py:129: in allowed_templates_for_mode
+    return [d.template_id for d in template_descriptors_for_mode(mode)]
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ashby/modules/meetings/template_registry.py:119: in template_descriptors_for_mode
+    merged: Dict[str, TemplateDescriptor] = {d.template_id: d for d in system_templates_for_mode(mv.canonical)}
+                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ashby/modules/meetings/template_registry.py:84: in system_templates_for_mode
+    front, _ = _split_front_matter(raw_text)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+text = '---\ntemplate_version: 2\n'
+
+    def _split_front_matter(text: str) -> tuple[Dict[str, Any], str]:
+        # YAML-like markdown front matter:
+        # ---
+        # key: value
+        # defaults:
+        #   include_citations: false
+        # ---
+        if not text.startswith("---\n"):
+            return ({}, text)
+        end_idx = text.find("\n---\n", 4)
+        if end_idx < 0:
+>           raise ValueError("template front matter starts with '---' but closing '---' is missing")
+E           ValueError: template front matter starts with '---' but closing '---' is missing
+
+ashby/modules/meetings/template_registry.py:187: ValueError
+=========================== short test summary info ============================
+FAILED tests/test_meetings_template_registry.py::test_validate_template_rejects_malformed_front_matter
+1 failed, 9 passed in 0.11s
+RC: 1
+BLOCKED: command failed (see RC above): cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_template_registry_merges_system_and_user.py tests/test_meetings_template_registry.py
+CMD: cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_template_registry_merges_system_and_user.py tests/test_meetings_template_registry.py
+..........                                                               [100%]
+10 passed in 0.08s
+RC: 0
+PASS: governance validation OK for QUEST_190 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_190__2026-03-03__stuart_v1_dungeon_11_3_10_template_registry_merge_system_and_user_resolve_by_mode_validate
+OK: finalize complete (validation PASS recorded).
+PASS: governance validation OK for QUEST_190 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_190__2026-03-03__stuart_v1_dungeon_11_3_10_template_registry_merge_system_and_user_resolve_by_mode_validate
+OK: finalize complete (validation PASS recorded).

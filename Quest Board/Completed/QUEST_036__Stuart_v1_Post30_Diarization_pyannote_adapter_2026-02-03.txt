@@ -1,0 +1,93 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+
+QUEST ID:
+QUEST_036
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Post-30: Stage 1 Diarization (pyannote.audio LOCAL_ONLY; optional HF token)
+
+Context: Stuart pipeline
+
+Origin:
+Control Sync — 2026-02-03 (Post-30 plan)
+
+Priority: P0
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-03_REV4.txt (Dungeon 5 diarize stage)
+- Target: pyannote.audio diarization pipeline (HF token may be required)
+
+Status: COMPLETED
+
+Audit Bundle Path:
+Audits/Execution/QUEST_036__2026-02-03__stuart_v1_post30_diarization_pyannote_adapter_2026-02-03
+
+Accepted On:
+2026-02-03
+
+Accepted By:
+Hands (Peter)
+
+Completed On:
+2026-02-03
+
+Completed By:
+Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Wire real diarization locally using pyannote. Output speaker turns with timestamps and stable speaker labels
+(SPEAKER_00, SPEAKER_01, …) for meeting mode.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Implement diarization adapter that consumes canonical wav and outputs diarization_segments.json:
+-   - segments: [{speaker_label, t_start, t_end, confidence?}]
+- Support speaker hint input where available (auto/2/3+).
+- Respect optional HF token gating; never hardcode secrets.
+- Meeting mode default: run diarization; Journal mode default: skip diarization (single speaker).
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Perfect diarization accuracy.
+- Cross-session speaker embedding identity (future).
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_033 (schemas: diarization_segments.json)
+- QUEST_034 (preflight: HF token handling)
+- QUEST_035 (normalize canonical wav)
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- If diarization cannot run (no token / missing model), behavior must be explicit: either fail meeting-mode run with clear message OR continue with speakers=unknown per guild orders policy (choose and document).
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] pyannote diarization adapter implemented behind execution profile.
+- [x] diarization_segments.json written and recorded as artifact.
+- [x] Token gating verified (no secret hardcoding).
+- [x] `python3 -m pytest -q` PASS (include a diarization adapter unit test stub or skip-if-missing token test).
+
+────────────────────────────────────────────────────────
+TALENT POINT
+────────────────────────────────────────────────────────
+On completion:
+- Talent Point Awarded: YES
+- Talent Spent On: TBD — Diarization Stage (pyannote)
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+- Journal mode skips diarization by default.
+- Speaker hints supported via inputs/speaker_hint.json (write-once).
+- Token gating: pyannote runs only when installed + HF_TOKEN; otherwise explicit stub payload with warning.

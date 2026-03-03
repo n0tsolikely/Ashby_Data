@@ -1,0 +1,164 @@
+STUART CODEX
+6.2 Canonical Artifacts (JSON / Markdown / PDF) (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines the canonical artifact set Stuart produces and stores. This is where we lock the “no hard-wrap” rule, the “print-ready PDF” requirement, and the separation between machine artifacts and human artifacts.
+
+Key design decision from this chat:
+For every meaningful output, Stuart stores:
+- a machine-readable artifact (JSON) for indexing, re-runs, and auditing, and
+- a human-readable artifact (Markdown/Text) for reading/editing, and
+- a print-ready artifact (PDF) for immediate printing (formalizations).
+
+1) Artifact categories
+
+A) Input artifacts (sources)
+- original audio/video files (or user-referenced paths)
+- extracted/normalized audio (optional)
+- any uploaded template documents/images (if used for template import)
+
+B) Ground truth artifacts
+- transcript (verbatim, citeable)
+- diarization output (if enabled)
+- alignment/stitching results (if separate)
+
+C) Derived artifacts (formalizations)
+- meeting minutes
+- journal/diary entry
+- incident report
+- creator notes
+- captions/subtitles
+- translations
+
+D) Audit artifacts
+- evidence maps
+- run manifests/config snapshots
+- logs (if stored locally)
+
+E) Retrieval artifacts
+- session manifest
+- indexes (local searchable structures)
+
+2) Transcript artifacts (ground truth)
+
+Once transcription is executed, Stuart MUST produce:
+
+- transcript.json (machine ground truth)
+  Contains:
+  - segments with stable segment IDs
+  - start/end timestamps
+  - speaker labels
+  - text
+  - confidence where available
+  - contribution reference (for multi-contribution sessions)
+
+- transcript.txt (human view)
+  Readable transcript, not hard-wrapped.
+  Line breaks should occur at paragraph boundaries and speaker turns, not at fixed widths.
+
+Optional but recommended:
+- transcript.md (human view with light structure)
+- diarization.json (speaker segments and confidence)
+- alignment.json (if alignment is a distinct stage)
+
+Critical rule:
+The verbatim transcript is the ground truth and must not be overwritten by “clean transcript” views.
+
+3) Formalization artifacts (derived, printable, re-runnable)
+
+For each formalization run (meeting/journal/incident/creator), Stuart MUST produce:
+
+- formalization.json (machine)
+  Contains:
+  - structured fields/sections
+  - extracted items (decisions/actions/timeline/etc)
+  - metadata (mode, template, retention, run_id, run timestamps)
+  - citations (references to transcript segment IDs/timestamps)
+
+- formalization.md (human)
+  Readable structured document.
+  Must avoid hard-wrap corruption.
+
+- formalization.pdf (print-ready)
+  The PDF is the canonical printing artifact. Users must be able to print immediately.
+
+Naming:
+The actual filename should reflect the mode, e.g.:
+- meeting_minutes.md / meeting_minutes.pdf
+- journal.md / journal.pdf
+- incident_report.md / incident_report.pdf
+- creator_notes.md / creator_notes.pdf
+
+But the storage layout must allow multiple runs and versions (see Section 6.3).
+
+4) Evidence map artifacts (audit backbone)
+
+Every formalization run MUST produce:
+- evidence_map.json
+
+The evidence map ties each output unit (bullet/paragraph/timeline item) to:
+- transcript segment IDs
+- timestamp ranges
+- speaker label references (and mapping status if applied)
+- confidence flags where relevant
+
+Even if citations are not printed in the PDF, the evidence map must exist.
+
+5) Captions/subtitles artifacts
+
+When captions mode is executed, Stuart MUST produce:
+- captions.srt (required)
+Optional but recommended:
+- captions.vtt
+Optional:
+- speaker-labeled captions track (only if requested)
+
+Captions are time-aligned artifacts derived from transcript alignment. Captions do not replace the transcript.
+
+6) Translation artifacts (derived views)
+
+Translations must be labeled derived and must not overwrite originals.
+Examples:
+- meeting_minutes.es.md / meeting_minutes.es.pdf
+- captions.es.srt
+
+Translations should preserve linkage back to original transcript timestamps.
+
+7) Session manifest artifacts
+
+Each session SHOULD contain:
+- session.json
+This manifest references:
+- contributions,
+- runs,
+- and artifact paths.
+
+This is how Stuart can reconstruct state without relying on chat.
+
+8) The “no hard-wrap” rule (locked)
+
+Stuart MUST NOT store hard-wrapped text as a canonical artifact.
+This is a direct requirement from user experience: hard wraps break printing and make documents annoying to use.
+
+Therefore:
+- .txt and .md files should contain line breaks only for paragraphs, lists, headings, and speaker turns.
+- Rendering engines handle wrapping for display and PDF.
+
+9) Print integrity
+
+Formalization PDFs must be reliable:
+- clean headings
+- readable bullet lists
+- stable spacing
+- predictable page breaks when needed
+
+PDF generation should be deterministic given the same source JSON/MD and template.
+
+10) Self-audit (6.2)
+
+- This section encodes the storage decisions we made: JSON as machine truth/structure, Markdown/Text as human readable without hard wraps, and PDF as print-ready output.
+- It enforces transcript as ground truth and labels all other outputs as derived views.
+- It requires evidence maps for auditable formalizations and supports long outputs by storing artifacts rather than relying on chat window limits.
+This section is complete.

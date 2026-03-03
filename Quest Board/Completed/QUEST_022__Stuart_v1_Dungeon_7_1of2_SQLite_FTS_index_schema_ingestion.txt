@@ -1,0 +1,70 @@
+QUEST ID: QUEST_022
+Title: Stuart v1 — Dungeon 7 (1 of 2): SQLite FTS index schema + ingestion
+Context: Stuart
+Origin: Guild Orders: GUILD_ORDERS_STUART_V1_2026-01-16_REV3.txt (Dungeon 7)
+Priority: P0
+Links:
+- Guild Orders: Stuart v1 — Dungeon 7
+- Supersedes (decomposition of): QUEST_008
+- Related: QUEST_020 (transcript artifacts), QUEST_013 (immutability)
+Status: COMPLETED
+Accepted On: 2026-01-25
+Completed On: 2026-01-25
+
+DESCRIPTION
+────────────────────────────────────────
+Implement deterministic-first retrieval by creating the SQLite FTS index schema and ingestion pipeline for transcript content and session metadata.
+
+SCOPE / OBJECTIVE
+────────────────────────────────────────
+Implement:
+- SQLite database creation and schema for FTS.
+- Ingestion/indexing of:
+  - session metadata (date/title/mode)
+  - transcript text (segment-level or chunk-level)
+  - speaker labels (raw labels; mapped names can be added later)
+  - pointers back to artifacts (session_id/run_id/segment_id/timestamps)
+
+Indexing must be deterministic and reproducible.
+Indexing should not require LLM scanning of files.
+
+OUT OF SCOPE
+────────────────────────────────────────
+Query UX and result presentation (handled in QUEST_023).
+Vector search / embeddings.
+Cloud multi-user indexing.
+
+DEPENDENCIES
+────────────────────────────────────────
+- QUEST_020
+- QUEST_013
+
+EXECUTION NOTES
+────────────────────────────────────────
+Index is a performance and determinism primitive. Keep it simple and correct in v1.
+Do not let indexing mutate transcripts; it should read and store pointers only.
+
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────
+- [x] SQLite FTS database is created in a stable location under STUART_ROOT (or configured runtime path).
+- [x] Ingestion can index at least one transcript into FTS with pointers to session_id/run_id/segment references.
+- [x] Index includes enough pointer data to reconstruct citations (segment_id and/or timestamps).
+- [x] Ingestion handles multiple sessions without collisions and can be rerun safely without corrupting data.
+- [x] A minimal test proves that transcripts are searchable by keyword via SQLite FTS.
+
+TALENT POINT
+────────────────────────────────────────
+On completion:
+- Talent Point Awarded: YES
+- Talent Spent On: TALENT_STUART_SQLITE_FTS_INDEX — SQLite FTS Index + Ingestion
+
+FINAL NOTES
+────────────────────────────────────────
+Evidence:
+- Engine files:
+  - ashby/modules/meetings/index/sqlite_fts.py (schema + search)
+  - ashby/modules/meetings/index/ingest.py (deterministic ingestion)
+- Default DB path: <STUART_ROOT>/index/stuart_index.sqlite3
+  - Override: STUART_INDEX_DB
+- Test: tests/test_meetings_sqlite_fts_index_ingestion.py
+- Verification: python -m pytest -q tests  -> 30 passed

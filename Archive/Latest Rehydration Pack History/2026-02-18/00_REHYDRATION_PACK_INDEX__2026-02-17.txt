@@ -1,0 +1,108 @@
+REHYDRATION PACK INDEX — 2026-02-17 (ASHBY / STUART)
+
+Purpose (no bullshit):
+- This folder is the deterministic re-entry kit for ANY new session.
+- If you start a new chat with Ash (Brains), you paste BOOTSTRAP_PROMPT first, then follow the read order below.
+- This pack is written to survive “blank-memory rehydrate” without drift.
+
+What these artifacts are (governance-defined):
+- BOOTSTRAP PROMPT:
+  The short “session opener” prompt. It tells the AI who it is, what rules bind it, and what to read first.
+- CONTINUITY LOCK:
+  The single-source “DO NOT DRIFT” anchor. It pins current phase, binding decisions, and exact resume point.
+- EXECUTION PACK (folder):
+  The deterministic runbooks for executing the CURRENT raid/quests without re-litigating strategy.
+
+CANON ROOT (where you are standing right now):
+- The canonical extracted tree is the folder that contains BOTH:
+  - Ashby_Engine/
+  - Ashby_Data/
+- Rule: once a canon zip is extracted, the extracted directory is THE ONLY source of truth.
+  Do not create parallel extracts. Do not “copy the repo somewhere else and work there”.
+
+================================================================================
+LATEST STATE ANCHORS (READ THESE)
+================================================================================
+1) Continuity Lock (authoritative continuity anchor):
+   - Ashby_Data/Latest Rehydration Pack/CONTINUITY_LOCK_2026-02-17.txt
+
+2) Latest Control Sync closure receipt (authoritative decisions + product spec):
+   - Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot__2026-02-16.txt
+
+3) Latest End-of-Day snapshot (older, but still the last EOD receipt on record):
+   - Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2026-02-15.txt
+
+================================================================================
+CURRENT RAID (PLANNED, NOT YET STARTED)
+================================================================================
+Guild Orders (currently PAUSED until Hands starts the raid):
+- Ashby_Data/Guild Orders/PAUSED/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt
+
+Codex (constitutional constraints for Stuart; must be honored by all quests):
+- Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt
+
+Quest Packs (already generated, currently sitting on the Quest Board):
+- Dungeon 1 quests: QUEST_080 … QUEST_089 (Frontend Foundation — Base44 UI port, NO Base44 deps)
+- Dungeon 2 quests: QUEST_090 … QUEST_101 (Frontend↔Backend Contract — API Surface)
+
+NOTE:
+- These quests are BOARD state (not accepted yet). Nothing is allowed to “execute” until Hands explicitly starts/accepts.
+
+================================================================================
+REQUIRED READ ORDER (SESSION START CHECKLIST)
+================================================================================
+A) Buffs (always load these first after Bootstrap Prompt):
+- Ashby_Data/Buffs/ASHBY_SESSION_START_CHECK.txt
+- Ashby_Data/Buffs/ASHBY_EXECUTION_PROTOCOL.txt
+- Ashby_Data/Buffs/ASHBY_DATA_DIRECTORY_MAP.txt
+- Ashby_Data/Buffs/ASHBY_PLATFORM_TRUTH_AND_PROFILE_LOCK.txt
+
+B) Governance (if anything feels unclear, stop guessing and read governance):
+NOTE:
+- Synapse governance is shipped as a separate zip alongside the canon.
+- If the folder 'Synapse_OS_Governance(AI)10/' is not present in the working directory, extract:
+  - Synapse_OS_Governance(AI)10.zip
+  exactly once, then treat it as READ-ONLY.
+
+- Synapse_OS_Governance(AI)10/Continuity/SYNAPSE_GUILD__REHYDRATION_PACK_CHECKLIST.txt
+- Synapse_OS_Governance(AI)10/Continuity/SYNAPSE_GUILD__BOOTSTRAP_PROMPT.txt
+- Synapse_OS_Governance(AI)10/Continuity/SYNAPSE_GUILD__CONTINUITY_LOCK.txt
+- Synapse_OS_Governance(AI)10/Continuity/SYNAPSE_GUILD__EXECUTION_PACKS.txt
+
+C) Then read (in this order):
+1. Ashby_Data/Latest Rehydration Pack/CONTINUITY_LOCK_2026-02-17.txt
+2. Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot__2026-02-16.txt
+3. Ashby_Data/Guild Orders/PAUSED/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt
+4. Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt
+
+D) Finally decide “what do we do RIGHT NOW?” (Hands decides; Brains executes):
+- If Hands says “start the raid”:
+  - Move Guild Orders PAUSED → ACTIVE (exact file move, do not rewrite content).
+  - Accept QUEST_080 (move BOARD → Accepted and fill metadata).
+  - Execute Dungeon 1 in numerical quest order: 080 → 089.
+  - Then execute Dungeon 2 in numerical quest order: 090 → 101.
+
+- If Hands says “generate more quests”:
+  - Default recommendation: do NOT generate Dungeon 3+ quests until Dungeon 1 + 2 are executed,
+    because Dungeon 3+ depends on the real folder contract + real API contract that D1+D2 produce.
+  - If Hands explicitly orders “generate all quests now”, do it — but label assumptions and risks.
+
+================================================================================
+EXECUTION PACK (RUNBOOKS)
+================================================================================
+Execution pack for Stuart v2 (Dungeon 1 + 2) lives at:
+- Ashby_Data/Latest Rehydration Pack/execution pack/
+
+Read first:
+- 00_EXECUTION_PACK_INDEX__2026-02-17.txt
+
+================================================================================
+ARCHIVE / HISTORY
+================================================================================
+- The previous “latest” rehydration artifacts (2026-02-15) were archived to:
+  - Ashby_Data/Archive/Latest Rehydration Pack History/2026-02-17/
+
+- Older historical packs exist under:
+  - Ashby_Data/Archive/Latest Rehydration Pack History/
+
+If you feel tempted to reinvent the wheel: don’t. Check the archive first.

@@ -1,0 +1,101 @@
+QUEST_ID: QUEST_162
+TITLE: Stuart v1 — D7 4/10 — LLM Gateway Prompt v2 (template-shaped JSON + evidence rails)
+DATE: 2026-03-01
+STATUS: ACCEPTED (Ready for Codex execution)
+RISK_CLASS: R2 (Prompt changes + validation rails; must not break schema)
+OWNER: OpenAI Codex (local CLI)
+
+CONTEXT / WHY
+We now have a contract that can carry:
+- transcript_segments (anchorable)
+- template_text + template_sections (structure drivers)
+
+But the Gemini provider prompt still:
+- ignores template_text entirely
+- uses transcript_text only
+- doesn’t explicitly instruct “fill these sections” based on template schema
+
+Dungeon 7 requires: Template shapes the output (D3: parsed schema + raw template text).
+
+CANON ANCHORS
+- Guild Orders D7: “Template content must shape the prompt (D3 BOTH schema + raw template text)”
+- Guild Orders D7: evidence discipline (citations required in JSON; evidence map always generated)
+- Stuart Codex: template + retention knob intent
+
+REPO REALITY
+- Provider: Ashby_Engine/ashby/interfaces/llm_gateway/providers/gemini.py
+- Retention prompts: Ashby_Engine/ashby/modules/meetings/formalize/retention_prompts.py (+ normalize in ashby/modules/meetings/retention_registry.py)
+  - NOTE: Do **not** create a new llm_gateway retention registry; reuse meetings retention plumbing.
+- Output validators: Ashby_Engine/ashby/interfaces/llm_gateway/validate.py + meetings schemas
+
+SCOPE LOCK
+IN SCOPE
+1) Upgrade Gemini provider prompt assembly to:
+   - Prefer transcript_segments over transcript_text when present.
+   - Include template_sections (parsed schema) as a “fill these buckets” instruction.
+   - Include raw template_text as a “hard structure” instruction.
+   - Keep JSON-only output requirement.
+   - Keep “no hallucination” rule: if not in transcript segments → omit or mark unknown (don’t invent).
+2) Ensure citations instructions are explicit:
+   - Each decision/action/key point item must include citations = [segment_id,...]
+   - Segment ids must be chosen ONLY from provided transcript_segments
+3) Add/update provider-level unit tests for prompt construction (where feasible).
+
+OUT OF SCOPE
+- Any engine-side changes (that’s other quests)
+- Any renderer changes
+- Any new templates
+- Any global chat (Dungeon 10)
+
+PROMPT CONTRACT (deterministic requirements)
+- The prompt must contain:
+  - Retention policy instructions
+  - JSON schema reminder for the selected mode (meeting minutes vs journal)
+  - Template sections list (ordered)
+  - Raw template text block
+  - Transcript as structured segments (not a single concatenated transcript)
+- The prompt must instruct:
+  - Use citations referencing segment_id for *every* factual item (decisions/actions/key points/etc.)
+  - Do not invent attendees/decisions/actions/risks/questions not supported by cited segments
+  - Keep items loss-minimized (no “summary only” unless retention low)
+
+IMPLEMENTATION NOTES
+- File: Ashby_Engine/ashby/interfaces/llm_gateway/providers/gemini.py
+  - Add logic:
+    - If req.transcript_segments present:
+      - Provide them as JSON lines or a JSON array in the prompt.
+      - Keep each segment with {segment_id,start_ms,end_ms,speaker_label,speaker_name,text}
+    - Else fallback to transcript_text (legacy)
+  - Include template_sections:
+    - Render as a short JSON array describing desired output buckets.
+    - Example: [{"heading":"Decisions","target_key":"decisions"}, ...]
+  - Include raw template_text verbatim in prompt as a quoted block.
+  - Keep “Return ONLY JSON object” constraint.
+
+- Add helper functions inside gemini.py (or new module if it keeps gemini.py from becoming a god file):
+  - format_template_sections(...)
+  - format_transcript_segments(...)
+  - build_prompt(...)
+
+Tests
+- Add/extend tests:
+  - A test that builds a FormalizeRequest with transcript_segments + template_text and asserts the constructed prompt contains:
+    - at least one segment_id in the prompt text
+    - template_text substring
+    - template_sections substring
+  - If tests currently mock genai client, keep mocking; do not add live network dependency.
+
+ACCEPTANCE CRITERIA
+- Provider uses template_text + template_sections whenever provided.
+- Provider uses transcript_segments if present; transcript_text otherwise.
+- No schema validation regressions (existing output validators still run).
+- pytest passes.
+
+RECEIPTS REQUIRED
+- Diff/patch
+- pytest output (include provider tests)
+
+FAIL CONDITIONS
+- Prompt ignores template_text or template_sections
+- Prompt drops segment_ids (kills evidence anchoring)
+- Prompt includes transcript content in logs (privacy leak)

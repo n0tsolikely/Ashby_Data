@@ -1,0 +1,646 @@
+STUART — THE CANONICAL VISION
+Version date: 2026-01-12
+Authoring context: This document is the single, human-readable explanation of Stuart as envisioned and refined through our control syncs.
+It is meant to stand on its own for a reader who has never heard of Stuart. It explains what Stuart is, why it exists, how it works end-to-end, and how it safely expands over time.
+This is not a dump of the Codex files. The Codex is the implementation contract. This document is the story + the complete mental model.
+
+============================================================
+1) What Stuart is (in plain language)
+============================================================
+
+Stuart is a chat-first, local-first transcription + diarization + formalization engine that turns recordings into trustworthy, printable records you can search later.
+“Trustworthy” in Stuart does not mean ‘the model is always right.’ It means the system never pretends: it preserves the ground truth (the audio and the transcript), it exposes uncertainty, it never invents facts, and it can always point to evidence (timestamps and transcript segments) for anything it claims.
+
+If Ashby is the long-term memory / planning / systems brain, Stuart is the specialist who takes raw spoken reality (meetings, incident calls, voice journals, creator ideas) and turns it into structured artifacts that Ashby (or a human) can safely use.
+
+The guiding mantra is simple:
+- Capture reality.
+- Preserve it.
+- Organize it without lying.
+- Make it printable and retrievable.
+- Keep the UI dead simple.
+
+
+============================================================
+2) The problem Stuart solves
+============================================================
+
+Meetings and voice recordings are high-signal, high-friction. People don’t review hour-long recordings. They don’t write minutes consistently. Incident reports drift and get rewritten from memory. Notes get lost in chat threads.
+
+Stuart solves that by producing, from a recording:
+- A verbatim transcript (best-effort, with uncertainty marked instead of guessed).
+- A formalized record (meeting minutes, journal entry, incident report, creator notes) that is detailed, structured, and grounded.
+- A print-ready PDF (because a chat response is not a document).
+- A searchable archive so you can ask later: “Find every meeting where time off was discussed,” “Show incidents involving Greg,” “Where did we decide X?”
+
+The key is that Stuart is not ‘a summarizer.’ Summary-vibes are the fastest way to lose trust. Stuart’s output is a formalization: the same content, reorganized into a usable structure, retaining the right amount of wording depending on the retention level you choose.
+
+
+============================================================
+3) Non-negotiables (the constitution)
+============================================================
+
+These are the invariants that define Stuart. If any of these are violated, Stuart turns into “just another AI notes app,” and the entire point dies.
+
+3.1 Truth-locked, evidence-backed behavior
+- Stuart does not invent decisions, action items, causes, impacts, or quotes.
+- If something isn’t supported by the transcript, it is either omitted or labeled as unknown/uncertain.
+- When Stuart claims a decision/action/timeline event exists, it must point to evidence: transcript segment IDs and timestamps.
+- If diarization is uncertain, Stuart does not pretend to know who said what.
+
+3.2 Explicit execution gating (no surprise runs)
+- Uploading a file is not permission to process it.
+- The user chooses mode + template + retention and then explicitly runs the pipeline.
+- Any remote processing (in HYBRID/CLOUD) requires explicit disclosure + confirmation of what leaves the machine.
+
+3.3 Local-first as a real product, not a checkbox
+- LOCAL_ONLY must work end-to-end for sensitive environments (elder care incidents, private org meetings).
+- LOCAL_ONLY means no network calls for processing. No hidden uploads. No background telemetry of content.
+
+3.4 Chat-first simplicity
+- Stuart is used like a chat box, not like a maze of menus.
+- The user can operate it by: select mode, select template, drop file, press Run.
+- Help is available by asking Stuart. The assistant must not hallucinate capabilities.
+
+3.5 Artifact-first outputs (no truncation)
+- Stuart produces durable artifacts on disk (JSON/MD/PDF).
+- A 60–180 minute meeting cannot be forced through one chat response window.
+- Chunking + hierarchical processing ensures completeness.
+
+3.6 Conservative speaker attribution
+- Diarization yields neutral speaker labels (SPEAKER_00), not real names.
+- Naming is a user overlay.
+- “Mentioned Greg” is not “Greg attended/spoke.” Those are different queries with different evidence requirements.
+
+3.7 No stealth design
+- Stuart is not built to enable covert recording.
+- Live capture / meeting bots (future) must be consent-aware and obvious.
+
+
+============================================================
+4) The mental model (how Stuart thinks about the world)
+============================================================
+
+Stuart is built around a few core objects. This matters because it keeps the system consistent even as features expand.
+
+4.1 Session
+A Session is the container for one unit of reality: one meeting, one incident call, one journal recording, or one creator brainstorm.
+Sessions have metadata (title, date/time, tags), but most importantly they have contributions and runs.
+
+4.2 Contribution
+A Contribution is an input source attached to a session. Examples:
+- An uploaded audio file.
+- A video file (audio extracted later).
+- A microphone recording captured by Stuart.
+- (Future) A live capture stream that becomes a recorded file.
+A session can have multiple contributions. This is how multi-person idea merging and multi-source meetings become possible without hacks.
+
+4.3 Run
+A Run is a pipeline execution over one or more contributions. Runs are immutable records:
+- what stages ran
+- which adapters were used
+- which mode/template/retention settings were active
+- whether any data left the machine
+- what artifacts were produced
+
+4.4 Artifact
+An Artifact is a file output. Artifacts are the actual truth of Stuart’s work, not chat text.
+Canonical artifacts include transcript.json, diarization.json, aligned_transcript.json, output.json, evidence_map.json, output.md, output.pdf, and run logs.
+
+4.5 Mode vs Template
+Mode defines what kind of record you’re producing (Meeting Minutes, Journal, Incident, Creator Notes…).
+Template defines the specific shape of that mode’s output (which sections, how detailed, what to include, printing rules).
+Templates are always scoped to modes. You don’t pick a random template for a different mode unless you explicitly re-run in that mode.
+
+4.6 Retention level
+Retention is the knob that controls how much of the original phrasing survives into the formalization.
+It exists because the same transcript can produce:
+- a clean, readable minutes doc
+- or a near-verbatim structured output that preserves almost every word but organized.
+
+4.7 Stance: Analyst vs Collaborator
+Analyst stance means: extract and organize what was said. No new ideas. No opinions.
+Collaborator stance means: Stuart can propose suggestions, but they are clearly labeled and segregated from the official record unless the user explicitly incorporates them.
+
+4.8 Overlays
+Corrections are overlays. Stuart never silently rewrites ground truth.
+- Transcript corrections overlay
+- Speaker mapping overlay
+- Speaker attribution corrections overlay
+Each overlay has provenance (who/when/what changed).
+
+
+============================================================
+5) Where Stuart fits relative to Ashby
+============================================================
+
+Stuart is a specialist pipeline agent that can live:
+- as a standalone local app/service with a chat UI, or
+- as a module within Ashby’s platform.
+
+The division of labor is intentional:
+- Stuart specializes in turning recordings into artifacts (truthful transcript + formalization + evidence + printing + retrieval).
+- Ashby specializes in long-term memory, multi-project planning, decision continuity, and broader agent behavior.
+
+Stuart does not need Ashby-style personal memory. It needs durable sessions and artifacts.
+That said, the artifacts Stuart generates are exactly the kind of grounded material Ashby can ingest into a larger system safely.
+
+If Stuart is used via a chat frontend like Telegram, it behaves like a chat bot, but the real product is still the files and the run logs.
+One critical honesty point: a networked chat frontend cannot be “fully local privacy.” The processing can be local, but the upload path goes through the chat platform.
+
+
+============================================================
+6) The user experience (what it feels like to use)
+============================================================
+
+Stuart must feel like the simplest possible thing that still does serious work.
+
+6.1 The chat-first flow
+You open Stuart and see a chat.
+At the top, there are minimal, obvious controls:
+- Profile indicator (LOCAL_ONLY / HYBRID / CLOUD)
+- Mode selector (Meeting / Journal / Incident / Creator / General Query…)
+- Template selector (scoped to the chosen mode)
+- Retention selector (or retention shown as part of template defaults with explicit override)
+- A Run/Submit control (explicit execution)
+
+6.2 Upload does not run
+You can drop a file into the chat. Stuart acknowledges it and shows what it is.
+Nothing is processed until you explicitly run.
+
+6.3 Transcript visibility is a UI choice, not a truth choice
+Stuart can generate a transcript silently and store it, while letting the user hide it.
+This keeps the UI clean, but preserves auditability.
+
+6.4 Re-run without re-upload
+Once a transcript exists, you can re-run formalization with:
+- a different template
+- a different retention level
+- even a different mode (if you intentionally choose it)
+without re-uploading the audio.
+
+6.5 Retrieval feels like asking the chat
+Because everything is indexed locally, you can ask:
+- “Bring up all meetings where time off was mentioned.”
+- “Show every incident with Greg.”
+- “What did we decide about changing the locks?”
+Stuart returns matching sessions and lets you open/print the PDFs, and jump to evidence.
+
+6.6 Help is built-in
+You can ask: “How do I use you? What modes do you have?”
+Stuart must answer based on the registry of real modes/templates, not imagination.
+
+
+============================================================
+7) Profiles: LOCAL_ONLY vs HYBRID vs CLOUD
+============================================================
+
+Profiles are not marketing. They are hard privacy boundaries.
+
+7.1 LOCAL_ONLY
+- No network calls for processing.
+- ASR, diarization, formalization, indexing, rendering all run locally.
+- Artifacts stay on disk.
+This is the profile for elder care incidents, private organizations, and anyone who cannot risk data leaving the device.
+
+7.2 HYBRID
+- Local by default.
+- Remote services allowed only with explicit disclosure + confirmation.
+- Redaction/minimization can be applied before sending transcript text remotely.
+This is the profile for “I want more horsepower sometimes, but I want control.”
+
+7.3 CLOUD
+- Remote services are allowed and may be the default depending on configuration.
+- Explicit execution gating still applies.
+- Run logs must record what left the machine and which provider processed it.
+
+7.4 The most important behavioral rule
+If anything will leave the machine (audio, transcript text, embeddings), Stuart must:
+- disclose it clearly
+- require confirmation
+- log it
+
+
+============================================================
+8) The canonical pipeline (how Stuart works end-to-end)
+============================================================
+
+Stuart’s pipeline is intentionally modular and staged so it stays buildable and swappable.
+Stages are executed as needed based on the run type and chosen mode/template.
+
+Stage 0 — Session initialization
+- Create a session folder and session manifest.
+- Attach contributions (uploaded files or captured audio).
+- Record intended mode/template/retention selection (but do not process).
+
+Stage 1 — Audio ingestion and normalization
+- Convert input to a standard internal format.
+- Preserve the original source file and the normalized version.
+- Create an audio manifest (sample rate, channels, duration, hashes).
+
+Stage 2 — Diarization (speaker segmentation)
+- Produce diarization segments: SPEAKER_00, SPEAKER_01, … with time ranges.
+- Detect overlap if possible.
+- Never assign real names automatically.
+- If diarization fails, allow degraded mode (speaker unknown) instead of lying.
+
+Stage 3 — Transcription (ASR)
+- Produce transcript segments with timestamps.
+- Mark unclear regions as unclear/inaudible rather than guessing.
+- Store transcript.json and transcript.txt.
+
+Stage 4 — Alignment
+- Merge diarization and transcript timelines into an aligned transcript.
+- Preserve transcript text as ground truth.
+- Attribute segments to speaker labels where confidence allows; otherwise UNKNOWN.
+
+Stage 5 — Formalization
+- Convert the aligned transcript into a structured output defined by the selected mode/template.
+- Respect retention level.
+- Enforce evidence requirements (especially for decisions/actions/timelines).
+- Produce output.json, evidence_map.json, output.md, output.pdf.
+- If Collaborator stance is enabled, produce suggestions separately and never merge them silently.
+
+Stage 6 — Indexing and retrieval
+- Index transcript text and extracted items for recall.
+- Support keyword search (baseline) and optional semantic indexing later.
+- Retrieval answers must link back to evidence segments and timestamps.
+
+8.1 Long sessions: chunking and hierarchical processing
+To avoid truncation and context limits, Stuart processes long recordings in chunks.
+It does not rely on a single giant prompt.
+Formalization is hierarchical:
+- extract per chunk
+- merge deterministically with citations preserved
+- render final outputs
+
+8.2 Failure handling: degrade honestly
+If any stage fails:
+- preserve what succeeded
+- label the run partial/failed
+- allow resume/retry
+- never fabricate missing outputs
+
+
+============================================================
+9) Modes (what Stuart can produce)
+============================================================
+
+A mode is a formalization contract. The pipeline stays the same; only the output contract changes.
+
+9.1 General Query Mode (no formalization)
+- Purpose: ask questions of existing artifacts.
+- It does not create an official minutes/journal document.
+- It is the safest default for quick queries.
+
+9.2 Meeting Minutes Mode (core)
+- Purpose: produce a detailed, structured meeting record.
+- Must support diarization and overlap honesty.
+- Must cite evidence for decisions and action items.
+- Default retention is HIGH (because meeting minutes should not be vague).
+
+9.3 Journal / Diary Mode (core)
+- Purpose: take a single-speaker voice note and produce a readable narrative.
+- Transcript is still preserved verbatim.
+- Retention can be MED/HIGH for readability or NEAR-VERBATIM for minimal smoothing.
+
+9.4 Incident Report Mode (highly desired)
+- Purpose: produce a structured incident record and timeline.
+- Must not invent root cause or impact.
+- Must cite evidence for timeline events and actions.
+
+9.5 Creator Notes Mode (planned)
+- Purpose: turn messy brainstorm speech into organized clusters of ideas.
+- Must preserve key phrases and nuance; creator notes should not be generic.
+- Supports superseded ideas and iterative planning with evidence.
+
+9.6 Subtitles / Captions Mode (planned)
+- Purpose: generate captions and subtitle files from transcripts.
+- Requires tight timestamp handling (word-level if possible).
+
+9.7 Translation (post-transcript step)
+- Translation happens after transcript exists.
+- You can translate transcripts or formalizations.
+- Translation never replaces the canonical transcript; it becomes an additional artifact.
+
+
+============================================================
+10) Templates (how outputs become ‘your’ structure)
+============================================================
+
+Templates are why Stuart scales to many companies and many personal styles.
+Different organizations do meeting minutes differently. Different incident teams have different structures. Different creators want different note formats.
+
+A template is a package that defines:
+- required vs optional sections
+- ordering
+- evidence requirements per section
+- rendering hints (what the PDF looks like)
+- default retention level
+- extraction rules for indexing
+
+Templates are always mode-scoped. You don’t have a ‘journal template’ inside Meeting mode.
+
+10.1 Template selection UX
+The UI should feel like:
+- choose mode
+- then choose template from the templates that exist for that mode
+Hover-style nested menus are fine if they stay simple; the key is that the system never pretends templates exist.
+
+10.2 Template creation (chat-guided)
+Users can describe the format they want and Stuart generates a template definition.
+This is how you adapt to a company’s incident report style without hardcoding.
+
+10.3 Template import (document/image-based)
+Users can upload a doc or even a photo of a template, and Stuart can extract the structure and turn it into a usable template.
+
+10.4 Template versioning
+Templates are versioned. Outputs record which template version generated them.
+This prevents disputes and enables reproducibility.
+
+10.5 Template marketplace (future, gated)
+There is a long-term vision of a template ecosystem, but it is not allowed to undermine privacy or trust.
+Marketplace submission must be explicit, scrubbed, previewed, and reviewed. No background uploads.
+
+
+============================================================
+11) The retention knob (LOW / MED / HIGH / NEAR-VERBATIM)
+============================================================
+
+Retention controls how much of the original phrasing survives into the formalization.
+It exists because:
+- Meeting minutes should be detailed, not vague.
+- Creators (and comedians especially) often need the actual wording preserved.
+- Some users want a clean, readable narrative (journal mode).
+
+Retention does not change the transcript. The transcript remains the ground truth.
+Retention changes how the formalized output is written.
+
+LOW
+- Aggressive compression.
+- Good for executive summary style outputs.
+- Still must not invent facts.
+
+MED
+- Balanced.
+- Keeps key phrasing but reduces repetition and filler.
+
+HIGH
+- Detailed minutes.
+- Preserves more original phrasing and nuance.
+- Default for meeting minutes and incidents.
+
+NEAR-VERBATIM
+- Structured, but extremely close to original wording.
+- Useful for creators and for cases where phrasing matters.
+- Still not identical to the transcript; the transcript is the literal verbatim artifact.
+
+
+============================================================
+12) Evidence, citations, and superseded decisions
+============================================================
+
+12.1 Evidence maps
+Every formalization produces an evidence map. This is the bridge from “nice looking minutes” to “trustworthy record.”
+Evidence maps link each extracted item (decision, action, incident timeline event) to transcript segments and timestamps.
+
+12.2 Superseded decisions and overrides
+Real conversations include reversals.
+Stuart tracks this explicitly:
+- An earlier decision can be marked as superseded by a later decision.
+- Both must cite evidence.
+- The output shows the current decision, and preserves history.
+
+This is also how multi-contribution creator collaboration works:
+- You can add another person’s audio later.
+- Stuart formalizes the combined work.
+- If something is overridden, it is tracked, not deleted.
+
+
+============================================================
+13) Storage, printing, and export
+============================================================
+
+Stuart is not “a chat that disappears.” It is a machine that produces files.
+
+13.1 Canonical artifact formats
+- JSON for canonical structured data (machine truth)
+- Markdown for human-readable text (easy to open, copy, and diff)
+- PDF for printing (the print artifact)
+
+13.2 No hard wraps
+Text artifacts must not be hard-wrapped. They must be paragraph-based so they can be printed or imported into other tools cleanly.
+
+13.3 Deterministic file naming and paths
+Sessions live in deterministic directories so users can find them without magic:
+- session folder
+- contributions folder
+- runs folder
+- artifacts folder
+
+13.4 Printing
+For formalized outputs, Stuart produces a print-ready PDF.
+Printing is one click: open PDF, print.
+If PDF rendering fails, the run is partial and Stuart offers “retry render” without redoing transcription.
+
+13.5 Export
+Users can export:
+- just the PDF
+- or a full session bundle (zip) including transcript, minutes, evidence map, and logs
+
+
+============================================================
+14) Recall and search (the ‘bring up every meeting…’ feature)
+============================================================
+
+Recall is core. Stuart isn’t helpful if it only produces documents and then forgets them.
+
+14.1 Index baseline
+V1 can ship with keyword search (SQLite FTS style) because it handles the most common queries reliably.
+Semantic embeddings can be added later as an enhancement.
+
+14.2 Evidence-first retrieval
+Search results must always be grounded:
+- show the match
+- link to transcript segment and timestamp
+- open the related PDF minutes/journal/incident
+
+14.3 Semantic honesty: mention vs attended vs spoke
+“Greg mentioned” means Greg’s name appears in text.
+“Greg attended” or “Greg spoke” requires speaker mapping or explicit participant metadata.
+Stuart must never pretend the stronger claim without the stronger evidence.
+
+
+============================================================
+15) Corrections (because reality is messy)
+============================================================
+
+Transcription and diarization are probabilistic. The system cannot guarantee zero errors.
+What it can guarantee is that correction does not destroy auditability.
+
+15.1 Overlay-only corrections
+- The original transcript remains preserved.
+- Corrections are stored as overlays with provenance.
+
+15.2 Re-running with corrections
+After corrections, you can re-run formalization using the corrected overlay.
+The run log records that overlays were applied.
+
+
+============================================================
+16) Security, privacy, compliance, and consent
+============================================================
+
+16.1 The privacy promise is explicit, not implied
+LOCAL_ONLY means no off-device processing.
+HYBRID/CLOUD means remote processing is possible, but never without disclosure + confirmation + logging.
+
+16.2 Data lifecycle
+Users must be able to:
+- reveal where sessions are stored
+- export sessions
+- delete sessions
+No silent retention policies.
+
+16.3 Redaction
+If remote processing is used, redaction/minimization can be applied before sending data.
+Redaction produces a report and never overwrites originals.
+
+16.4 Consent posture
+Stuart does not encourage covert recording.
+Future live capture features must be consent-aware and obvious.
+
+
+============================================================
+17) What V1 must be (the minimum shippable Stuart)
+============================================================
+
+V1 is built to be deployable immediately in real settings like Knights of Columbus meetings, a small business, or an elder care org.
+
+V1 must deliver:
+- Chat-first UI with mode/template/retention selection and explicit Run.
+- LOCAL_ONLY end-to-end processing.
+- Meeting Minutes mode with diarization support and evidence-based decisions/actions.
+- Journal/Diary mode for single-speaker voice notes.
+- Retrieval: find past sessions by keyword, open and print PDFs.
+- Print-ready PDFs.
+
+V1 must NOT ship:
+- Template marketplace.
+- Live meeting join.
+- Real-time transcription guarantees.
+- A giant explosion of modes.
+
+
+============================================================
+18) vNext and the long-term vision
+============================================================
+
+Once V1 is solid, the long-term expansion is massive, but it must remain structurally clean so we don’t refactor the foundation.
+
+18.1 Live meeting capture and meeting platform integrations
+- Teams/Zoom/RingCentral capture via local capture or meeting bot join.
+- Provisional live transcript view may exist, but canonical transcript remains post-processed.
+
+18.2 Real-time transcription
+- A streaming UI is possible later, but it cannot replace the artifact-first truth model.
+
+18.3 Massive expansion of modes
+- Doctor/clinical note modes.
+- Chef/kitchen iteration modes.
+- Student lecture modes.
+- CRM/sales call modes.
+All of these are new mode contracts + templates, not pipeline rewrites.
+
+18.4 Template ecosystem and marketplace
+- Community templates.
+- Org-private registries.
+- Submission scrubbers and review.
+- Template recommendation (registry-only) and favorites/recent templates.
+
+18.5 Collaboration flows
+- Multiple contributions per session.
+- Merge creator ideas with collaborator audio.
+- Track superseded decisions with citations.
+
+18.6 Scalability
+- Thousands of sessions.
+- Better indexing (hybrid keyword + semantic).
+- Concurrency and job scheduling.
+- Storage policies and archival.
+
+
+============================================================
+19) The end-state: what Stuart becomes
+============================================================
+
+In the end-state, Stuart becomes the universal “spoken reality → structured truth” layer.
+You can feed it:
+- a board meeting recording
+- a volunteer organization meeting
+- an incident call
+- your own journal voice note
+- a creator brainstorm
+- a YouTube video needing captions
+
+And it outputs:
+- the ground truth transcript
+- a structured, template-perfect formalization
+- a print-ready PDF
+- and a searchable archive
+
+Most importantly, it outputs these without crossing the line into fiction.
+That’s the differentiator. That’s why Stuart is worth building.
+
+
+============================================================
+20) A few concrete example workflows (so the vision is tangible)
+============================================================
+
+Example A: Knights of Columbus meeting minutes
+- Record the meeting audio.
+- Drop the audio into Stuart.
+- Choose Meeting Minutes mode + Standard template + retention HIGH.
+- Run transcription + diarization.
+- Review minutes and optionally map SPEAKER_00 to a real name.
+- Print the PDF immediately.
+- Weeks later: ask Stuart to bring up every meeting where “time off” or “donuts” was discussed.
+
+Example B: Journal voice note
+- Record yourself talking.
+- Drop the audio into Stuart.
+- Choose Journal mode + Narrative template.
+- Run.
+- Get transcript (hidden unless you want it) + a clean readable journal entry.
+- Print or export.
+
+Example C: Incident call in a sensitive environment
+- LOCAL_ONLY profile.
+- Upload the incident call recording.
+- Run Incident mode.
+- Get a timeline with citations.
+- Export/print as needed.
+- Delete session when retention policy requires.
+
+Example D: Creator brainstorm + collaborator merge
+- Record your own brainstorm.
+- Later, record a collaborator’s response.
+- Put both into the same session as contributions.
+- Run Creator Notes mode.
+- Stuart produces a structured plan, tracking overrides as superseded decisions with citations.
+
+
+============================================================
+21) Final note: what ‘perfect’ means for Stuart
+============================================================
+
+You asked for ‘no mistakes.’
+We interpret that correctly:
+- Stuart cannot guarantee ASR perfection in all audio conditions.
+- Stuart can guarantee it does not fabricate.
+- Stuart can guarantee uncertainty is disclosed.
+- Stuart can guarantee evidence is preserved and traceable.
+- Stuart can guarantee outputs are complete (no truncation) because the deliverable is artifacts, not chat text.
+- Stuart can guarantee the user stays in control of privacy boundaries via explicit execution and profiles.
+
+That is the real definition of a trustworthy system.

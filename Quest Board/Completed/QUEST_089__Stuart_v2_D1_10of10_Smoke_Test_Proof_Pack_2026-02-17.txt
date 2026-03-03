@@ -1,0 +1,113 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_089
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v2 — D1 10of10: Dungeon 1 smoke test + proof pack (install/dev/build + UI render)
+
+Context: (Ashby / Stuart / System / Other)
+Stuart (Ashby) — Webapp Frontend
+
+Origin:
+Stuart Architecture Transcendence Protocol — Control Sync 2026-02-16 (Dungeon 1)
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- Guild Orders: Ashby_Data/Guild Orders/PAUSED/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt — Dungeon 1
+- Codex: Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt (Sections 1.2, 1.4, 2.1, 2.2, 2.5)
+- Docs: Ashby_Data/Stuart/Docs/STUART_Base44_UI_Code_Audit__2026-02-16.txt
+- Docs: Ashby_Data/Stuart/Docs/STUART_Base44_UI_Surgery_Checklist__2026-02-16.txt
+- Input: Ashby_Data/Stuart/Docs/stuart_app.zip (Base44 UI source pack)
+- Engine anchor: Ashby_Engine/ashby/interfaces/web/ (current FastAPI web door + /static + /templates)
+
+Status: BOARD | ACTIVE | COMPLETED | ABANDONED
+COMPLETED
+
+Audit Bundle Path: Quest Board/Quest Diff Audit Files/QUEST_###__AUDIT.txt
+Ashby_Data/Audits/Execution/QUEST_089__2026-02-17__stuart_v2_d1_10of10_dungeon_1_smoke_test_proof_pack_install_dev_build_ui_render
+
+Accepted On:
+2026-02-18
+
+Accepted By:
+Codex (GPT-5)
+
+Completed On:
+2026-02-18
+
+Completed By:
+Codex (GPT-5)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Run the full Dungeon 1 smoke test sequence and capture proof receipts: install, dev server, optional build, and confirmation that the Base44-style UI shell renders without Base44 runtime deps and without crashes.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Run install (pnpm/npm) inside the frontend workspace and capture the full terminal output.
+- Start dev server (pnpm/npm dev) and capture output confirming it is serving.
+- Open the UI and confirm it renders the base shell:
+  • header
+  • session list area
+  • tabs (Session/Chat/Outputs) visible
+  • no crash loops
+- Optional but recommended: run build (pnpm/npm build) and capture output.
+- Run grep receipts again (base44 + InvokeLLM) to prove contamination is gone.
+- Write a short 03_SMOKE_TEST_RECEIPT.md with: commands run, expected URLs, and what was verified visually.
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Running transcription/formalization pipeline end-to-end (later dungeons).
+- Perfect UI parity/polish (later).
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_080 through QUEST_088 must be complete.
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- No ‘works’ claims without receipts. Proof is required for Dungeon completion.
+- If the backend is not running, the UI may show empty states; that is acceptable as long as it does not crash and errors are explicit.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] Install output captured and indicates successful dependency install without Base44 packages.
+- [x] Dev server output captured and indicates serving successfully.
+- [x] UI shell confirmed rendered (receipt written).
+- [x] Optional build succeeds (or failure recorded with clear error).
+- [x] Grep receipts confirm zero Base44/InvokeLLM references remain.
+- [x] 03_SMOKE_TEST_RECEIPT.md exists and is complete.
+
+────────────────────────────────────────────────────────
+TALENT POINT
+────────────────────────────────────────────────────────
+# On completion:
+# - Talent Point Awarded: YES / NO
+# - Talent Spent On: (TALENT ID — Name in Talent Tree)
+Talent Point Awarded: NO
+Talent Spent On: N/A
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+# Optional closing notes once the quest is completed or abandoned.
+Smoke test receipt files:
+- /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/03_SMOKE_TEST_RECEIPT.md
+- /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_089__2026-02-17__stuart_v2_d1_10of10_dungeon_1_smoke_test_proof_pack_install_dev_build_ui_render/RECEIPTS.txt
+
+Key command outcomes:
+- `npm install --no-audit --progress=false` => success (`up to date in 1s`)
+- `npm run dev -- --host 127.0.0.1 --port 4173 --logLevel info` => serving at `http://127.0.0.1:4173/`
+- `npm run build` => success
+- grep checks for `base44` and `InvokeLLM` => zero hits in frontend root (excluding `node_modules`)

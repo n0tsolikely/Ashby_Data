@@ -1,0 +1,306 @@
+ASHBY DATA + ENGINE DIRECTORY MAP (BUFF)
+Version: 2026-02-22
+Last Updated: 2026-02-22
+Status: Canonical (Orientation + Review Tiers for the Ashby subject; Stuart module focus)
+Purpose: Tell Brains exactly where to look, what is canonical vs reference, what to edit vs never touch.
+Scope: Subject Data canon + Subject Engine canon + runtime artifact surface.
+
+Governance Note:
+- Buffs are ignition, not authority. If a Buff conflicts with a Lock/Codex/Governance → Buff is invalid → STOP.
+- Governance requires exactly THREE canonical Buff files (this is one of them).
+
+================================================================================
+0) PRIME RULES (READ FIRST)
+================================================================================
+0.1 Root anchoring (do NOT guess)
+Define these at session start:
+- CANON_ROOT      = extracted canon bundle root (folder containing Ashby_Data/ and Ashby_Engine/)
+- DATA_ROOT       = CANON_ROOT/Ashby_Data
+- ENGINE_ROOT     = CANON_ROOT/Ashby_Engine
+- GOVERNANCE_ROOT = Synapse OS Governance root (separate pack)
+- STUART_ROOT     = runtime artifact root (outside repo; env var STUART_ROOT)
+
+0.2 Naming reality (don’t “fix” it without orders)
+- Subject key/name = ASHBY (see DATA_ROOT/SUBJECT_STATE.yaml).
+- Stuart is a module name (work artifacts co-located under DATA_ROOT/Stuart/).
+- Current directory names remain Ashby_Data and Ashby_Engine (legacy naming).
+- Do NOT rename folders unless Hands orders a migration.
+
+0.3 Canonical edit policy (simple)
+- If it’s under DATA_ROOT or ENGINE_ROOT → it is canonical, edit there.
+- If it’s in an Archive folder → reference only unless Hands orders reopening.
+- If it’s in a zip file → inert artifact, never the place you work.
+
+================================================================================
+1) REVIEW TIERS (HOW MUCH TO REVIEW EACH SESSION)
+================================================================================
+Tier 0 (Always Review — Mandatory before any Raid work)
+- Synapse Governance: BUFFS law + Quest law + Control Sync law (governance-first)
+- THIS Buff set (3 files):
+  - ASHBY_EXECUTION_PROTOCOL.txt
+  - ASHBY_DATA_DIRECTORY_MAP.txt
+  - ASHBY_SESSION_START_CHECK.txt
+- Latest Continuity Lock + Bootstrap Prompt (if present)
+- Active Guild Orders (current raid scope)
+- Quest Board state (Accepted + Completed + Board root inventory)
+- Latest Control Sync Snapshot (resume truth)
+- Latest End-of-Day Snapshot (last execution receipt)
+- Confirm engine tests runnable + preflight passes
+- Confirm STUART_ROOT configured and writable
+
+Tier 1 (Review only when relevant to the quest being executed)
+- Stuart Codex sections relevant to the subsystem touched:
+  - web door / API contracts
+  - meetings pipeline (transcribe/diarize/formalize)
+  - truth gate + evidence map
+  - profiles (LOCAL/HYBRID/CLOUD)
+  - export contract
+- Prior quests that are direct dependencies of the current quest
+- Stuart Canonical Vision doc ONLY if quest changes UX/flows/contracts
+
+Tier 2 (Do NOT review unless troubleshooting a contradiction)
+- Old snapshots (beyond latest Control Sync + latest EOD)
+- Idea dumps / long-term brainstorming
+- Archives / deprecated contracts
+
+================================================================================
+2) CANONICAL GOVERNANCE TREE (DATA_ROOT) (EDITABLE)
+================================================================================
+DATA_ROOT/
+├── .governance_runtime/          (runtime working area for governance tooling; canonical)
+├── AGENTS.md                    (agent notes; canonical)
+├── SUBJECT_STATE.yaml            (subject state + pointers; canonical)
+│
+├── Buffs/                        (canonical ignition docs; update rarely)
+│   ├── ASHBY_EXECUTION_PROTOCOL.txt
+│   ├── ASHBY_DATA_DIRECTORY_MAP.txt
+│   └── ASHBY_SESSION_START_CHECK.txt
+│
+├── Quest Board/                  (filesystem state machine)
+│   ├── Accepted/                 (ACTIVE commitments)
+│   ├── Completed/                (DONE commitments)
+│   ├── Abandoned/                (Control Sync only)
+│   └── QUEST_TEMPLATE.txt        (authoritative quest template)
+│
+├── Guild Orders/
+│   ├── ACTIVE/                   (current raid scope; folder is authoritative)
+│   ├── PAUSED/                   (future raids)
+│   └── COMPLETED/                (history)
+│
+├── Snapshots/                    (receipts / ground truth)
+│   ├── Control Sync/
+│   ├── End of Day/
+│   ├── General/
+│   └── Draft Shots/
+│
+├── Audits/
+│   ├── Execution/                (quest-level audit bundles)
+│   └── Retro/
+│
+├── Talent Tree/
+│   ├── Ashby/                    (platform capability tracking)
+│   ├── Stuart/                   (Stuart module tracking)
+│   └── TALENT TREE GUIDE.txt     (talent rules; authoritative)
+│
+├── Latest Rehydration Pack/      (optional resume kit; authoritative when present)
+│   └── execution pack/           (optional runbook artifacts)
+│
+├── confirmations/                (consent/confirmations artifacts)
+├── Incubation/                   (new work + experiments; canonical)
+│
+├── Stuart/
+│   ├── Docs/                     (vision + UI source + surgery notes)
+│   ├── Stuart Codex/             (Stuart codex; reference unless ordered to edit)
+│   ├── To Do/                    (Stuart ideas + backlog; Tier 2)
+│   └── Archive/                  (ignore unless ordered)
+│
+├── Codex/                        (Ashby codex; reference unless ordered to edit)
+├── Docs/                         (Ashby docs; usually reference)
+├── To Do/                        (idea dumps; Tier 2)
+└── Archive/                      (superseded unless Hands orders reopen)
+
+Edit policy:
+- YES: Quest Board, Guild Orders, NEW snapshots, audits, talent tree
+- NO: rewrite old snapshots
+- NO: modify archives unless ordered
+
+================================================================================
+3) CANONICAL CANON TREE (REFERENCE-ONLY BY DEFAULT)
+================================================================================
+3.1 Stuart Codex
+Path:
+- DATA_ROOT/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt
+
+Review tier:
+- Tier 1 (or Tier 0 only if continuity demands)
+
+Edit policy:
+- Reference-only unless Hands explicitly orders codex edits.
+
+3.2 Stuart Canonical Vision
+Paths:
+- DATA_ROOT/Stuart/Docs/
+  - Contains the Canonical Vision doc and any UI/UX reference materials.
+  - List this folder and open the relevant docs for the current work.
+
+Review tier:
+- Tier 1 (when doing UI/UX contract work, API integration, workflows)
+
+Edit policy:
+- Reference-only unless Hands orders updates.
+
+================================================================================
+4) PROJECT WORK AREAS (ENGINE_ROOT + RUNTIME) (EDITABLE)
+================================================================================
+4.1 Engine Root (ALL code edits happen here)
+ENGINE_ROOT/
+Key top-level:
+- ENGINE_ROOT/ashby/              (core python package)
+- ENGINE_ROOT/Stuart              (launcher: boot full Stuart stack: backend + frontend)
+- ENGINE_ROOT/scripts/            (entrypoints: stuart_preflight.py, stuart_web.py, stuart_up.sh, smoke_stuart_web_api_v1.sh)
+- ENGINE_ROOT/tests/              (pytest suite)
+- ENGINE_ROOT/docs/stuart/        (install + system dependency docs)
+- ENGINE_ROOT/requirements-stuart-v1.txt (dependency pins)
+
+4.2 Stuart “Meetings” module (the core pipeline)
+ENGINE_ROOT/ashby/modules/meetings/
+- pipeline/        (normalize/transcribe/diarize/align/formalize stages)
+- adapters/        (ASR + diarization implementations)
+- templates/       (template registry + defaults)
+- schemas/         (artifact schemas)
+- formalize/       (LLM formalization orchestration, profile gating)
+- export/          (session export bundle assembly)
+- index/           (FTS search + ingestion)
+- render/          (MD/PDF rendering)
+- truth/           (module truth policies)
+- router/          (intent routing for this module)
+- cli_stuart.py    (CLI door for Stuart workflows)
+
+4.3 Web Door (current python web interface)
+ENGINE_ROOT/ashby/interfaces/web/
+- app.py           (FastAPI app wiring)
+- uploads.py       (upload endpoints)
+- sessions.py      (session list/detail endpoints)
+- runs.py          (run endpoints)
+- registry_api.py  (template/mode/profile registries surfaced)
+
+Entrypoint script:
+- ENGINE_ROOT/scripts/stuart_web.py
+
+4.4 Telegram Door (optional interface)
+ENGINE_ROOT/ashby/interfaces/telegram/
+- stuart_door_core.py
+- stuart_runner.py
+
+4.5 Core platform primitives (truth + profiles)
+ENGINE_ROOT/ashby/core/
+- profile/*         (execution profiles, consent, egress posture)
+- truth/*           (TruthGateJudge + spine)
+
+4.6 Runtime Artifact Surface (STUART_ROOT) (DO NOT COMMIT)
+- Default STUART_ROOT is typically: ~/ashby_runtime/stuart
+- Overrides via env var: STUART_ROOT=/path/to/runtime
+What lives here:
+- per-session directories
+- audio originals (as received)
+- normalized audio
+- transcript_json versions (diarize on/off variants)
+- diarization artifacts
+- evidence map artifacts
+- formalizations (minutes/journal MD/PDF/JSON)
+- export zips
+- sqlite index db
+
+4.7 Stuart v2 UI (Vite+React frontend) — INTEGRATED
+Canonical frontend root (inside ENGINE_ROOT):
+- ENGINE_ROOT/webapp/stuart_frontend/
+Vite app directory:
+- ENGINE_ROOT/webapp/stuart_frontend/stuart_app/
+
+Run story (choose one):
+- Launcher: ENGINE_ROOT/Stuart
+- Script:   ENGINE_ROOT/scripts/stuart_up.sh
+
+Rule:
+- One canonical frontend root; one build/run story. Do NOT scatter frontend copies.
+
+
+================================================================================
+5) REHYDRATION PACKS (OPTIONAL RESUME KIT)
+================================================================================
+Canonical location:
+- DATA_ROOT/Latest Rehydration Pack/
+
+Binding rule:
+- Rehydration pack is authoritative resume law WHEN present for the session.
+- Treat as read-only unless Hands explicitly orders a refresh.
+- Pack copies are not the canonical sources for Quest Board/Guild Orders/Snapshots.
+
+What it usually contains:
+- CONTINUITY_LOCK_YYYY-MM-DD.txt
+- BOOTSTRAP_PROMPT_YYYY-MM-DD.txt
+- execution pack/ (optional)
+  - execution runbook + pointers to latest snapshots + active raid entrypoint
+
+================================================================================
+6) ARCHIVE (IGNORE UNLESS ORDERED)
+================================================================================
+Paths:
+- DATA_ROOT/Archive/
+- DATA_ROOT/Stuart/Archive/
+- ENGINE_ROOT/Archive/
+- any /Archive/ folders
+
+Rule:
+- Archives are receipts/history. Do not “continue work” from them unless Hands orders.
+
+================================================================================
+7) OUTSIDE THE SUBJECT CANON (SESSION ENVIRONMENT)
+================================================================================
+7.1 Zip quarantine
+- Zips are distribution artifacts only.
+- Never work in a zip or a fresh re-extract unless Hands orders it.
+
+7.2 Synapse Governance Pack
+- Governance text is read from GOVERNANCE_ROOT.
+- Governance pack is reference law; do not fork it mid-raid unless ordered.
+
+================================================================================
+8) RESUME ANCHORS (TIMELESS LOCATORS — NO STATE IN BUFFS)
+================================================================================
+Buffs MUST NOT record current state (no dungeon numbers, no specific filenames, no dated 'latest' claims).
+Instead, use these stable locators and list folders to find the newest artifacts:
+
+8.1 Active raid scope (Guild Orders)
+- Folder: DATA_ROOT/Guild Orders/ACTIVE/
+- Rule: Folder contents define active scope. Read the relevant doc(s) inside; do not assume a single file.
+
+8.2 Quest Board truth
+- DATA_ROOT/Quest Board/Accepted/
+- DATA_ROOT/Quest Board/Completed/
+- DATA_ROOT/Quest Board/  (board root inventory)
+
+8.3 Snapshots (receipts)
+- DATA_ROOT/Snapshots/Control Sync/  (list + choose newest)
+- DATA_ROOT/Snapshots/End of Day/    (list + choose newest)
+- DATA_ROOT/Snapshots/General/       (supporting receipts)
+
+8.4 Rehydration Pack (optional resume kit)
+- DATA_ROOT/Latest Rehydration Pack/
+  - List folder; pick newest Continuity Lock and Bootstrap Prompt by filename ordering.
+  - execution pack/ contains optional runbooks (read-only unless ordered).
+
+
+================================================================================
+9) SELF-AUDIT (THIS DOCUMENT)
+================================================================================
+Checklist:
+[ ] Defines CANON_ROOT/DATA_ROOT/ENGINE_ROOT/GOVERNANCE_ROOT/STUART_ROOT
+[ ] Review tiers (0/1/2) are defined and usable
+[ ] Canonical Data governance tree is mapped with edit policy
+[ ] Engine tree is mapped (modules, doors, entrypoints)
+[ ] Rehydration packs marked as optional resume kit + read-only by default
+[ ] Resume anchors section is timeless (folder locators only; no state claims)
+[ ] Archive rules explicit
+
+END OF FILE.

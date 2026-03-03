@@ -1,0 +1,61 @@
+ASHBY — CONTROL SYNC SNAPSHOT
+DATE: 2025-12-27
+TIMEZONE: America/Toronto
+RAID: Ashby Structural Realignment (Emergency) — ACTIVE
+CORE RAID: PAUSED/BLOCKED until Emergency raid complete
+
+PURPOSE (THIS CONTROL SYNC)
+Re-align on the Emergency raid scope and finish the router thinning correctly without scope creep.
+
+NON‑NEGOTIABLES (RECONFIRMED)
+- ZERO behavior change during the raid.
+- One canonical entrypoint router: ashby/core/router.py (thin orchestrator).
+- WHAT vs HOW separation remains absolute (platform principles unchanged).
+- “Ship clean”: no late-night improvisation that increases risk.
+
+DECISIONS LOCKED (TODAY)
+1) One Router Doctrine (LOCKED)
+   - Stuart is a MODULE / capability on the Ashby platform, not a separate platform.
+   - Stuart does NOT get its own global router.
+   - The canonical router receives input from IO (Telegram/CLI/etc), runs NLU, then dispatches to module handlers (lights/comfort/stuart/etc).
+
+2) Step-by-step surgical workflow (LOCKED)
+   - One step at a time.
+   - After each step: compile + quick CLI sanity.
+   - No multi-step tangents that become redundant if a step fails.
+
+3) Remaining Emergency raid scope (LOCKED)
+   - Finish router thinning by extracting capability logic OUT of ashby/core/router.py into capability handlers.
+   - Then migrate IO imports to canonical router and remove compatibility wrappers.
+   - Then minimal runtime/config scaffolding + naming hygiene (AshPi → Ashby strings), then full sanity pass.
+
+TODAY’S DECIDED EXECUTION ORDER (LOCKED)
+A) Create capability handler scaffolding directories (safe).
+B) Lights extraction sequence:
+   - Create lights handler file (copy first).
+   - Wire router dispatch to handler.
+   - Verify behavior via CLI.
+   - ONLY then delete old lights blocks from router.
+C) Comfort extraction sequence (same pattern as lights).
+D) Import migration:
+   - CLI + Telegram import from ashby/core/router.py (not brain shim).
+E) Wrapper purge:
+   - Remove compatibility wrappers after grep confirms no remaining imports rely on them.
+F) Minimal runtime/config scaffolding + naming drift cleanup.
+G) Final full sanity pass (compile + CLI + Telegram).
+
+DEFERRED / OUT OF SCOPE (EXPLICIT)
+- ComfyUI / offline image generation integration (only after raid completion).
+- Home Assistant bridge work.
+- Any new capability additions, optimizations, or behavior polish.
+
+ACCEPTANCE CRITERIA TO CLOSE THE EMERGENCY RAID (RECONFIRMED)
+- Router contains no capability execution logic (thin orchestrator only).
+- Capability handlers exist and are used.
+- CLI + Telegram import canonical router.
+- Compatibility wrappers removed.
+- Naming drift removed (AshPi strings/loggers cleaned).
+- runtime/ + configs/ exist (minimal scaffolding) and memory path is standardized.
+- Full sanity passes.
+
+END OF CONTROL SYNC SNAPSHOT

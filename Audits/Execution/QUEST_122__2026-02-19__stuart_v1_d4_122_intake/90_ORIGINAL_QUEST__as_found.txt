@@ -1,0 +1,108 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_122
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 4 (9/15): Formalization outputs record consumed transcript_version_id (traceability)
+
+Context: (Ashby / Stuart / System / Other)
+Stuart meetings — provenance / traceability
+
+Origin:
+Guild Orders — Dungeon 4 deliverable: clear traceability transcript_version_id → run_id → artifacts
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- Guild Orders: Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt (Dungeon 4 + Dungeon 5 dependencies)
+- Stuart Codex (full): Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_7.4_Stage_3_Transcription.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_7.3_Stage_2_Diarization.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_6.2_Canonical_Artifacts_JSON_Markdown_PDF.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_8.1_Evidence_Anchors_and_Citations.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_3.2_Meeting_Minutes_Mode.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 30.1.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 28.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 8A.4.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 26.txt
+- Engine anchors:
+  - Ashby_Engine/ashby/modules/meetings/pipeline/job_runner.py
+  - Ashby_Engine/ashby/modules/meetings/manifests.py (RunManifest)
+  - Ashby_Engine/ashby/modules/meetings/schemas/minutes_v1.py / journal_v1.py (output payloads)
+  - Ashby_Engine/ashby/modules/meetings/schemas/evidence_map_v2.py (if it needs transcript_version_id linkage)
+
+Status: ACTIVE
+
+Audit Bundle Path:
+  /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_122__2026-02-19__stuart_v1_d4_122_intake
+
+Accepted On:
+2026-02-19
+Accepted By:
+Hands (Peter) via Codex (Brains)
+Completed On:
+
+Completed By:
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Once formalize consumes a transcript version, every downstream artifact must say which transcript_version_id it used. This is crucial for audits and production reliability.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+Record provenance in all the right places:
+
+- In run.json (RunManifest):
+  - Add `consumed_transcript_version_id` for formalize runs (or within primary_outputs)
+  - Keep overlay linkage intact (already exists)
+
+- In primary output JSON (minutes.json / journal.json):
+  - Include transcript_version_id at top-level metadata
+
+- In evidence map output (evidence_map.json):
+  - Include transcript_version_id in the metadata header (even if citations still use segment anchors)
+
+- Ensure /api/sessions/{session_id}/formalizations returns the consumed transcript_version_id (NOT derived from run_id)
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Redesigning citations format (Dungeon 8).
+- Adding UI badges (optional).
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+QUEST_118
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────
+Do not lie:
+- If a formalize run didn’t consume a transcript version (legacy path), set null or derive via a documented shim — but do not invent ids without traceable mapping.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] Formalize runs store consumed_transcript_version_id in run.json
+- [ ] minutes/journal JSON outputs include transcript_version_id
+- [ ] Formalizations API surfaces consumed transcript_version_id
+- [ ] pytest passes
+
+────────────────────────────────────────────────────────
+TALENT POINT
+────────────────────────────────────────────────────────
+# On completion:
+# - Talent Point Awarded: YES / NO
+# - Talent Spent On: (TALENT ID — Name in Talent Tree)
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+# Optional closing notes once the quest is completed or abandoned.

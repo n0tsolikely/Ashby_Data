@@ -1,0 +1,108 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_085
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v2 — D1 6of10: Normalize module resolution + import paths (alias/jsconfig) to eliminate '@/…' breakage
+
+Context: (Ashby / Stuart / System / Other)
+Stuart (Ashby) — Webapp Frontend
+
+Origin:
+Stuart Architecture Transcendence Protocol — Control Sync 2026-02-16 (Dungeon 1)
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- Guild Orders: Ashby_Data/Guild Orders/PAUSED/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt — Dungeon 1
+- Codex: Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt (Sections 1.2, 1.4, 2.1, 2.2, 2.5)
+- Docs: Ashby_Data/Stuart/Docs/STUART_Base44_UI_Code_Audit__2026-02-16.txt
+- Docs: Ashby_Data/Stuart/Docs/STUART_Base44_UI_Surgery_Checklist__2026-02-16.txt
+- Input: Ashby_Data/Stuart/Docs/stuart_app.zip (Base44 UI source pack)
+- Engine anchor: Ashby_Engine/ashby/interfaces/web/ (current FastAPI web door + /static + /templates)
+
+Status: BOARD | ACTIVE | COMPLETED | ABANDONED
+COMPLETED
+
+Audit Bundle Path: Quest Board/Quest Diff Audit Files/QUEST_###__AUDIT.txt
+Ashby_Data/Audits/Execution/QUEST_085__2026-02-17__stuart_v2_d1_6of10_normalize_module_resolution_import_paths_alias_jsconfig_to_eliminate_breakage
+
+Accepted On:
+2026-02-18
+
+Accepted By:
+Codex (GPT-5)
+
+Completed On:
+2026-02-18
+
+Completed By:
+Codex (GPT-5)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Ensure all import paths resolve deterministically (alias + jsconfig/tsconfig if needed) so the project compiles reliably without Base44 tooling.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Confirm whether the codebase uses '@/...' imports broadly; if yes, ensure '@' alias is correctly configured in Vite.
+- Add/update jsconfig.json or tsconfig.json paths mapping to match the alias (for editor + tooling parity).
+- Resolve any remaining unresolved import errors by either: (a) fixing alias, or (b) converting those imports to relative paths consistently (choose one strategy).
+- Run the dev server compile and ensure there are zero Vite 'failed to resolve import' errors.
+- Update 02_CHANGELOG.md with the final import strategy (alias vs relative).
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Functional endpoint wiring for runs/chat (later quests).
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_084 must be complete (entrypoint fixed) so remaining errors are real import resolution issues, not entry errors.
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Avoid a half-and-half import strategy. Pick one and apply consistently (prefer alias).
+- Do not add Base44-specific aliases or tooling; only standard Vite/TS/JS config.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] All '@/...' imports resolve correctly OR have been consistently refactored away.
+- [x] jsconfig.json/tsconfig.json is aligned with the chosen strategy.
+- [x] Dev server compiles with zero unresolved import errors.
+- [x] 02_CHANGELOG.md updated with import strategy details.
+
+────────────────────────────────────────────────────────
+TALENT POINT
+────────────────────────────────────────────────────────
+# On completion:
+# - Talent Point Awarded: YES / NO
+# - Talent Spent On: (TALENT ID — Name in Talent Tree)
+Talent Point Awarded: NO
+Talent Spent On: N/A
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+# Optional closing notes once the quest is completed or abandoned.
+Import strategy finalized: keep alias imports (`@/`) and align Vite + jsconfig.
+
+Validated files:
+- /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app/vite.config.js
+- /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app/jsconfig.json
+
+Compile proof:
+- `npm run build` exits successfully
+- Dev server starts without unresolved import errors (`http://127.0.0.1:4173/`)
+
+Changelog updated:
+- /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/02_CHANGELOG.md

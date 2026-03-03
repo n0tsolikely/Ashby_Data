@@ -1,0 +1,120 @@
+QUEST_ID: QUEST_160
+TITLE: Stuart v1 — D7 2/10 — Template Registry v2 (front matter, version, defaults, parsed sections)
+DATE: 2026-03-01
+STATUS: ACCEPTED (Ready for Codex execution)
+RISK_CLASS: R2 (Template storage contract + parsing affects formalization & UI later)
+OWNER: OpenAI Codex (local CLI)
+
+CONTEXT / WHY
+Dungeon 7 requires templates to be first-class “structure drivers” for formalization (not just a template_id string).
+Right now:
+- System template files exist, but are NOT used by the LLM prompt.
+- There is no template metadata (version, defaults) and no parser to derive “sections/schema” from the template.
+
+This quest establishes a minimal TemplateSpec contract:
+- template_id
+- template_version
+- mode
+- defaults: { show_empty_sections, include_citations }
+- sections: parsed list used later for prompt shaping
+- raw template text (body) preserved
+
+CANON ANCHORS
+- Guild Orders (ACTIVE): Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-25_REV14.txt
+  - Dungeon 7: “(D) Template content must shape the prompt — D3 BOTH schema + raw template text”
+  - Dungeon 7: “show_empty_sections default FALSE”, “include_citations default FALSE”
+- Stuart Codex: Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt (Templates)
+- Canonical Vision: Ashby_Data/Stuart/Docs/Stuart - The Canonical Vision.txt (template-as-imposed-structure)
+
+REPO REALITY (existing plumbing)
+- Template registry: Ashby_Engine/ashby/modules/meetings/template_registry.py
+- System templates (currently): Ashby_Engine/ashby/modules/meetings/templates/system/{meeting|journal}/default.md
+
+SCOPE LOCK
+IN SCOPE
+1) Define and implement a TemplateSpec loader that can:
+   - load a template file
+   - parse YAML front matter (or equivalent) for version + defaults
+   - parse sections (headings) from the body
+2) Update system default templates to include front matter + align the body content to “JSON formalization schema”, not “produce markdown”.
+3) Provide a stable API for later quests:
+   - load_template_spec(mode, template_id, user_id=None) → TemplateSpec
+   - validate_template(mode, template_id, user_id=None) still works
+   - get_template_defaults(...) helper
+4) Add/adjust unit tests to prevent regressions.
+
+OUT OF SCOPE
+- User template CRUD UI (Dungeon 11)
+- Any LLM gateway schema changes (next quests)
+- Renderer behavior changes (later quests)
+
+DESIGN DECISIONS (locked)
+- Templates live in ENGINE, not Ashby_Data.
+- Canonical paths:
+  - system: Ashby_Engine/ashby/modules/meetings/templates/system/<mode>/<template_id>.md
+  - user (local-only for now): Ashby_Engine/ashby/modules/meetings/templates/user/<user_id>/<mode>/<template_id>.md
+- Template defaults exist in template metadata; UI may override later.
+
+IMPLEMENTATION (deterministic)
+1) Introduce TemplateSpec dataclass (or TypedDict)
+- Recommended new file: Ashby_Engine/ashby/modules/meetings/template_spec.py
+  - Fields: template_id, template_version, mode, defaults, sections, raw_text, body_text
+
+2) Add template parsing utilities
+- Recommended new file: Ashby_Engine/ashby/modules/meetings/template_parser.py
+  - parse_front_matter(text) → (meta_dict, body_text)
+    - YAML front matter format: starts with '---' then YAML then '---'
+    - If no front matter, meta_dict = {}
+  - parse_sections(body_text) → list[dict]
+    - Parse markdown headings (e.g., lines starting with '#', '##', etc.)
+    - Keep it simple: capture heading text and order
+
+3) Update template_registry to use TemplateSpec
+- File: Ashby_Engine/ashby/modules/meetings/template_registry.py
+  - Add load_template_spec(...)
+    - loads template file content
+    - parses front matter:
+      - template_version: default "1" if missing
+      - defaults.show_empty_sections: default False
+      - defaults.include_citations: default False
+    - parses sections from body
+  - Keep validate_template but make it call load_template_spec to ensure template is parseable.
+
+4) Update default templates
+- Files:
+  - Ashby_Engine/ashby/modules/meetings/templates/system/meeting/default.md
+  - Ashby_Engine/ashby/modules/meetings/templates/system/journal/default.md
+- Update content so it is a “directive for JSON output” (not “write markdown”).
+- Required front matter keys:
+  - template_id: default
+  - template_version: "1"
+  - mode: meeting (or journal)
+  - defaults:
+      show_empty_sections: false
+      include_citations: false
+- Body should:
+  - Define the intended sections (headings) in the order you want them to appear in outputs
+  - Include “Tail Notes / Additional Notes” section to catch important items not captured elsewhere
+
+5) Tests
+- Add new tests (or update existing) under Ashby_Engine/tests:
+  - test_templates_load_template_spec_system_default.py
+    - asserts front matter parsed
+    - asserts defaults set correctly
+    - asserts at least N headings parsed for meeting template
+  - Ensure validate_template still rejects missing template_id files and invalid mode.
+
+ACCEPTANCE CRITERIA
+- load_template_spec works for both meeting/default and journal/default.
+- validate_template rejects malformed front matter (if YAML fails) with a clear error message.
+- Templates now contain front matter + JSON-oriented directives (human readable).
+- pytest passes.
+
+RECEIPTS REQUIRED
+- Patch/diff of template files and parser code
+- pytest output
+
+FAIL CONDITIONS
+- Parser logic hardcodes “default” template only
+- Parser creates a new parallel template system instead of upgrading existing template_registry
+- Template body remains “produce markdown” instructions (won’t match JSON gateway schema)

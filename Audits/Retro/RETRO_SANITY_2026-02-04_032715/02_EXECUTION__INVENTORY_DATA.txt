@@ -1,0 +1,618 @@
+Ashby_Data/Archive(IGNORE)/1.txt
+Ashby_Data/Archive(IGNORE)/2.txt
+Ashby_Data/Archive(IGNORE)/3.txt
+Ashby_Data/Archive(IGNORE)/4.txt
+Ashby_Data/Archive(IGNORE)/ASHBY CODEX #U2014 CONTINUITY LOCK.txt
+Ashby_Data/Archive(IGNORE)/ASHBY_ARCHITECTURE_VISION.txt
+Ashby_Data/Archive(IGNORE)/ASHBY_Core_Meaning_Architecture_and_Pipeline_SPEC_2025-12-22.txt
+Ashby_Data/Archive(IGNORE)/ASHBY_End_of_Day_Snapshot_2025-12-16_v2.txt
+Ashby_Data/Archive(IGNORE)/ASHBY_End_of_Day_Snapshot_2025-12-25-ONE OF TWO.txt
+Ashby_Data/Archive(IGNORE)/ASHBY_End_of_Day_Snapshot_2025-12-25-TWO OF TWO.txt
+Ashby_Data/Archive(IGNORE)/ASHBY_Preservation_Pack_01_Config_Schemas_2025-12-22.txt
+Ashby_Data/Archive(IGNORE)/ASHBY_Preservation_Pack_02_Canonical_Data_Models_2025-12-22.txt
+Ashby_Data/Archive(IGNORE)/ASHBY_Preservation_Pack_03_Truth_Gate_and_Response_Constraints_2025-12-22.txt
+Ashby_Data/Archive(IGNORE)/ASHBY_Preservation_Pack_04_Acceptance_Tests_and_Test_Harness_2025-12-22.txt
+Ashby_Data/Archive(IGNORE)/ASHBY_Preservation_Pack_05_Migration_and_Structural_Realignment_Playbook_2025-12-22.txt
+Ashby_Data/Archive(IGNORE)/ASHBY_Preservation_Pack_06_Security_and_Secrets_Handling_2025-12-22.txt
+Ashby_Data/Archive(IGNORE)/ASHBY_Preservation_Pack_07_Logging_and_Observability_2025-12-22.txt
+Ashby_Data/Archive(IGNORE)/ASHBY_Preservation_Pack_08_Interface_Contracts_2025-12-22.txt
+Ashby_Data/Archive(IGNORE)/ASHBY_Preservation_Pack_09_HouseState_Sync_and_Staleness_2025-12-22.txt
+Ashby_Data/Archive(IGNORE)/ASHBY_Preservation_Pack_10_Stuart_Module_Integration_2025-12-22.txt
+Ashby_Data/Archive(IGNORE)/ASHPI TUYA OUTLET CONTROL #U2013 FULL REBUILD DATA 12 - 08 - 2025.txt
+Ashby_Data/Archive(IGNORE)/ASHPI_FULL_UNTRIMMED_RECONSTRUCTION.txt
+Ashby_Data/Archive(IGNORE)/ASHPI_Project_Notes_1.txt
+Ashby_Data/Archive(IGNORE)/AUDIT LOGGING.txt
+Ashby_Data/Archive(IGNORE)/AshPiNest/AshPiNestCredentials.json
+Ashby_Data/Archive(IGNORE)/AshPi_Notes_1.5.txt
+Ashby_Data/Archive(IGNORE)/Ashby Execution Pack/ASHBY_BATCH_0_ENGINE_EXPANSION_RUNBOOK_2026-01-13.txt
+Ashby_Data/Archive(IGNORE)/Ashby Execution Pack/ASHBY_MODULE_REGISTRY_CONTRACT_2026-01-13.txt
+Ashby_Data/Archive(IGNORE)/Ashby Execution Pack/ASHBY_PROFILE_AND_CONSENT_CONTRACT_2026-01-13.txt
+Ashby_Data/Archive(IGNORE)/Ashby Execution Pack/ASHBY_RESULT_OBJECTS_CONTRACT_2026-01-13.txt
+Ashby_Data/Archive(IGNORE)/Ashby Execution Pack/ASHBY_SESSION_MODEL_CONTRACT_2026-01-13.txt
+Ashby_Data/Archive(IGNORE)/Ashby Execution Pack/ASHBY_STORAGE_ADAPTER_CONTRACT_2026-01-13.txt
+Ashby_Data/Archive(IGNORE)/Ashby Execution Pack/ASHBY_TRUTH_GATE_SPINE_CONTRACT_2026-01-13.txt
+Ashby_Data/Archive(IGNORE)/Ashby Platform Principles.txt
+Ashby_Data/Archive(IGNORE)/AshbyArchetectureTreeVision.txt
+Ashby_Data/Archive(IGNORE)/Ashpi Full Setup Reference.pdf
+Ashby_Data/Archive(IGNORE)/Ashpi Project Notes.pdf
+Ashby_Data/Archive(IGNORE)/COMMANDS VS VIBE STATEMENTS.txt
+Ashby_Data/Archive(IGNORE)/CONFIRMATION GATES.txt
+Ashby_Data/Archive(IGNORE)/IDEMPOTENCY AND DUPLICATE PREVENTION.txt
+Ashby_Data/Archive(IGNORE)/INCIDENT MODE AND LOCKDOWN.txt
+Ashby_Data/Archive(IGNORE)/INVENTION DISCLOSURE #U2014 darft 1.txt
+Ashby_Data/Archive(IGNORE)/LASTCHAT1247AM-12-09-2025.txt
+Ashby_Data/Archive(IGNORE)/PATENT SUMMARY .txt
+Ashby_Data/Archive(IGNORE)/RESOLUTION TEST.txt
+Ashby_Data/Archive(IGNORE)/SAFETY BLOCKS AND HIGH-RISK ACTIONS.txt
+Ashby_Data/Archive(IGNORE)/SEDRETS AND {RIVACY.txt
+Ashby_Data/Archive(IGNORE)/TRANSPORT LEVEL CONSISTENCY.txt
+Ashby_Data/Archive(IGNORE)/ashpi back up files/router.txt
+Ashby_Data/Archive(IGNORE)/ashpi nest/ashpi nest temp.txt
+Ashby_Data/Archive(IGNORE)/ashpi nest/ashpi_nest_full_setup.txt
+Ashby_Data/Archive(IGNORE)/ashpi outlet/ashpi_tuya_outlet_full_setup.txt
+Ashby_Data/Archive(IGNORE)/ashpi outlet/ashpiplug.txt
+Ashby_Data/Archive(IGNORE)/ashpi telegram/New Text Document.txt
+Ashby_Data/Archive(IGNORE)/ashpi telegram/ashpi_telegram_control.txt
+Ashby_Data/Archive(IGNORE)/ashpi telegram/ashpihome_bot.txt
+Ashby_Data/Archive(IGNORE)/ashpi_archetecture-overview.txt
+Ashby_Data/Archive(IGNORE)/ashpi_devices_snapshot_2025-12-08.txt
+Ashby_Data/Archive(IGNORE)/ashpi_master_state_and_roadmap_2025-12-08.txt
+Ashby_Data/Archive(IGNORE)/ashpi_reconstructed_summary.txt
+Ashby_Data/Archive(IGNORE)/ashpi_tuya_lights_setup.txt
+Ashby_Data/Archive(IGNORE)/chat701PM12092025.txt
+Ashby_Data/Archive(IGNORE)/last chat 1218 am 12102025.txt
+Ashby_Data/Archive(IGNORE)/nlu_behemoth_examples.txt
+Ashby_Data/Archive(IGNORE)/updated chat.txt
+Ashby_Data/Audits/Execution/LEGACY_MIGRATION_MAP.tsv
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/PRE-QUEST_026__AUDIT/00_TIMESTAMP_UTC.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/PRE-QUEST_026__AUDIT/01_NOTES.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/PRE-QUEST_026__AUDIT/02_DIFF.patch
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/PRE-QUEST_027__AUDIT/00_TIMESTAMP_UTC.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/PRE-QUEST_027__AUDIT/01_NOTES.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/PRE-QUEST_027__AUDIT/02_DIFF.patch
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/PRE-QUEST_028__AUDIT/00_TIMESTAMP_UTC.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/PRE-QUEST_028__AUDIT/01_NOTES.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/PRE-QUEST_028__AUDIT/02_DIFF.patch
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_010__AUDIT/00_DATA_PATH.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_010__AUDIT/00_ENGINE_PATH.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_010__AUDIT/00_TIMESTAMP_UTC.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_010__AUDIT/01_BEFORE_git_status.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_010__AUDIT/02_BEFORE_git_diff.patch
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_010__AUDIT/03_BEFORE_filecount.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_010__AUDIT/03_BEFORE_pytest.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_010__AUDIT/04_BEFORE_pytest.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_010__AUDIT/04_BEFORE_questboard_ls.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_010__AUDIT/05_AFTER_git_status.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_010__AUDIT/06_AFTER_git_diff.patch
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_010__AUDIT/07_AFTER_pytest.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_010__AUDIT/08_CHANGED_FILES.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_010__AUDIT/09_AFTER_SUMMARY.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_023__AUDIT/00_BEFORE__GIT_STATE.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_023__AUDIT/00_BEFORE__REPO_STATE.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_023__AUDIT/00_BEFORE__STATE.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_023__AUDIT/01_DIFF.patch
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_023__AUDIT/03_TEST_OUTPUT.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_023__AUDIT/04_AFTER__SUMMARY.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_024__AUDIT/00_BEFORE__ENGINE.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_024__AUDIT/00_BEFORE__QUEST.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_024__AUDIT/01_ACCEPTED_QUEST.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_024__AUDIT/02_AFTER__ENGINE_DIFF.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_024__AUDIT/03_DIFF.patch
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_024__AUDIT/04_TEST_OUTPUT.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_024__AUDIT/05_AFTER__DATA.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_024__AUDIT/06_NEW_FILES_LIST.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_024__AUDIT/07_NEW_FILES.patch
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_025__AUDIT/00_BEFORE_GIT_STATUS.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_025__AUDIT/01_BEFORE_GIT_DIFFSTAT.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_025__AUDIT/02_BEFORE_WEB_APP_PY.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_025__AUDIT/03_BEFORE_WEB_APP_JS.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_025__AUDIT/04_BEFORE_WEB_APP_HTML.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_025__AUDIT/10_AFTER_GIT_STATUS.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_025__AUDIT/11_AFTER_GIT_DIFFSTAT.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_025__AUDIT/12_ENGINE_PATCH.diff
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_025__AUDIT/13_PYTEST.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_025__AUDIT/14_CHANGED_FILES.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_025__AUDIT/20_COMPLETED_QUEST.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_025__AUDIT/21_DATA_LOCATIONS.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/QUEST_AUDIT_DIFFS_2026-01-25.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/Quest_Diff_Audit_Files_README.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/SIDE-QUEST_029__AUDIT/00_TIMESTAMP_UTC.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/SIDE-QUEST_029__AUDIT/01_NOTES.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/SIDE-QUEST_029__AUDIT/02_DIFF.patch
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/SIDE-QUEST_030__AUDIT/00_TIMESTAMP_UTC.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/SIDE-QUEST_030__AUDIT/01_NOTES.txt
+Ashby_Data/Audits/Execution/LEGACY__QUEST_DIFF_AUDIT_FILES/SIDE-QUEST_030__AUDIT/02_DIFF.patch
+Ashby_Data/Audits/Execution/QUEST_031__2026-02-03__run_input_binding/00_SUMMARY.md
+Ashby_Data/Audits/Execution/QUEST_031__2026-02-03__run_input_binding/01_PREQUEST.md
+Ashby_Data/Audits/Execution/QUEST_031__2026-02-03__run_input_binding/02_EXECUTION.md
+Ashby_Data/Audits/Execution/QUEST_031__2026-02-03__run_input_binding/03_VERIFY.md
+Ashby_Data/Audits/Execution/QUEST_031__2026-02-03__run_input_binding/04_OUTCOME.md
+Ashby_Data/Audits/Execution/QUEST_031__2026-02-03__run_input_binding/90_ORIGINAL_QUEST__as_found.txt
+Ashby_Data/Audits/Execution/QUEST_031__2026-02-03__run_input_binding/91_BEFORE/stuart_runner.py
+Ashby_Data/Audits/Execution/QUEST_031__2026-02-03__stuart_v1_post30_run_input_binding_2026-02-03/00_SUMMARY.md
+Ashby_Data/Audits/Execution/QUEST_031__2026-02-03__stuart_v1_post30_run_input_binding_2026-02-03/01_PREQUEST.md
+Ashby_Data/Audits/Execution/QUEST_031__2026-02-03__stuart_v1_post30_run_input_binding_2026-02-03/02_EXECUTION.md
+Ashby_Data/Audits/Execution/QUEST_031__2026-02-03__stuart_v1_post30_run_input_binding_2026-02-03/03_VERIFY.md
+Ashby_Data/Audits/Execution/QUEST_031__2026-02-03__stuart_v1_post30_run_input_binding_2026-02-03/04_OUTCOME.md
+Ashby_Data/Audits/Execution/QUEST_031__2026-02-03__stuart_v1_post30_run_input_binding_2026-02-03/12_TEST_OUTPUT__explicit_contribution_smoke.txt
+Ashby_Data/Audits/Execution/QUEST_031__2026-02-03__stuart_v1_post30_run_input_binding_2026-02-03/12_TEST_OUTPUT__pytest.txt
+Ashby_Data/Audits/Execution/QUEST_031__2026-02-03__stuart_v1_post30_run_input_binding_2026-02-03/12_TEST_OUTPUT__runner_default_pipeline_smoke.txt
+Ashby_Data/Audits/Execution/QUEST_031__2026-02-03__stuart_v1_post30_run_input_binding_2026-02-03/90_ORIGINAL_QUEST__as_found.txt
+Ashby_Data/Audits/Execution/QUEST_031__2026-02-03__stuart_v1_post30_run_input_binding_2026-02-03/91_BEFORE/cli_stuart.py
+Ashby_Data/Audits/Execution/QUEST_031__2026-02-03__stuart_v1_post30_run_input_binding_2026-02-03/91_BEFORE/input_resolver.py
+Ashby_Data/Audits/Execution/QUEST_031__2026-02-03__stuart_v1_post30_run_input_binding_2026-02-03/91_BEFORE/job_runner.py
+Ashby_Data/Audits/Execution/QUEST_031__2026-02-03__stuart_v1_post30_run_input_binding_2026-02-03/91_BEFORE/stuart_runner.py
+Ashby_Data/Audits/Execution/QUEST_032__2026-02-03__stuart_v1_post30_execution_profiles_adapter_selection_2026-02-03/00_SUMMARY.md
+Ashby_Data/Audits/Execution/QUEST_032__2026-02-03__stuart_v1_post30_execution_profiles_adapter_selection_2026-02-03/01_PREQUEST.md
+Ashby_Data/Audits/Execution/QUEST_032__2026-02-03__stuart_v1_post30_execution_profiles_adapter_selection_2026-02-03/02_EXECUTION.md
+Ashby_Data/Audits/Execution/QUEST_032__2026-02-03__stuart_v1_post30_execution_profiles_adapter_selection_2026-02-03/03_VERIFY.md
+Ashby_Data/Audits/Execution/QUEST_032__2026-02-03__stuart_v1_post30_execution_profiles_adapter_selection_2026-02-03/04_OUTCOME.md
+Ashby_Data/Audits/Execution/QUEST_032__2026-02-03__stuart_v1_post30_execution_profiles_adapter_selection_2026-02-03/10_DIFF.patch
+Ashby_Data/Audits/Execution/QUEST_032__2026-02-03__stuart_v1_post30_execution_profiles_adapter_selection_2026-02-03/12_TEST_OUTPUT__profile_smoke.txt
+Ashby_Data/Audits/Execution/QUEST_032__2026-02-03__stuart_v1_post30_execution_profiles_adapter_selection_2026-02-03/12_TEST_OUTPUT__pytest.txt
+Ashby_Data/Audits/Execution/QUEST_032__2026-02-03__stuart_v1_post30_execution_profiles_adapter_selection_2026-02-03/90_ORIGINAL_QUEST__as_found.txt
+Ashby_Data/Audits/Execution/QUEST_033__2026-02-03__stuart_v1_post30_canonical_json_artifact_schemas_v1_2026-02-03/00_SUMMARY.md
+Ashby_Data/Audits/Execution/QUEST_033__2026-02-03__stuart_v1_post30_canonical_json_artifact_schemas_v1_2026-02-03/01_PREQUEST.md
+Ashby_Data/Audits/Execution/QUEST_033__2026-02-03__stuart_v1_post30_canonical_json_artifact_schemas_v1_2026-02-03/02_EXECUTION.md
+Ashby_Data/Audits/Execution/QUEST_033__2026-02-03__stuart_v1_post30_canonical_json_artifact_schemas_v1_2026-02-03/03_VERIFY.md
+Ashby_Data/Audits/Execution/QUEST_033__2026-02-03__stuart_v1_post30_canonical_json_artifact_schemas_v1_2026-02-03/04_OUTCOME.md
+Ashby_Data/Audits/Execution/QUEST_033__2026-02-03__stuart_v1_post30_canonical_json_artifact_schemas_v1_2026-02-03/12_TEST_OUTPUT__pytest.txt
+Ashby_Data/Audits/Execution/QUEST_033__2026-02-03__stuart_v1_post30_canonical_json_artifact_schemas_v1_2026-02-03/12_TEST_OUTPUT__smoke.txt
+Ashby_Data/Audits/Execution/QUEST_033__2026-02-03__stuart_v1_post30_canonical_json_artifact_schemas_v1_2026-02-03/90_ORIGINAL_QUEST__as_found.txt
+Ashby_Data/Audits/Execution/QUEST_034__2026-02-03__stuart_v1_post30_model_dependency_preflight_2026-02-03/00_SUMMARY.md
+Ashby_Data/Audits/Execution/QUEST_034__2026-02-03__stuart_v1_post30_model_dependency_preflight_2026-02-03/01_PREQUEST.md
+Ashby_Data/Audits/Execution/QUEST_034__2026-02-03__stuart_v1_post30_model_dependency_preflight_2026-02-03/02_EXECUTION.md
+Ashby_Data/Audits/Execution/QUEST_034__2026-02-03__stuart_v1_post30_model_dependency_preflight_2026-02-03/03_VERIFY.md
+Ashby_Data/Audits/Execution/QUEST_034__2026-02-03__stuart_v1_post30_model_dependency_preflight_2026-02-03/04_OUTCOME.md
+Ashby_Data/Audits/Execution/QUEST_034__2026-02-03__stuart_v1_post30_model_dependency_preflight_2026-02-03/12_TEST_OUTPUT__pytest.txt
+Ashby_Data/Audits/Execution/QUEST_034__2026-02-03__stuart_v1_post30_model_dependency_preflight_2026-02-03/12_TEST_OUTPUT__smoke.txt
+Ashby_Data/Audits/Execution/QUEST_034__2026-02-03__stuart_v1_post30_model_dependency_preflight_2026-02-03/90_ORIGINAL_QUEST__as_found.txt
+Ashby_Data/Audits/Execution/QUEST_035__2026-02-03__stuart_v1_post30_normalize_ffmpeg_16k_mono_wav_2026-02-03/00_SUMMARY.md
+Ashby_Data/Audits/Execution/QUEST_035__2026-02-03__stuart_v1_post30_normalize_ffmpeg_16k_mono_wav_2026-02-03/01_PREQUEST.md
+Ashby_Data/Audits/Execution/QUEST_035__2026-02-03__stuart_v1_post30_normalize_ffmpeg_16k_mono_wav_2026-02-03/02_EXECUTION.md
+Ashby_Data/Audits/Execution/QUEST_035__2026-02-03__stuart_v1_post30_normalize_ffmpeg_16k_mono_wav_2026-02-03/03_VERIFY.md
+Ashby_Data/Audits/Execution/QUEST_035__2026-02-03__stuart_v1_post30_normalize_ffmpeg_16k_mono_wav_2026-02-03/04_OUTCOME.md
+Ashby_Data/Audits/Execution/QUEST_035__2026-02-03__stuart_v1_post30_normalize_ffmpeg_16k_mono_wav_2026-02-03/12_TEST_OUTPUT__pytest.txt
+Ashby_Data/Audits/Execution/QUEST_035__2026-02-03__stuart_v1_post30_normalize_ffmpeg_16k_mono_wav_2026-02-03/12_TEST_OUTPUT__smoke.txt
+Ashby_Data/Audits/Execution/QUEST_035__2026-02-03__stuart_v1_post30_normalize_ffmpeg_16k_mono_wav_2026-02-03/90_ORIGINAL_QUEST__as_found.txt
+Ashby_Data/Audits/Execution/QUEST_036__2026-02-03__stuart_v1_post30_diarization_pyannote_adapter_2026-02-03/00_SUMMARY.md
+Ashby_Data/Audits/Execution/QUEST_036__2026-02-03__stuart_v1_post30_diarization_pyannote_adapter_2026-02-03/01_PREQUEST.md
+Ashby_Data/Audits/Execution/QUEST_036__2026-02-03__stuart_v1_post30_diarization_pyannote_adapter_2026-02-03/02_EXECUTION.md
+Ashby_Data/Audits/Execution/QUEST_036__2026-02-03__stuart_v1_post30_diarization_pyannote_adapter_2026-02-03/03_VERIFY.md
+Ashby_Data/Audits/Execution/QUEST_036__2026-02-03__stuart_v1_post30_diarization_pyannote_adapter_2026-02-03/04_OUTCOME.md
+Ashby_Data/Audits/Execution/QUEST_036__2026-02-03__stuart_v1_post30_diarization_pyannote_adapter_2026-02-03/12_TEST_OUTPUT__pytest.txt
+Ashby_Data/Audits/Execution/QUEST_036__2026-02-03__stuart_v1_post30_diarization_pyannote_adapter_2026-02-03/12_TEST_OUTPUT__smoke.txt
+Ashby_Data/Audits/Execution/QUEST_036__2026-02-03__stuart_v1_post30_diarization_pyannote_adapter_2026-02-03/90_ORIGINAL_QUEST__as_found.txt
+Ashby_Data/Audits/Execution/QUEST_037__2026-02-03__stuart_v1_post30_asr_faster_whisper_adapter_2026-02-03/00_SUMMARY.md
+Ashby_Data/Audits/Execution/QUEST_037__2026-02-03__stuart_v1_post30_asr_faster_whisper_adapter_2026-02-03/01_PREQUEST.md
+Ashby_Data/Audits/Execution/QUEST_037__2026-02-03__stuart_v1_post30_asr_faster_whisper_adapter_2026-02-03/02_EXECUTION.md
+Ashby_Data/Audits/Execution/QUEST_037__2026-02-03__stuart_v1_post30_asr_faster_whisper_adapter_2026-02-03/03_VERIFY.md
+Ashby_Data/Audits/Execution/QUEST_037__2026-02-03__stuart_v1_post30_asr_faster_whisper_adapter_2026-02-03/04_OUTCOME.md
+Ashby_Data/Audits/Execution/QUEST_037__2026-02-03__stuart_v1_post30_asr_faster_whisper_adapter_2026-02-03/12_TEST_OUTPUT__pytest.txt
+Ashby_Data/Audits/Execution/QUEST_037__2026-02-03__stuart_v1_post30_asr_faster_whisper_adapter_2026-02-03/12_TEST_OUTPUT__smoke.txt
+Ashby_Data/Audits/Execution/QUEST_037__2026-02-03__stuart_v1_post30_asr_faster_whisper_adapter_2026-02-03/90_ORIGINAL_QUEST__as_found.txt
+Ashby_Data/Audits/Execution/QUEST_038__2026-02-03__stuart_v1_post30_alignment_diarization_to_asr_2026-02-03/00_SUMMARY.md
+Ashby_Data/Audits/Execution/QUEST_038__2026-02-03__stuart_v1_post30_alignment_diarization_to_asr_2026-02-03/01_PREQUEST.md
+Ashby_Data/Audits/Execution/QUEST_038__2026-02-03__stuart_v1_post30_alignment_diarization_to_asr_2026-02-03/02_EXECUTION.md
+Ashby_Data/Audits/Execution/QUEST_038__2026-02-03__stuart_v1_post30_alignment_diarization_to_asr_2026-02-03/03_VERIFY.md
+Ashby_Data/Audits/Execution/QUEST_038__2026-02-03__stuart_v1_post30_alignment_diarization_to_asr_2026-02-03/04_OUTCOME.md
+Ashby_Data/Audits/Execution/QUEST_038__2026-02-03__stuart_v1_post30_alignment_diarization_to_asr_2026-02-03/10_DIFF.patch
+Ashby_Data/Audits/Execution/QUEST_038__2026-02-03__stuart_v1_post30_alignment_diarization_to_asr_2026-02-03/12_TEST_OUTPUT__pytest.txt
+Ashby_Data/Audits/Execution/QUEST_038__2026-02-03__stuart_v1_post30_alignment_diarization_to_asr_2026-02-03/12_TEST_OUTPUT__smoke.txt
+Ashby_Data/Audits/Execution/QUEST_038__2026-02-03__stuart_v1_post30_alignment_diarization_to_asr_2026-02-03/12_TEST_OUTPUT__smoke_FAIL_01.txt
+Ashby_Data/Audits/Execution/QUEST_038__2026-02-03__stuart_v1_post30_alignment_diarization_to_asr_2026-02-03/90_ORIGINAL_QUEST__as_found.txt
+Ashby_Data/Audits/Execution/QUEST_039__2026-02-03__stuart_v1_post30_formalization_from_transcript_2026-02-03/00_SUMMARY.md
+Ashby_Data/Audits/Execution/QUEST_039__2026-02-03__stuart_v1_post30_formalization_from_transcript_2026-02-03/01_PREQUEST.md
+Ashby_Data/Audits/Execution/QUEST_039__2026-02-03__stuart_v1_post30_formalization_from_transcript_2026-02-03/02_EXECUTION.md
+Ashby_Data/Audits/Execution/QUEST_039__2026-02-03__stuart_v1_post30_formalization_from_transcript_2026-02-03/03_VERIFY.md
+Ashby_Data/Audits/Execution/QUEST_039__2026-02-03__stuart_v1_post30_formalization_from_transcript_2026-02-03/04_OUTCOME.md
+Ashby_Data/Audits/Execution/QUEST_039__2026-02-03__stuart_v1_post30_formalization_from_transcript_2026-02-03/12_TEST_OUTPUT__pytest.txt
+Ashby_Data/Audits/Execution/QUEST_039__2026-02-03__stuart_v1_post30_formalization_from_transcript_2026-02-03/12_TEST_OUTPUT__smoke.txt
+Ashby_Data/Audits/Execution/QUEST_039__2026-02-03__stuart_v1_post30_formalization_from_transcript_2026-02-03/90_ORIGINAL_QUEST__as_found.txt
+Ashby_Data/Audits/Execution/QUEST_040__2026-02-03__stuart_v1_post30_evidence_map_anchors_2026-02-03/00_SUMMARY.md
+Ashby_Data/Audits/Execution/QUEST_040__2026-02-03__stuart_v1_post30_evidence_map_anchors_2026-02-03/01_PREQUEST.md
+Ashby_Data/Audits/Execution/QUEST_040__2026-02-03__stuart_v1_post30_evidence_map_anchors_2026-02-03/02_EXECUTION.md
+Ashby_Data/Audits/Execution/QUEST_040__2026-02-03__stuart_v1_post30_evidence_map_anchors_2026-02-03/03_VERIFY.md
+Ashby_Data/Audits/Execution/QUEST_040__2026-02-03__stuart_v1_post30_evidence_map_anchors_2026-02-03/04_OUTCOME.md
+Ashby_Data/Audits/Execution/QUEST_040__2026-02-03__stuart_v1_post30_evidence_map_anchors_2026-02-03/12_TEST_OUTPUT__pytest.txt
+Ashby_Data/Audits/Execution/QUEST_040__2026-02-03__stuart_v1_post30_evidence_map_anchors_2026-02-03/12_TEST_OUTPUT__smoke.txt
+Ashby_Data/Audits/Execution/QUEST_040__2026-02-03__stuart_v1_post30_evidence_map_anchors_2026-02-03/90_ORIGINAL_QUEST__as_found.txt
+Ashby_Data/Audits/Execution/SIDE-QUEST_030__2026-02-02__stuart_runner_subprocess_pypath_import_fix/00_SUMMARY.md
+Ashby_Data/Audits/Execution/SIDE-QUEST_030__2026-02-02__stuart_runner_subprocess_pypath_import_fix/01_PREQUEST.md
+Ashby_Data/Audits/Execution/SIDE-QUEST_030__2026-02-02__stuart_runner_subprocess_pypath_import_fix/02_EXECUTION.md
+Ashby_Data/Audits/Execution/SIDE-QUEST_030__2026-02-02__stuart_runner_subprocess_pypath_import_fix/03_VERIFY.md
+Ashby_Data/Audits/Execution/SIDE-QUEST_030__2026-02-02__stuart_runner_subprocess_pypath_import_fix/04_OUTCOME.md
+Ashby_Data/Audits/Execution/SIDE-QUEST_030__2026-02-02__stuart_runner_subprocess_pypath_import_fix/10_DIFF.patch
+Ashby_Data/Audits/Execution/SIDE-QUEST_030__2026-02-02__stuart_runner_subprocess_pypath_import_fix/12_TEST_OUTPUT__env_smoke.txt
+Ashby_Data/Audits/Execution/SIDE-QUEST_030__2026-02-02__stuart_runner_subprocess_pypath_import_fix/12_TEST_OUTPUT__pytest.txt
+Ashby_Data/Audits/Execution/SIDE-QUEST_030__2026-02-02__stuart_runner_subprocess_pypath_import_fix/12_TEST_OUTPUT__run_default_pipeline_smoke.txt
+Ashby_Data/Audits/Execution/SIDE-QUEST_030__2026-02-02__stuart_runner_subprocess_pypath_import_fix/90_ORIGINAL_QUEST__as_found.txt
+Ashby_Data/Audits/Execution/SIDE-QUEST_030__2026-02-02__stuart_runner_subprocess_pypath_import_fix/91_BEFORE__stuart_runner.py
+Ashby_Data/Audits/Retro/RETRO_SANITY_2026-02-04_032656/00_SUMMARY.md
+Ashby_Data/Audits/Retro/RETRO_SANITY_2026-02-04_032656/01_PREQUEST.md
+Ashby_Data/Audits/Retro/RETRO_SANITY_2026-02-04_032715/00_SUMMARY.md
+Ashby_Data/Audits/Retro/RETRO_SANITY_2026-02-04_032715/01_PREQUEST.md
+Ashby_Data/Buffs/ASHBY_DATA_DIRECTORY_MAP.txt
+Ashby_Data/Buffs/ASHBY_EXECUTION_PROTOCOL.txt
+Ashby_Data/Buffs/ASHBY_SESSION_START_CHECK.txt
+Ashby_Data/Codex/ASHBY CODEX FULL.txt
+Ashby_Data/Codex/Ashby Codex Sections/.ASHBY TOC.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 0.1.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 0.2.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 0.3.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 0.4.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 0.5.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 0.6.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 1.1.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 1.2.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 1.3.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 1.4.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 10.1.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 10.2.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 10.3.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 10.4.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 10.5.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 10.6.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 10.7.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 10.8.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 11.1.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 11.2.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 11.3.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 11.4.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 11.5.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 12.1.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 12.4.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 12.5.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 12.6.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 13.1.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 13.2.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 13.3.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 13.4.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 13.5.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 13.6.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 14.1.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 14.2.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 14.3.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 14.4.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 14.5.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 14.6.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 15.1.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 15.2.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 15.3.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 15.4.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 16.1.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 16.2.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 16.3.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 17.1.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 17.2.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 17.3.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 17.4.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 17.5.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 18.1.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 18.2.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 18.3.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 18.4.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 18.5.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 18.6.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 19.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 2.1.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 2.2.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 2.3.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 2.4.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 2.5.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 20.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 21.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 22.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 23.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 24.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 25.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 26.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 27.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 28.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 29.1.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 29.2.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 29.3.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 3.1.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 3.2.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 3.3.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 3.4.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 3.5.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 30.1.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 30.2.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 31.1.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 31.2.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 31.3.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 31.4.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 32.1.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 32.2.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 32.3.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 33.1.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 33.2.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 33.3.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 34.1.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 34.2.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 35.1.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 35.2.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 35.3.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 36.1.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 36.2.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 4.1.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 4.2.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 4.3.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 4.4.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 4.5.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 5.1.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 5.10.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 5.11.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 5.12.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 5.13.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 5.2.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 5.3.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 5.4.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 5.5.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 5.6.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 5.7.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 5.8.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 5.9.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 6.1.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 6.10.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 6.11.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 6.2.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 6.3.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 6.4.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 6.5.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 6.6.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 6.7.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 6.8.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 6.9.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 7.1.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 7.2.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 7.3.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 7.4.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 7.5.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 7.6.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 7.7.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 8.1.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 8.10.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 8.11.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 8.12.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 8.2.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 8.3.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 8.4.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 8.5.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 8.6.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 8.7.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 8.8.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 8.9.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 8A.1.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 8A.10.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 8A.11.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 8A.12.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 8A.13.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 8A.14.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 8A.15.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 8A.2.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 8A.3.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 8A.4.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 8A.5.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 8A.6.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 8A.7.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 8A.8.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 8A.9.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 9.1.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 9.2.txt
+Ashby_Data/Codex/Ashby Codex Sections/ASHBY CODEX #U2014 9.3.txt
+Ashby_Data/Codex/CODEX_FREEZE.md
+Ashby_Data/Docs/ASHBY_CANONICAL_TECHNICAL_BLUEPRINT_2026-01-13.txt
+Ashby_Data/Docs/ASHBY_THE_CANONICAL_VISION_2026-01-13.txt
+Ashby_Data/Docs/STUART_Runbook__Env_and_Smoke_Test_2026-01-25__DRAFT.txt
+Ashby_Data/Github Stuff(IGNORE)/ashby-wsl-rtx4070-token_2.7z
+Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS_STUART_V1_2026-02-03_REV4.txt
+Ashby_Data/Guild Orders/COMPLETED/ASHBY_Guild_Orders_Emergency_Raid_Structural_Realignment_2025-12-23.txt
+Ashby_Data/Guild Orders/COMPLETED/GUILD_ORDERS_STUART_V1_2026-01-16_REV3.txt
+Ashby_Data/Guild Orders/PAUSED/ASHBY CONTROL SYNC #U2014 GUILD ORDERS-2025-12-15.txt
+Ashby_Data/Latest Rehydration Pack/BOOTSRAP_PROMPT_2026-01-25.txt
+Ashby_Data/Latest Rehydration Pack/BOOTSRAP_PROMPT_2026-01-26.txt
+Ashby_Data/Latest Rehydration Pack/CONTINUITY_LOCK_2026-01-25.txt
+Ashby_Data/Latest Rehydration Pack/CONTINUITY_LOCK_2026-01-26.txt
+Ashby_Data/Latest Rehydration Pack/README.txt
+Ashby_Data/Latest Rehydration Pack/Stuart - The Canonical Vision.txt
+Ashby_Data/Latest Rehydration Pack/Stuart Execution Pack/STUART_ARTIFACT_VERSIONING_AND_IMMUTABILITY_2026-01-13.txt
+Ashby_Data/Latest Rehydration Pack/Stuart Execution Pack/STUART_ERROR_TAXONOMY_AND_RESUME_RULES_2026-01-13.txt
+Ashby_Data/Latest Rehydration Pack/Stuart Execution Pack/STUART_ID_CONVENTIONS_AND_HASHING_2026-01-13.txt
+Ashby_Data/Latest Rehydration Pack/Stuart Execution Pack/STUART_IN_ASHBY_ARCHITECTURE_TREE_VISION_2026-01-13.txt
+Ashby_Data/Latest Rehydration Pack/Stuart Execution Pack/STUART_PROFILE_AND_ADAPTER_MATRIX_2026-01-13.txt
+Ashby_Data/Latest Rehydration Pack/Stuart Execution Pack/STUART_REHYDRATE_PACKET_2026-01-13.txt
+Ashby_Data/Latest Rehydration Pack/Stuart Execution Pack/STUART_RETRIEVAL_INDEXING_CONTRACT_2026-01-13.txt
+Ashby_Data/Latest Rehydration Pack/Stuart Execution Pack/STUART_TRUTH_AND_EVIDENCE_CONTRACT_2026-01-13.txt
+Ashby_Data/Latest Rehydration Pack/Stuart Execution Pack/STUART_V1_CANON_GAPS_AND_ADDITIONS_2026-01-13.txt
+Ashby_Data/MIGRATION_NOTE__2026-02-02.txt
+Ashby_Data/Quest Board/Abandoned/QUEST_026__Stuart_Telegram_PDF_Path_Truth_Gate_Fix_2026-01-26.txt
+Ashby_Data/Quest Board/Abandoned/SIDE-QUEST_030__Stuart_Subprocess_PYTHONPATH_Injection.txt
+Ashby_Data/Quest Board/Abandoned/SIDE-QUEST_031__Stuart_Runner_Robust_RepoRoot_PYTHONPATH_Fix_2026-01-27.txt
+Ashby_Data/Quest Board/Accepted/QUEST_041__Stuart_v1_Post30_WeasyPrint_PDF_Renderer_2026-02-03.txt
+Ashby_Data/Quest Board/Completed/PRE-QUEST_026__Stuart_v1_Telegram_PDF_Path_Truth_Gate_Fix_2026-01-27.txt
+Ashby_Data/Quest Board/Completed/PRE-QUEST_027__Stuart_v1_Webapp_Bootstrap_Reproduction_2026-01-27.txt
+Ashby_Data/Quest Board/Completed/PRE-QUEST_028__Stuart_v1_Webapp_Run_and_PDF_Download_2026-01-27.txt
+Ashby_Data/Quest Board/Completed/QUEST_001__Governance_Setup_Quest_Board_Talent_Tree_v01.txt
+Ashby_Data/Quest Board/Completed/QUEST_002__Stuart_v1_Dungeon_1_Module_scaffold_final_shape_directories.txt
+Ashby_Data/Quest Board/Completed/QUEST_007__Stuart_v1_Dungeon_6_Speaker_identity_overlay_rerender_only_what_X_said.txt
+Ashby_Data/Quest Board/Completed/QUEST_010__Stuart_v1_Dungeon_9_Telegram_door_dead_simple_buttons.txt
+Ashby_Data/Quest Board/Completed/QUEST_011__Stuart_v1_Dungeon_2_1of3_STUART_ROOT_layout_config_resolution.txt
+Ashby_Data/Quest Board/Completed/QUEST_012__Stuart_v1_Dungeon_2_2of3_Manifest_schemas_ULID_hashing.txt
+Ashby_Data/Quest Board/Completed/QUEST_013__Stuart_v1_Dungeon_2_3of3_Immutability_rerun_video_audio_policy.txt
+Ashby_Data/Quest Board/Completed/QUEST_014__Stuart_v1_Dungeon_3_1of2_Mode_registry_defaults.txt
+Ashby_Data/Quest Board/Completed/QUEST_015__Stuart_v1_Dungeon_3_2of2_Template_registry_storage_placeholders.txt
+Ashby_Data/Quest Board/Completed/QUEST_016__Stuart_v1_Dungeon_4_1of3_Intent_parsing_plan_object.txt
+Ashby_Data/Quest Board/Completed/QUEST_017__Stuart_v1_Dungeon_4_2of3_Clarification_plan_preview_contract.txt
+Ashby_Data/Quest Board/Completed/QUEST_018__Stuart_v1_Dungeon_4_3of3_Execution_gating_upload_not_process.txt
+Ashby_Data/Quest Board/Completed/QUEST_019__Stuart_v1_Dungeon_5_1of3_Job_runner_run_lifecycle_progress.txt
+Ashby_Data/Quest Board/Completed/QUEST_020__Stuart_v1_Dungeon_5_2of3_Transcribe_diarize_pipeline_transcript_artifacts.txt
+Ashby_Data/Quest Board/Completed/QUEST_021__Stuart_v1_Dungeon_5_3of3_Formalize_render_MD_PDF_evidence_map.txt
+Ashby_Data/Quest Board/Completed/QUEST_022__Stuart_v1_Dungeon_7_1of2_SQLite_FTS_index_schema_ingestion.txt
+Ashby_Data/Quest Board/Completed/QUEST_023__Stuart_v1_Dungeon_7_2of2_Search_queries_ranked_results_citations.txt
+Ashby_Data/Quest Board/Completed/QUEST_024__Stuart_v1_Dungeon_8_1of2_Webapp_scaffold_chat_session_history_plan_preview_shell.txt
+Ashby_Data/Quest Board/Completed/QUEST_025__Stuart_v1_Dungeon_8_2of2_Webapp_upload_run_downloads_state_sync.txt
+Ashby_Data/Quest Board/Completed/QUEST_031__Stuart_v1_Post30_Run_Input_Binding_2026-02-03.txt
+Ashby_Data/Quest Board/Completed/QUEST_032__Stuart_v1_Post30_Execution_Profiles_Adapter_Selection_2026-02-03.txt
+Ashby_Data/Quest Board/Completed/QUEST_033__Stuart_v1_Post30_Canonical_JSON_Artifact_Schemas_v1_2026-02-03.txt
+Ashby_Data/Quest Board/Completed/QUEST_034__Stuart_v1_Post30_Model_Dependency_Preflight_2026-02-03.txt
+Ashby_Data/Quest Board/Completed/QUEST_035__Stuart_v1_Post30_Normalize_ffmpeg_16k_mono_wav_2026-02-03.txt
+Ashby_Data/Quest Board/Completed/QUEST_036__Stuart_v1_Post30_Diarization_pyannote_adapter_2026-02-03.txt
+Ashby_Data/Quest Board/Completed/QUEST_037__Stuart_v1_Post30_ASR_faster_whisper_adapter_2026-02-03.txt
+Ashby_Data/Quest Board/Completed/QUEST_038__Stuart_v1_Post30_Alignment_diarization_to_ASR_2026-02-03.txt
+Ashby_Data/Quest Board/Completed/QUEST_039__Stuart_v1_Post30_Formalization_from_transcript_2026-02-03.txt
+Ashby_Data/Quest Board/Completed/QUEST_040__Stuart_v1_Post30_Evidence_Map_Anchors_2026-02-03.txt
+Ashby_Data/Quest Board/Completed/SIDE-QUEST_029__Engine_Runtime_Import_Parity_Telegram_Webapp.txt
+Ashby_Data/Quest Board/Completed/SIDE-QUEST_030__Stuart_Runner_Subprocess_PYTHONPATH_Import_Fix_2026-01-27.txt
+Ashby_Data/Quest Board/QUEST DIFF AUDIT FILES/AUDITS_MOVED_README.txt
+Ashby_Data/Quest Board/QUEST_TEMPLATE.txt
+Ashby_Data/Snapshots/Control Sync/ASHBY_Control_Sync_Snapshot_2025-12-23.txt
+Ashby_Data/Snapshots/Control Sync/ASHBY_Control_Sync_Snapshot_2025-12-24.txt
+Ashby_Data/Snapshots/Control Sync/ASHBY_Control_Sync_Snapshot_2025-12-26.txt
+Ashby_Data/Snapshots/Control Sync/ASHBY_Control_Sync_Snapshot_2025-12-28.txt
+Ashby_Data/Snapshots/Control Sync/ASHBY_Control_Sync_Snapshot_2025-12-29.txt
+Ashby_Data/Snapshots/Control Sync/ASHBY_Control_Sync_Snapshot_TEMPLATE.txt
+Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync-2026-01-27.txt
+Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-01-05.txt
+Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-01-12.txt
+Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-01-16.txt
+Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-01-19.txt
+Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-01-25(2).txt
+Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-01-25.txt
+Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-01-26.txt
+Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-02-02.txt
+Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-02-02__SIDE-QUEST_030_EXECUTION.txt
+Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-02-03.txt
+Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-02-03__POST_ACCEPTANCE.txt
+Ashby_Data/Snapshots/Control Sync/Stuart_Control_Sync_2026-01-26.txt
+Ashby_Data/Snapshots/End of Day/ASHBY_End_of_Day_Snapshot_ 2025-12-10.txt
+Ashby_Data/Snapshots/End of Day/ASHBY_End_of_Day_Snapshot_2025-12-11.txt
+Ashby_Data/Snapshots/End of Day/ASHBY_End_of_Day_Snapshot_2025-12-15.txt
+Ashby_Data/Snapshots/End of Day/ASHBY_End_of_Day_Snapshot_2025-12-16.txt
+Ashby_Data/Snapshots/End of Day/ASHBY_End_of_Day_Snapshot_2025-12-23.txt
+Ashby_Data/Snapshots/End of Day/ASHBY_End_of_Day_Snapshot_2025-12-25.txt
+Ashby_Data/Snapshots/End of Day/ASHBY_End_of_Day_Snapshot_2025-12-26.txt
+Ashby_Data/Snapshots/End of Day/ASHBY_End_of_Day_Snapshot_2025-12-28.txt
+Ashby_Data/Snapshots/End of Day/ASHBY_End_of_Day_Snapshot_2025-12-29.txt
+Ashby_Data/Snapshots/End of Day/ASHBY_End_of_Day_Snapshot_2026-01-13.txt
+Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2025-12-18.txt
+Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2025-12-22.txt
+Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2026-01-19.txt
+Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2026-01-22.txt
+Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2026-01-24.txt
+Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2026-01-25(2).txt
+Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2026-01-25.txt
+Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2026-01-26.txt
+Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2026-01-27.txt
+Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2026-02-02__SIDE-QUEST_030.txt
+Ashby_Data/Snapshots/General/GENERAL_Snapshot_2025-12-18.txt
+Ashby_Data/Snapshots/General/GENERAL_Snapshot_2025-12-25.txt
+Ashby_Data/Snapshots/General/GENERAL_Snapshot_2025-12-27.txt
+Ashby_Data/Snapshots/General/GENERAL_Snapshot_2026-01-06.md
+Ashby_Data/Snapshots/General/GENERAL_Snapshot_2026-01-08.md
+Ashby_Data/Snapshots/General/GENERAL_Snapshot_2026-01-13.txt
+Ashby_Data/Snapshots/General/GENERAL_Snapshot_2026-01-14.txt
+Ashby_Data/Snapshots/General/GENERAL_Snapshot_2026-01-16.txt
+Ashby_Data/Snapshots/General/GENERAL_Snapshot_2026-01-22.txt
+Ashby_Data/Snapshots/General/GENERAL_Snapshot_2026-01-24.txt
+Ashby_Data/Snapshots/General/Synapse_Governance_General_2026-01-26.txt
+Ashby_Data/Stuart/Archive/STUART_Pipeline_Contract_vNEXT_2026-01-05.txt
+Ashby_Data/Stuart/Archive/STUART_v0_Pipeline_Contract.md
+Ashby_Data/Stuart/Docs/Latest Rehyration Pack/BOOTSRAP_PROMPT_2026-01-25.txt
+Ashby_Data/Stuart/Docs/Latest Rehyration Pack/BOOTSRAP_PROMPT_2026-01-26.txt
+Ashby_Data/Stuart/Docs/Latest Rehyration Pack/CONTINUITY_LOCK_2026-01-25.txt
+Ashby_Data/Stuart/Docs/Latest Rehyration Pack/CONTINUITY_LOCK_2026-01-26.txt
+Ashby_Data/Stuart/Docs/Latest Rehyration Pack/Stuart - The Canonical Vision.txt
+Ashby_Data/Stuart/Docs/Latest Rehyration Pack/Stuart Execution Pack/STUART_ARTIFACT_VERSIONING_AND_IMMUTABILITY_2026-01-13.txt
+Ashby_Data/Stuart/Docs/Latest Rehyration Pack/Stuart Execution Pack/STUART_ERROR_TAXONOMY_AND_RESUME_RULES_2026-01-13.txt
+Ashby_Data/Stuart/Docs/Latest Rehyration Pack/Stuart Execution Pack/STUART_ID_CONVENTIONS_AND_HASHING_2026-01-13.txt
+Ashby_Data/Stuart/Docs/Latest Rehyration Pack/Stuart Execution Pack/STUART_IN_ASHBY_ARCHITECTURE_TREE_VISION_2026-01-13.txt
+Ashby_Data/Stuart/Docs/Latest Rehyration Pack/Stuart Execution Pack/STUART_PROFILE_AND_ADAPTER_MATRIX_2026-01-13.txt
+Ashby_Data/Stuart/Docs/Latest Rehyration Pack/Stuart Execution Pack/STUART_REHYDRATE_PACKET_2026-01-13.txt
+Ashby_Data/Stuart/Docs/Latest Rehyration Pack/Stuart Execution Pack/STUART_RETRIEVAL_INDEXING_CONTRACT_2026-01-13.txt
+Ashby_Data/Stuart/Docs/Latest Rehyration Pack/Stuart Execution Pack/STUART_TRUTH_AND_EVIDENCE_CONTRACT_2026-01-13.txt
+Ashby_Data/Stuart/Docs/Latest Rehyration Pack/Stuart Execution Pack/STUART_V1_CANON_GAPS_AND_ADDITIONS_2026-01-13.txt
+Ashby_Data/Stuart/Docs/PLAN__Post_30_plan.txt
+Ashby_Data/Stuart/Docs/Stuart - The Canonical Vision.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_0.1_Scope_Audience_Reading_Order.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_0.2_Terminology_and_Definitions.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_0.3_Relationship_to_Ashby_Agent_on_Platform.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_1.1_Purpose_and_Non_Goals.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_1.2_Core_Invariants_Truth_Evidence_Explicit_Execution.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_1.3_Profiles_LOCAL_ONLY_HYBRID_CLOUD.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_1.4_Trust_Auditability_Anti_Hallucination_Rules.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_10.1_V1_Minimum_Shippable_Product_Definition.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_10.2_Supported_Modes_and_Templates_V1.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_10.3_Explicit_Non_Goals_for_V1_v2.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_10.4_Known_Limitations_and_Truth_Disclosures_V1.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_11.1_Expanded_Modes_Framework_and_Guardrails.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_11.2_Live_Meeting_Capture_Teams_Zoom_RingCentral.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_11.3_Template_Ecosystem_and_Marketplace.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_11.4_Scalability_and_Performance_Evolution.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_11.5_Risks_Tradeoffs_and_Refactor_Traps.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_2.1_Chat_First_Interface.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_2.2_Explicit_Execution_Gating_Submit_Confirm.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_2.3_Mode_Selection.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_2.4_Template_Selection_Scoped_by_Mode.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_2.5_Transcript_Visibility_and_Export_Controls.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_2.6_Analyst_vs_Collaborator_Voice_Gating.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_2.7_Help_Guidance_and_Safe_Chat.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_3.1_General_Query_Mode_No_Formalization.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_3.2_Meeting_Minutes_Mode.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_3.3_Journal_Diary_Mode.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_3.4_Incident_Report_Mode.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_3.5_Creator_Notes_Mode.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_3.6_Subtitles_Captions_Mode.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_3.7_Translation_Post_Transcript_Step.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_4.1_Mode_vs_Template_Separation.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_4.2_Template_Schema_Sections_Required_vs_Optional.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_4.3_Retention_Levels_per_Template.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_4.4_Template_Creation_Chat_Guided.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_4.5_Template_Import_Document_or_Image_Based.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_4.6_Template_Versioning_and_Compatibility.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_4.7_Template_Sharing_Future_Gated.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_5.1_Retention_Knob_LOW_MED_HIGH_NEAR_VERBATIM.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_5.2_Formalization_vs_Summary_Definitions.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_5.3_Evidence_and_Citation_Requirements.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_5.4_Superseded_Decisions_and_Overrides.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_5.5_Handling_Ambiguity_and_Uncertainty.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_6.1_Session_Model_Sessions_Contributions_Sources.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_6.2_Canonical_Artifacts_JSON_Markdown_PDF.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_6.3_File_Naming_and_Deterministic_Paths.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_6.4_Printing_and_Export_Requirements.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_6.5_Artifact_Indexing_for_Recall_and_Search.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_7.1_Stage_0_Session_Initialization.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_7.2_Stage_1_Audio_Ingestion_and_Normalization.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_7.3_Stage_2_Diarization.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_7.4_Stage_3_Transcription.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_7.5_Stage_4_Alignment_and_Stitching.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_7.6_Stage_5_Formalization.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_7.7_Stage_6_Indexing_and_Retrieval.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_7.8_Chunking_and_Hierarchical_Formalization_Long_Sessions.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_7.9_Failure_Modes_and_Graceful_Degradation.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_8.1_AudioSource_Adapters_File_Stream_Device.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_8.2_ASR_Adapters_Local_vs_Remote_Capabilities.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_8.3_Diarization_Adapters_Local_vs_Remote_Overlap.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_8.4_Formalization_Adapters_Local_vs_Remote_Redaction.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_8.5_Rendering_Adapters_MD_to_PDF_Print_Parity.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_8.6_Indexing_Adapters_SQLite_FTS_vs_Embeddings.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_8.7_Redaction_and_Sanitization_Adapters.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_9.1_Security_Privacy_and_Data_Handling.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_9.2_Compliance_Considerations_Healthcare_Elder_Care.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_9.3_Consent_Disclosure_and_Ethical_Use.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_9.4_Audit_Logs_and_Transparency.txt
+Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_Table_of_Contents.txt
+Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt
+Ashby_Data/Stuart/To Do/Stuart - vNext Ideas & To-Dos (10-15 Year Thought Experiment).txt
+Ashby_Data/Talent Tree/Ashby/RESPEC_RULES.txt
+Ashby_Data/Talent Tree/Ashby/TALENT_LOG.txt
+Ashby_Data/Talent Tree/Ashby/TALENT_TREE.txt
+Ashby_Data/Talent Tree/Stuart/RESPEC_RULES.txt
+Ashby_Data/Talent Tree/Stuart/TALENT_LOG.txt
+Ashby_Data/Talent Tree/Stuart/TALENT_TREE.txt
+Ashby_Data/Talent Tree/TALENT TREE GUIDE.txt
+Ashby_Data/To Do/# ASHBY PLATFORM EXPANSION ROADMAP.txt
+Ashby_Data/To Do/ASHBY_WEB_UI_PLAN.txt
+Ashby_Data/To Do/If you want, I can help you map you.txt
+Ashby_Data/To Do/STUART_Guild_Orders_Draft_2026-01-27.txt

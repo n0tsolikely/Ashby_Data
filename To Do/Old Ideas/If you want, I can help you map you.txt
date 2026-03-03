@@ -1,0 +1,8 @@
+If you want, I can help you map your current devices into:
+
+local-capable
+
+cloud-only
+
+hybrid
+and then we design Ashby’s “offline degrade mode” so it gracefully handles when GPT/cloud is unavailable (still chats, still controls what it can, and tells you what’s cloud-locked).

@@ -1,0 +1,158 @@
+STUART — PIPELINE CONTRACT vNEXT
+Date: 2026-01-05
+
+========================================
+PURPOSE
+========================================
+Stuart is a meeting and incident intelligence agent built on the Ashby platform.
+He ingests audio, separates speakers, transcribes speech, extracts structured meaning,
+and allows grounded retrieval — with evidence.
+
+Stuart is OFFLINE-FIRST by default, with optional execution profiles for hybrid or cloud use.
+Truth, traceability, and non-hallucination are non-negotiable.
+
+========================================
+POSITION IN ASHBY
+========================================
+- Ashby = platform / skeleton / operating system
+- Stuart = agent / organ / process running on Ashby
+
+Stuart does not duplicate Ashby responsibilities.
+He consumes Ashby services (routing, storage rules, truth gating)
+and contributes meeting-specific cognition.
+
+Recommended canonical path:
+ashby/agents/stuart/
+
+========================================
+EXECUTION PROFILES (LOCKED)
+========================================
+
+1) LOCAL_ONLY (default)
+- No outbound network calls
+- All processing local
+- CPU baseline supported
+- GPU acceleration optional
+- Primary markets: LTC, legal, regulated orgs
+
+2) HYBRID (optional)
+- Audio + storage local
+- Select inference stages may use cloud adapters
+- Must be explicitly enabled
+- Local artifacts remain authoritative
+
+3) CLOUD (optional)
+- Cloud storage + inference permitted
+- For SMBs prioritizing speed over privacy
+- Still bound by evidence rules
+
+Execution profile is selected at runtime.
+Pipeline logic does not change — adapters do.
+
+========================================
+CORE PIPELINE (CANONICAL)
+========================================
+
+Stage 0 — Session Init
+- Create session folder
+- Assign session ID, metadata, mode (meeting / incident)
+
+Stage 1 — Audio Normalize
+- Ingest audio (live or file)
+- Normalize via ffmpeg
+- Persist original + normalized audio
+
+Stage 2 — Diarization (Adapter)
+- Input: normalized audio
+- Output: diarization.json
+- Best-effort speaker separation
+- Overlap + unknown speaker supported
+
+Stage 3 — Transcription (Adapter)
+- Input: normalized audio
+- Output: transcript.json (timestamps)
+- CPU or GPU adapter selectable
+
+Stage 4 — Alignment
+- Merge diarization + transcript
+- Output: aligned.json
+- Canonical source for downstream logic
+
+Stage 5 — Extraction (Adapter)
+- Generate:
+  - short_summary
+  - detailed_minutes
+  - decisions
+  - action_items
+  - incidents
+- Every claim must cite aligned.json evidence
+
+Stage 6 — Index + Retrieval
+- Keyword search baseline
+- Semantic search optional later
+- Retrieval always returns timestamps + speakers
+
+========================================
+CANONICAL OUTPUT SCHEMA (LOCKED)
+========================================
+Per session:
+- audio_original.*
+- audio_normalized.wav
+- diarization.json
+- transcript.json
+- aligned.json
+- summary_short.json
+- minutes_detailed.json
+- decisions.json
+- action_items.json
+- incidents.json
+- index.json
+- meta.json
+
+Schema stability is mandatory.
+Adapters may change, schemas may not.
+
+========================================
+ADAPTER MODEL
+========================================
+Each capability exposes an interface:
+- ASRAdapter
+- DiarizationAdapter
+- ExtractionAdapter
+- StorageAdapter
+
+Implementations:
+- LocalCPU
+- LocalGPU
+- Cloud
+
+Swapping adapters must not require pipeline refactors.
+
+========================================
+TRUTH & FILTERING RULES
+========================================
+- Full transcript is preserved
+- Summaries filter relevance
+- Trivial chatter (e.g., coffee mentions) excluded from summaries
+- No deletion of source evidence
+- If uncertain, mark as UNCERTAIN, do not infer
+
+========================================
+NON-GOALS (vNEXT)
+========================================
+- Perfect diarization in chaotic environments
+- Automatic speaker identity without mapping
+- Legal or medical judgment
+- Hidden inference or opaque summaries
+
+========================================
+NEXT MILESTONE
+========================================
+- Implement CLI end-to-end run
+- Validate on real meeting audio
+- Demo-safe output
+- Prepare first business-facing demo
+
+========================================
+END OF CONTRACT
+========================================

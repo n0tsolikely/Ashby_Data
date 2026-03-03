@@ -1,0 +1,302 @@
+DAY SNAPSHOT — Ashby Recovery, Migration, and First True Live Validation
+Date: 2025-12-18 (late night into 12-19)
+Operator: notsolikely
+System: Raspberry Pi 5 + Laptop (WSL/Ubuntu) + SD backup media
+
+====================================================================
+0) Why this snapshot exists
+====================================================================
+Today’s “Control Sync” got hijacked immediately by a boot failure scare. Instead of Guild Orders / feature work, the entire session became a recovery + migration + verification mission:
+- Pi booted into **systemd emergency mode** (looked like “we might lose everything”).
+- We salvaged the full user home from the Pi onto removable media.
+- We migrated the working Ashby codebase to the laptop (WSL Ubuntu).
+- We recreated a proper Python venv and installed dependencies cleanly.
+- We got Ashby fully functional again and **proved it live** by controlling Thor’s bulb and executing NLU calls.
+
+This snapshot preserves the exact path we took, what broke, what we fixed, and the bugs discovered during live testing.
+
+====================================================================
+1) The incident: Pi booted into emergency mode
+====================================================================
+Symptoms shown on boot:
+- “You are in emergency mode… After logging in, type ‘journalctl -xb’ to view system logs… ‘systemctl reboot’… ‘systemctl default’…”
+- “Cannot open access to console, the root account is locked.”
+- It looped: “Press Enter to continue.” → reload → emergency mode message again.
+- We were worried the SD filesystem or mount targets were failing.
+
+Key context:
+- Pi had been shut down properly the previous night with: sudo shutdown -h
+- This still happened anyway (so “proper shutdown” doesn’t guarantee no boot issues).
+
+Outcome:
+- Eventually the Pi did boot normally again (later we got desktop + network up).
+- But we treated it like a real failure and proceeded with backup-first recovery steps.
+
+====================================================================
+2) Windows + SD card triage (what we saw)
+====================================================================
+We pulled the Pi SD and put it in the laptop.
+Windows Disk Management showed:
+- A small FAT32 partition (“bootfs” ~512MB) visible in Explorer.
+- A large second partition (ext4) present but not normally mountable by Windows.
+We could browse boot partition files like cmdline.txt, config.txt, overlays, dtb files, etc.
+
+Attempted to mount ext4 via WSL:
+- We attempted:
+  wsl.exe --mount \\.\PHYSICALDRIVE4 --partition 2 --type ext4 --read-only
+- We hit multiple issues:
+  - “Unknown command: --mount” occurred at one point due to invoking the wrong “wsl” binary (Wsman Shell tool, not wsl.exe).
+  - WSL mount flags mismatch / unsupported argument: “Invalid command line argument: --read-only”
+  - Then: “The system cannot find the drive specified. Error code 0x8007000f”
+  - Diskpart showed Disk 4 Online 119GB; we tried “offline disk” and later “online disk” and saw:
+    “Virtual Disk Service error: The object is not found.”
+
+Important practical lesson:
+- Diskpart state changes + some USB hubs can make devices disappear / stop enumerating temporarily.
+- The Anker hub later stopped detecting SD readers properly (no connection sound, no drive), while other ports did work.
+
+Decision:
+- Stop burning time fighting Windows/WSL raw-disk mounting while streaming.
+- Use the Pi itself (which can read ext4 natively) to do the backup safely.
+
+====================================================================
+3) Recovery plan chosen (the correct move)
+====================================================================
+Instead of risking more corruption:
+- We booted the Pi normally (it did come up).
+- We plugged a separate SD card into the Pi via SD-to-USB adapter.
+- We backed up from the Pi’s internal SD (mmcblk0) → external USB SD (sda).
+
+We validated devices with:
+lsblk
+and saw:
+- mmcblk0p1 mounted at /boot/firmware
+- mmcblk0p2 mounted at /
+- External SD appeared as sda1 mounted at /media/notsolikely/SD
+
+====================================================================
+4) Backup execution (what worked, what failed, and why)
+====================================================================
+First attempt (copy full home dir):
+cp -r /home/notsolikely /media/notsolikely/SD/pi_backup
+
+This failed with:
+- “cannot create symbolic link … Operation not permitted”
+because the destination filesystem (likely exFAT/FAT) does not support Linux symlinks/permissions the same way.
+
+Correct solution:
+- Use tar to preserve structure in an archive (and avoid direct symlink creation issues):
+tar -czf /media/notsolikely/SD/pi_backup.tar.gz /home/notsolikely
+
+Result:
+- pi_backup.tar.gz created successfully.
+- Size observed: ~411MB (later shown around ~420MB on Windows).
+- We also had a “pi_backup/” folder created from earlier attempts, but the tar.gz is the real reliable artifact.
+
+We then unmounted safely and noted the SD got warm (normal under write load).
+
+====================================================================
+5) Why we shut down the Pi after backup
+====================================================================
+Reason:
+- After creating the backup archive, powering down prevents any further writes and reduces risk of SD corruption while we move media between devices.
+- The whole point was “freeze the state” and not keep poking the system.
+
+====================================================================
+6) What the backup contains (and what it does NOT mean)
+====================================================================
+On the laptop, we could see:
+- The tar.gz and a visible pi_backup folder.
+- Inside were .local/.config/.cache plus our Ashby/AshPi files and Python scripts.
+
+Important clarification:
+- Having the code on your laptop does NOT mean you can “run it on Windows directly” in Explorer.
+- You run it in Linux (WSL Ubuntu) or on the Pi, using Python + dependencies.
+- That’s why we migrated into WSL and rebuilt the venv.
+
+====================================================================
+7) Laptop migration: clean slate decision
+====================================================================
+We already had old folders on the laptop:
+~/ashby and ~/ash-env
+
+User decision (correct call):
+- Delete them and replace with the fresh backup, because the old laptop copy might be outdated and confusing.
+
+Commands used:
+rm -rf ~/ashby
+rm -rf ~/ash-env
+
+Then we extracted the tar to restore /home/notsolikely tree:
+- We initially tried /mnt/h (failed because drive wasn’t mounted as /mnt/h yet).
+- After mounting, extraction succeeded.
+
+Final confirmed layout after extraction:
+/home/notsolikely/home/notsolikely/ (note the double “home/notsolikely” path due to how tar was extracted relative to ~)
+
+We verified with:
+cd /home/notsolikely
+ls
+then:
+cd notsolikely
+ls
+and saw:
+ashpi/
+ashpi-env/
+ashenv/
+ash.py
+ashpi_test.py
+ashpi_telegram_control.py
+and other project files
+
+====================================================================
+8) Python environment fixes (the actual blocker)
+====================================================================
+We tried running:
+python3 ash.py
+and got:
+ModuleNotFoundError: No module named 'openai'
+
+We tried pip and got:
+“pip: command not found” and “externally-managed-environment” errors (PEP 668).
+That’s Debian/Ubuntu protecting system Python from random pip installs.
+
+Correct fix (what we did):
+- Create a NEW venv inside the project directory:
+python3 -m venv .venv
+source .venv/bin/activate
+
+- Upgrade pip inside the venv:
+python3 -m pip install --upgrade pip
+
+- Install required packages inside the venv (NOT system-wide):
+python3 -m pip install openai tuya-iot-py-sdk
+
+This succeeded and installed all dependencies cleanly.
+
+Next blocker:
+Running ashpi_test.py then failed because:
+OPENAI_API_KEY environment variable was not set.
+
+Fix:
+- Export key in the shell before running, or load it via env file logic.
+(You did the smart thing and hid the key from stream.)
+
+====================================================================
+9) The win: Ashby was ALIVE and proven live
+====================================================================
+Once key was set, we tested live functionality and it worked.
+
+Proofs:
+1) Conversational:
+“You: yo bro how are you”
+[AshPi NLU] GPT intent called for: ‘yo bro how are you’
+Ashby responded normally.
+
+2) Real device control:
+“You: turn off thor”
+[AshPi INFO] Setting group ‘thor’ devices [‘thor_bulb’] to 0/1000
+Ashby confirmed action.
+
+3) Relative brightness control:
+“You: too bright” → set to 200/1000
+“You: higher” → 300/1000
+“You: more” → 400/1000
+
+This is the first **true live validation** after the recovery scare:
+- NLU, control path, and device execution all worked again.
+
+====================================================================
+10) Bugs / behavior issues discovered during live testing
+====================================================================
+BUG 1 — “Turn on to 10%” while light is OFF doesn’t actually turn it on first
+Observed behavior:
+- Command: “turn him on to 10%”
+- Ashby acted like it did it, but the light stayed off (because it didn’t issue an ON + brightness sequence).
+Expected:
+- If light is OFF and user says “on to X%”, system must:
+  1) turn on
+  2) then set brightness to X
+Or do brightness set in a way that implies ON for that device API.
+This needs an explicit “ensure_on” in the action path when an absolute brightness command is used on an OFF device.
+
+BUG 2 — “again” intent causes a lighting loop / doesn’t apply last_delta correctly
+Observed:
+- After reaching 40%, saying “again” triggered GPT intent classification (“again”) and it responded:
+  “Cranking Thor up to 40% again—oh wait, we're already there!”
+It did NOT apply +10% step (or last_delta inheritance) properly.
+Expected:
+- “again” should inherit last direction and apply another step (e.g., +100/1000) even if the exact level repeats.
+- Also: It should not announce doing something it already knows is redundant.
+
+BUG 3 — “yes” intent acknowledged a change but state reported inconsistently
+Observed:
+- Ashby said it was bringing Thor to 50%, but later “what’s he at” reported 40%.
+This suggests:
+- Either the 50% action didn’t execute,
+- or the state tracker didn’t update,
+- or the answer came from stale / assumed state rather than verified HouseState.
+
+Meta-note on logs:
+- When the log shows “[AshPi INFO] Setting group…” without “[AshPi NLU] GPT intent called…”, that usually means it matched a local rule/intent path (fast path) instead of GPT NLU.
+- When it shows “[AshPi NLU] GPT intent called…”, it went through GPT intent resolution.
+
+====================================================================
+11) Sync strategy needed: Pi + Laptop staying aligned
+====================================================================
+We need a clean plan so Pi and Laptop don’t drift.
+
+Goal:
+- One “source of truth” repo/folder (probably laptop WSL).
+- Pi becomes a deploy target (rsync/scp) OR uses git pulls.
+- Avoid hand-copying folders back and forth without version control.
+
+Candidate plan (tomorrow during Control Sync):
+A) Put Ashby under git (even local-only initially).
+B) Use a deploy script:
+   - rsync -av --delete ~/ashby/ pi:/home/notsolikely/ashby/
+   OR push/pull from a private repo.
+C) Keep secrets (.env) out of git; use env files per machine.
+
+====================================================================
+12) Stuart integration note
+====================================================================
+We need Stuart “on top” of this platform later.
+Not solved tonight; the win tonight was recovery + validation.
+But the laptop-based workflow will make integrating Stuart easier because:
+- One environment
+- Easier editing/automation
+- Easier logging/versioning
+
+====================================================================
+13) Final state at end of session
+====================================================================
+- Backup exists on external SD:
+  pi_backup.tar.gz (full /home/notsolikely)
+- Laptop WSL has the extracted tree and a working .venv with dependencies installed.
+- Ashby is functioning again, and real device control was demonstrated live.
+- We have 3 concrete bugs / improvements to hit next session.
+- We can now sleep without fear of “we lost everything.”
+
+====================================================================
+14) Tomorrow’s Control Sync (first things to do)
+====================================================================
+1) Confirm backup integrity:
+   - Verify tar.gz can extract cleanly and contains ashpi + configs.
+2) Decide the “source-of-truth” workflow (git vs rsync).
+3) Fix BUG 1 (ensure_on for “on to X%” when device is off).
+4) Fix BUG 2 (again/last_delta step application; don’t loop at same level).
+5) Fix BUG 3 (state verification so “yes to 50%” is reflected correctly).
+6) Optional: start formal folder structure cleanup (designated ashby folder).
+7) Optional: note about SD vs USB reliability (but not required tonight).
+
+====================================================================
+15) One last thing (real talk)
+====================================================================
+This was a W. Not “fun”, but a real win:
+- You didn’t panic.
+- You saved the state.
+- You proved the brain still controls the house.
+That’s the difference between “toy project” and “real system.”
+
+END OF DAY SNAPSHOT

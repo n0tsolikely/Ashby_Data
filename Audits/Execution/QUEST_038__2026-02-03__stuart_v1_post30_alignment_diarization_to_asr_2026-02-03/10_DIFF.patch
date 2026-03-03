@@ -1,0 +1,167 @@
+diff --git a/ashby/modules/meetings/pipeline/align.py b/ashby/modules/meetings/pipeline/align.py
+new file mode 100644
+index 0000000..8132bdb
+--- /dev/null
++++ b/ashby/modules/meetings/pipeline/align.py
+@@ -0,0 +1,109 @@
++from __future__ import annotations
++
++import json
++import time
++from pathlib import Path
++from typing import Any, Dict, List, Optional
++
++from ashby.modules.meetings.schemas.artifacts_v1 import dump_json
++from ashby.modules.meetings.store import sha256_file
++
++
++def _load_json(path: Path) -> Dict[str, Any]:
++    return json.loads(path.read_text(encoding="utf-8"))
++
++
++def _overlap_ms(a_start: int, a_end: int, b_start: int, b_end: int) -> int:
++    lo = max(a_start, b_start)
++    hi = min(a_end, b_end)
++    return max(0, hi - lo)
++
++
++def align_transcript_time_overlap(run_dir: Path) -> Dict[str, Any]:
++    """Stage 3 alignment: diarization ↔ ASR.
++
++    Reads (write-once inputs produced earlier):
++      - run_dir/artifacts/transcript.json (v1)
++      - run_dir/artifacts/diarization_segments.json (v1) (optional)
++
++    Writes (write-once):
++      - run_dir/artifacts/aligned_transcript.json (v1)
++
++    Truth:
++      - If diarization file missing, we still write aligned output by copying transcript speakers.
++    """
++    artifacts_dir = run_dir / "artifacts"
++    tpath = artifacts_dir / "transcript.json"
++    if not tpath.exists():
++        raise FileNotFoundError(f"transcript.json missing: {tpath}")
++
++    dpath = artifacts_dir / "diarization_segments.json"
++
++    out_path = artifacts_dir / "aligned_transcript.json"
++    if out_path.exists():
++        raise FileExistsError(f"Refusing to overwrite aligned transcript: {out_path}")
++
++    t = _load_json(tpath)
++    diar = _load_json(dpath) if dpath.exists() else {"segments": [], "engine": "missing"}
++
++    t_segs = t.get("segments") or []
++    d_segs = diar.get("segments") or []
++
++    aligned: List[Dict[str, Any]] = []
++
++    for seg in t_segs:
++        try:
++            start_ms = int(seg.get("start_ms", 0) or 0)
++            end_ms = int(seg.get("end_ms", 0) or 0)
++        except Exception:
++            start_ms, end_ms = 0, 0
++
++        # default speaker from transcript
++        speaker = seg.get("speaker") if isinstance(seg.get("speaker"), str) and seg.get("speaker") else "SPEAKER_00"
++        speaker_source = "transcript"
++
++        best_ov = 0
++        best_sp: Optional[str] = None
++
++        # only attempt overlap if transcript segment has a duration
++        if end_ms > start_ms and d_segs:
++            for d in d_segs:
++                try:
++                    ds = int(d.get("start_ms", 0) or 0)
++                    de = int(d.get("end_ms", 0) or 0)
++                except Exception:
++                    continue
++                ov = _overlap_ms(start_ms, end_ms, ds, de)
++                if ov > best_ov:
++                    best_ov = ov
++                    best_sp = d.get("speaker") if isinstance(d.get("speaker"), str) else None
++
++        if best_sp and best_ov > 0:
++            speaker = best_sp
++            speaker_source = "diarization"
++
++        out_seg: Dict[str, Any] = dict(seg)
++        out_seg["speaker"] = speaker
++        out_seg["speaker_source"] = speaker_source
++        aligned.append(out_seg)
++
++    payload: Dict[str, Any] = {
++        "version": 1,
++        "session_id": t.get("session_id", ""),
++        "run_id": t.get("run_id", ""),
++        "segments": aligned,
++        "engine": "time_overlap_v1",
++        "asr_engine": t.get("engine", ""),
++        "diarization_engine": diar.get("engine", "missing"),
++        "diarization_present": bool(dpath.exists()),
++    }
++
++    dump_json(out_path, payload, write_once=True)
++
++    return {
++        "kind": "aligned_transcript",
++        "path": str(out_path),
++        "sha256": sha256_file(out_path),
++        "created_ts": time.time(),
++        "engine": payload["engine"],
++    }
+diff --git a/tests/test_meetings_alignment_time_overlap.py b/tests/test_meetings_alignment_time_overlap.py
+new file mode 100644
+index 0000000..32e5b31
+--- /dev/null
++++ b/tests/test_meetings_alignment_time_overlap.py
+@@ -0,0 +1,46 @@
++from __future__ import annotations
++
++import json
++from pathlib import Path
++
++from ashby.modules.meetings.pipeline.align import align_transcript_time_overlap
++from ashby.modules.meetings.schemas.artifacts_v1 import dump_json
++
++
++def test_alignment_time_overlap_assigns_speaker(tmp_path: Path):
++    run_dir = tmp_path / 'runs' / 'run_x'
++    art = run_dir / 'artifacts'
++    art.mkdir(parents=True, exist_ok=True)
++
++    transcript = {
++        "version": 1,
++        "session_id": "ses_x",
++        "run_id": "run_x",
++        "engine": "stub",
++        "segments": [
++            {"segment_id": 0, "start_ms": 0, "end_ms": 1000, "speaker": "SPEAKER_00", "text": "hi"},
++            {"segment_id": 1, "start_ms": 1000, "end_ms": 2000, "speaker": "SPEAKER_00", "text": "yo"},
++        ],
++    }
++    diar = {
++        "version": 1,
++        "session_id": "ses_x",
++        "run_id": "run_x",
++        "engine": "stub",
++        "segments": [
++            {"segment_id": 0, "start_ms": 0, "end_ms": 1500, "speaker": "SPEAKER_01"},
++            {"segment_id": 1, "start_ms": 1500, "end_ms": 2500, "speaker": "SPEAKER_02"},
++        ],
++    }
++
++    dump_json(art / 'transcript.json', transcript, write_once=True)
++    dump_json(art / 'diarization_segments.json', diar, write_once=True)
++
++    a = align_transcript_time_overlap(run_dir)
++    out_path = Path(a['path'])
++    payload = json.loads(out_path.read_text(encoding='utf-8'))
++
++    segs = payload['segments']
++    assert segs[0]['speaker'] == 'SPEAKER_01'
++    # second segment overlaps 1000-1500 with SPEAKER_01 and 1500-2000 with SPEAKER_02 => tie? max overlap both 500; tie-break keeps first max (SPEAKER_01)
++    assert segs[1]['speaker'] in ('SPEAKER_01', 'SPEAKER_02')

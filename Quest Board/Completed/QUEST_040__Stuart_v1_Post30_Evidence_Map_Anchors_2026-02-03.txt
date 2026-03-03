@@ -1,0 +1,92 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+
+QUEST ID:
+QUEST_040
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Post-30: Stage 5 Evidence Map v1 (anchors → transcript segments + timestamps)
+
+Context: Stuart render
+
+Origin:
+Control Sync — 2026-02-03 (Post-30 plan)
+
+Priority: P1
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-03_REV4.txt (evidence_map.json requirement)
+- Engine: meetings/render/evidence_map.py (currently stub)
+
+Status: COMPLETED
+
+Audit Bundle Path:
+Audits/Execution/QUEST_040__2026-02-03__stuart_v1_post30_evidence_map_anchors_2026-02-03
+
+Accepted On:
+2026-02-03
+
+Accepted By:
+Hands (Peter)
+
+Completed On:
+2026-02-04
+
+Completed By:
+Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Replace the evidence_map stub with a minimal but real evidence map that links output sections/claims
+back to transcript segments and time spans. This is the truth gate for formalization.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Define minimal evidence items:
+-   - claim_id
+-   - claim_text (or section label)
+-   - anchors: [{segment_id, t_start, t_end, speaker_label}]
+- For v1, evidence mapping may be coarse (e.g., section → full transcript span) but must be real and consistent.
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Perfect claim extraction.
+- LLM-based citation selection (optional later).
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_033 (evidence_map schema)
+- QUEST_037 (transcript segments)
+- QUEST_038 (aligned transcript segments for meeting mode)
+- QUEST_039 (formalized output structure)
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Evidence map must be generated deterministically from artifacts created in the same run.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] evidence_map.json generated (non-empty anchors for at least transcript section).
+- [ ] Anchors reference existing transcript segments/timestamps.
+- [ ] Search citations remain coherent (no broken pointers).
+- [ ] `python3 -m pytest -q` PASS.
+
+────────────────────────────────────────────────────────
+TALENT POINT
+────────────────────────────────────────────────────────
+On completion:
+- Talent Point Awarded: YES
+- Talent Spent On: TBD — Evidence Map v1
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+(optional)

@@ -1,0 +1,32 @@
+SNAPSHOT_TYPE: CONTROL_SYNC
+SUBJECT: STUART (Ashby)
+DATE: 2026-02-18
+TIMEZONE: America/Toronto
+GOVERNANCE: Synapse_OS
+STATUS: CONTROL_SYNC CLOSED
+
+CONTROL_SYNC_OPENING_DECLARATION
+- Control Sync was opened and remained in alignment mode (no execution started).
+
+BINDING_DECISIONS
+- Stuart diarization model confirmed as `pyannote/speaker-diarization-3.1` from canonical adapter path.
+- Boundary-accuracy TODO artifact created and placed in canonical Stuart To Do folder.
+- All Dungeon 3 board quests were accepted in strict order and moved to Accepted state with acceptance metadata.
+
+ARTIFACT_STATE_TRANSITIONS
+- Created: `Ashby_Data/Stuart/To Do/STUART_TODO__DIARIZATION_BOUNDARY_ACCURACY__2026-02-18.txt`
+- Quest moves: `Ashby_Data/Quest Board/QUEST_102..QUEST_113` -> `Ashby_Data/Quest Board/Accepted/`
+- Quest metadata updates applied in each moved quest:
+  - `Accepted On: 2026-02-18`
+  - `Accepted By: Hands (Peter) via Codex (Brains)`
+  - Status value set to `ACTIVE`
+
+EXPLICIT_NON_DECISIONS
+- No quest execution was performed in this Control Sync.
+- No quest completion transitions were performed.
+- No engine runtime code changes were made in this closeout step.
+
+NEXT_ACTION_ON_RESUME
+- If directed, begin Dailies execution starting at `QUEST_102` and proceed forward-only with per-quest execution audits.
+
+END_OF_CONTROL_SYNC_SNAPSHOT

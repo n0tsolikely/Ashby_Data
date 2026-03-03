@@ -1,0 +1,101 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+
+QUEST ID:
+QUEST_031
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Post-30: Run Input Binding (contribution → pipeline)
+
+Context: Stuart (Ashby module: meetings)
+
+Origin:
+Control Sync — 2026-02-03 (Post-30 plan)
+
+Priority: P0
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-03_REV4.txt (Dungeon 2 + Dungeon 5; Post-30 Quest Map)
+- Engine: ashby/modules/meetings/store.py (contribution storage)
+- Engine: ashby/modules/meetings/pipeline/job_runner.py (pipeline entry)
+- Engine: ashby/modules/meetings/cli_stuart.py (upload/run contract)
+
+Status: COMPLETED
+
+Audit Bundle Path:
+Audits/Execution/QUEST_031__2026-02-03__stuart_v1_post30_run_input_binding_2026-02-03
+
+Accepted On:
+2026-02-03
+
+Accepted By:
+Hands (Peter)
+
+Completed On:
+2026-02-03
+
+Completed By:
+Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Real engines (ASR/diarization/normalize) require the pipeline to know *which uploaded media* to process.
+Right now the formalize path can succeed with stub artifacts without ever referencing a contribution.
+This quest binds runs to contributions deterministically so Post-30 real stages can run end-to-end.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Define a deterministic rule for selecting an input contribution for a run:
+-   - Prefer explicit contribution_id in the plan step params when provided.
+-   - Otherwise choose the latest contribution for the session (by created_ts in contribution.json).
+- Add a resolver utility (module-level, testable) that returns:
+-   - contribution_id
+-   - source_path (contributions/<id>/source.*)
+-   - source_kind (audio/video) from contribution.json
+- Update run execution so transcribe/diarize/normalize stages receive the resolved input paths.
+- Update CLI contract to optionally accept --contribution-id for plan/run (default: latest).
+- Add proof: run_default_pipeline processes the correct uploaded file when multiple contributions exist.
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Implementing ASR/diarization/PDF engines (handled in QUEST_035–QUEST_041).
+- Web/Telegram door UI changes (handled later under door quests).
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- Completed baseline: QUEST_011–QUEST_013 (STUART_ROOT layout + manifests + immutability rails)
+- Completed baseline: QUEST_019 (job runner lifecycle)
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Immutability rail: do NOT overwrite source media; runs must read from contribution storage.
+- Do not mutate session.json write-once manifests; use deterministic discovery by scanning contribution manifests or use session_state pointers if needed.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] Deterministic contribution resolver implemented (explicit id or latest-by-ts).
+- [ ] CLI supports passing contribution_id into plan/run OR job_runner resolves latest safely.
+- [ ] job_runner passes resolved input path to downstream stages (normalize/transcribe/diarize).
+- [ ] Tests added for: multiple contributions → correct selection.
+- [ ] `python3 -m pytest -q` PASS.
+- [ ] Control Sync + EOD snapshot created on completion.
+
+────────────────────────────────────────────────────────
+TALENT POINT
+────────────────────────────────────────────────────────
+On completion:
+- Talent Point Awarded: YES
+- Talent Spent On: TBD — Run/Contribution Binding (real pipeline input)
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+(optional)

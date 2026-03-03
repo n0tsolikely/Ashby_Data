@@ -1,0 +1,311 @@
+--- /dev/fd/63	2026-02-09 05:41:58.665798109 +0000
++++ ashby/interfaces/web/app.py	2026-02-09 05:29:56.198769220 +0000
+@@ -46,6 +46,28 @@
+     def api_sessions(limit: int = 50) -> Dict[str, Any]:
+         return {"sessions": list_sessions(limit=limit)}
+ 
++    @app.get("/api/library")
++    def api_library(limit: int = 50, mode: Optional[str] = None) -> Dict[str, Any]:
++        """Return sessions suitable for a library view.
++
++        Source of truth:
++        - Uses SQLite index (QUEST_059) so doors can list sessions + latest runs
++          without scanning the filesystem.
++
++        Notes:
++        - If the index is empty, returns an empty list.
++        - Does not create sessions or runs.
++        """
++
++        db_path = sqlite_fts.get_db_path()
++        conn = sqlite_fts.connect(db_path)
++        try:
++            sqlite_fts.ensure_schema(conn)
++            sessions = sqlite_fts.list_sessions(conn, limit=int(limit), mode=(mode or None))
++            return {"ok": True, "sessions": [asdict(s) for s in sessions]}
++        finally:
++            conn.close()
++
+     @app.post("/api/sessions")
+     async def api_create_session(payload: Dict[str, Any]) -> Dict[str, Any]:
+         mode = (payload.get("mode") or "").strip().lower()
+--- /dev/fd/63	2026-02-09 05:41:58.677667184 +0000
++++ ashby/interfaces/web/templates/index.html	2026-02-09 05:30:40.758935188 +0000
+@@ -24,6 +24,12 @@
+             <option value="" selected disabled>Template</option>
+           </select>
+         </div>
++
++        <div class="topbar-right">
++          <input id="searchInput" type="text" placeholder="Search library..." autocomplete="off"/>
++          <button class="pill" id="searchBtn" type="button">Search</button>
++          <button class="pill" id="libraryBtn" type="button">Library</button>
++        </div>
+       </header>
+ 
+       <section class="chat" id="chat"></section>
+--- /dev/fd/63	2026-02-09 05:41:58.688699875 +0000
++++ ashby/interfaces/web/static/app.css	2026-02-09 05:31:33.741854263 +0000
+@@ -57,11 +57,24 @@
+   border-bottom:1px solid var(--border);
+   display:flex;
+   align-items:center;
++  justify-content:space-between;
+   padding:0 14px;
+ }
+ 
+ .topbar-left{display:flex; gap:10px; align-items:center}
+ 
++.topbar-right{display:flex; gap:10px; align-items:center}
++
++#searchInput{
++  width:280px;
++  background:rgba(255,255,255,0.06);
++  border:1px solid var(--border);
++  color:var(--text);
++  padding:10px 12px;
++  border-radius:12px;
++  outline:none;
++}
++
+ select{
+   background:rgba(255,255,255,0.06);
+   color:var(--text);
+@@ -186,3 +199,18 @@
+ }
+ .run-btn:hover{filter:brightness(1.05)}
+ .run-btn:active{transform:translateY(1px)}
++
++/* QUEST_064: minimal library + search UI styling */
++.search-row,.lib-row{
++  margin-top:10px;
++  padding:10px;
++  border:1px solid var(--border);
++  border-radius:12px;
++  background:rgba(255,255,255,0.03);
++  display:flex;
++  flex-direction:column;
++  gap:6px;
++}
++.search-meta,.lib-meta{color:var(--muted); font-size:12px}
++.search-snippet{font-size:13px; line-height:1.35}
++.search-actions,.lib-actions{display:flex; gap:8px; flex-wrap:wrap}
+--- /dev/fd/63	2026-02-09 05:41:58.736830784 +0000
++++ ashby/interfaces/web/static/app.js	2026-02-09 05:34:29.752741787 +0000
+@@ -85,6 +85,17 @@
+   addCard('All Artifacts', lines);
+ }
+ 
++async function showOutputs(runId){
++  if(!runId) return;
++  addBubble('assistant', `Loading outputs for ${runId}...`);
++  const r = await fetch(`/api/runs/${encodeURIComponent(runId)}`);
++  const data = await r.json();
++  const ok = renderPrimaryDownloads(runId, data.downloads || {});
++  if(!ok){
++    renderArtifactsFallback(runId, data.artifacts || []);
++  }
++}
++
+ function addRunStatusCard(runId){
+   const card = document.createElement('div');
+   card.className = 'card';
+@@ -307,8 +318,7 @@
+ }
+ 
+ async function doSearch(q){
+-  const sid = await ensureSession();
+-  const url = `/api/search?q=${encodeURIComponent(q)}&session_id=${encodeURIComponent(sid)}`;
++  const url = `/api/search?q=${encodeURIComponent(q)}&limit=20`;
+   const r = await fetch(url);
+   const data = await r.json();
+   if(!data.ok){
+@@ -320,11 +330,130 @@
+     addBubble('assistant', 'No hits.');
+     return;
+   }
+-  const lines = hits.slice(0,10).map(h => {
+-    const cite = `run:${h.run_id} seg:${h.segment_id} t:${h.t_start || ''}-${h.t_end || ''}`;
+-    return ['hit:', `${h.snippet} <span class="muted">(${cite})</span>`];
++  renderSearchResultsCard(hits);
++}
++
++function renderSearchResultsCard(hits){
++  const card = document.createElement('div');
++  card.className = 'card';
++
++  const h = document.createElement('h3');
++  h.textContent = 'Search Results';
++  card.appendChild(h);
++
++  hits.slice(0,20).forEach(hit => {
++    const row = document.createElement('div');
++    row.className = 'search-row';
++
++    const snippet = document.createElement('div');
++    snippet.className = 'search-snippet';
++    snippet.textContent = hit.snippet || '';
++
++    const meta = document.createElement('div');
++    meta.className = 'search-meta';
++    const title = hit.title || hit.session_id;
++    const t0 = (hit.t_start === 0 || hit.t_start) ? hit.t_start.toFixed(2) : '';
++    const t1 = (hit.t_end === 0 || hit.t_end) ? hit.t_end.toFixed(2) : '';
++    meta.textContent = `${title} · ${hit.mode || 'unknown'} · run:${hit.run_id} · seg:${hit.segment_id}` + ((t0||t1) ? ` · t:${t0}-${t1}` : '');
++
++    const actions = document.createElement('div');
++    actions.className = 'search-actions';
++
++    const b1 = document.createElement('button');
++    b1.className = 'pill primary';
++    b1.type = 'button';
++    b1.textContent = 'Outputs';
++    b1.onclick = () => showOutputs(hit.run_id);
++    actions.appendChild(b1);
++
++    const b2 = document.createElement('button');
++    b2.className = 'pill';
++    b2.type = 'button';
++    b2.textContent = 'Open Session';
++    b2.onclick = async () => {
++      ACTIVE_SESSION = hit.session_id;
++      ATTACHMENTS = [];
++      localStorage.setItem('stuart_active_session', ACTIVE_SESSION);
++      await fetchSessions();
++      addBubble('assistant', `Switched to session ${ACTIVE_SESSION}`);
++    };
++    actions.appendChild(b2);
++
++    row.appendChild(snippet);
++    row.appendChild(meta);
++    row.appendChild(actions);
++    card.appendChild(row);
+   });
+-  addCard('Search Results', lines);
++
++  el('chat').appendChild(card);
++  el('chat').scrollTop = el('chat').scrollHeight;
++}
++
++async function showLibrary(){
++  const r = await fetch('/api/library?limit=50');
++  const data = await r.json();
++  if(!data.ok){
++    addBubble('assistant', 'Library failed to load.');
++    return;
++  }
++  const sessions = data.sessions || [];
++  if(!sessions.length){
++    addBubble('assistant', 'Library is empty.');
++    return;
++  }
++
++  const card = document.createElement('div');
++  card.className = 'card';
++
++  const h = document.createElement('h3');
++  h.textContent = 'Library';
++  card.appendChild(h);
++
++  sessions.slice(0,50).forEach(s => {
++    const row = document.createElement('div');
++    row.className = 'lib-row';
++
++    const title = document.createElement('div');
++    title.className = 'lib-title';
++    title.textContent = (s.title || s.session_id) + ` (${s.mode || 'unknown'})`;
++
++    const meta = document.createElement('div');
++    meta.className = 'lib-meta';
++    const st = s.latest_run_status ? `latest:${s.latest_run_status}` : 'no runs yet';
++    meta.textContent = s.latest_run_id ? `${st} · run:${s.latest_run_id}` : st;
++
++    const actions = document.createElement('div');
++    actions.className = 'lib-actions';
++
++    const b1 = document.createElement('button');
++    b1.className = 'pill';
++    b1.type = 'button';
++    b1.textContent = 'Set Active';
++    b1.onclick = async () => {
++      ACTIVE_SESSION = s.session_id;
++      ATTACHMENTS = [];
++      localStorage.setItem('stuart_active_session', ACTIVE_SESSION);
++      await fetchSessions();
++      addBubble('assistant', `Switched to session ${ACTIVE_SESSION}`);
++    };
++    actions.appendChild(b1);
++
++    const b2 = document.createElement('button');
++    b2.className = 'pill primary';
++    b2.type = 'button';
++    b2.textContent = 'Latest Outputs';
++    b2.disabled = !s.latest_run_id;
++    b2.onclick = () => showOutputs(s.latest_run_id);
++    actions.appendChild(b2);
++
++    row.appendChild(title);
++    row.appendChild(meta);
++    row.appendChild(actions);
++    card.appendChild(row);
++  });
++
++  el('chat').appendChild(card);
++  el('chat').scrollTop = el('chat').scrollHeight;
+ }
+ 
+ async function sendMessage(){
+@@ -374,6 +503,19 @@
+     setMode(e.target.value);
+   });
+ 
++  // library + search UI (QUEST_064)
++  el('libraryBtn').addEventListener('click', showLibrary);
++  el('searchBtn').addEventListener('click', async () => {
++    const q = (el('searchInput').value || '').trim();
++    if(q) await doSearch(q);
++  });
++  el('searchInput').addEventListener('keydown', async (e) => {
++    if(e.key === 'Enter'){
++      const q = (el('searchInput').value || '').trim();
++      if(q) await doSearch(q);
++    }
++  });
++
+   // attach wiring
+   const fileInput = document.createElement('input');
+   fileInput.type = 'file';
+--- /dev/fd/63	2026-02-09 05:41:58.748014077 +0000
++++ tests/test_meetings_web_door_scaffold.py	2026-02-09 05:35:24.737206771 +0000
+@@ -32,3 +32,31 @@
+     html = r.text
+     # placeholder must exist and be disabled so nothing is preselected
+     assert '<option value="" selected disabled>Mode</option>' in html
++
++
++@pytest.mark.asyncio
++async def test_index_has_library_and_search_controls():
++    app = create_app()
++    transport = httpx.ASGITransport(app=app)
++    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as c:
++        r = await c.get("/")
++    assert r.status_code == 200
++    html = r.text
++    # QUEST_064: basic library/search UI controls exist
++    assert 'id="searchInput"' in html
++    assert 'id="searchBtn"' in html
++    assert 'id="libraryBtn"' in html
++
++
++@pytest.mark.asyncio
++async def test_web_library_endpoint_returns_ok_even_when_empty(tmp_path, monkeypatch):
++    monkeypatch.setenv("STUART_ROOT", str(tmp_path / "stuart_runtime"))
++
++    app = create_app()
++    transport = httpx.ASGITransport(app=app)
++    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as c:
++        r = await c.get("/api/library?limit=10")
++    assert r.status_code == 200
++    data = r.json()
++    assert data.get("ok") is True
++    assert "sessions" in data

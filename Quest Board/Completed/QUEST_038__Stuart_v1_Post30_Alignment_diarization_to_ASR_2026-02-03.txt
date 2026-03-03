@@ -1,0 +1,95 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+
+QUEST ID:
+QUEST_038
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Post-30: Stage 3 Alignment (diarization ↔ ASR merge → aligned_transcript.json)
+
+Context: Stuart pipeline
+
+Origin:
+Control Sync — 2026-02-03 (Post-30 plan)
+
+Priority: P0
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-03_REV4.txt (Dungeon 5 align stage)
+- Engine: meetings/render/speaker_overlay.py (name overlay)
+
+Status: COMPLETED
+
+Audit Bundle Path:
+Audits/Execution/QUEST_038__2026-02-03__stuart_v1_post30_alignment_diarization_to_asr_2026-02-03
+
+Accepted On:
+2026-02-03
+
+Accepted By:
+Hands (Peter)
+
+Completed On:
+2026-02-03
+
+Completed By:
+Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Apply diarization speaker turns onto ASR transcript segments to produce a speaker-labeled aligned transcript.
+This is the ground truth for meeting-mode outputs (formalization, extract-only, citations).
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Implement alignment logic that outputs aligned_transcript.json:
+-   - For each transcript segment, assign speaker_label based on overlap with diarization turns.
+-   - Preserve original timestamps and text.
+- Produce aligned transcript text mirror (optional) or update transcript.txt format to include speaker labels when available.
+- Ensure speaker overlay mapping (SPEAKER_00 → name) can be applied at render time (no mutation).
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Word-level forced alignment.
+- Speaker embedding identity across sessions.
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_036 (diarization segments)
+- QUEST_037 (transcript segments)
+- QUEST_033 (aligned_transcript schema)
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Keep algorithm deterministic (tie-break rules documented).
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] aligned_transcript.json produced for meeting mode when diarization exists.
+- [x] Speaker labels are stable and compatible with overlay system.
+- [x] `python3 -m pytest -q` PASS (alignment unit tests with synthetic segments).
+
+────────────────────────────────────────────────────────
+TALENT POINT
+────────────────────────────────────────────────────────
+On completion:
+- Talent Point Awarded: YES
+- Talent Spent On: TBD — Alignment (diarization↔ASR)
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+(optional)
+
+FINAL NOTES
+- Audit bundle: Audits/Execution/QUEST_038__2026-02-03__stuart_v1_post30_alignment_diarization_to_asr_2026-02-03
+- Diff: 10_DIFF.patch
+- Receipts: 12_TEST_OUTPUT__pytest.txt, 12_TEST_OUTPUT__smoke.txt

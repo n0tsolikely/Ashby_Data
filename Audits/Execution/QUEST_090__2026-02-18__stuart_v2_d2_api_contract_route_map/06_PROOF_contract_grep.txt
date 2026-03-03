@@ -1,0 +1,8 @@
+4:- Upload is not Run. `POST /api/upload` stores contribution only.
+5:- Artifacts on disk are source of truth (JSON/MD/PDF). No fabricated transcript/formalization content.
+20:## Transcript Version ID Strategy
+26:## export_type Semantics
+48:| `GET /api/sessions/{session_id}/export` | Create/return export metadata | Supports `export_type` |
+67:- `GET /api/sessions/{session_id}/export?export_type=full_bundle`:
+69:{"ok": true, "session_id": "ses_...", "export_type": "full_bundle", "zip": {"name": "....zip", "download_url": "/api/exports/....zip"}}
+79:curl -s "http://127.0.0.1:8844/api/sessions/ses_xxx/export?export_type=full_bundle"

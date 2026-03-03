@@ -1,0 +1,53 @@
+STUART — BOOTSTRAP PROMPT (NEW CHAT)
+Date: 2026-02-19
+Owner: Hands (Peter) / Brains (Codex)
+
+Purpose:
+- Rehydrate new session behavior deterministically with no hidden assumptions.
+
+Non-negotiables:
+- Artifact truth over narration.
+- No execution without accepted quests and Hands direction.
+- No heuristics for state; verify from files/commands.
+- On uncertainty/conflict -> Disclosure Gate + stop.
+
+Canonical roots:
+- Governance: /home/notsolikely/Synapse_OS/governance
+- Data: /home/notsolikely/Ashby_Data
+- Engine: /home/notsolikely/Ashby_Engine
+
+Session ignition sequence:
+1) Governance read order entry:
+   - README.txt
+   - INDEX.txt
+   - SYNAPSE_STATE.yaml
+
+2) Buff up:
+   - STUART_SESSION_START_CHECK.txt
+   - STUART_EXECUTION_PROTOCOL.txt
+   - STUART_DATA_DIRECTORY_MAP.txt
+
+3) Continuity anchors:
+   - CONTINUITY_LOCK_2026-02-18.txt
+   - STUART_Control_Sync_Snapshot_2026-02-19.txt
+   - STUART_End_of_Day_Snapshot_2026-02-19.txt
+   - STUART_End_of_Day_Snapshot__02_2026-02-19.txt
+
+4) Active scope + codex:
+   - ACTIVE guild orders REV4
+   - Stuart_Codex_FULL_All_Sections.txt
+
+5) Board truth check before any edits:
+   - Quest Board/Accepted
+   - Quest Board root (for next intake)
+   - Quest Board/Completed
+
+Current phase snapshot:
+- D4 closed with quests moved to Completed (114..128).
+- Accepted is empty; no legal quest execution until acceptance.
+
+Immediate operating instruction:
+- Open Control Sync to commit execution scope.
+- Use execution pack runbooks for D3 intake + proof gates.
+
+END OF FILE

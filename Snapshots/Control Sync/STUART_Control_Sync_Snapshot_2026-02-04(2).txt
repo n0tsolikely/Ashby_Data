@@ -1,0 +1,86 @@
+STUART CONTROL SYNC SNAPSHOT — 2026-02-04 (POST ACCEPTANCE)
+Timestamp (local): 2026-02-04 15:58:54 EST (-0500)
+Timestamp (utc):   2026-02-04 20:58:54 UTC (+0000)
+Hands: Peter
+Operator: Ash
+
+CONTROL SYNC STATUS
+- CLOSED (checkpoint for rehydration / new chat)
+
+CANONICAL ROOTS CONFIRMED
+- Data:       /mnt/data/Ashby_Data
+- Engine:     /mnt/data/Ashby_Engine
+- Governance: /mnt/data/Synapse_OS_Governance
+
+WHAT CHANGED ON DISK (THIS CONTROL SYNC)
+1) Rehydration pack archived (inert) while preserving Stuart canonical vision:
+   - Kept (top-level):
+     - Ashby_Data/Latest Rehydration Pack/Stuart - The Canonical Vision.txt
+   - Created:
+     - Ashby_Data/Latest Rehydration Pack/Stuart Rehydration Pack Feb 04/
+   - Moved into that folder (ALL other items):
+     - BOOTSRAP_PROMPT_* (all)
+     - CONTINUITY_LOCK_* (all)
+     - execution pack/ (entire folder)
+     - README.txt
+
+2) Quest scope accepted (per Hands) — QUEST_042 through QUEST_051:
+   - Each accepted quest now has:
+     - Status: ACCEPTED
+     - Accepted On: 2026-02-04
+     - Accepted By: Hands (Peter)
+     - Audit Bundle Path set
+   - Files moved:
+     - from: Ashby_Data/Quest Board/
+     - to:   Ashby_Data/Quest Board/Accepted/
+
+ACTIVE RAID STATE (NOW)
+- Active Raid(s):
+  - Stuart V1 — REV6 Guild Orders:
+    - Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS_STUART_V1_2026-02-04_REV6.txt
+- Accepted quest scope (today):
+  - Dungeon 1 (Artifact contract / naming):
+    - QUEST_042, QUEST_043, QUEST_044, QUEST_045
+  - Dungeon 2 (Formalization foundations):
+    - QUEST_046, QUEST_047, QUEST_048, QUEST_049, QUEST_050, QUEST_051
+
+ACCEPTED QUEST LIST (WITH AUDIT BUNDLES)
+- QUEST_042 — D1 (1/4) minutes.md / journal.md naming
+  - Audits/Execution/QUEST_042__2026-02-04__stuart_v1_dungeon_1_1_4_mode_specific_artifact_naming_for_md_minutes_md_journal__2026-02-04
+- QUEST_043 — D1 (2/4) minutes.pdf / journal.pdf naming
+  - Audits/Execution/QUEST_043__2026-02-04__stuart_v1_dungeon_1_2_4_mode_specific_export_naming_for_pdf_minutes_pdf_journal__2026-02-04
+- QUEST_044 — D1 (3/4) diarization.json naming alignment
+  - Audits/Execution/QUEST_044__2026-02-04__stuart_v1_dungeon_1_3_4_diarization_artifact_naming_alignment_diarization_json_c_2026-02-04
+- QUEST_045 — D1 (4/4) run manifest primary outputs pointers (mode-aware)
+  - Audits/Execution/QUEST_045__2026-02-04__stuart_v1_dungeon_1_4_4_run_manifest_primary_output_pointers_mode_aware_2026-02-04
+- QUEST_046 — D2 (1/7) retention + template become first-class run params (validated)
+  - Audits/Execution/QUEST_046__2026-02-04__stuart_v1_dungeon_2_1_7_retention_template_become_first_class_run_params_validat_2026-02-04
+- QUEST_047 — D2 (2/7) default templates v1 system prompts (meeting + journal)
+  - Audits/Execution/QUEST_047__2026-02-04__stuart_v1_dungeon_2_2_7_default_templates_v1_system_prompts_for_meeting_journal_2026-02-04
+- QUEST_048 — D2 (3/7) minutes.json schema v1
+  - Audits/Execution/QUEST_048__2026-02-04__stuart_v1_dungeon_2_3_7_minutes_json_schema_v1_machine_contract_2026-02-04
+- QUEST_049 — D2 (4/7) journal.json schema v1
+  - Audits/Execution/QUEST_049__2026-02-04__stuart_v1_dungeon_2_4_7_journal_json_schema_v1_machine_contract_2026-02-04
+- QUEST_050 — D2 (5/7) LLM formalizer v1 (meeting → minutes.json)
+  - Audits/Execution/QUEST_050__2026-02-04__stuart_v1_dungeon_2_5_7_llm_formalizer_v1_meeting_minutes_json_with_citations_2026-02-04
+- QUEST_051 — D2 (6/7) LLM formalizer v1 (journal → journal.json)
+  - Audits/Execution/QUEST_051__2026-02-04__stuart_v1_dungeon_2_6_7_llm_formalizer_v1_journal_journal_json_with_truth_discip_2026-02-04
+
+DECISIONS / CONSTRAINTS (BINDING)
+- Stuart Codex is the law for Meeting Minutes Mode + Journal Mode:
+  - /mnt/data/Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt
+- Rehydration artifacts are NOT deleted; they are archived inertly and will be regenerated only after real quest execution produces real deltas.
+- Door UX (Webapp/Telegram/CLI) is not the scope of accepted quests yet.
+
+KNOWN AMBIGUITIES / RISKS (EXPLICIT)
+- Dungeon coverage mismatch vs numbering:
+  - Hands requested acceptance of QUEST_042–QUEST_051 as “Dungeons 1–3 scope”.
+  - In the current quest board, Dungeon 3 work begins at QUEST_053.
+  - Therefore, Dungeon 3 is NOT accepted today (still BOARD) unless Hands expands scope later.
+  - Also, Dungeon 2 has a 7th quest (QUEST_052) that remains BOARD.
+  - This is intentional because scope was explicitly set to 042–051.
+
+NEXT EXECUTION ENTRYPOINT (WHEN DAILIES START)
+- Start with QUEST_042 and complete sequentially unless Hands overrides.
+
+END OF CONTROL SYNC SNAPSHOT

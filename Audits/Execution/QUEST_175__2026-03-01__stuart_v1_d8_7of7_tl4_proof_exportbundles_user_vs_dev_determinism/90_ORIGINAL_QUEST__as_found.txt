@@ -1,0 +1,110 @@
+# QUEST_ID: QUEST_175
+# TITLE: Stuart v1 — Dungeon 8 (7/7): TL4 Proof — Export Bundles (USER vs DEV) + Determinism
+# DATE: 2026-03-01
+# STATUS: ACCEPTED
+# PRIORITY: P0
+# OWNER: OpenAI Codex (CLI)
+# RISK_CLASS: R1
+
+## EXECUTIVE SUMMARY
+This is the end-to-end proof quest for Dungeon 8.
+
+We need hard evidence that:
+- USER_EXPORT bundles match the contract and exclude dev artifacts
+- DEV_EXPORT bundles include a `dev/` folder with receipts/evidence/raw JSON
+- Export outputs are deterministic (same inputs → same zip hash)
+- PDFs contain ID footers
+
+## DEPENDS ON
+- QUEST_169-174
+
+## TESTING LEVEL
+TL4 (end-to-end)
+
+## PROOF ARTIFACTS TO PRODUCE
+Create a new folder:
+- `Ashby_Data/Proofs/D8/`
+
+Inside it, store:
+1) `user_full_bundle.zip`
+2) `user_transcript_only.zip`
+3) `user_formalization_only.zip`
+4) `dev_bundle.zip`
+5) `sha256.txt` (sha256 of each zip, plus determinism re-run hashes)
+6) `zip_tree_user_full.txt` (output of `unzip -l user_full_bundle.zip`)
+7) `zip_tree_dev.txt` (output of `unzip -l dev_bundle.zip`)
+8) `CHECKLIST.md` describing what was verified and where in the zips
+
+## PROCEDURE
+### A) Pick a real session
+Use a session that has:
+- at least 1 transcript_version
+- at least 1 formalization run
+- at least 1 overlay mapping (speaker_map)
+
+Record:
+- session_id
+- transcript_version_ids present
+- formalization_ids (run_ids) present
+
+### B) Generate exports (via API or UI)
+Generate these zips with explicit options:
+- USER_EXPORT full_bundle:
+  - transcript_formats: `txt,pdf`
+  - formalization_formats: `pdf,md`
+- USER_EXPORT transcript_only:
+  - transcript_formats: `txt`
+- USER_EXPORT formalization_only:
+  - formalization_formats: `pdf`
+- DEV_EXPORT dev_bundle
+
+Save them to `Ashby_Data/Proofs/D8/` with the names listed above.
+
+### C) Verify structure + content policy
+For USER_EXPORT:
+- must contain:
+  - session.json
+  - audio/
+  - transcripts/<id>/
+  - overlays/
+  - (formalizations/<id>/ if applicable)
+- must NOT contain:
+  - evidence_map.json
+  - llm_usage_receipt.json
+  - minutes.json / journal.json / transcript_version.json
+  - run manifests/logs
+  - dev/
+
+For DEV_EXPORT:
+- must contain `dev/` with:
+  - evidence_map.json
+  - llm_usage_receipt.json
+  - run.json and events.jsonl
+  - raw JSON outputs
+
+### D) Verify traceability footers
+- Open one exported formalization PDF:
+  - confirm footer includes session_id + formalization_id + created_ts
+- Open one exported transcript PDF (if included):
+  - confirm footer includes session_id + transcript_version_id + created_ts
+
+### E) Verify determinism
+Run the exact same export twice (same session, same options) and compare sha256.
+At minimum prove determinism for:
+- USER_EXPORT full_bundle
+- DEV_EXPORT dev_bundle
+
+`sha256(user_full_bundle_run1) == sha256(user_full_bundle_run2)`
+`sha256(dev_bundle_run1) == sha256(dev_bundle_run2)`
+
+Record hashes in `sha256.txt`.
+
+## ACCEPTANCE CRITERIA
+- Proof folder exists with all artifacts.
+- CHECKLIST.md clearly states pass/fail for each requirement.
+- Hash determinism proven for at least full_bundle + dev_bundle.
+
+## RECEIPTS REQUIRED
+- The entire `Ashby_Data/Proofs/D8/` folder committed or attached.
+- Contents of `sha256.txt` and `CHECKLIST.md`.
+

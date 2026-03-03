@@ -1,0 +1,128 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_086
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v2 — D1 7of10: Create canonical stuartClient API module (no Base44 naming, no fake outputs)
+
+Context: (Ashby / Stuart / System / Other)
+Stuart (Ashby) — Webapp Frontend
+
+Origin:
+Stuart Architecture Transcendence Protocol — Control Sync 2026-02-16 (Dungeon 1) + Codex 1.2/1.4 evidence/truth rules
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- Guild Orders: Ashby_Data/Guild Orders/PAUSED/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt — Dungeon 1
+- Codex: Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt (Sections 1.2, 1.4, 2.1, 2.2, 2.5)
+- Docs: Ashby_Data/Stuart/Docs/STUART_Base44_UI_Code_Audit__2026-02-16.txt
+- Docs: Ashby_Data/Stuart/Docs/STUART_Base44_UI_Surgery_Checklist__2026-02-16.txt
+- Input: Ashby_Data/Stuart/Docs/stuart_app.zip (Base44 UI source pack)
+- Engine anchor: Ashby_Engine/ashby/interfaces/web/ (current FastAPI web door + /static + /templates)
+
+Status: BOARD | ACTIVE | COMPLETED | ABANDONED
+COMPLETED
+
+Audit Bundle Path: Quest Board/Quest Diff Audit Files/QUEST_###__AUDIT.txt
+Ashby_Data/Audits/Execution/QUEST_086__2026-02-17__stuart_v2_d1_7of10_create_canonical_stuartclient_api_module_no_base44_naming_no_fake_outputs
+
+Accepted On:
+2026-02-18
+
+Accepted By:
+Codex (GPT-5)
+
+Completed On:
+2026-02-18
+
+Completed By:
+Codex (GPT-5)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Create a canonical frontend API client module (stuartClient) that maps to our Stuart web API contract. This replaces Base44 client concepts and prevents fake data generation paths.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Create src/api/stuartClient.(js|ts) (canonical name; no Base44 naming).
+- Client must support (at minimum) these canonical calls aligned to Guild Orders Dungeon 2 contract:
+  • GET /api/sessions
+  • POST /api/sessions
+  • POST /api/upload
+  • POST /api/run
+  • GET /api/runs/{run_id}
+  • GET /api/sessions/{session_id}/runs
+  • GET /api/sessions/{session_id}/transcripts
+  • GET /api/transcripts/{transcript_version_id}
+  • GET /api/sessions/{session_id}/formalizations
+  • POST /api/chat (session scope)
+  • POST /api/chat/global (optional stub; design now)
+  • GET /api/sessions/{session_id}/export?export_type=... (design now; can be used later)
+- Base URL strategy: prefer relative '/api' with Vite proxy; allow optional override via VITE_STUART_API_BASE.
+- Error handling: return explicit error objects/messages on failure; no fake transcripts, no fake formalizations.
+- Document usage examples inside the module or a small API_CLIENT.md in the frontend root.
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Refactoring the entire UI to use this client (Quest 087).
+- Implementing missing backend endpoints (Dungeon 2).
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_085 (imports resolved) so this module can be imported cleanly.
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- This quest is about canonical naming and correctness rails. If an endpoint is not present yet, the client must fail loudly and the UI must show 'Not implemented' (later quest handles UI integration).
+- Keep the client thin; avoid adding business logic that belongs in backend modules.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] src/api/stuartClient exists and exports the canonical methods listed above.
+- [x] No Base44 naming exists in the client module.
+- [x] Client defaults to relative '/api' (or documents chosen base URL strategy) and does not require CORS hacks.
+- [x] Client returns explicit errors for missing/unavailable endpoints (no fake data).
+- [x] API_CLIENT.md (or inline docs) exists describing how to use and configure base URL.
+
+────────────────────────────────────────────────────────
+TALENT POINT
+────────────────────────────────────────────────────────
+# On completion:
+# - Talent Point Awarded: YES / NO
+# - Talent Spent On: (TALENT ID — Name in Talent Tree)
+Talent Point Awarded: NO
+Talent Spent On: N/A
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+# Optional closing notes once the quest is completed or abandoned.
+Canonical client created:
+- /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app/src/api/stuartClient.js
+
+Implemented methods:
+- sessions.list/create
+- upload
+- runs.create/status/listBySession
+- transcripts.list/get
+- formalizations.list
+- chat.session/global
+- exportSession
+
+Base URL behavior:
+- defaults to relative `/api`
+- supports override via `VITE_STUART_API_BASE`
+
+Usage/config docs:
+- /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/API_CLIENT.md

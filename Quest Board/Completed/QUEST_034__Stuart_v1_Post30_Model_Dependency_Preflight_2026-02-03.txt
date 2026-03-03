@@ -1,0 +1,93 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+
+QUEST ID:
+QUEST_034
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Post-30: Model + Dependency Preflight (ffmpeg / Torch / HF token / WeasyPrint deps)
+
+Context: System + Stuart
+
+Origin:
+Control Sync — 2026-02-03 (Post-30 plan)
+
+Priority: P1
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-03_REV4.txt (LOCAL_ONLY targets)
+- Targets: ffmpeg; faster-whisper (CTranslate2); pyannote.audio; WeasyPrint
+
+Status: COMPLETED
+
+Audit Bundle Path:
+Audits/Execution/QUEST_034__2026-02-03__stuart_v1_post30_model_dependency_preflight_2026-02-03
+
+Accepted On:
+2026-02-03
+
+Accepted By:
+Hands (Peter)
+
+Completed On:
+2026-02-03
+
+Completed By:
+Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Local-only pipelines fail in ugly ways when deps are missing (ffmpeg not installed, WeasyPrint OS libs missing,
+pyannote token gated, etc.). This quest adds deterministic preflight checks + friendly error messages
+so doors can surface actionable instructions without crashing mid-run.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Add a preflight routine callable from CLI and job_runner:
+-   - detect ffmpeg availability
+-   - detect WeasyPrint import + system deps failures
+-   - detect torch availability (CPU-only ok)
+-   - diarization: if HF token missing, mark diarization as unavailable and degrade gracefully (meeting mode should request token or skip with clear message depending on policy).
+- Add a `stuart healthcheck` CLI command (or equivalent) that prints PASS/FAIL per dependency.
+- Document env vars / config keys for tokens and model cache paths.
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Automatic dependency installation.
+- GPU enablement (optional later).
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_032 (profile/config surface) recommended.
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- No secrets in files. HF token only via env/config.
+- Preflight must be deterministic and fast (<1s typical).
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] Preflight checker implemented and returns structured results.
+- [ ] CLI healthcheck command exists.
+- [ ] Meeting mode behavior when diarization unavailable is explicit + tested.
+- [ ] `python3 -m pytest -q` PASS.
+
+────────────────────────────────────────────────────────
+TALENT POINT
+────────────────────────────────────────────────────────
+On completion:
+- Talent Point Awarded: YES
+- Talent Spent On: TBD — Preflight / Healthcheck Capability
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+(optional)

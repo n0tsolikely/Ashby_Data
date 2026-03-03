@@ -1,0 +1,179 @@
+STUART — GENERAL SNAPSHOT — 2026-02-24
+Snapshot Type: General
+Subject: STUART (Ashby module)
+Participants: Peter (Hands), Ash (Brains)
+Scope: “Everything that happened in today’s chat / execution wave” (formalized, decision-complete, no transcript padding)
+
+================================================================================
+0) NOW TRUE (TOPLINE)
+================================================================================
+- Stuart now has a real LLM in the loop (Gemini via the local LLM gateway) producing minutes artifacts and writing llm_usage.json receipts.
+- Governance enforcement was materially hardened: quest execution is now expected to capture receipts during execution (06_TESTS / 06_CHANGED) and validate before completion.
+- Dungeon 9 was split into 9A (Gateway infrastructure) and 9B (Stuart LLM integration) in canonical Guild Orders REV5.
+- Monster workflow is now a deterministic sequence: REPO/CANON (truth) → CANON.zip (input) → MONSTER (derived) → MONSTER_REFRESH.zip (snapshot archive).
+- Remaining real issues: diarization is currently stubbed (no pyannote), speaker overlay therefore doesn’t work; formalization output still sometimes contains JSON-as-text pollution; chat UI display is still not the “memory assistant” (Dungeon 10+), and some earlier audit bundles were missing 06_* receipts prior to the wrapper enforcement.
+
+================================================================================
+1) CANONICAL INPUTS / AUTHORITY (AS OF THIS SNAPSHOT)
+================================================================================
+Canonical Guild Orders
+- File: GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-23_REV5.txt
+- SHA256: 09f018aa3adcbcd068de33b4688aa6ae9f39414502c13d823d3c4dd804407f53
+- Binding decision in chat: REV5 is canonical; older Guild Orders inside Ashby_Data are deprecated for quest generation.
+
+Monster + Canon
+- Canon bundle: Monster_Ashby_Canon(10).zip
+  - SHA256: 2bc5b315295a315ce07a93d1ba09f5a25abee8600c487828a119c7ae10ae205c
+- Monster-only pack: MONSTER_ONLY__Monster_Ashby_Canon10__2026-02-23.zip
+  - SHA256: f9b93e6d9280638f79e5289b4bd161b9bc9f3ef10f4644d308fb55e4226e691d
+
+Control Sync Artifacts (chat-side)
+- Control Sync snapshot base (retrofit): STUART_Control_Sync_Snapshot__05_2026-02-23.txt
+  - SHA256: 9260fdb13f6a430c406713d46bf747dfdfc21e80065185ff175650f1f2c7368d
+Note: This General Snapshot does not close Control Sync by itself; it formalizes state for continuity and planning.
+
+================================================================================
+2) WHAT HAPPENED (SEQUENCE)
+================================================================================
+
+2.1 Governance tightening (stop fake “Completed” quests)
+- Problem observed: Codex was completing quests while audit bundles were missing key receipts (especially 06_TESTS.txt and 06_CHANGED_FILES.txt).
+- Action taken: enforce “no completion without proof” and push toward “receipts captured during execution, not retrofilled.”
+- Evidence thread: check codex logs (see ‘check codex*.txt’ artifacts). The wrapper approach was validated using a dummy quest smoke run (init/cmd/finalize) to prove 06_TESTS gets populated during command execution and validation blocks placeholders.
+
+Artifacts (chat-side):
+- AGENTS upgraded for wrapper enforcement:
+  - AGENTS__UPGRADED_FOR_WRAPPER_ENFORCEMENT__2026-02-24.md
+  - SHA256: f8e127190ef0dfd739835d2eedb6f44a140f91aebb1c5f8d91a8b8b0d0760e9a
+
+Important nuance:
+- This chat produced policy + tooling intent. Actual enforcement depends on what is installed in Peter’s WSL environment (Synapse_OS + quest_run.sh + governance guard). Codex logs indicate these changes were applied.
+
+2.2 Monster workflow stabilized into a real archive sequence
+- Insight/decision: MONSTER_REFRESH.zip is an immutable snapshot of a given run (canon + monster + fingerprint). Archive it; don’t treat it as the live workspace.
+- Workflow clarified:
+  - You update REPO/CANON.
+  - RUN_MONSTER.bat creates CANON.zip and runs monster_update.py.
+  - MONSTER/ gets overwritten to match latest state.
+  - MONSTER_REFRESH.zip is archived as a historical “state snapshot.”
+- Outcome: Peter now has a proper sequence archive instead of chaos backups (“REAL_THIS_ONE.zip” era is over, thank fuck).
+
+2.3 Dungeon 9 split (REV5): 9A then 9B
+- Dungeon 9A: local SaaS-simulated LLM Gateway
+  - Separate process, binds to 127.0.0.1
+  - Holds GEMINI_API_KEY in env only
+  - version=1 response contract
+- Dungeon 9B: Stuart LLM routing integration (Stuart calls gateway, retention semantics, usage receipts, proof)
+
+2.4 9A/9B execution outcomes seen in canon10 + session artifacts
+- Canon10 (repo review) indicates 9A quests were completed as QUEST_140–143 (renumbered by Peter):
+  - QUEST_140 gateway scaffold + versioned contract
+  - QUEST_141 gemini adapter
+  - QUEST_142 schema validation rails
+  - QUEST_143 proof
+  - Also SIDE-QUEST_088 fixed upload gating using contributions store
+- Evidence: receipt__repo_review__Monster_Ashby_Canon10__2026-02-23.txt
+
+- 9B progressed through multiple quests; TL4 proof quest remained BLOCKED at one point due to local env constraints; later, Peter successfully started the gateway and produced real LLM minutes artifacts (session zips below).
+
+================================================================================
+3) CURRENT SYSTEM TRUTH (VERIFIED BY SESSION ARTIFACTS)
+================================================================================
+
+3.1 LLM is actually working (not placebo)
+Session artifact: Session 01KJ6YK5.zip
+- SHA256: b29db6443b3af903c13efe2e7688624160ead51385c7b3cfbd4af26e49941559
+- Contains run artifacts showing llm_usage.json with provider=gemini, model=gemini-2.5-flash, retention=MED, version=1 and real token usage.
+- minutes_llm_raw.txt exists (raw gateway JSON), indicating gateway→Gemini path is real.
+
+Session artifact: Session 01KJ711Z.zip
+- SHA256: e7df433d60f93f28ce1a9d394500b420af74056101b8f96b533b70aa7c5fc8b5
+- Contains llm_usage.json with provider=gemini, model=gemini-2.5-flash, retention=NEAR_VERBATIM.
+- Confirms the gateway health endpoint was returning ok=true, version=1, provider gemini.
+
+3.2 Diarization is NOT working (stub fallback)
+In Session 01KJ711Z.zip, diarization.json indicates:
+- engine: stub
+- warning: pyannote not installed; diarization unavailable
+Implication:
+- Even if diarization toggle is “ON”, speaker IDs won’t split across speakers, so overlay mapping won’t behave as expected.
+- This is a dependency/config issue, not a UI toggle wiring issue.
+
+3.3 Speaker overlay not working (expected given diarization stub)
+- Without real diarization segments/speaker ids, speaker_map overlay has nothing meaningful to map.
+- Overlay work should be re-tested after diarization engine is installed and producing SPEAKER_01/02…
+
+3.4 Formalization output quality improved but still polluted
+- minutes.json contains at least one instance of JSON code block embedded inside notes[].text (notes[0].text begins with ```json …).
+- That means the model is still sometimes stuffing structured JSON into a string field. It’s “valid” but ugly and violates the intended human-readable text constraint.
+- This is fixable: tighten prompt + add sanitizer step before render/write.
+
+================================================================================
+4) KNOWN ISSUES / OPEN ITEMS
+================================================================================
+
+A) Chat UI is not yet “memory assistant”
+- /api/chat backend had a schema mismatch (ClarifyPrompt.question vs message); this was fixed during the wave.
+- Frontend may still display “Request accepted” rather than real reply; this is a UI mapping issue and/or intended scaffold behavior.
+- The real cross-session assistant (“what did we decide Monday?”, “all entries about Katie”, clickable session results) is Dungeon 10+ territory and was explicitly deferred.
+
+B) Diarization dependency missing
+- pyannote not installed → diarization stub → overlay fails.
+- Needs a dedicated fix dungeon/quest; not addressed tonight.
+
+C) Audit bundle completeness drift
+- At least one review showed completed quests with missing 06_TESTS/06_CHANGED receipts (prior to wrapper enforcement).
+- With guard+wrapper enforcement in place, future completion should block until receipts exist.
+- You likely need a one-time backfill pass for already-completed quests that lack receipts, or regress them back to Accepted until repaired.
+
+D) Dev env keys + venv assumptions
+- Peter prefers external venvs and active environment (not Ashby_Engine/.venv).
+- Ensure execution wrappers/tools do not hardcode .venv/bin/python.
+- Keys (OPENAI/GEMINI/HF) in bashrc are for dev convenience; product deployment should use proper env injection later.
+
+================================================================================
+5) WHAT’S NEXT (DETERMINISTIC RESUME POINT)
+================================================================================
+(Non-binding; for continuity)
+
+1) Fix diarization engine:
+- Install + configure real diarization (pyannote or chosen engine) so diarization.json is not stub.
+- Re-test diarization toggle and speaker overlay mapping end-to-end.
+
+2) Fix formalization “JSON-in-text” pollution:
+- Tighten gateway prompt: forbid embedding JSON blobs into string fields.
+- Add sanitizer in Stuart before writing minutes/journal artifacts; if text field parses as JSON, extract readable string and/or treat as invalid.
+
+3) Confirm 9B completion state:
+- If QUEST_152 (or equivalent TL4 proof quest in current numbering) is still BLOCKED in Quest Board, run proof wave on real machine and capture receipts, then complete.
+- Update Control Sync snapshot artifact to record final state and resume point.
+
+4) Begin Dungeon 10 planning (cross-session retrieval assistant) only after diarization + sanitation stable:
+- Retrieval layer + citations + UI actions list + session search by keyword/date/title.
+
+================================================================================
+6) RECEIPTS / FILES REVIEWED TO PRODUCE THIS SNAPSHOT
+================================================================================
+(These are the concrete artifacts consulted; no hand-wavy memory-only claims.)
+
+- Monster_Ashby_Canon(10).zip (canon bundle)
+- MONSTER_ONLY__Monster_Ashby_Canon10__2026-02-23.zip (monster-only pack)
+- receipt__repo_review__Monster_Ashby_Canon10__2026-02-23.txt
+- report__snapshots_2026-02-23__monster_canon10.txt
+- check codex.txt / check codex2.txt / check codex3.txt (codex execution logs)
+- Session 01KJ6YK5.zip / Session 01KJ711Z.zip (run artifacts proving LLM + diarization stub + output pollution)
+- GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-23_REV5.txt
+- ASHBY_QUESTS__DUNGEON_9B__QUEST_144-152__TEMPLATE_MATCH_FULL_REFINED__2026-02-23.zip
+- AGENTS.md and AGENTS__UPGRADED_FOR_WRAPPER_ENFORCEMENT__2026-02-24.md
+
+Artifact SHA256 list (selected)
+- Monster_Ashby_Canon(10).zip: 2bc5b315295a315ce07a93d1ba09f5a25abee8600c487828a119c7ae10ae205c
+- MONSTER_ONLY__Monster_Ashby_Canon10__2026-02-23.zip: f9b93e6d9280638f79e5289b4bd161b9bc9f3ef10f4644d308fb55e4226e691d
+- REV5 Guild Orders: 09f018aa3adcbcd068de33b4688aa6ae9f39414502c13d823d3c4dd804407f53
+- 9B refined pack: cc522e8e5f0f0e2c8386e4f6888305767087eaf1852bd6c68cf09ca9aff4c15e
+- Session 01KJ6YK5.zip: b29db6443b3af903c13efe2e7688624160ead51385c7b3cfbd4af26e49941559
+- Session 01KJ711Z.zip: e7df433d60f93f28ce1a9d394500b420af74056101b8f96b533b70aa7c5fc8b5
+
+================================================================================
+END OF SNAPSHOT — 2026-02-24
+================================================================================

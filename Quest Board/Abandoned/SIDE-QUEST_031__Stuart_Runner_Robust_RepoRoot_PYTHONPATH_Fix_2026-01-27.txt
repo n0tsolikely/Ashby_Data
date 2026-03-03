@@ -1,0 +1,65 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+
+QUEST ID:
+SIDE-QUEST_031
+
+Title:
+Stuart Runner Robust RepoRoot PYTHONPATH Fix (subprocess import)
+
+Context: Stuart (in Ashby) / Runtime
+
+Origin:
+Control Sync — STUART_Control_Sync-2026-01-27
+
+Priority: P1
+
+Links:
+- File: ashby/interfaces/telegram/stuart_runner.py (_env / subprocess runner)
+- Symptom: subprocess `python -m ashby.modules.meetings.cli_stuart ...` fails with:
+  ModuleNotFoundError: No module named 'ashby'
+
+Status: ABANDONED
+
+Audit Bundle Path:
+Audits/Execution/SIDE-QUEST_031__2026-01-27__stuart_runner_rep_root_pypath_fix
+
+Accepted On:
+
+Completed On:
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Robustly inject canonical repo-root into subprocess PYTHONPATH so Stuart runner
+can import ashby modules regardless of caller launch context.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Walk upward from __file__ to detect repo root.
+- Prepend repo root to subprocess PYTHONPATH.
+- Eliminate ModuleNotFoundError during subprocess execution.
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Audio decoding correctness.
+- UI changes.
+- Packaging redesign.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA
+────────────────────────────────────────────────────────
+- Subprocess can import ashby modules.
+- Web upload progresses past import stage (may still fail later on fake audio).
+- Audit bundle + EOD snapshot generated.
+
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+
+Abandoned On: 2026-02-03
+Reason: Redundant. Subprocess PYTHONPATH import parity was fixed and verified PASS under:
+  /mnt/data/Ashby_Data/Quest Board/Completed/SIDE-QUEST_030__Stuart_Runner_Subprocess_PYTHONPATH_Import_Fix_2026-01-27.txt
+See audit bundle + EOD snapshot for proof.

@@ -1,0 +1,130 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_114
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 4 (1/15): TranscriptVersion artifact schema + runtime store
+
+Context: (Ashby / Stuart / System / Other)
+Stuart meetings — transcript versioning (multi-transcript per session)
+
+Origin:
+Control Sync — 2026-02-18 (Stuart D4 planning + governance v11)
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- Guild Orders: Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt (Dungeon 4 + Dungeon 5 dependencies)
+- Stuart Codex (full): Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_7.4_Stage_3_Transcription.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_7.3_Stage_2_Diarization.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_6.2_Canonical_Artifacts_JSON_Markdown_PDF.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_8.1_Evidence_Anchors_and_Citations.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_3.2_Meeting_Minutes_Mode.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 30.1.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 28.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 8A.4.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 26.txt
+- Engine anchors:
+  - Ashby_Engine/ashby/modules/meetings/layout.py
+  - Ashby_Engine/ashby/modules/meetings/ids.py
+  - Ashby_Engine/ashby/modules/meetings/manifests.py
+  - Ashby_Engine/ashby/modules/meetings/schemas/artifacts_v1.py
+  - Ashby_Engine/ashby/modules/meetings/__init__.py (if export surface needed)
+
+Status: ACTIVE
+
+Audit Bundle Path:
+  /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_114__2026-02-19__stuart_v1_d4_114_intake
+
+Accepted On:
+2026-02-19
+Accepted By:
+Hands (Peter) via Codex (Brains)
+Completed On:
+
+Completed By:
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Introduce the canonical TranscriptVersion artifact so a single session can have multiple transcripts (different engines, diarization toggles, retries) and we can choose which transcript feeds formalization.
+
+This is the foundational storage + schema quest. It must be immutable (write-once) and future-proof for additional transcript engines and fields.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+Implement a TranscriptVersion artifact schema (v1) and storage API that supports:
+- transcript_version_id (use prefix `trv_` via ids.new_id("trv"))
+- session_id
+- run_id (the run that produced the transcript)
+- created_ts (float seconds)
+- diarization_enabled: bool
+- asr_engine: str (start with "default")
+- segments: list[{segment_id:int, start_ms:int, end_ms:int, speaker?:str, text:str, confidence?:float}]
+- audio_ref metadata sufficient for traceability (MUST NOT be absolute paths outside STUART_ROOT; store safe relpaths)
+
+Runtime storage (under STUART_ROOT):
+A) Per-session storage (source of truth)
+- sessions/{session_id}/transcripts/
+  - index.jsonl (append-only rows: transcript_version_id, run_id, created_ts, diarization_enabled, asr_engine, segments_count, sha256, etc.)
+  - versions/{transcript_version_id}.json  (write-once; full artifact)
+
+B) Global lookup for fast resolution (required for /api/transcripts/{id})
+- transcript_versions/lookup.jsonl
+  - append-only rows: transcript_version_id, session_id, run_id, created_ts
+
+Provide a python API in ashby/modules/meetings/ (e.g. transcript_versions.py) with:
+- create_transcript_version(...)  (writes versions/{id}.json, appends both index.jsonl + lookup.jsonl)
+- list_transcript_versions(session_id) -> summaries (no segments)
+- load_transcript_version(session_id, transcript_version_id) -> full
+- resolve_transcript_version(transcript_version_id) -> {session_id, run_id?} (uses lookup.jsonl)
+- ensure_transcripts_dirs(session_id)
+
+All writes must be atomic + deterministic JSON formatting.
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Wiring the transcribe pipeline to emit these artifacts (next quest).
+- Web API and UI changes (later quests).
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+None.
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────
+Immutability laws:
+- A transcript version artifact is ground-truth and MUST be write-once.
+- Any speaker naming is handled via overlay artifacts (do not mutate transcript text/segments).
+- Never store absolute paths that break export bundles; use relpaths under STUART_ROOT only.
+
+Reference existing patterns:
+- manifests.save_manifest_write_once(...) for immutability
+- schemas.artifacts_v1.dump_json(write_once=True) for deterministic JSON
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] New TranscriptVersion schema exists (TypedDict or equivalent) with the Dungeon 4 required fields
+- [ ] Runtime layout paths for session transcripts are defined and created deterministically
+- [ ] create/list/load helpers exist and are unit-tested at a basic level (new tests or minimal harness)
+- [ ] No existing tests regress (`python3 -m pytest -q` passes)
+
+────────────────────────────────────────────────────────
+TALENT POINT
+────────────────────────────────────────────────────────
+# On completion:
+# - Talent Point Awarded: YES / NO
+# - Talent Spent On: (TALENT ID — Name in Talent Tree)
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+# Optional closing notes once the quest is completed or abandoned.

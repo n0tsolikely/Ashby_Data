@@ -1,0 +1,103 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+================================================
+
+QUEST ID:
+QUEST_106
+
+Created By:
+Codex (Brains)
+
+Title:
+Stuart v2 — D3 (5/11) — Speaker Mapping Overlay Editor UI
+
+Subject:
+Stuart
+
+Context: (Ashby / Stuart / System / Other)
+Ashby / Stuart
+
+Origin:
+Guild Orders ACTIVE REV4 -> Dungeon 3 Session tab speaker mapping requirement.
+
+Priority: (P0 / P1 / P2)
+P1
+
+Links:
+- Dungeon 6 speaker mapping overlay model
+- Transcript version UI quest (QUEST_105)
+
+Status: BOARD | ACTIVE | COMPLETED | ABANDONED
+COMPLETED
+
+Audit Bundle Folder Path:
+Ashby_Data/Audits/Execution/QUEST_106__2026-02-18__stuart_v2_d3_speaker_mapping_overlay_ui
+
+Accepted On:
+2026-02-18
+
+Accepted By:
+Hands (Peter) via Codex (Brains)
+
+Completed On:
+2026-02-18
+
+Completed By:
+Codex (Brains)
+
+Change Class: (TRIVIAL / FEATURE / STRUCTURAL)
+FEATURE
+
+Vision Delta: (ALIGNED / VARIATION / SHIFT)
+ALIGNED
+
+System Context Statement:
+Speaker mapping is a UI overlay capability that improves readability without mutating transcript truth.
+
+Anti-Duplication Plan:
+Represent mapping as overlay state tied to transcript/session; do not rewrite transcript artifact text.
+
+Placement Intent:
+Session tab transcript panel overlay editor.
+
+Codex Anchors (DRAFT):
+- Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_6.5_Artifact_Indexing_for_Recall_and_Search.txt
+- Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_5.3_Evidence_and_Citation_Requirements.txt
+- Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_1.4_Trust_Auditability_Anti_Hallucination_Rules.txt
+
+Codex Constraint Summary:
+- Mapping must be overlay, not transcript mutation.
+- Speaker identity enrichments must remain auditable.
+- Evidence mapping and citations remain anchored to original speaker labels/segments.
+
+Door Impact:
+Stuart web door (UI)
+
+Testing Level (TL):
+TL2
+
+Talent Point Awarded: (YES / NO)
+YES
+
+DESCRIPTION
+Add speaker mapping editor surface to map labels (e.g., SPEAKER_01 -> Greg) while retaining transcript ground truth.
+
+SCOPE / OBJECTIVE
+- Enumerate discovered speaker labels.
+- Allow assigning/editing display names.
+- Apply overlay in transcript display.
+
+OUT OF SCOPE
+- Full backend schema redesign for mapping.
+- Cross-session identity intelligence.
+
+DEPENDENCIES
+- QUEST_105
+- Dungeon 6 backend endpoints/model
+
+EXECUTION NOTES
+If backend map endpoint is absent, implement graceful read-only UI with disclosure.
+
+COMPLETION CRITERIA (REQUIRED)
+- [ ] Speaker labels are editable in UI overlay.
+- [ ] Display name mapping updates transcript rendering.
+- [ ] Transcript source artifact remains unchanged.

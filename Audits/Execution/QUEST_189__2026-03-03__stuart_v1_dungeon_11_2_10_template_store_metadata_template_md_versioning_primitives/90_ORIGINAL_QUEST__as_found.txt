@@ -1,0 +1,166 @@
+# QUEST_189 — Stuart v1 — Dungeon 11 (2/10) — Template Store: metadata.json + template.md + Versioning Primitives
+
+(Quest template: Synapse OS — Architecture Transcendence Protocol, Stuart v1)
+
+IDENTITY
+- Quest ID: QUEST_189
+- Title: Stuart v1 — Dungeon 11 (2/10) — Template Store: metadata.json + template.md + Versioning Primitives
+- Dungeon: 11 (Templates as first-class artifacts)
+- Owner: OpenAI Codex (CLI execution)
+- Priority: P1
+- Risk Class: R2
+- Expected Testing Level: TL2 (unit + API) unless explicitly upgraded in this quest
+- Date Authored: 2026-03-03
+
+CANON LOCKS (sha256)
+- Guild Orders (ACTIVE): Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-25_REV14.txt
+  sha256: d10c278cd45a543c32c27102a912ce6f1c0569401c5ec0e00f6dc1e5c5b9b094
+
+- Guild Orders — Dungeon 11 block (verbatim) sha256: 00aff20ab5689f18747d0931ed6eea4432d0828df6dd180f0994337193b3905b
+
+- Stuart Codex anchors:
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_4.1_Mode_vs_Template_Separation.txt
+    sha256: 3823c6a3fa132e600d2b8b8c3cf825a6dc950c65b1dfa3c62a06a5a319bd7424
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_4.2_Template_Schema_Sections_Required_vs_Optional.txt
+    sha256: 2e6ca9a2caef22ec2eb432254afbe37cd5b53502aec9afe87e3b86f87f439611
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_4.4_Template_Creation_Chat_Guided.txt
+    sha256: c27b38f828095b60d21fc591c664c47ca44f987275ba438b3896220f83c50ca7
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_4.5_Template_Import_Document_or_Image_Based.txt
+    sha256: f10e6c36bd1206efb11d0f2da84b47797d705d31f89f7788d1a142747f96a047
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_4.6_Template_Versioning_and_Compatibility.txt
+    sha256: c359eed7780c19aef3b54fafc50ddc3e941ef25b367c958d8f6b0f3b9fc0b68f
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_2.4_Template_Selection_Scoped_by_Mode.txt
+    sha256: 03d3aa53371845a759f165fe1f542b38e7694829a0618b881316a0802d18c165
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_6.2_Canonical_Artifacts_JSON_Markdown_PDF.txt
+    sha256: aaf3db33935220866ed5f48dc0bf5d0e95a92ea6f690fa008ff47e01bee5bfc0
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_6.3_File_Naming_and_Deterministic_Paths.txt
+    sha256: f551b5e5166d175eac545518cde1a9d9dcea0bae7d43477c298471d42bf6371d
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_1.2_Core_Invariants_Truth_Evidence_Explicit_Execution.txt
+    sha256: 2f15b9014fc6f787986f990020867c177561e268950bafda58d6f0cbe8472953
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_2.2_Explicit_Execution_Gating_Submit_Confirm.txt
+    sha256: 322b838cce234e1c17d36f6a9a4c35a612dba211000b3ee8878be4e5dec6b602
+
+- Monster (Canon16 reference): MONSTER_ASHBY__THE_MONSTER_WORKSPACE__20260303_170000.zip
+  Routes index: MONSTER/repomap/snapshot_repomap_pack_current/WEB_API.md
+  sha256: df6c574135ac970896d89513b3aa87923d50feded9f91d2695a6f04a82f9dd4e
+
+
+SYSTEM CONTEXT STATEMENT
+- Dungeon 11 requires templates to be first-class artifacts:
+  - Stable `template_id`
+  - Human-facing `template_title`
+  - Versioned (immutable prior versions)
+  - Stored under TemplateStoreRoot (runtime), not Ashby_Data and not in-repo
+- We already have a **TemplateSpec parser** in `template_registry.py` for system templates, but no runtime-backed store for user templates.
+
+REPO / MONSTER ANCHORS
+- Runtime root + layout (TemplateStoreRoot introduced in QUEST_188):
+  - ashby/modules/meetings/layout.py (StuartLayout.templates)
+  - ashby/modules/meetings/init_root.py (creates TemplateStoreRoot)
+- Template parsing (will be reused, not duplicated):
+  - ashby/modules/meetings/template_registry.py (parse_markdown_template)
+
+CONSTRAINT SUMMARY
+- Storage contract (user templates):
+  - `<STUART_ROOT>/templates/user/<mode>/<template_id>/v<version>/metadata.json`
+  - `<STUART_ROOT>/templates/user/<mode>/<template_id>/v<version>/template.md`
+- **No in-place edits**: every change creates a new `v<version>` directory.
+- Keep a single seam for the root (layout/templates).
+- Do not invent a database for templates yet; filesystem store only.
+
+ANTI-DUP PLAN
+- `rg -n "TemplateStore|template_store|templates/user" Ashby_Engine/ashby`
+- If any TemplateStore-like module exists already, extend it. If not, create exactly one new module.
+
+PLACEMENT INTENT
+- New module: `ashby/modules/meetings/templates/store.py`
+  - Owns TemplateRecord IO, versioning rules, and directory layout.
+
+DELIVERABLES
+- New module implementing:
+  - `TemplateRecord` (pydantic or dataclass)
+  - `TemplateDraft` (preview-only, not persisted)
+  - CRUD-ish primitives (filesystem):
+    - create_template(...)
+    - create_new_version(...)
+    - list_templates(...)
+    - list_versions(template_id, mode)
+    - load_template(template_id, mode, version)
+    - delete_template(template_id, mode)
+- Validation:
+  - Reject path traversal in template_id/mode/version
+  - Enforce allowed modes: meeting, journal
+  - Enforce version int >= 1
+- Tests:
+  - Unit tests for create/list/load/version/delete using a temp STUART_ROOT
+
+TASK BREAKDOWN
+1) Create module skeleton
+   - Add: `Ashby_Engine/ashby/modules/meetings/templates/store.py`
+   - Export functions from `ashby/modules/meetings/templates/__init__.py` (create if missing)
+
+2) Define the on-disk layout helpers
+   - `template_root(layout) -> Path`
+   - `template_dir(mode, template_id) -> Path`
+   - `template_version_dir(mode, template_id, version:int) -> Path`
+
+3) Implement TemplateRecord
+   Required fields (Dungeon 11):
+   - template_id: str  (stable)
+   - template_title: str (renamable, but renames create a new version)
+   - version: int
+   - mode: Literal["meeting","journal"]
+   - template_text: str  (markdown)
+   - defaults: {
+       include_citations: bool,
+       show_empty_sections: bool
+     }
+   - created_at: ISO 8601 str
+   - updated_at: ISO 8601 str
+
+4) Implement create_template (new template)
+   - Inputs: mode, title, template_text, defaults
+   - Output: TemplateRecord (version=1)
+   - Writes:
+     - metadata.json (all fields except template_text)
+     - template.md (template_text)
+
+5) Implement create_new_version (edit existing template)
+   - Inputs: template_id, mode, template_text/title/defaults updates
+   - Computes next version: max(existing)+1
+   - Writes new version folder; never edits old versions
+
+6) Implement list_templates
+   - Returns latest version per template_id for a mode
+   - Include `source: "user"` in returned descriptors (system handled later)
+
+7) Implement delete_template
+   - Deletes the entire template_id directory for that mode (all versions)
+   - Requires explicit caller confirmation parameter at API layer (handled in later quest)
+
+8) Unit tests
+   - Add: `tests/test_template_store_filesystem_versioning.py`
+   - Cover:
+     - create_template -> v1 exists
+     - create_new_version -> v2 exists and v1 unchanged
+     - list_templates returns latest only
+     - load_template returns correct version
+     - delete_template removes tree
+
+ACCEPTANCE CRITERIA
+- Filesystem contract is exactly met under TemplateStoreRoot.
+- Versioning is immutable (no edits to v1 when creating v2).
+- Tests pass:
+  - `pytest -q tests/test_template_store_filesystem_versioning.py`
+
+VERIFICATION PLAN
+- `cd /home/notsolikely/Ashby_Engine`
+- `pytest -q tests/test_template_store_filesystem_versioning.py`
+
+ROLLBACK PLAN
+- Remove `templates/store.py` and its tests.
+- No other modules should be coupled yet (that comes in QUEST_190).
+
+AUDIT BUNDLE
+- `/home/notsolikely/Ashby_Data/Audit Bundles/QUEST_189/`
+  - Include: diff + pytest output + sample on-disk tree listing.

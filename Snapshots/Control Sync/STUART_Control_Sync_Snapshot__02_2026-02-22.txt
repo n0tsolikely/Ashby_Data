@@ -1,0 +1,76 @@
+ASHBY — CONTROL SYNC SNAPSHOT (Control Sync CLOSED)
+Snapshot Type: Control Sync
+Date: 2026-02-22
+Timezone: America/Toronto
+Participants: Peter (Hands), Ash (Brains)
+
+Purpose
+- Close the active Control Sync covering: (1) restore deterministic audit discipline for Codex executor, (2) align subject quest authoring to Synapse governance v1.5, (3) prepare full Dungeon 5 quest set + Side-Quests derived from STUART_TO_DO_2026-02-20__REV1.
+
+Rehydration Anchors (evidence references)
+- Active Guild Orders:
+  - Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt
+  - Dungeon 5 block referenced: “TRANSCRIBE STAGE (REAL ASR) + DIARIZATION TOGGLE”
+- Recent Control Sync Snapshot already exists same-day:
+  - Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-02-22.txt
+  - This snapshot is the second same-day Control Sync snapshot: __02_2026-02-22
+
+Binding Decisions (what is now true because of this Control Sync)
+1) Subject quest authoring is aligned to Synapse governance v1.5
+- Subject copy of Quest Template is updated to match governance v1.5 semantics:
+  - Quest state is defined by folder location (BOARD/Accepted/Completed/Abandoned), not “Status:” fields inside quest files.
+  - New quests must include explicit anchors to Guild Orders + Codex + repo targets.
+  - Audit bundle requirements are explicit and mandatory (see #2 below).
+- Artifact:
+  - Ashby_Data/Quest Board/QUEST_TEMPLATE.txt (subject-local copy aligned to governance/Quest Board/QUEST_TEMPLATE.txt)
+
+2) Audit bundle discipline is enforced via subject BUFF (Codex executor guardrail)
+- Added/embedded a mandatory “Audit Bundle Validation Checklist” inside the existing subject BUFF:
+  - Ashby_Data/Buffs/ASHBY_EXECUTION_PROTOCOL.txt
+- Rule: every ACCEPTED quest must produce an audit bundle under:
+  - Ashby_Data/Audits/Execution/<QuestId>__<YYYY-MM-DD>__<slug>/
+- Minimum required bundle files:
+  - 00_SUMMARY.md
+  - 01_PREQUEST.md
+  - 02_EXECUTION.md
+  - 03_VERIFY.md
+  - 04_OUTCOME.md
+- Verification receipts must be real command outputs (no “trust me” text).
+
+3) Subject state manifest is schema-valid and includes canonical roots
+- Subject manifest updated to include required keys for schema validation:
+  - schema_version
+  - roots (data_root, engine_root)
+- Artifact:
+  - Ashby_Data/SUBJECT_STATE.yaml
+
+4) Quest Board state machine folder repaired to prevent disappearance
+- Created and persisted:
+  - Ashby_Data/Quest Board/Accepted/.gitkeep
+
+5) Dungeon 5 Quests + Stuart To-Do Side-Quests are authored (BOARD state)
+- Dungeon 5 Quests (BOARD):
+  - QUEST_129 through QUEST_139 (11 quests total) — full Dungeon 5 allotment
+- Side-Quests from STUART_TO_DO_2026-02-20__REV1 (BOARD):
+  - SIDE-QUEST_081 through SIDE-QUEST_087 (7 side-quests total)
+- Placement:
+  - Ashby_Data/Quest Board/
+
+Artifacts Produced / Packaging Outputs (downloads)
+- Full workspace zip with updates:
+  - THE_MONSTER_WORKSPACE__ASHBY_CANON(7).zip
+- Quests-only pack:
+  - ASHBY_QUESTS__D5_AND_STUART_TODO_SIDEQUESTS__2026-02-22.zip
+
+Explicit Non-Decisions / Deferred
+- No quests were ACCEPTED in this Control Sync (BOARD authoring only).
+- No execution occurred; therefore no Execution Audit bundles are created by this snapshot.
+- No decision recorded here on acceptance/execution order; Hands will decide acceptance order when ready.
+- R2 Consent artifacts were not created; any R2 work remains blocked until proper CONFIRM_R2 artifacts exist on disk.
+
+Operational Guidance (next phase)
+- Next phase: accept quests intentionally (via moving from Quest Board to Accepted) and execute via Codex with the BUFF checklist enforced.
+- Recommended acceptance order (non-binding): start with door/rails/ASR strictness before proof quests.
+
+Control Sync Closeout
+- Control Sync is CLOSED as of this snapshot.

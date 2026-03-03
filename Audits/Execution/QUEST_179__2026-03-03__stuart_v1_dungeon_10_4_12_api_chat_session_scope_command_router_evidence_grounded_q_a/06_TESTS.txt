@@ -1,0 +1,126 @@
+## Command Receipt Log
+WRAPPER: synapse_quest_run.sh
+ENGINE_ROOT: /home/notsolikely/Ashby_Engine
+DATA_ROOT: /home/notsolikely/Ashby_Data
+---
+CMD: PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_chat_session_scope_lock.py tests/test_meetings_web_api_envelope_consistency.py
+
+==================================== ERRORS ====================================
+_______ ERROR collecting tests/test_meetings_chat_session_scope_lock.py ________
+ImportError while importing test module '/home/notsolikely/Ashby_Engine/tests/test_meetings_chat_session_scope_lock.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_meetings_chat_session_scope_lock.py:9: in <module>
+    from tests.chat_test_utils import seed_chat_index
+E   ModuleNotFoundError: No module named 'tests.chat_test_utils'
+=========================== short test summary info ============================
+ERROR tests/test_meetings_chat_session_scope_lock.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.47s
+RC: 2
+BLOCKED: command failed (see RC above): PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_chat_session_scope_lock.py tests/test_meetings_web_api_envelope_consistency.py
+CMD: PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_chat_session_scope_lock.py tests/test_meetings_web_api_envelope_consistency.py
+....F                                                                    [100%]
+=================================== FAILURES ===================================
+__________________ test_api_chat_global_returns_chat_envelope __________________
+
+    @pytest.mark.asyncio
+    async def test_api_chat_global_returns_chat_envelope():
+        app = create_app()
+        transport = httpx.ASGITransport(app=app)
+        c = httpx.AsyncClient(transport=transport, base_url="http://testserver")
+        try:
+>           r = await c.post("/api/chat/global", json={"text": "hello", "ui": {}})
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_meetings_web_api_envelope_consistency.py:67: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../venvs/ashby-env/lib/python3.12/site-packages/httpx/_client.py:1859: in post
+    return await self.request(
+../venvs/ashby-env/lib/python3.12/site-packages/httpx/_client.py:1540: in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../venvs/ashby-env/lib/python3.12/site-packages/httpx/_client.py:1629: in send
+    response = await self._send_handling_auth(
+../venvs/ashby-env/lib/python3.12/site-packages/httpx/_client.py:1657: in _send_handling_auth
+    response = await self._send_handling_redirects(
+../venvs/ashby-env/lib/python3.12/site-packages/httpx/_client.py:1694: in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../venvs/ashby-env/lib/python3.12/site-packages/httpx/_client.py:1730: in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../venvs/ashby-env/lib/python3.12/site-packages/httpx/_transports/asgi.py:170: in handle_async_request
+    await self.app(scope, receive, send)
+../venvs/ashby-env/lib/python3.12/site-packages/fastapi/applications.py:1135: in __call__
+    await super().__call__(scope, receive, send)
+../venvs/ashby-env/lib/python3.12/site-packages/starlette/applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+../venvs/ashby-env/lib/python3.12/site-packages/starlette/middleware/errors.py:186: in __call__
+    raise exc
+../venvs/ashby-env/lib/python3.12/site-packages/starlette/middleware/errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+../venvs/ashby-env/lib/python3.12/site-packages/starlette/middleware/exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+../venvs/ashby-env/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+../venvs/ashby-env/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+../venvs/ashby-env/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+../venvs/ashby-env/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+../venvs/ashby-env/lib/python3.12/site-packages/starlette/routing.py:736: in app
+    await route.handle(scope, receive, send)
+../venvs/ashby-env/lib/python3.12/site-packages/starlette/routing.py:290: in handle
+    await self.app(scope, receive, send)
+../venvs/ashby-env/lib/python3.12/site-packages/fastapi/routing.py:115: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+../venvs/ashby-env/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+../venvs/ashby-env/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+../venvs/ashby-env/lib/python3.12/site-packages/fastapi/routing.py:101: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+../venvs/ashby-env/lib/python3.12/site-packages/fastapi/routing.py:355: in app
+    raw_response = await run_endpoint_function(
+../venvs/ashby-env/lib/python3.12/site-packages/fastapi/routing.py:243: in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ashby/interfaces/web/app.py:1135: in api_chat_global
+    reply = _augment_actions_from_hits(reply, focus_session_id=focus_session_id)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ashby/interfaces/web/app.py:1046: in _augment_actions_from_hits
+    trv = _transcript_version_for_run(sid, str(h.run_id))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ashby/interfaces/web/app.py:1023: in _transcript_version_for_run
+    for row in list_transcript_versions(session_id):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ashby/modules/meetings/transcript_versions.py:265: in list_transcript_versions
+    _ensure_session_exists(session_id)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+session_id = 'ses_01KHGXFBDZY9E9HX5NVMZRRQQC'
+
+    def _ensure_session_exists(session_id: str) -> None:
+        p = _session_manifest_path(session_id)
+        if not p.exists():
+>           raise FileNotFoundError(f"Unknown session_id (missing manifest): {p}")
+E           FileNotFoundError: Unknown session_id (missing manifest): /home/notsolikely/ashby_runtime/stuart/sessions/ses_01KHGXFBDZY9E9HX5NVMZRRQQC/session.json
+
+ashby/modules/meetings/transcript_versions.py:23: FileNotFoundError
+=========================== short test summary info ============================
+FAILED tests/test_meetings_web_api_envelope_consistency.py::test_api_chat_global_returns_chat_envelope
+1 failed, 4 passed in 0.77s
+RC: 1
+BLOCKED: command failed (see RC above): PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_chat_session_scope_lock.py tests/test_meetings_web_api_envelope_consistency.py
+CMD: PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_chat_session_scope_lock.py tests/test_meetings_web_api_envelope_consistency.py
+.....                                                                    [100%]
+5 passed in 0.60s
+RC: 0
+PASS: governance validation OK for QUEST_179 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_179__2026-03-03__stuart_v1_dungeon_10_4_12_api_chat_session_scope_command_router_evidence_grounded_q_a
+OK: finalize complete (validation PASS recorded).

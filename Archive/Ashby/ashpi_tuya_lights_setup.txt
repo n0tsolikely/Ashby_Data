@@ -1,0 +1,150 @@
+AshPi Tuya Lights Setup
+=======================
+
+Scope:
+------
+This document captures how Tuya-based bulbs (including Noma/Globe devices that use Tuya/SmartLife)
+are integrated into AshPi as of 2025-12-08.
+
+Key Python Files:
+-----------------
+- ashpi_devices.py
+    - Contains DEVICES dict with entries like:
+        - bed_lamp (Tuya plug, type="plug", room="bedroom")
+        - birdcage_light (Tuya plug)
+        - captain_america_bulb (Tuya bulb)
+        - thor_bulb (Tuya bulb)
+        - sky_bulb (Tuya bulb)
+
+- ashpi_lights_tuya.py
+    - Tuya-specific lights module (bulbs only).
+    - Handles:
+        - Turning bulbs ON/OFF
+        - Setting exact brightness (0–1000)
+        - Stepping brightness up/down by a fixed step
+        - Caching latest brightness per bulb
+
+Current DEVICES Snapshot (Bulbs only):
+--------------------------------------
+From ashpi_devices.py (conceptual):
+
+DEVICES = {
+    "bed_lamp": {
+        "id": "ebf157ec2f48cf767auaif",
+        "type": "plug",
+        "brand": "tuya",
+        "room": "bedroom",
+        "description": "Bedside lamp outlet"
+    },
+    "birdcage_light": {
+        "id": "ebca18fe0ff83bec80tjtl",
+        "type": "plug",
+        "brand": "tuya",
+        "room": "bedroom",
+        "description": "Birdcage light outlet"
+    },
+    "captain_america_bulb": {
+        "id": "405837102cf4325c60c6",
+        "type": "bulb",
+        "brand": "tuya",
+        "room": "bedroom",
+        "description": "Captain America wall bulb"
+    },
+    "thor_bulb": {
+        "id": "40583710cc50e3e008dd",
+        "type": "bulb",
+        "brand": "tuya",
+        "room": "bedroom",
+        "description": "Thor wall bulb"
+    },
+    "sky_bulb": {
+        "id": "405837102cf4321d1d05",
+        "type": "bulb",
+        "brand": "tuya",
+        "room": "bedroom",
+        "description": "Ceiling 'sky' bulb"
+    },
+}
+
+Tuya Functions for Bulbs:
+-------------------------
+Queried via Tuya OpenAPI /v1.0/devices/{id}/functions:
+
+- switch_led       -> Boolean (True/False) = main ON/OFF
+- bright_value_v2  -> Integer (0–1000) = brightness level
+- work_mode        -> Enum: white/colour/scene/music
+- control_data     -> Json: h/s/v, temperature, etc. (for color bulbs)
+- scene_data_v2    -> Json: predefined scenes
+- countdown_1      -> Integer: timer
+
+For now AshPi uses:
+- switch_led (on/off)
+- bright_value_v2 (brightness)
+
+ashpi_lights_tuya.py Core Behavior:
+-----------------------------------
+- BRIGHTNESS_STATE: local cache: { device_name -> 0–1000 }
+- DEFAULT_STEP = 100
+- DEFAULT_BRIGHTNESS = 500
+
+Functions:
+
+1) set_brightness(target, value)
+   - target: single device name or list of names
+   - clamps value to [0, 1000]
+   - sends Tuya command:
+       - bright_value_v2 = value
+       - switch_led = True if value > 0 else False
+   - updates BRIGHTNESS_STATE for each device
+
+2) step_brightness(target, delta)
+   - delta > 0 => brighter
+   - delta < 0 => dimmer
+   - uses BRIGHTNESS_STATE or DEFAULT_BRIGHTNESS if unknown
+   - new_value = clamp(current + delta)
+   - internally calls set_brightness()
+
+3) turn_on(target, value=None)
+   - If value is None and a single target:
+       - uses cached brightness or DEFAULT_BRIGHTNESS
+   - If value is None and multiple targets:
+       - uses DEFAULT_BRIGHTNESS
+   - calls set_brightness(target, value)
+
+4) turn_off(target)
+   - sets switch_led = False
+   - caches brightness as 0
+
+Test Snippet Used:
+------------------
+python3 - << 'EOF'
+from ashpi_lights_tuya import turn_on, turn_off, step_brightness, set_brightness
+
+# Turn Thor ON at default
+turn_on("thor_bulb")
+
+# Make him brighter by 100
+step_brightness("thor_bulb", +100)
+
+# Dim him by 200
+step_brightness("thor_bulb", -200)
+
+# Set exact brightness
+set_brightness("thor_bulb", 547)
+
+# Turn off
+turn_off("thor_bulb")
+EOF
+
+Future Plans:
+-------------
+- Add groups in core/devices.py:
+    - wall_lights = [captain_america_bulb, thor_bulb]
+    - ceiling_light = [sky_bulb]
+    - room_lights = all 3
+- Brightness "phrase layer" will live above this module:
+    - "brighter" -> step_brightness(..., +100)
+    - "dimmer"   -> step_brightness(..., -100)
+    - "max bright" -> set_brightness(..., 1000)
+    - "max dim"    -> set_brightness(..., 0)
+- Telegram/Discord/web/voice will all call these same functions.

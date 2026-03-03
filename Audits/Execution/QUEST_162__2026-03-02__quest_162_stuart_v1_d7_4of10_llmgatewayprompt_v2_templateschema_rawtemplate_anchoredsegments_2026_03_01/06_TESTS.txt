@@ -1,0 +1,6 @@
+## Command Receipt Log
+CMD: source /home/notsolikely/venvs/ashby-env/bin/activate && cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_llm_gateway_contract_minimum.py tests/test_llm_gateway_api.py
+...........                                                              [100%]
+11 passed in 0.45s
+RC: 0
+PASS: governance validation OK for QUEST_162 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_162__2026-03-02__quest_162_stuart_v1_d7_4of10_llmgatewayprompt_v2_templateschema_rawtemplate_anchoredsegments_2026_03_01

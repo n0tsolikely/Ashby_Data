@@ -1,0 +1,70 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_068
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 6 (1/5): speaker map overlay API + manifest integration
+
+Context: Stuart speaker overlays
+
+Origin:
+Control Sync — 2026-02-04 (Stuart v1 finish-line: REV5)
+
+Priority: P0
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV5.txt (Dungeon 6)
+- Stuart Codex 3.2/3.3: mapping overlay + uncertainty disclosure
+- Engine: pipeline/job_runner.py speaker_map_overlay step
+
+Status: COMPLETE
+
+Audit Bundle Path:
+  /mnt/data/Ashby_Data/Audits/Execution/QUEST_068__2026-02-10__stuart_v1_d6_1of5_speaker_map_overlay_api_and_manifest_integration
+Accepted On:
+2026-02-10
+Accepted By:
+Hands (Peter)
+Completed On:
+2026-02-11
+
+Completed By:
+Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Finalize the speaker overlay primitive: user-provided mapping from Speaker 1 → Greg etc is stored immutably, can be set active per session, and is referenced in runs/manifests.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Ensure overlay artifact includes overlay_id + mapping + sha256 + created_ts
+- Ensure active overlay id is stored per session
+- Ensure run.json records which overlay was used
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Door UI for setting mapping (next quest)
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_045
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Never mutate transcript; overlays are separate artifacts.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] Overlay can be created and set active
+- [x] Runs reference the active overlay
+- [x] `python3 -m pytest -q` passes
+

@@ -1,0 +1,145 @@
+QUEST TEMPLATE — SYNAPSE OS [v1.5]
+
+========================================
+IDENTITY
+========================================
+QUEST ID: QUEST_180
+TITLE: Stuart v1 — Dungeon 10 (5/12) — /api/chat/global: Global Q&A + Soft Focus + open_session Actions
+GUILD / DUNGEON: STUART v1 / DUNGEON 10 (5 of 12)
+PRIORITY: P0
+OWNER: OpenAI Codex (CLI execution) under Synapse OS governance
+STATE: ACCEPTED (place this file into Ashby_Data/Quest Board/Accepted)
+CREATED: 2026-03-03
+LAST UPDATED: 2026-03-03
+SOURCE SEED: Guild Orders Rev14 — Dungeon 10
+RISK CLASS: R1
+TESTING LEVEL (TL0–TL4): TL3
+DOOR IMPACT: ashby/interfaces/web/app.py /api/chat/global route; global retrieval policy
+PERMISSION: N/A (standard Stuart dev permissions)
+
+========================================
+CANON LOCKS
+========================================
+SOURCE OF TRUTH (LOCKS):
+- Guild Orders (ACTIVE): /home/notsolikely/Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-25_REV14.txt
+  - sha256: d10c278cd45a543c32c27102a912ce6f1c0569401c5ec0e00f6dc1e5c5b9b094
+  - Dungeon 10 block sha256: a1336566007c90e0ff8518545d0381e78dc8d237ed1a9d1cc0572b7d754a7656
+- Codex Anchors (Stuart):
+  - /home/notsolikely/Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_2.1_Chat_First_Interface.txt
+    - sha256: 465d0c0b31ac581d67f8307d9d932021e770e07708a653ac47951cde13bffb71
+  - /home/notsolikely/Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_2.2_Explicit_Execution_Gating_Submit_Confirm.txt
+    - sha256: 322b838cce234e1c17d36f6a9a4c35a612dba211000b3ee8878be4e5dec6b602
+  - /home/notsolikely/Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_5.3_Evidence_and_Citation_Requirements.txt
+    - sha256: 95d2237444f12df57b3a81d166b521e40e24032aca0fa5d13497d9b33870c799
+  - /home/notsolikely/Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_6.1_Session_Model_Sessions_Contributions_Sources.txt
+    - sha256: 55a95019ca3d7b56ba1acfbb248d2583e93c9a00f4baeb3dd2631ed1a4e9eef9
+  - /home/notsolikely/Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_6.2_Canonical_Artifacts_JSON_Markdown_PDF.txt
+    - sha256: aaf3db33935220866ed5f48dc0bf5d0e95a92ea6f690fa008ff47e01bee5bfc0
+  - /home/notsolikely/Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_6.5_Artifact_Indexing_for_Recall_and_Search.txt
+    - sha256: 7167ab663b883f0210edd02538df832b4ff076aeb47f3276683259be0a4b5e17
+  - /home/notsolikely/Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_7.7_Stage_6_Indexing_and_Retrieval.txt
+    - sha256: 172cb662c787d6b65f9e9be4bfa18e4866cf9109188cf1d50d95664d052f863c
+- Monster (Canon 15 reference): MONSTER_ASHBY__THE_MONSTER_WORKSPACE__20260303_050600.zip
+  - routes index sha256: 5bd87ac821c3ef2a5479af94196d2ffa31855d56103e78f0da84361c0c73c47b
+
+========================================
+SYSTEM CONTEXT STATEMENT
+========================================
+Dungeon 10 requires global chat to actually work, including cold-start (no session selected).
+
+Global scope rules:
+- If a session is selected, treat it as SOFT FOCUS only.
+- Try focus session first; if no evidence OR the question is clearly cross-session, expand search to all sessions.
+- When evidence is found in another session, return open_session actions so the UI can switch.
+- Do NOT force user into extra confirmation UI. They already have a scope toggle.
+
+========================================
+CONSTRAINT SUMMARY
+========================================
+- Global handler must not require a session_id and must not error when none is selected.
+- Do not prompt user for a 'global vs session' choice; the toggle already exists in UI.
+- Keep soft-focus logic deterministic and minimal.
+
+========================================
+ANTI-DUP PLAN
+========================================
+Before writing new code, run a repo-wide scan to confirm what already exists and extend it instead of cloning it.
+Required scans:
+- rg -n "@app\.post\(\"/api/chat" ashby/interfaces/web/app.py
+- rg -n "chat" ashby/modules/meetings -S
+- rg -n "scope\s*===\s*'global'" webapp/stuart_frontend/stuart_app/src -S
+- rg -n "Global \(Not Implemented\)" webapp/stuart_frontend/stuart_app/src -S
+- rg -n "segments_fts|sqlite_fts\.search" ashby/modules/meetings -S
+
+========================================
+PLACEMENT INTENT
+========================================
+New code should be modular and placed close to the domain it serves:
+- Chat domain logic: ashby/modules/meetings/chat/ (new package)
+- Shared meeting schemas: ashby/modules/meetings/schemas/
+- Web door remains thin: ashby/interfaces/web/app.py calls into modules, not vice versa
+- Frontend wiring: webapp/stuart_frontend/stuart_app/src/components/stuart/ and src/pages/Stuart.jsx
+
+========================================
+ATOMICITY STATEMENT
+========================================
+This quest is complete when its acceptance criteria pass and it does not require uncommitted follow-up work to avoid breaking the build.
+
+========================================
+DEPENDENCIES
+========================================
+- QUEST_176 (schema), QUEST_177 (retrieval), QUEST_178 (answerer), QUEST_179 (session handler patterns).
+
+========================================
+DELIVERABLES
+========================================
+- Implemented /api/chat/global handler (no more 501) using retrieval + answerer.
+- Global chat accepts requests without session_id and without selected_session_id.
+- Soft focus behavior supported via ui_state fields (client-controlled) and/or explicit session refs.
+- Tests for cold-start and open_session action behavior.
+
+========================================
+TASK BREAKDOWN
+========================================
+- Replace api_chat_global stub in ashby/interfaces/web/app.py with real handler.
+  - Parse ChatRequestV1.
+  - Determine soft_focus_session_id (if any) from ui_state (selected_session_id) and/or a deterministic session ref parse (reuse retrieval.resolve_session_ref).
+- Global retrieval algorithm:
+  - If soft_focus_session_id present: search within focus first.
+  - If zero hits OR query is explicitly cross-session ("how many meetings", "which meeting", "all sessions") => expand to global search.
+  - Keep this heuristic SMALL and explicit; do not add a bunch of brittle NLP rules.
+- Build actions:
+  - For any hit not in the focused session (or when no focus exists), include open_session action for that session.
+  - For citations, include jump_to_segment action for key segments.
+- Add tests:
+  - tests/test_meetings_chat_global_cold_start.py:
+    - POST /api/chat/global with only text + ui_state:{} on a repo with at least one session.
+    - Assert ok==True, reply.kind==assistant, and hits is a list (possibly empty).
+  - tests/test_meetings_chat_global_open_session_actions.py:
+    - Focus session A but query term exists in session B.
+    - Assert reply contains open_session for session B.
+
+
+========================================
+ACCEPTANCE CRITERIA
+========================================
+- /api/chat/global returns ChatResponseV1; no longer 501.
+- Global chat works with no selected session (ui_state may be empty).
+- Soft focus is implemented (focus-first then expand) and produces open_session actions when needed.
+- New tests pass.
+
+========================================
+VERIFICATION PLAN
+========================================
+- pytest -q tests/test_meetings_chat_global_cold_start.py tests/test_meetings_chat_global_open_session_actions.py
+
+========================================
+ROLLBACK PLAN
+========================================
+- git restore --staged --worktree ashby/interfaces/web/app.py tests/test_meetings_chat_global_cold_start.py tests/test_meetings_chat_global_open_session_actions.py
+- Revert commit if merged.
+
+========================================
+AUDIT BUNDLE FOLDER PATH
+========================================
+/home/notsolikely/Ashby_Data/Audits/Execution/QUEST_180__<Codex fills on completion>/

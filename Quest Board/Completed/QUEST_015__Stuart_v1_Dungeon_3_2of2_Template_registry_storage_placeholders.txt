@@ -1,0 +1,62 @@
+QUEST ID: QUEST_015
+Title: Stuart v1 — Dungeon 3 (2 of 2): Template registry + storage placeholders
+Context: Stuart
+Origin: Guild Orders: GUILD_ORDERS_STUART_V1_2026-01-16_REV3.txt (Dungeon 3)
+Priority: P0
+Links:
+- Guild Orders: Stuart v1 — Dungeon 3
+- Supersedes (decomposition of): QUEST_004
+- Related: QUEST_014 (mode registry + defaults)
+Status: COMPLETED
+Accepted On: Completed On:
+Completed On: DESCRIPTION
+
+DESCRIPTION
+────────────────────────────────────────
+Make templates first-class and enumerated so v1 can ship one default template per mode, while v2 can add multiple templates without refactors.
+
+SCOPE / OBJECTIVE
+────────────────────────────────────────
+Implement:
+- Template registry per mode.
+- v1 ships exactly one template per mode: “default”.
+- Placeholder template storage directories:
+  - templates/system/<mode>/<template_id>.* (format can be JSON/MD; choose one and lock it)
+  - templates/user/ (reserved for future CRUD)
+
+Ensure validation for templates mirrors mode validation:
+- unknown template requests must trigger clarification listing allowed values.
+Provide simple query methods:
+- “what templates are available for meeting?”
+
+OUT OF SCOPE
+────────────────────────────────────────
+Template CRUD/editor UI.
+Multiple templates shipped in v1 (beyond default).
+Telegram template selection (explicitly forbidden; Telegram uses default only).
+
+DEPENDENCIES
+────────────────────────────────────────
+- QUEST_014
+
+EXECUTION NOTES
+────────────────────────────────────────
+This quest is about structure and validation, not writing the perfect default template content.
+Lock the registry so later work is additive.
+
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────
+- [x] Template registry exists with exactly one “default” template per mode in v1.
+- [x] Template storage directories exist: templates/system/... and templates/user/ reserved.
+- [x] Validation rejects unknown template IDs and returns allowed values for clarification prompts.
+- [x] Engine can answer: “what templates are available?” and “what templates are available for meeting?”
+
+TALENT POINT
+────────────────────────────────────────
+On completion:
+- Talent Point Awarded: YES
+- Talent Spent On: TALENT_STUART_TEMPLATE_REGISTRY_ENUM — Enumerated Template Registry + Storage Placeholders
+
+FINAL NOTES
+────────────────────────────────────────
+(optional)

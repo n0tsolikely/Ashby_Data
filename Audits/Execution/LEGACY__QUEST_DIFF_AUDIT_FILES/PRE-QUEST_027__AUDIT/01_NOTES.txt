@@ -1,0 +1,1 @@
+Reproduced webapp scaffold: BASE-relative mounts, JS send/upload scaffold, index.html includes script + file input id.

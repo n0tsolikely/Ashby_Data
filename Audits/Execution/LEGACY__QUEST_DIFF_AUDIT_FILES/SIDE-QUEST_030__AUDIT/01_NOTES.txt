@@ -1,0 +1,6 @@
+Patched _env() to inject canonical repo root into subprocess PYTHONPATH.
+This removes ModuleNotFoundError for ashby modules when run_default_pipeline shells out.
+
+Import smoke:
+- ashby_import: OK
+- env_has_PYTHONPATH: False

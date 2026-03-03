@@ -1,0 +1,78 @@
+STUART CODEX
+4.6 Template Versioning and Compatibility (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines template versioning. Versioning matters because users will evolve templates over time, and Stuart must preserve what was used to generate an artifact historically.
+
+We also discussed “no refactors later.” Template versioning is one of the main refactor traps if you ignore it early.
+
+1) Why templates must be versioned
+
+If a template changes silently, then:
+- old artifacts become ambiguous (“what structure was used?”),
+- re-running a session could produce different output unexpectedly,
+- auditability suffers.
+
+Therefore:
+- a template used to generate an artifact must be identifiable and immutable.
+
+2) Versioning rules (canonical)
+
+VER1) Templates have versions
+Each template has a version identifier (e.g., 1, 2, 3 or semantic versions).
+
+VER2) Edits create new versions
+Editing a template must create a new version.
+Older versions remain available for historical reference.
+
+VER3) Artifacts record template version
+Any formalization artifact must record:
+- mode_id
+- template_id
+- template_version
+- retention setting used (explicit or default)
+- run timestamp
+This ensures reproducibility.
+
+VER4) Compatibility declarations
+Templates should declare:
+- minimum Stuart version required
+- optional: schema version used
+This prevents breakage if template schema evolves.
+
+3) Re-running old sessions with new templates
+
+Users may want to re-run a session with:
+- the original template version (reproducible output),
+- or the latest template version (updated structure).
+
+Stuart should support both:
+- “Re-run with same template version”
+- “Re-run with latest template version”
+
+But the output must clearly state what was used.
+
+4) Deprecation behavior
+
+Templates or template versions may be deprecated.
+Deprecation must:
+- not delete historical artifacts,
+- not break the ability to view old outputs,
+- and not remove the ability to re-run with an old version unless explicitly removed by the user.
+
+5) Future sharing implications
+
+If templates are shared later:
+- versioning is mandatory for stable distribution.
+- shared templates must include version metadata and compatibility.
+
+6) Self-audit (4.6)
+
+This section reflects our chat decisions:
+- templates can proliferate and evolve,
+- users should be able to experiment without losing reproducibility,
+- and versioning prevents refactor traps and audit ambiguity.
+
+This section is complete.

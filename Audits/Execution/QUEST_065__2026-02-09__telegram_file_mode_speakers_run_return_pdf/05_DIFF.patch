@@ -1,0 +1,417 @@
+--- /dev/fd/63	2026-02-09 06:48:49.102686082 +0000
++++ Ashby_Engine/ashby/interfaces/telegram/stuart_door_core.py	2026-02-09 06:22:26.281331716 +0000
+@@ -25,7 +25,7 @@
+ 
+ @dataclass
+ class DoorState:
+-    stage: str  # "awaiting_mode" | "awaiting_speakers" | "ready"
++    stage: str  # "awaiting_mode" | "awaiting_speakers" | "awaiting_confirm" | "ready"
+     local_path: str
+     source_kind: str  # "audio" | "video" | "voice" | "document"
+     mode: Optional[Mode] = None
+@@ -36,7 +36,8 @@
+ 
+     def to_run_request(self) -> RunRequest:
+         """Convert door selections into the canonical meetings RunRequest contract."""
+-        return RunRequest(mode=self.mode, speakers=self.speakers)
++        # Normalize through the RunRequest contract (e.g., "2" -> 2, "3+" -> 3)
++        return RunRequest.from_dict({"mode": self.mode, "speakers": self.speakers})
+ 
+ 
+ def start_from_upload(*, local_path: str, source_kind: str) -> Tuple[DoorState, DoorPrompt]:
+@@ -66,14 +67,25 @@
+     return st, prompt
+ 
+ 
+-def apply_speakers(st: DoorState, speakers: Speakers) -> DoorState:
+-    st.stage = "ready"
++def apply_speakers(st: DoorState, speakers: Speakers) -> Tuple[DoorState, DoorPrompt]:
++    st.stage = "awaiting_confirm"
+     st.speakers = speakers
+-    return st
++    prompt = DoorPrompt(
++        text=(
++            "Stuart: confirm run\n"
++            f"Mode: {st.mode or 'meeting'}\n"
++            f"Speakers: {speakers}"
++        ),
++        buttons=[
++            DoorButton("Confirm & Run", f"{STUART_CB_PREFIX}go:run"),
++            DoorButton("Cancel", f"{STUART_CB_PREFIX}go:cancel"),
++        ],
++    )
++    return st, prompt
+ 
+ 
+ def parse_callback_data(data: str) -> Optional[Tuple[str, str]]:
+-    # Returns (kind, value) where kind in {"mode","spk"}
++    # Returns (kind, value) where kind in {"mode","spk","go"}
+     if not isinstance(data, str):
+         return None
+     if not data.startswith(STUART_CB_PREFIX):
+@@ -84,7 +96,7 @@
+     kind, value = body.split(":", 1)
+     kind = kind.strip()
+     value = value.strip()
+-    if kind not in ("mode", "spk"):
++    if kind not in ("mode", "spk", "go"):
+         return None
+     if not value:
+         return None
+--- /dev/fd/63	2026-02-09 06:48:49.117669005 +0000
++++ Ashby_Engine/ashby/interfaces/telegram/stuart_runner.py	2026-02-09 06:35:48.055033388 +0000
+@@ -7,6 +7,8 @@
+ from pathlib import Path
+ from typing import Any, Dict, Optional
+ 
++from ashby.modules.meetings.schemas.run_request import RunRequest
++
+ 
+ def _py() -> str:
+     # Allow Ashby Telegram to run Stuart in a separate venv / python version.
+@@ -34,84 +36,122 @@
+     return ast.literal_eval(out) if out else {}
+ 
+ 
+-def _extract_pdf_path(run_state: Dict[str, Any]) -> Optional[str]:
++def _extract_primary_pdf_path(run_state: Dict[str, Any]) -> Optional[str]:
++    """Extract the canonical primary PDF pointer from a cli_stuart run/go response."""
+     st = run_state.get("state") if isinstance(run_state, dict) else None
+     if not isinstance(st, dict):
+         return None
+-
+-    artifacts = st.get("artifacts")
+-    if not isinstance(artifacts, list):
++    po = st.get("primary_outputs")
++    if not isinstance(po, dict):
+         return None
++    pdf = po.get("pdf")
++    if not isinstance(pdf, dict):
++        return None
++    p = pdf.get("path")
++    return p if isinstance(p, str) and p else None
+ 
+-    # Prefer canonical formalized PDF
+-    for a in artifacts:
+-        if isinstance(a, dict) and a.get("kind") == "formalized_pdf":
+-            p = a.get("path")
+-            if isinstance(p, str) and p:
+-                return p
+-
+-    # Fallback: any PDF artifact path
+-    for a in artifacts:
+-        if isinstance(a, dict):
+-            p = a.get("path")
+-            if isinstance(p, str) and p.lower().endswith(".pdf"):
+-                return p
+ 
+-    return None
++def run_default_pipeline(
++    *,
++    local_path: str,
++    source_kind: str,
++    run_request: RunRequest,
++    template: str = "default",
++    retention: str = "MED",
++    contribution_id: str | None = None,
++) -> Dict[str, Any]:
++    """Telegram subprocess runner: upload -> plan (in-proc) -> go (subprocess) -> return primary PDF.
++
++    Contract:
++    - Do NOT auto-run on upload.
++    - Always return the mode-specific primary PDF (minutes.pdf / journal.pdf) via run.primary_outputs pointers.
++    """
+ 
+-def run_default_pipeline(*, local_path: str, source_kind: str, mode: str, template: str = "default", contribution_id: str | None = None) -> Dict[str, Any]:
+     # 1) upload (creates session if none)
+     kind_flag = source_kind if source_kind in ("audio", "video") else "audio"
+-    up = _run_cmd([
+-        _py(), "-m", "ashby.modules.meetings.cli_stuart",
+-        "upload", local_path,
+-        "--kind", kind_flag,
+-        "--mode", mode,
+-    ])
++    mode = (run_request.mode or "meeting").strip().lower() if isinstance(run_request.mode, str) else "meeting"
++    up = _run_cmd(
++        [
++            _py(),
++            "-m",
++            "ashby.modules.meetings.cli_stuart",
++            "upload",
++            local_path,
++            "--kind",
++            kind_flag,
++            "--mode",
++            mode,
++        ]
++    )
+     session_id = up.get("session_id")
+     uploaded_contribution_id = up.get("contribution_id")
+     if not isinstance(session_id, str) or not session_id:
+         raise RuntimeError(f"upload did not return session_id: {up}")
+ 
+-    # 2) run default template pipeline (optionally bind explicit contribution)
+-    cid = contribution_id or (uploaded_contribution_id if isinstance(uploaded_contribution_id, str) and uploaded_contribution_id else None)
+-    run_cmd = [
+-        _py(), "-m", "ashby.modules.meetings.cli_stuart",
+-        "run", session_id,
+-        "--mode", mode,
+-        "--template", template,
+-    ]
++    cid = contribution_id or (
++        uploaded_contribution_id if isinstance(uploaded_contribution_id, str) and uploaded_contribution_id else None
++    )
++
++    # 2) Build a deterministic plan from the unified RunRequest contract (in-proc),
++    # then create the run manifest. Execution still happens via subprocess (go).
++    from ashby.modules.meetings.router.router import build_intent_and_plan
++    from ashby.modules.meetings.schemas.plan import SessionContext
++    from ashby.modules.meetings.store import create_run
++
++    rr = RunRequest(
++        mode=mode,
++        template_id=(run_request.template_id or template),
++        retention=(run_request.retention or retention),
++        speakers=run_request.speakers,
++    )
++
++    session = SessionContext(active_session_id=session_id, last_run_id=None)
++    out = build_intent_and_plan(text="run", run_request=rr, session=session)
++    if not out.plan.validation.ok:
++        raise ValueError(f"Invalid run request: {out.plan.validation.issues}")
++
++    steps = [{"kind": s.kind.value, "params": dict(s.params)} for s in out.plan.steps]
++
+     if cid:
+-        run_cmd += ["--contribution-id", cid]
++        for st in steps:
++            if (st.get("kind") or "").strip().lower() == "formalize":
++                params = st.get("params") if isinstance(st.get("params"), dict) else {}
++                params = dict(params)
++                params["contribution_id"] = cid
++                st["params"] = params
++                break
++
++    run_id = create_run(session_id=session_id, plan={"steps": steps})
++
++    # 3) execute in subprocess
++    rn = _run_cmd([
++        _py(), "-m", "ashby.modules.meetings.cli_stuart", "go", run_id
++    ])
+ 
+-    rn = _run_cmd(run_cmd)
++    # 4) return the canonical primary PDF pointer
++    pdf_path = _extract_primary_pdf_path(rn)
+ 
+-    # 3) extract or force-export PDF
+-    pdf_path = _extract_pdf_path(rn)
++    po: Dict[str, Any] = {}
++    st = rn.get("state") if isinstance(rn, dict) else None
++    if isinstance(st, dict) and isinstance(st.get("primary_outputs"), dict):
++        po = dict(st.get("primary_outputs") or {})
+ 
+     if not pdf_path:
+-        from pathlib import Path
+-        from ashby.modules.meetings.render.export_pdf import export_pdf_stub
++        # Fallback: resolve from run state on disk.
++        from ashby.modules.meetings.primary_outputs import resolve_primary_outputs
+ 
+-        run_dir_val = rn.get("run_dir")
+-        if isinstance(run_dir_val, str) and run_dir_val:
+-            run_dir = Path(run_dir_val)
+-            if run_dir.exists():
+-                out = export_pdf_stub(run_dir)
+-                pdf_path = out.get("pdf_path")
+-
+-                # final fallback: scan exports dir
+-                if not pdf_path:
+-                    exports = run_dir / "exports"
+-                    if exports.exists():
+-                        for p in exports.glob("*.pdf"):
+-                            pdf_path = str(p)
+-                            break
++        po = resolve_primary_outputs(run_id)
++        pdf = po.get("pdf") if isinstance(po, dict) else None
++        if isinstance(pdf, dict):
++            p = pdf.get("path")
++            pdf_path = p if isinstance(p, str) and p else None
+ 
+     return {
+         "ok": True,
+         "session_id": session_id,
+         "contribution_id": cid,
++        "run_id": run_id,
+         "run": rn,
++        "primary_outputs": po,
+         "pdf_path": pdf_path,
+     }
+--- /dev/fd/63	2026-02-09 06:48:49.131212002 +0000
++++ Ashby_Engine/io/telegram/ashby_telegram_control.py	2026-02-09 06:27:51.835620945 +0000
+@@ -182,34 +182,35 @@
+         return
+ 
+     if kind == "spk":
+-        # Store choice (not yet used by pipeline, but captured for future diarization adapters)
+-        st = apply_speakers(st, value if value in ("auto", "1", "2", "3+") else "auto")  # type: ignore[arg-type]
++        # Capture speakers, then require an explicit confirm before running.
++        st, prompt = apply_speakers(st, value if value in ("auto", "1", "2", "3+") else "auto")  # type: ignore[arg-type]
+         context.user_data["stuart_door_state"] = st.__dict__
++        await q.message.reply_text(prompt.text, reply_markup=_prompt_to_markup(prompt))
++        return
++
++    if kind == "go":
++        if value == "cancel":
++            context.user_data.pop("stuart_door_state", None)
++            await q.message.reply_text("Stuart: cancelled.")
++            return
++
++        if value != "run":
++            return
+ 
+-        await q.message.reply_text("Stuart: running default pipeline…")
+-        await q.message.reply_text("Stuart: running default pipeline…")
++        rr = st.to_run_request()
++        await q.message.reply_text("Stuart: running...")
+         try:
+             out = run_default_pipeline(
+                 local_path=st.local_path,
+                 source_kind="audio" if st.source_kind != "video" else "video",
+-                mode=st.mode or "meeting",
++                run_request=rr,
+             )
+ 
+-            # DEBUG: print everything to the console
+-            import json
+-            print("\n========== STUART PIPELINE OUT ==========")
+-            try:
+-                print(json.dumps(out, indent=2, default=str))
+-            except Exception:
+-                print(out)
+-            print("========== /STUART PIPELINE OUT ==========\n")
+-
+             pdf_path = out.get("pdf_path")
+-
+             if isinstance(pdf_path, str) and pdf_path:
+                 from pathlib import Path
++
+                 p = Path(pdf_path)
+-                print(f"[telegram] pdf_path={pdf_path} exists={p.exists()}")
+                 if p.exists():
+                     await q.message.reply_document(document=p.read_bytes(), filename=p.name)
+                 else:
+@@ -218,30 +219,13 @@
+                 await q.message.reply_text("Stuart: ran, but no PDF path returned.")
+         except Exception as e:
+             import traceback
++
+             print("\n========== STUART ERROR ==========")
+             traceback.print_exc()
+             print("========== /STUART ERROR ==========\n")
+             await q.message.reply_text(f"Stuart error: {e}")
+         finally:
+             context.user_data.pop("stuart_door_state", None)
+-        return
+-
+-        try:
+-            out = run_default_pipeline(local_path=st.local_path, source_kind="audio" if st.source_kind != "video" else "video", mode=st.mode or "meeting")
+-            pdf_path = out.get("pdf_path")
+-            if isinstance(pdf_path, str) and pdf_path:
+-                from pathlib import Path
+-                p = Path(pdf_path)
+-                if p.exists():
+-                    await q.message.reply_document(document=p.read_bytes(), filename=p.name)
+-                else:
+-                    await q.message.reply_text(f"Stuart: ran, but PDF missing: {pdf_path}")
+-            else:
+-                await q.message.reply_text("Stuart: ran, but no PDF path returned.")
+-        except Exception as e:
+-            await q.message.reply_text(f"Stuart error: {e}")
+-        finally:
+-            context.user_data.pop("stuart_door_state", None)
+         return
+ 
+ 
+--- /dev/fd/63	2026-02-09 06:48:49.144137017 +0000
++++ Ashby_Engine/tests/test_telegram_stuart_door_core.py	2026-02-09 06:21:50.971841044 +0000
+@@ -21,12 +21,14 @@
+     assert st.mode == "meeting"
+     assert any(b.data.startswith(STUART_CB_PREFIX + "spk:") for b in prompt.buttons)
+ 
+-    st = apply_speakers(st, "2")
+-    assert st.stage == "ready"
++    st, confirm = apply_speakers(st, "2")
++    assert st.stage == "awaiting_confirm"
+     assert st.speakers == "2"
++    assert any(b.data.startswith(STUART_CB_PREFIX + "go:") for b in confirm.buttons)
+ 
+ 
+ def test_parse_callback_data():
+     assert parse_callback_data("nope") is None
+     assert parse_callback_data(STUART_CB_PREFIX + "mode:meeting") == ("mode", "meeting")
+     assert parse_callback_data(STUART_CB_PREFIX + "spk:3+") == ("spk", "3+")
++    assert parse_callback_data(STUART_CB_PREFIX + "go:run") == ("go", "run")
+--- /dev/null	2026-02-09 05:51:57.389776676 +0000
++++ Ashby_Engine/tests/test_telegram_stuart_runner_smoke.py	2026-02-09 06:41:15.223118828 +0000
+@@ -0,0 +1,62 @@
++import shutil
++import subprocess
++from pathlib import Path
++
++import pytest
++
++from ashby.interfaces.telegram.stuart_runner import run_default_pipeline
++from ashby.modules.meetings.schemas.run_request import RunRequest
++
++
++def _make_sine_wav(path, *, seconds: float = 0.25) -> None:
++    ffmpeg = shutil.which("ffmpeg")
++    if not ffmpeg:
++        raise RuntimeError("ffmpeg missing")
++
++    # Generate a tiny deterministic mono WAV.
++    cmd = [
++        ffmpeg,
++        "-y",
++        "-f",
++        "lavfi",
++        "-i",
++        f"sine=frequency=440:duration={seconds}",
++        "-ar",
++        "16000",
++        "-ac",
++        "1",
++        str(path),
++    ]
++    subprocess.run(cmd, check=True, capture_output=True, text=True)
++
++
++@pytest.mark.skipif(shutil.which("ffmpeg") is None, reason="ffmpeg missing")
++def test_telegram_runner_returns_primary_pdf_paths(tmp_path, monkeypatch):
++    # Isolate runtime writes.
++    monkeypatch.setenv("STUART_ROOT", str(tmp_path / "StuartRuntime"))
++
++    wav = tmp_path / "tone.wav"
++    _make_sine_wav(wav)
++
++    # Meeting => minutes.pdf
++    out_m = run_default_pipeline(
++        local_path=str(wav),
++        source_kind="audio",
++        run_request=RunRequest.from_dict({"mode": "meeting", "speakers": 2}),
++    )
++    assert out_m.get("ok") is True
++    pdf_m = out_m.get("pdf_path")
++    assert isinstance(pdf_m, str) and pdf_m.endswith("minutes.pdf")
++    assert (tmp_path / "StuartRuntime").exists()  # sanity
++    assert Path(pdf_m).exists()
++
++    # Journal => journal.pdf
++    out_j = run_default_pipeline(
++        local_path=str(wav),
++        source_kind="audio",
++        run_request=RunRequest.from_dict({"mode": "journal", "speakers": "auto"}),
++    )
++    assert out_j.get("ok") is True
++    pdf_j = out_j.get("pdf_path")
++    assert isinstance(pdf_j, str) and pdf_j.endswith("journal.pdf")
++    assert Path(pdf_j).exists()

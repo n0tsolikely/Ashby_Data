@@ -1,0 +1,134 @@
+STUART — END OF DAY SNAPSHOT
+Date: 2026-02-08
+Scope: Stuart v1 (Meetings + Journal) — D3 (Truth & Evidence) + D4 (Index/Retrieval) + Platform Spine Wiring
+
+================================================================================
+0) PURPOSE
+================================================================================
+This snapshot is a **rehydration anchor** and an **execution log pointer**.
+It records what was completed, what laws were locked, and where the receipts live.
+
+This snapshot is NOT a new quest acceptance.
+
+================================================================================
+1) AUTHORITATIVE ANCHORS (DO NOT ARGUE WITH THESE)
+================================================================================
+Control Sync (phase acceptance + ordering):
+- /mnt/data/Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-02-07__PHASE_D3_D4_PLUS_PLATFORM_SPINE_WIRING.txt
+
+Binding architecture lock (platform truth + profile + routing):
+- /mnt/data/Ashby_Data/Buffs/ASHBY_PLATFORM_TRUTH_AND_PROFILE_LOCK.txt
+
+Vision clarification addendum (profile vs personality, platform truth wiring, module boundaries):
+- /mnt/data/Ashby_Data/Docs/ASHBY_VISION_ADDENDUM__2026-02-07__TRUTH_PROFILE_ROUTING_CLARITY.txt
+
+================================================================================
+2) COMPLETED QUEST STACK (COMMITMENTS CLOSED)
+================================================================================
+Accepted stack from Control Sync is now COMPLETE.
+Quest Board state:
+- Accepted: EMPTY
+- Completed: includes QUEST_053 → QUEST_060, SIDE-QUEST_076, SIDE-QUEST_077
+
+Primary receipts live in the audit bundles:
+- /mnt/data/Ashby_Data/Audits/Execution/
+
+--------------------------------------------------------------------------------
+2.1 Dungeon 3 — Truth & Evidence
+--------------------------------------------------------------------------------
+QUEST_053 — evidence_map v2 schema + builder (claim-level anchors)
+- Goal: upgrade evidence_map to v2 tying claims to transcript anchors.
+- Receipts:
+  - /mnt/data/Ashby_Data/Audits/Execution/QUEST_053__2026-02-07__evidence_map_v2_schema_builder/
+
+QUEST_054 — citation rendering standard (MD/PDF)
+- Goal: lock deterministic citation formatting so MD + PDF match.
+- Receipts:
+  - /mnt/data/Ashby_Data/Audits/Execution/QUEST_054__2026-02-07__citation_rendering_standard_md_pdf/
+
+QUEST_055 — minutes truth guards (no invented decisions/actions)
+- Goal: explicit empty-state output + schema rails so decisions/actions aren’t hallucinated.
+- Receipts:
+  - /mnt/data/Ashby_Data/Audits/Execution/QUEST_055__2026-02-07__minutes_truth_guards_no_decisions_when_none/
+
+--------------------------------------------------------------------------------
+2.2 Platform splice — ExecutionProfile substrate unification
+--------------------------------------------------------------------------------
+SIDE-QUEST_076 — unify ExecutionProfile substrate (single canonical substrate)
+- Canonical substrate: ashby.core.profile
+- execution_profiles becomes a deprecated shim (re-export only).
+- Receipts:
+  - /mnt/data/Ashby_Data/Audits/Execution/SIDE-QUEST_076__2026-02-07__unify_execution_profile_substrate/
+
+--------------------------------------------------------------------------------
+2.3 Dungeon 4 — Index/Retrieval
+--------------------------------------------------------------------------------
+QUEST_056 — SQLite schema migration: segment anchors
+- DB schema bumped to support segment anchors (start_ms/end_ms).
+- Receipts:
+  - /mnt/data/Ashby_Data/Audits/Execution/QUEST_056__2026-02-07__sqlite_schema_migration_segment_anchors/
+
+QUEST_057 — ingest transcript.json + aligned_transcript.json
+- Ingest prefers aligned transcript when present.
+- Stores segment_id + timestamps for downstream citations.
+- Receipts:
+  - /mnt/data/Ashby_Data/Audits/Execution/QUEST_057__2026-02-07__ingest_transcript_json_aligned_transcript/
+
+QUEST_058 — search results return citations
+- Search returns ranked results with citation anchors (segment_id + timestamps).
+- Adds session/mode filters.
+- Receipts:
+  - /mnt/data/Ashby_Data/Audits/Execution/QUEST_058__2026-02-07__search_results_return_citations/
+
+QUEST_059 — library list sessions + metadata + latest runs
+- DB-backed session list for doors/UX without full search.
+- Receipts:
+  - /mnt/data/Ashby_Data/Audits/Execution/QUEST_059__2026-02-07__library_list_sessions_metadata_latest_runs/
+
+QUEST_060 — index speaker overlay names + attendee queries
+- Overlay-only attendee matching; no identity invention.
+- Receipts:
+  - /mnt/data/Ashby_Data/Audits/Execution/QUEST_060__2026-02-07__index_speaker_map_names_attendee_queries/
+
+--------------------------------------------------------------------------------
+2.4 Platform truth wiring — Meetings TruthPolicy + TruthGateJudge integration
+--------------------------------------------------------------------------------
+SIDE-QUEST_077 — MeetingsTruthPolicy integrated with platform TruthGateJudge
+- TruthGate runs after JSON formalize and before MD/PDF publish.
+- Always writes machine-readable truth gate report artifact.
+- Blocks output on FAIL (no silent publish).
+- Receipts:
+  - /mnt/data/Ashby_Data/Audits/Execution/SIDE-QUEST_077__2026-02-07__meetings_truth_policy_truth_gate_judge/
+
+================================================================================
+3) TESTING RECEIPTS (WHAT WAS ACTUALLY VERIFIED)
+================================================================================
+Per-quest verification commands and exit codes are recorded in each audit bundle’s 03_VERIFY.md.
+High-level:
+- D3 + D4 quests ran `python3 -m pytest -q` as the primary verification gate.
+- SIDE-QUEST_077 ran a targeted smoke+integration gate (see its audit bundle).
+
+IMPORTANT: do not claim tests passed without executing them. This snapshot only points to receipts.
+
+================================================================================
+4) CURRENT PRODUCT SHAPE (POST-PHASE SUMMARY)
+================================================================================
+As of this EOD:
+- Evidence is claim-level (evidence_map v2).
+- Citations have standardized formatting.
+- Minutes/Journals have explicit “none” statements for decisions/actions.
+- SQLite index supports:
+  - transcript segment anchors
+  - transcript/aligned transcript ingest
+  - search results with citations
+  - library session listing
+  - attendee-style overlay queries
+- Meetings module is hard-wired to platform truth spine via TruthGateJudge + MeetingsTruthPolicy.
+- ExecutionProfile substrate is unified at platform-level (ashby.core.profile).
+
+================================================================================
+5) NEXT SAFE MOVE
+================================================================================
+A new Control Sync is required before executing unaccepted quests.
+The next unaccepted stack begins at QUEST_061 (Dungeon 5: Doors unification + UX flows).
+

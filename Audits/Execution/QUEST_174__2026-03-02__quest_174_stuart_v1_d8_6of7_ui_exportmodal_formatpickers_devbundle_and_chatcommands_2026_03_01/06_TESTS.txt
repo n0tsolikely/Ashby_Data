@@ -1,0 +1,8 @@
+## Command Receipt Log
+CMD: cd /home/notsolikely/Ashby_Engine && npm --prefix webapp/stuart_frontend/stuart_app run build
+
+> stuart-frontend@0.0.0 build
+> vite build
+
+RC: 0
+PASS: governance validation OK for QUEST_174 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_174__2026-03-02__quest_174_stuart_v1_d8_6of7_ui_exportmodal_formatpickers_devbundle_and_chatcommands_2026_03_01

@@ -1,0 +1,238 @@
+Ashby Platform Principles
+(These do not change without a Control Sync)
+1. Ashby Is a Platform, Not a Product
+
+Ashby is a general agentic platform capable of supporting many products.
+
+Any single use-case (home, meetings, inventory, media, business ops) is:
+
+a profile
+
+a module set
+
+not the definition of Ashby itself
+
+No feature is allowed to redefine the platform.
+
+2. The Engine Is Sacred
+
+The engine/ is the brain, not the body.
+
+The engine:
+
+reasons
+
+plans
+
+remembers
+
+enforces truth
+
+routes tools
+
+The engine never:
+
+talks to vendors
+
+knows brands
+
+executes hardware logic
+
+contains optional features
+
+If something can be disabled, removed, or swapped, it does not belong in the engine.
+
+3. WHAT vs HOW Is Absolute
+
+This rule is never bent.
+
+WHAT Ashby does → modules/
+
+HOW it is executed → adapters/, bridges/, native_vendor/, connectors/
+
+Modules:
+
+decide
+
+reason
+
+plan
+
+describe intent
+
+Execution layers:
+
+translate
+
+call APIs
+
+send commands
+
+report results
+
+If reasoning leaks into execution code, the design is wrong.
+
+4. Scopes Are the World Model
+
+Everything Ashby knows or does exists inside a scope.
+
+Scopes unify:
+
+rooms
+
+zones
+
+projects
+
+accounts
+
+clients
+
+properties
+
+environments
+
+No module bypasses scopes.
+No adapter defines scopes.
+Scopes are owned by Ashby alone.
+
+5. Ashby Never Lies
+
+Ashby may be uncertain.
+Ashby may ask questions.
+Ashby may refuse.
+
+Ashby never claims an action occurred unless it was:
+
+executed
+
+verified
+
+recorded
+
+Truth enforcement is mandatory.
+
+6. Bridges Are Temporary by Design
+
+Bridges (Home Assistant, Matter, Zigbee, etc.) exist to:
+
+accelerate capability
+
+reduce integration pain
+
+enable shipping
+
+They are not permanent dependencies.
+
+Every bridge must be:
+
+optional
+
+replaceable
+
+isolated
+
+Ashby’s long-term path is native ownership, not permanent delegation.
+
+7. Native Ownership Is Earned, Not Rushed
+
+Native vendor integrations are built:
+
+one at a time
+
+deliberately
+
+when they provide real advantage
+
+Ashby never rebuilds infrastructure “just to own it.”
+
+Ownership follows leverage, not ego.
+
+8. Modules Must Be Removable
+
+Any module (lights, Stuart, Tori, image generation, etc.) must be:
+
+addable
+
+removable
+
+upgradable
+
+Removing a module must not:
+
+break the engine
+
+require refactors
+
+leak config across the system
+
+If removing a module hurts, the module is wrongly designed.
+
+9. Profiles Define Products, Not Code Forks
+
+Products are defined by:
+
+profiles
+
+feature flags
+
+entitlements
+
+Never by:
+
+branching the codebase
+
+copying folders
+
+special-casing logic
+
+One engine. Many products.
+
+10. Ashby Must Remain Understandable
+
+Complexity is allowed.
+Confusion is not.
+
+Every subsystem must:
+
+have a clear boundary
+
+have a defined owner
+
+have a reason to exist
+
+If you cannot explain where something belongs, it does not belong.
+
+11. Control Sync Governs Change
+
+Structural changes require:
+
+alignment
+
+intent
+
+documentation
+
+No architectural changes are made:
+
+under stress
+
+mid-implementation
+
+“just this once”
+
+Control Sync comes first. Code comes second.
+
+Final Principle
+
+Ashby is designed to grow without collapsing under its own intelligence.
+
+If a decision makes Ashby:
+
+harder to reason about
+
+harder to remove parts from
+
+harder to ship as a product
+
+That decision violates the platform.

@@ -1,0 +1,158 @@
+# QUEST_191 — Stuart v1 — Dungeon 11 (4/10) — Templates API: CRUD + Preview + Registry Payload Upgrade
+
+(Quest template: Synapse OS — Architecture Transcendence Protocol, Stuart v1)
+
+IDENTITY
+- Quest ID: QUEST_191
+- Title: Stuart v1 — Dungeon 11 (4/10) — Templates API: CRUD + Preview + Registry Payload Upgrade
+- Dungeon: 11 (Templates as first-class artifacts)
+- Owner: OpenAI Codex (CLI execution)
+- Priority: P1
+- Risk Class: R2
+- Expected Testing Level: TL2 (unit + API) unless explicitly upgraded in this quest
+- Date Authored: 2026-03-03
+
+CANON LOCKS (sha256)
+- Guild Orders (ACTIVE): Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-25_REV14.txt
+  sha256: d10c278cd45a543c32c27102a912ce6f1c0569401c5ec0e00f6dc1e5c5b9b094
+
+- Guild Orders — Dungeon 11 block (verbatim) sha256: 00aff20ab5689f18747d0931ed6eea4432d0828df6dd180f0994337193b3905b
+
+- Stuart Codex anchors:
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_4.1_Mode_vs_Template_Separation.txt
+    sha256: 3823c6a3fa132e600d2b8b8c3cf825a6dc950c65b1dfa3c62a06a5a319bd7424
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_4.2_Template_Schema_Sections_Required_vs_Optional.txt
+    sha256: 2e6ca9a2caef22ec2eb432254afbe37cd5b53502aec9afe87e3b86f87f439611
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_4.4_Template_Creation_Chat_Guided.txt
+    sha256: c27b38f828095b60d21fc591c664c47ca44f987275ba438b3896220f83c50ca7
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_4.5_Template_Import_Document_or_Image_Based.txt
+    sha256: f10e6c36bd1206efb11d0f2da84b47797d705d31f89f7788d1a142747f96a047
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_4.6_Template_Versioning_and_Compatibility.txt
+    sha256: c359eed7780c19aef3b54fafc50ddc3e941ef25b367c958d8f6b0f3b9fc0b68f
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_2.4_Template_Selection_Scoped_by_Mode.txt
+    sha256: 03d3aa53371845a759f165fe1f542b38e7694829a0618b881316a0802d18c165
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_6.2_Canonical_Artifacts_JSON_Markdown_PDF.txt
+    sha256: aaf3db33935220866ed5f48dc0bf5d0e95a92ea6f690fa008ff47e01bee5bfc0
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_6.3_File_Naming_and_Deterministic_Paths.txt
+    sha256: f551b5e5166d175eac545518cde1a9d9dcea0bae7d43477c298471d42bf6371d
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_1.2_Core_Invariants_Truth_Evidence_Explicit_Execution.txt
+    sha256: 2f15b9014fc6f787986f990020867c177561e268950bafda58d6f0cbe8472953
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_2.2_Explicit_Execution_Gating_Submit_Confirm.txt
+    sha256: 322b838cce234e1c17d36f6a9a4c35a612dba211000b3ee8878be4e5dec6b602
+
+- Monster (Canon16 reference): MONSTER_ASHBY__THE_MONSTER_WORKSPACE__20260303_170000.zip
+  Routes index: MONSTER/repomap/snapshot_repomap_pack_current/WEB_API.md
+  sha256: df6c574135ac970896d89513b3aa87923d50feded9f91d2695a6f04a82f9dd4e
+
+
+SYSTEM CONTEXT STATEMENT
+- We need a backend surface for managing templates, without shoving everything into app.py.
+- We already have:
+  - `/api/registry` route wired in app.py (see Monster routes index)
+  - A template parser/registry (`template_registry.py`)
+  - A runtime filesystem store (`templates/store.py`) after QUEST_189
+- Dungeon 11 requires:
+  - Template list/preview/CRUD
+  - Registry returns templates_by_mode (id + title)
+  - User templates never stored under Ashby_Data or repo
+
+REPO / MONSTER ANCHORS
+- Web entrypoint: Ashby_Engine/ashby/interfaces/web/app.py (mounts /api/*)
+- Registry payload: Ashby_Engine/ashby/interfaces/web/registry_api.py:10
+- API models: Ashby_Engine/ashby/interfaces/web/api_models_v1.py (envelopes, session models)
+- Template registry: Ashby_Engine/ashby/modules/meetings/template_registry.py
+- Template store: Ashby_Engine/ashby/modules/meetings/templates/store.py
+- Monster: MONSTER/repomap/snapshot_repomap_pack_current/WEB_API.md (verify no route collisions)
+
+CONSTRAINT SUMMARY
+- Keep app.py thin:
+  - Add a new router module (e.g., templates_api.py) and include_router.
+- API must be deterministic and stable:
+  - IDs are stable, titles are mutable via new version.
+- “Preview” endpoints must not persist anything without explicit save.
+
+ANTI-DUP PLAN
+- `rg -n "templates_api|/api/templates|TemplateRecordV1" Ashby_Engine/ashby/interfaces/web`
+- If any templates endpoints already exist, extend them; do not add duplicates.
+
+DELIVERABLES
+- Backend routes:
+  1) GET `/api/templates?mode=<meeting|journal>&q=<optional>&limit=&offset=`
+  2) GET `/api/templates/{template_id}?mode=<...>&version=<optional>`
+  3) GET `/api/templates/{template_id}/versions?mode=<...>`
+  4) POST `/api/templates/draft` (preview-only; accepts text input, returns draft)
+  5) POST `/api/templates` (persist; create new template or new version)
+  6) DELETE `/api/templates/{template_id}?mode=<...>&confirm=true`
+- Registry upgrade:
+  - `/api/registry` includes `templates_by_mode` with template_id, template_title, template_version, source
+- Tests:
+  - API tests cover list/get/create/version/delete + registry templates_by_mode
+
+TASK BREAKDOWN
+1) Add API models (v1)
+   - Prefer new file: `ashby/interfaces/web/templates_models_v1.py`
+   - Models:
+     - TemplateDescriptorV1 {template_id, template_title, template_version, mode, source}
+     - TemplateRecordV1 {descriptor + defaults + created_at + updated_at + template_text}
+     - TemplateDraftV1 (same shape as record but `persisted=false`, and no stable template_id until saved)
+     - ListResponseV1 wrapper (or reuse PaginationV1 + data list)
+   - Keep consistent with existing envelope patterns in api_models_v1.
+
+2) Implement templates API router
+   - Add: `ashby/interfaces/web/templates_api.py`
+   - Use FastAPI APIRouter
+   - Wire into app.py:
+     - `app.include_router(templates_router, prefix="/api")` (or `/api/templates`)
+
+3) Implement handlers using template_registry + TemplateStore
+   - GET list:
+     - use template_registry.allowed_templates_for_mode(mode) (now includes user templates)
+   - GET record:
+     - use template_registry.load_template_spec(...) + TemplateStore metadata to expose title/defaults/text
+   - POST draft:
+     - input: mode, template_title (optional), source_text
+     - output: TemplateDraftV1 with generated template_text + defaults
+     - IMPORTANT: does not write to disk
+     - Implementation may be heuristic-only for now; LLM-assisted generation is introduced later (QUEST_195)
+   - POST create:
+     - input: mode, template_title, template_text, defaults, optional template_id (if creating new version)
+     - create new template via TemplateStore (version=1) OR new version (version++)
+     - return TemplateRecordV1
+   - DELETE:
+     - require confirm=true query param; otherwise return 400
+
+4) Upgrade registry payload
+   - Edit: `ashby/interfaces/web/registry_api.py`
+   - Add `templates_by_mode` key:
+     - mapping: mode -> list[TemplateDescriptorV1]
+   - Ensure existing keys remain unchanged (back-compat for frontend).
+
+5) Tests
+   - Add: `tests/test_templates_api_crud_and_registry.py`
+   - Use FastAPI TestClient pointed at app
+   - Use temp STUART_ROOT env to isolate filesystem store
+   - Assertions:
+     - POST /api/templates creates template (v1)
+     - GET list returns it under mode
+     - GET versions returns [1]
+     - POST create with same template_id creates v2
+     - DELETE removes it
+     - GET /api/registry includes templates_by_mode with titles
+
+ACCEPTANCE CRITERIA
+- All endpoints exist, are non-zombie, and behave as specified.
+- Registry payload now includes templates_by_mode (no frontend hardcodes needed after QUEST_192).
+- Tests pass:
+  - `pytest -q tests/test_templates_api_crud_and_registry.py`
+
+VERIFICATION PLAN
+- `cd /home/notsolikely/Ashby_Engine`
+- `pytest -q tests/test_templates_api_crud_and_registry.py`
+
+ROLLBACK PLAN
+- Remove templates_api + models and revert registry_api changes.
+- No data migrations are required (templates are runtime-only and test suite uses temp root).
+
+AUDIT BUNDLE
+- `/home/notsolikely/Ashby_Data/Audit Bundles/QUEST_191/`
+  - diff + pytest output + curl examples for list/create/delete + registry payload excerpt.

@@ -1,0 +1,73 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_054
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 3 (2/3): citation rendering standard in MD + PDF (consistent)
+
+Context: Stuart citations
+
+Origin:
+Control Sync — 2026-02-04 (Stuart v1 finish-line: REV5)
+
+Priority: P0
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV5.txt (Dungeon 3)
+- Stuart Codex 3.2/3.3: minutes/journal must be auditable with citations
+- Engine: renderers + pdf export
+
+Status: DONE
+
+Audit Bundle Path:
+  /mnt/data/Ashby_Data/Audits/Execution/QUEST_054__2026-02-07__citation_rendering_standard_md_pdf
+
+Accepted On:
+2026-02-07
+Accepted By:
+Hands (Peter)
+Completed On:
+2026-02-07
+
+Completed By:
+Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Define a consistent citation syntax and ensure it renders cleanly in both markdown and PDF output.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Standardize citation tokens (e.g., [S12 00:03:12–00:03:19])
+- Update MD renderers to emit citations consistently
+- Ensure PDF export preserves citation formatting (no hard-wrap corruption)
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Clickable deep links (nice-to-have)
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_043
+- QUEST_052
+- QUEST_053
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Citations must be stable identifiers: segment_id + timestamps.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] Citations appear in minutes.md/journal.md
+- [x] Citations are readable in minutes.pdf/journal.pdf
+- [x] `python3 -m pytest -q` passes
+

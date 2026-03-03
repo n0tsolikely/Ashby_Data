@@ -1,0 +1,83 @@
+STUART — BOOTSTRAP PROMPT (NEW CHAT)
+Date: 2026-02-05
+Owner: Hands (Peter) / Brains (Ash)
+Scope: Stuart v1 (Meetings + Journal) — REV7 finish-line
+
+PURPOSE
+- Rehydrate a brand new chat into the exact governed state of the Stuart v1 raid.
+- This prompt is NOT permission to execute; it is permission to become consistent.
+
+CANONICAL ROOTS (ABSOLUTE)
+- Governance: /mnt/data/Synapse_OS_Governance
+- Data:       /mnt/data/Ashby_Data
+- Engine:     /mnt/data/Ashby_Engine
+
+DO NOT USE
+- Any older “engine zip” working copies.
+- Module-level historical rehydration packs under:
+  /mnt/data/Ashby_Data/Stuart/Docs/Latest Rehyration Pack
+  (Those are historical reference; canonical session resume is this folder.)
+
+MANDATORY READ ORDER (SESSION START)
+1) Synapse Governance
+   - /mnt/data/Synapse_OS_Governance/README.txt
+   - /mnt/data/Synapse_OS_Governance/INDEX.txt
+   - /mnt/data/Synapse_OS_Governance/Processes/SYNAPSE_GUILD__THE_LOOP.txt
+   - /mnt/data/Synapse_OS_Governance/Processes/SYNAPSE_GUILD__TRUTH_GATE.txt
+
+2) Subject Buffs (Ashby)
+   - /mnt/data/Ashby_Data/Buffs/ASHBY_SESSION_START_CHECK.txt
+   - /mnt/data/Ashby_Data/Buffs/ASHBY_EXECUTION_PROTOCOL.txt
+   - /mnt/data/Ashby_Data/Buffs/ASHBY_DATA_DIRECTORY_MAP.txt
+
+3) Continuity Lock (this folder)
+   - /mnt/data/Ashby_Data/Latest Rehydration Pack/CONTINUITY_LOCK_2026-02-05.txt
+
+4) Codex freeze marker (execution authorization)
+   - /mnt/data/Ashby_Data/Codex/CODEX_FREEZE.md
+
+5) Active Guild Orders
+   - /mnt/data/Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS_STUART_V1_2026-02-04_REV7.txt
+
+6) Quest Board truth
+   - /mnt/data/Ashby_Data/Quest Board/Accepted/
+   - /mnt/data/Ashby_Data/Quest Board/Completed/
+
+7) Latest Stuart control sync anchor
+   - /mnt/data/Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-02-04__REV7_Quest_Refactor.txt
+
+CURRENT RAID INTENT (WHAT WE ARE BUILDING)
+Goal: Stuart v1 should accept an audio file and produce:
+- diarization (speaker segments)
+- verbatim transcript
+- meeting minutes (minutes.json + minutes.md + minutes.pdf)
+- journal entry (journal.json + journal.md + journal.pdf)
+…with truth discipline (citations anchored to segment_ids) and no hallucinated templates.
+
+CANONICAL RULES (NON-NEGOTIABLE)
+- No God files. Each file does one job.
+- Template IDs are registry-validated. If the user asks for a template that doesn’t exist, Stuart must NOT invent one.
+- Quests are atomic. Execute only Accepted quests.
+- Truth Gate: every “done” claim requires real receipts (diffs, commands, tests, artifacts).
+- Snapshots:
+  - Control Sync snapshots capture decisions.
+  - End-of-day snapshot only when the accepted quest stack is complete OR the session explicitly ends.
+
+WHERE WE LEFT OFF (STATE)
+Active Guild Orders:
+- GUILD_ORDERS_STUART_V1_2026-02-04_REV7.txt is ACTIVE.
+
+Quest Board:
+- COMPLETED:
+  - QUEST_042 — Run params: retention + template_id are first-class + validated
+  - QUEST_043 — Default meeting/journal templates upgraded (citation format + “no invention”)
+
+- ACCEPTED (current commitment stack):
+  - QUEST_044 → QUEST_052
+
+NEXT ACTION (DO NOT EXECUTE UNTIL HANDS SAYS GO)
+- If Hands says “execute next quest”, start with:
+  - QUEST_044 (minutes.json schema v1)
+- Follow execution order in the execution pack:
+  - /mnt/data/Ashby_Data/Latest Rehydration Pack/execution pack/
+

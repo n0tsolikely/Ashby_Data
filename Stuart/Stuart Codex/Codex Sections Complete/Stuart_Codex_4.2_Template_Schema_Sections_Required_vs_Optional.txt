@@ -1,0 +1,118 @@
+STUART CODEX
+4.2 Template Schema (Sections, Required vs Optional) (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines what a template must be able to express. We are not implementing the full schema here, but we are locking the requirements that the schema must satisfy so that later implementation does not force refactors.
+
+Templates exist to:
+- encode structure,
+- encode retention defaults,
+- and encode formatting rules
+without requiring the user to craft prompts repeatedly.
+
+1) Template identity and metadata
+
+Each template MUST have:
+- template_id (stable, unique, deterministic)
+- mode_id (the owning mode)
+- template_name (human readable)
+- version (semantic or monotonically increasing)
+- description (what it’s good for)
+- default_retention (LOW/MED/HIGH/NEAR-VERBATIM)
+- created_by (local user or “system”)
+- compatibility info (minimum Stuart version, optional)
+
+2) Sections
+
+A template MUST be able to define an ordered set of sections.
+
+Each section should support:
+- section_id (stable)
+- title (display label)
+- description (what goes here)
+- required flag (true/false)
+- extraction directives (what content to pull from transcript)
+- formatting style (paragraphs, bullets, tables if needed)
+- evidence policy (citations required? how strict?)
+
+Examples:
+Meeting template sections:
+- “Topics Discussed” (required)
+- “Decisions” (required)
+- “Action Items” (required)
+- “Open Questions” (optional)
+
+Incident template sections:
+- “Summary” (required)
+- “Timeline” (required)
+- “Impact” (required)
+- “Root Cause” (optional; only if stated)
+- “Follow-ups” (required)
+
+Journal template sections:
+- “Entry” (required)
+- “Feelings” (optional)
+- “Lessons” (optional)
+- “Next actions” (optional)
+
+Creator template sections:
+- “Idea clusters” (required)
+- “Hooks / lines” (optional)
+- “Steps / next actions” (optional)
+- “Open questions” (optional)
+
+3) Required vs optional behavior
+
+Required sections:
+- must appear in the output even if empty,
+- and if empty, Stuart must explicitly say why (e.g., “No explicit decisions recorded.”).
+
+Optional sections:
+- may be omitted if there is no supporting content,
+- or may appear as empty if the user prefers a fixed form.
+This behavior should be configurable.
+
+4) Evidence policy per section
+
+Templates must be able to control evidence strictness.
+Some sections must always be evidence-backed (decisions/action items/timeline).
+Other sections (like “Discussion Notes” or “Narrative Entry”) may be less granular but still derived from transcript.
+
+At minimum, the schema must support:
+- “citations_required”: yes/no
+- “citation_granularity”: segment-level vs summary-level
+- “uncertainty_handling”: required disclosure if low confidence
+
+5) Speaker attribution policy
+
+Templates must be able to declare speaker attribution behavior:
+- use labels only (Speaker 1),
+- use mapped names when available,
+- require confidence thresholds before naming,
+- or allow “uncertain attribution” markers.
+
+This prevents templates from silently assigning identity.
+
+6) Output controls and rendering hints
+
+Templates may include rendering hints such as:
+- heading levels,
+- bullet indentation,
+- “include timestamps next to each item,”
+- “include quote blocks,”
+- “page break between sections” (for PDF).
+
+These are hints, not truth; they shape readability and printability.
+
+7) Self-audit (4.2)
+
+This section reflects our chat decisions:
+- templates must be rich enough to represent org-specific meeting/incident formats,
+- required vs optional sections are needed (especially to avoid “missing decisions” ambiguity),
+- evidence policy is crucial for trust,
+- speaker attribution must respect uncertainty,
+- and templates must remain data (config) to avoid refactor-heavy hardcoding.
+
+This section is complete.

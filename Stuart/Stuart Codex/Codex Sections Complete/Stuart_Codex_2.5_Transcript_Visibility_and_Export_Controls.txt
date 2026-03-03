@@ -1,0 +1,114 @@
+STUART CODEX
+2.5 Transcript Visibility and Export Controls (Canonical)
+
+Status: Canonical
+Last updated: 2026-02-16
+
+This section defines how Stuart handles transcript visibility and export. It exists because we made a critical decision: the transcript must always exist internally (truth), but users should not be forced to look at it or print it.
+
+1) Transcript is mandatory internally
+
+Once a session proceeds to processing, Stuart MUST generate a verbatim transcript internally.
+This transcript is the ground truth and is required for:
+- evidence-backed outputs,
+- citations,
+- dispute resolution (“I didn’t say that”),
+- and debugging.
+
+This requirement holds in all profiles (LOCAL_ONLY, HYBRID, CLOUD).
+
+2) Visibility is user-controlled
+
+The UI MUST allow the transcript to be:
+- hidden (default-friendly),
+- shown (audit-friendly).
+
+The chat interface must support:
+- “Show transcript”
+- “Hide transcript”
+- “Open transcript”
+- “Show transcript around timestamp 12:34”
+- “Show everything Speaker 2 said”
+
+This supports both casual users and power users.
+
+3) Export is user-controlled
+
+The transcript should not be forced into every export bundle.
+Users must be able to export:
+- formalization only,
+- transcript only,
+- or full session bundle (audio + transcript + formalization + evidence maps).
+
+The UI MUST present export options (e.g., a dropdown or modal behind an Export button), and chat MUST support equivalent commands (“export formalization only”, “export transcript only”, “export full bundle”).
+
+Recommended export artifacts:
+- transcript.txt (human readable)
+- transcript.json (machine readable)
+- minutes.md / formalization.md (human readable)
+- minutes.json / formalization.json (machine readable)
+- minutes.pdf / formalization.pdf (printable)
+- evidence_map.json (audit backbone)
+- optional: captions files (srt/vtt)
+
+4) Printing rules
+
+Users typically do not print full transcripts. Users often print formalizations.
+Therefore:
+- Formalizations MUST have a print-ready PDF export.
+- Transcripts MAY be printable, but printing transcript is not the primary requirement.
+
+The UI should provide:
+- Print Formalization (primary)
+- Print Transcript (optional)
+
+5) “No hard-wrap” rule in exports
+
+Stuart must avoid saving hard-wrapped text as the canonical artifact.
+- .txt and .md exports should contain paragraph/list breaks, not forced line wraps.
+- PDF generation should control page layout, margins, headings, and list formatting.
+
+This was a direct lesson from earlier experiences with hard-wrapped documents.
+
+6) Transcript vs “clean transcript”
+
+Stuart may generate additional transcript views, but must preserve ground truth:
+- Verbatim transcript (ground truth)
+- Optional cleaned transcript view (removes filler) if a template/mode requests it
+
+The cleaned view must not replace the verbatim transcript.
+It must be labeled clearly as derived.
+
+
+
+7A) Transcript versions (retranscribe with diarization ON/OFF)
+
+Stuart MUST support multiple transcript versions within a session. This is required for the user workflow:
+- transcribe fast without diarization,
+- retranscribe with diarization ON,
+- and choose which transcript version feeds a formalization.
+
+Rules:
+- Each transcript version MUST have a stable identifier (transcript_version_id) and preserve timestamps and segment IDs.
+- The currently visible transcript in the UI is the currently selected transcript version.
+- Formalizations MUST declare which transcript_version_id they consumed.
+- Export bundles MUST allow the user to include:
+  • the selected transcript version only, or
+  • all transcript versions (optional),
+  depending on export type.
+
+Chat commands MUST support:
+- “List transcript versions.”
+- “Use transcript version X.”
+- “Retranscribe with diarization ON/OFF.”
+
+7) Self-audit (2.5)
+
+This section encodes our chat decisions:
+- transcript always exists internally to protect truth and accuracy,
+- transcript visibility is optional,
+- transcript export is optional,
+- formalizations are the primary printable outputs,
+- and exports must avoid hard-wrap corruption.
+
+This section is complete.

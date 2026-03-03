@@ -1,0 +1,70 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_057
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 4 (2/5): ingest transcript.json + aligned_transcript.json into DB
+
+Context: Stuart retrieval/index
+
+Origin:
+Control Sync — 2026-02-04 (Stuart v1 finish-line: REV5)
+
+Priority: P0
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV5.txt (Dungeon 4)
+- Engine: ashby/modules/meetings/index/ingest.py
+
+Status: DONE
+
+Audit Bundle Path:
+  /mnt/data/Ashby_Data/Audits/Execution/QUEST_057__2026-02-07__ingest_transcript_json_aligned_transcript
+
+Accepted On:
+2026-02-07
+Accepted By:
+Hands (Peter)
+Completed On:
+2026-02-08
+
+Completed By:
+Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Replace brittle transcript.txt parsing with ingestion from transcript.json / aligned_transcript.json, preserving segment ids, timestamps, and speaker labels.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Ingest reads transcript.json and/or aligned_transcript.json
+- Insert segments into DB with stable anchors
+- Write an ingestion receipt artifact (fts_ingest.json) and refuse overwrite
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Advanced semantic embeddings
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_056
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Prefer aligned_transcript when available for timestamp accuracy.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] Ingest populates DB from transcript.json/aligned_transcript.json
+- [x] Search can return segment-level hits with timestamps
+- [x] `python3 -m pytest -q` passes
+

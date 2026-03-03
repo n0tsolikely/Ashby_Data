@@ -1,0 +1,75 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_049
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 1 (1/4): mode-specific artifact naming for MD (minutes.md / journal.md)
+
+Context: Stuart artifact contract
+
+Origin:
+Control Sync — 2026-02-04 (Stuart v1 finish-line: REV7)
+
+Priority: P0
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV7.txt (Dungeon 1)
+- Stuart Codex 3.2/3.3: required artifacts minutes.md/journal.md
+- Engine: ashby/modules/meetings/render/formalize_md.py + pipeline/job_runner.py
+
+Status: COMPLETED
+Audit Bundle Path:
+Audits/Execution/QUEST_049__2026-02-04__stuart_v1_dungeon_1_1_4_mode_specific_artifact_naming_for_md_minutes_md_journal__2026-02-04
+Accepted On:
+2026-02-04
+
+Accepted By:
+Hands (Peter)
+
+Completed On:
+2026-02-06
+
+Completed By:
+Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Replace the legacy `formalized.md` artifact naming with Codex-required mode-specific names: `minutes.md` for meeting mode, `journal.md` for journal mode. This is a contract upgrade: content can stay deterministic for now; naming must be correct and stable.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Update `render_formalized_md` (or successor) to write `artifacts/minutes.md` or `artifacts/journal.md` based on mode
+- Update pipeline/job_runner formalize step to reference the new MD name (no hard-coded formalized.md)
+- Update run state artifact kinds to reflect minutes/journal MD (or keep a generic kind but correct path)
+- Ensure no overwrite: refuse if target md already exists in the run dir
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- LLM formalization quality improvements (handled in Dungeon 2)
+- Evidence map changes (Dungeon 3)
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_046
+- QUEST_047
+- QUEST_048
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Keep backwards compatibility optional: do NOT delete old runs; only new runs use new names.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] Meeting run produces `artifacts/minutes.md`
+- [ ] Journal run produces `artifacts/journal.md`
+- [ ] No `formalized.md` is generated for new runs
+- [ ] `python3 -m pytest -q` passes
+

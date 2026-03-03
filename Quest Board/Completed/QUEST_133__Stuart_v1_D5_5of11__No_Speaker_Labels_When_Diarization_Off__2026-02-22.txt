@@ -1,0 +1,131 @@
+================================================================================
+IDENTITY (REQUIRED)
+================================================================================
+Quest ID:
+QUEST_133
+
+Title:
+Stuart v1 — Dungeon 5 (5/11): When diarization_enabled=false, transcripts contain NO speaker labels
+
+Subject:
+Ashby / Stuart
+
+Origin:
+Guild Orders Rev4 — Dungeon 5 contract: diarize=False => transcript segments without speaker labels.
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- Guild Orders Rev4 — Dungeon 5
+- Stuart Codex: Ashby_Data/Codex/Stuart/Stuart_Codex_Full.txt (§7.3 diarization optional)
+- Engine anchors:
+  - Ashby_Engine/ashby/modules/meetings/pipeline/job_runner.py
+  - Ashby_Engine/ashby/modules/meetings/transcript_versions.py (segment normalization)
+
+================================================================================
+CODEX ANCHORS + CONSTRAINT SUMMARY (DRAFT)
+================================================================================
+Codex Anchors (DRAFT):
+- Stuart_Codex_Full.txt §7.3 (If diarization skipped, speaker attribution is unavailable and must not be implied.)
+- Guild Orders Rev4 — Dungeon 5 (diarize=False => no speaker labels)
+
+Codex Constraint Summary:
+- When diarization is OFF, do not pretend you have speaker attribution.
+- Speaker labels must be absent (not just "SPEAKER_00" everywhere).
+
+================================================================================
+QUEST BOARD FOLDER STATE
+================================================================================
+Quest Board Folder State: BOARD
+
+================================================================================
+DESCRIPTION
+================================================================================
+Today the ASR adapter writes transcript segments with speaker="SPEAKER_00".
+If we create transcript versions from transcript.json, transcript versions will also contain speaker labels even when diarization is OFF.
+
+Dungeon 5 requires:
+- diarization OFF => transcript segments have NO speaker labels.
+
+================================================================================
+SCOPE / OBJECTIVE
+================================================================================
+Implementation rule:
+- If diarization_enabled is False when emitting transcript_version:
+  - remove "speaker" keys from the segments before create_transcript_version()
+  - ensure transcript_version.diarization_enabled is False
+
+Notes:
+- transcript.json may still include speaker="SPEAKER_00" for internal convenience, but transcript_version must not.
+- aligned_transcript.json is only produced when diarization is ON, so it remains speaker-labeled.
+
+Update any UI expectations:
+- When transcript_version.diarization_enabled is False, speaker badge indicates “Diarization OFF”.
+- Speaker list endpoint should return [] or only when diarization is present.
+
+================================================================================
+OUT OF SCOPE
+================================================================================
+- Implementing diarization itself.
+- Speaker name overlays.
+
+================================================================================
+DEPENDENCIES
+================================================================================
+QUEST_132 (explicit diarization_enabled wiring)
+
+================================================================================
+RISK
+================================================================================
+Risk: R0
+
+================================================================================
+DOOR IMPACT
+================================================================================
+Door Impact:
+- WEB
+
+================================================================================
+TESTING LEVEL
+================================================================================
+Testing Level: TL2
+
+================================================================================
+VERIFICATION PLAN (DRAFT)
+================================================================================
+- Unit/integration:
+  - transcribe-only run with diarization_enabled=false produces transcript_version where every segment lacks speaker.
+  - transcribe-only run with diarization_enabled=true produces transcript_version with speaker labels.
+
+================================================================================
+CHANGE CLASS + VISION DELTA
+================================================================================
+Change Class: FEATURE
+Vision Delta: ALIGNED
+
+================================================================================
+SYSTEM CONTEXT STATEMENT
+================================================================================
+We treat transcript_version as the user-facing, provenance-bearing artifact. When diarization is OFF, speaker attribution is unavailable and must be encoded as such.
+
+================================================================================
+ANTI-DUPLICATION PLAN
+================================================================================
+- rg -n "create_transcript_version" job_runner.py
+- rg -n "speaker"" transcript_versions.py
+
+================================================================================
+PLACEMENT INTENT
+================================================================================
+- job_runner.py (pre-process segments before transcript_version emission)
+
+================================================================================
+TALENT POINT
+================================================================================
+Talent Point Awarded: NO
+
+================================================================================
+EXECUTION AUDIT BUNDLE
+================================================================================
+Audit Bundle Folder Path: (set when moving to ACCEPTED)

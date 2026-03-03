@@ -1,0 +1,70 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+SIDE-QUEST_080
+
+Created By:
+Codex (Brains)
+
+Title:
+Stuart launcher defaults: enable real ASR by default while preserving explicit override control
+
+Context: Stuart runtime / launcher / environment defaults
+
+Origin:
+Hands request after runtime regression diagnosis (ASR fell back to stub unless ASHBY_ASR_ENABLE was set)
+
+Priority: P1
+
+Links:
+- /home/notsolikely/Ashby_Engine/Stuart
+- /home/notsolikely/Ashby_Engine/ashby/modules/meetings/adapters/transcribe_faster_whisper.py
+- /home/notsolikely/Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2026-02-19.txt
+
+Status: COMPLETED
+Audit Bundle Path:
+  /home/notsolikely/Ashby_Data/Audits/Execution/SIDE-QUEST_080__2026-02-19__stuart_launcher_asr_default_enable_2026-02-19
+Accepted On:
+2026-02-19
+Accepted By:
+Hands (Peter)
+Completed On:
+2026-02-19
+Completed By:
+Codex (Brains)
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Stuart launcher currently does not set ASR enable flags, and the ASR adapter requires explicit opt-in (`ASHBY_ASR_ENABLE`). This causes transcribe stage to run stub transcripts even when faster-whisper is installed and healthy.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Update launcher so standard `Stuart` boot defaults to real ASR path.
+- Preserve environment override behavior for power users.
+- Keep LOCAL_ONLY profile default and deterministic formalization default.
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Reworking ASR adapter internals.
+- Altering formalization engine policy beyond launcher defaults.
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- Existing ASR adapter enable gate (`ASHBY_ASR_ENABLE`).
+- Existing launcher dependency checks.
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Set defaults in launcher only when env vars are unset.
+- Export defaults before boot handoff to `scripts/stuart_up.sh`.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] `Stuart` defaults `ASHBY_ASR_ENABLE=1` (unless user overrides)
+- [x] Launcher remains syntax-valid and executable
+- [x] Existing dependency-check behavior preserved
+- [x] Quest audit + board state reflect completion

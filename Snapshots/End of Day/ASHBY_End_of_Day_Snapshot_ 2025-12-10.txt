@@ -1,0 +1,203 @@
+
+ASHPI END‑OF‑DAY SNAPSHOT — 2025‑12‑10
+===============================================================
+
+BRO THIS IS THE FULL UNTRIMMED SNAPSHOT TEXT FILE.
+THIS IS WHAT YOU LOAD INTO A NEW CHAT TOMORROW MORNING TO PICK UP
+EXACTLY WHERE WE LEFT OFF WITH ZERO LOST CONTEXT.
+
+===============================================================
+1. **ARCHITECTURE STATUS (LIGHTS + COMFORT + ROUTER + GPT NLU)**
+===============================================================
+
+• We now have a working **split‑intent pipeline**:
+    - **local_nlu.py** handles lighting + comfort pattern matching
+    - **gpt_nlu.py** handles fallback GPT interpretation
+    - **nlu_manager.py** routes between local + GPT based on confidence rules
+
+• Router now calls **extract_intent()** instead of hardcoded parsing.
+
+• Lighting logic is working with Δ‑based steps:
+    - "more", "down", "up a bit", etc. inherit previous direction
+    - default brightness = 500 if unknown
+    - absolute percent sets (“30%”) vs delta percent (“30% more/less”) now planned
+      but NOT implemented yet.
+
+• Comfort (heat) control runs through:
+    - local NLU for phrases like “hot, cold, turn it up/down”
+    - GPT NLU fallback when unclear
+    - Thermostat API fully operational
+
+• Tuya lighting groups now loaded from:
+    /home/notsolikely/ashpi/devices/ashpi_devices.py
+
+• All lighting control functions succeed except when:
+    - Tuya token expires → needs auto‑refresh system added
+    - GPT hallucinated group names (e.g., “turn_him_off”) → must penalize / ignore
+
+===============================================================
+2. **NEW GPT POWER BEHAVIOR + BUGS FOUND**
+===============================================================
+
+• GPT is successfully recognizing lighting + heat intents.
+• BUT GPT creates **fake device groups** when unsure:
+    - “Thor” vs “thor”
+    - “turn_him_off”
+    - “all”
+    → We must enforce strict normalization + rejection rules.
+
+• GPT currently acts **disconnected** because:
+    - System prompt does NOT tell it what actions were taken
+    - It does NOT receive full context of real events
+    - Router does NOT feed memory/state into GPT yet
+
+We planned a MAJOR UPGRADE:
+------------------------------------------------
+**AshPi must receive its OWN conversation context + real‑world actions.**
+------------------------------------------------
+
+This requires:
+1. A persistent Telegram conversation log (rolling buffer)
+2. A structured “world state” message appended to GPT each time:
+    • active lights + their brightness
+    • last comfort state
+    • last lighting interaction direction + delta
+    • devices known
+    • rooms known
+3. A system prompt update telling AshPi:
+    - That it controls the lights + heat
+    - What it just changed
+    - That it should talk like Ash AND acknowledge actions
+
+This is a big missing piece and will be tomorrow's work.
+
+===============================================================
+3. **TODAY’S CRITICAL DISCOVERIES**
+===============================================================
+
+• GPT must be **grounded** with:
+    - device registry
+    - last command
+    - last group used
+    - brightness state
+    - thermostat temperature
+
+Otherwise it acts like a generic chatbot.
+
+• "super bright" issue fixed locally:
+    - had been mapped to 10% instead of 90%
+    - verified corrected
+
+• Several slang phrases still NOT mapped locally:
+    - “jack it up”
+    - “make it daytime”
+    - “right down retard”
+    - “crank it”
+    - and many others
+
+We decided:
+------------------------------------------------
+**Let GPT handle all slang. Local NLU only handles strict patterns.**
+------------------------------------------------
+
+===============================================================
+4. **OPEN BUGS IDENTIFIED**
+===============================================================
+
+1. **Normalization inconsistent**
+   “Thor”, “thor”, “turn him on”, “turn Thor off retard”
+   → Should all resolve to group “thor”
+
+2. **GPT fabricates device groups**
+   → Need safe rejection if group not in DEVICES or GROUPS
+
+3. **Tuya token expired mid‑session**
+   → MUST add automatic token refresh OR re-login loop
+
+4. **Comfort questions (e.g., “what’s the temperature?”)**
+   → We need a function to *read* thermostat state, not only set.
+
+5. **AshPi replies do not acknowledge real actions**
+   → Example: after turning light up, GPT does not know we moved it.
+   → Needs structured memory injection.
+
+===============================================================
+5. **TOMORROW’S MANDATORY TASK LIST**
+===============================================================
+
+### 🔥 **1. Add device‑aware GPT system prompt**
+GPT must know:
+- which lights exist
+- what their names are
+- what brightness they are currently at
+- what action was just performed
+
+### 🔥 **2. Add state injection**
+Before every GPT call, we must inject:
+{
+    "lights": {
+        "thor": 600,
+        "captain_america": 0,
+        "sky": 0
+    },
+    "thermostat": {
+        "heat_celsius": 21.0
+    },
+    "last_action": "set thor to 600",
+    "active_group": "thor"
+}
+
+### 🔥 **3. Reject hallucinated device groups**
+If intent group not in known groups → ignore or ask user.
+
+### 🔥 **4. Solve Tuya token‑expired issue**
+    Auto refresh
+    OR re-authenticate
+    OR wrap with try/except
+
+### 🔥 **5. Add “make it daytime / nighttime” scenes**
+Scenes → presets:
+    daytime = 800
+    evening = 300
+    chill = 150
+    bedtime = 0
+
+### 🔥 **6. Add thermostat READ function**
+Use SDM API "GET" endpoint.
+
+===============================================================
+6. **NOTES ON LARGER GOALS**
+===============================================================
+
+• We are building a patent‑grade conversational smart‑home NLU.
+• No other system (Home Assistant, Alexa, Google) does:
+    - slang-based lighting delta control
+    - per-user session-based brightness memory
+    - integrated personality brain
+    - zone inheritance
+    - device role mapping
+• These features ARE INVENTIONS.
+
+===============================================================
+7. **ABSOLUTE MUST‑REMEMBER STATE**
+===============================================================
+
+**Lights:**
+thor → working
+captain_america → working
+sky → working
+
+**NLU:**
+local → matches simple commands
+gpt → handles slang
+
+**Router:**
+correctly escalates to intents
+
+**Big Missing Feature:**
+AshPi has **NO SELF-AWARENESS** yet.
+We will fix this with injected memory tomorrow.
+
+===============================================================
+END OF SNAPSHOT
+===============================================================

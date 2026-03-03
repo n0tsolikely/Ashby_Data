@@ -1,0 +1,49 @@
+STUART END-OF-DAY SNAPSHOT — 2026-02-02 — SIDE-QUEST_030
+Timestamp (local): 2026-02-02 22:21:55 EST (-0500)
+Timestamp (utc):   2026-02-03 03:21:55 UTC (+0000)
+Hands: Peter
+Operator: Ash
+
+A) HEADER
+- Subject: Stuart v1 (Ashby module: meetings)
+- World State: Fog Lifted (execution permitted)
+- Codex Freeze marker:
+  - /mnt/data/Ashby_Data/Codex/CODEX_FREEZE.md
+
+B) WHAT HAPPENED TODAY
+- Fixed SIDE-QUEST_030 properly (was previously marked "Completed" but failed engine reality).
+- Implemented missing Path import + portable PYTHONPATH concatenation in Stuart runner.
+- Verified subprocess import parity without external PYTHONPATH hacks.
+- Corrected data/engine root drift (flattened nested Ashby_Data/Ashby_Data and Ashby_Engine/Ashby_Engine).
+
+C) COMPLETED WORK (WITH PROOF POINTERS)
+- SIDE-QUEST_030 — Stuart Runner Subprocess PYTHONPATH Import Fix
+  - Audit bundle: /mnt/data/Ashby_Data/Audits/Execution/SIDE-QUEST_030__2026-02-02__stuart_runner_subprocess_pypath_import_fix
+  - Proof:
+    - Diff: 10_DIFF.patch
+    - Verify: 03_VERIFY.md (pytest + env smoke + run_default_pipeline smoke)
+
+D) INCOMPLETE / FAILED WORK
+- None.
+
+E) BUGS / WEIRDNESS / DISCOVERIES
+- Discovered governance drift: CODEX_FREEZE marker was missing despite historical completed quests.
+  - Fixed by writing /mnt/data/Ashby_Data/Codex/CODEX_FREEZE.md (Hands authorized execution).
+
+F) VERIFICATION PERFORMED
+- `python3 -m pytest -q` (PASS)
+- `_env()` smoke (PASS)
+- `run_default_pipeline()` smoke from /tmp with PYTHONPATH env cleared (PASS, formalized.pdf created)
+
+G) TALENT TREE UPDATES
+- None (reliability fix; no new durable capability).
+
+H) RAID / GUILD ORDERS STATUS CHANGES
+- None (Stuart v1 Guild Orders remain ACTIVE).
+
+I) CONTINUITY + RESUME INSTRUCTIONS
+- Next Control Sync should start by reviewing:
+  - STUART_Control_Sync_Snapshot_2026-02-02__SIDE-QUEST_030_EXECUTION.txt
+  - This snapshot
+- Post-30 plan is still parked. Resume only when Hands says:
+  - "continue with the Post 30 plan"

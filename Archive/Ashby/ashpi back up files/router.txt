@@ -1,0 +1,310 @@
+import time
+from typing import Dict, Any
+
+from ashpi.control.device_control import set_group_brightness
+from .ash_core import AshBrain
+from . import comfort_sessions, memory, lighting_sessions
+from .nlu_manager import extract_intent
+
+# In a long-running process (like Telegram bot), we can keep brains in memory:
+_brains: Dict[str, AshBrain] = {}
+
+# Simple in-memory lighting sessions:
+# _light_sessions[user_id] = {"group": str, "level": int}
+_light_sessions: Dict[str, Dict[str, object]] = {}
+
+# Recent actions for short-term contextual replies (per user)
+# _recent_actions[user_id] = {"type": "lighting", "ts": float, "group": str, "level": int}
+_recent_actions: Dict[str, Dict[str, Any]] = {}
+
+
+def get_brain(user_id: str) -> AshBrain:
+    user_id = str(user_id)
+    if user_id not in _brains:
+        _brains[user_id] = AshBrain(user_id)
+    return _brains[user_id]
+
+
+def _get_light_session(user_id: str):
+    return _light_sessions.get(str(user_id))
+
+
+def _start_light_session(user_id: str, group: str, level: int, last_delta: int = 0):
+    _light_sessions[str(user_id)] = {
+        "group": group,
+        "level": level,
+        "last_delta": int(last_delta),
+    }
+
+
+def _update_light_level(user_id: str, level: int):
+    if str(user_id) in _light_sessions:
+        _light_sessions[str(user_id)]["level"] = level
+
+
+def _end_light_session(user_id: str):
+    _light_sessions.pop(str(user_id), None)
+
+
+def _clamp_level(level: int) -> int:
+    return max(0, min(1000, int(level)))
+
+
+def _set_recent_action(user_id: str, action_type: str, **data: Any) -> None:
+    _recent_actions[str(user_id)] = {
+        "type": action_type,
+        "ts": time.time(),
+        **data,
+    }
+
+
+def _get_recent_action(user_id: str, max_age: float = 30.0) -> Dict[str, Any] | None:
+    rec = _recent_actions.get(str(user_id))
+    if not rec:
+        return None
+    if time.time() - rec.get("ts", 0) > max_age:
+        return None
+    return rec
+
+
+# --- main entrypoint --- #
+
+def handle_text(user_id: str, text: str) -> str:
+    """
+    Main entrypoint for AshPi brain.
+
+    Now uses NLU:
+      - nlu_manager.extract_intent(text) → intent dict:
+        {
+          "type": "lights.on" | "lights.off" | "lights.adjust" | "comfort.cold" | "chat" | "unknown",
+          "group": "captain_america" | "thor" | "sky" | None,
+          "brightness": 0–1000 or None,
+          "delta": +/- int or None,
+          "mode": "max" | "min" | None,
+        }
+    """
+
+    user_id = str(user_id)
+    text_stripped = text.strip()
+    brain = get_brain(user_id)
+
+    # 1) If there's an active HEAT session, let that logic handle yes/no/a bit more/etc.
+    if comfort_sessions.has_active_session(user_id):
+        temp, msg = comfort_sessions.process_reply(user_id, text_stripped)
+
+        # If the comfort session decided on a new temp, remember it
+        if temp is not None:
+            try:
+                memory.set(user_id, "preferred_temp", float(temp))
+            except Exception:
+                pass
+            # TODO: hook real Nest call here, e.g.:
+            # from ashpi_nest_set import set_heat
+            # set_heat(temp)
+
+        return msg
+
+    # 2) Run NLU on every message
+    intent = extract_intent(text_stripped)
+
+    # See if we were already waiting for a target (e.g. user said "turn it on")
+    pending = lighting_sessions.pop_awaiting_target(user_id)
+
+    itype = intent["type"]
+    group = intent.get("group")
+    brightness = intent.get("brightness")
+    delta = intent.get("delta")
+    mode = intent.get("mode")
+
+    # If we had a pending "lights.on" with no target, and now the user
+    # says e.g. "thor" or "bedroom lights", merge that into the pending intent.
+    if pending and pending.get("type") == "lights.on":
+        if not group:
+            low_pending = text_stripped.lower().strip()
+
+            # strip filler endings like "man", "bro", "dude"
+            for filler in ["man", "bro", "dude"]:
+                if low_pending.endswith(" " + filler):
+                    low_pending = low_pending[: -len(filler) - 1].strip()
+
+            # strip leading "the "
+            if low_pending.startswith("the "):
+                low_pending = low_pending[4:]
+
+            if low_pending not in ["turn it on", "turn it off", "on", "off"]:
+                group = low_pending.replace(" ", "_")
+
+        # inherit brightness/mode from pending if needed
+        if brightness is None and pending.get("brightness") is not None:
+            brightness = pending["brightness"]
+        if mode is None and pending.get("mode") is not None:
+            mode = pending["mode"]
+
+        # If this message didn't come through as a lights intent, but we now
+        # have a group and a pending lights.on, force it back to lights.on.
+        if group and not itype.startswith("lights."):
+            itype = "lights.on"
+
+    # 2b) Lighting-aware acknowledgements after a recent light change
+    low = text_stripped.lower().strip()
+    recent = _get_recent_action(user_id)
+    if recent and recent.get("type") == "lighting" and itype in ("chat", "unknown"):
+        # Super lightweight: any of these words appearing means "I'm happy with the lights"
+        ack_keywords = [
+            "perfect",
+            "better",
+            "much better",
+            "nice",
+            "good",
+            "awesome",
+            "sweet",
+            "beauty",
+            "thanks",
+            "thank you",
+            "that’s good",
+            "that is good",
+            "that’s better",
+            "that is better",
+        ]
+        if any(k in low for k in ack_keywords):
+            grp = recent.get("group")
+            level = recent.get("level")
+            if grp is not None and level is not None:
+                nice_name = str(grp).replace("_", " ")
+                try:
+                    # Optional: remember that this level was "good" for this group
+                    memory.set(user_id, f"preferred_level_{grp}", int(level))
+                except Exception:
+                    # If memory.set isn't implemented yet, just ignore
+                    pass
+
+                percent = round(int(level) / 10)
+                return f"Gotcha. Leaving {nice_name} around {percent}%."
+
+            return "No problem, I’ll keep the lights like that."
+
+    # 3) Comfort / heat starter ("I'm cold", etc.)
+    if itype == "comfort.cold":
+        # In the future: get real temp from Nest
+        current_temp = memory.get(user_id, "last_known_temp", 19.0)
+        preferred_temp = memory.get(user_id, "preferred_temp", 21.0)
+
+        if current_temp < preferred_temp - 0.5:
+            comfort_sessions.start_cold_session(user_id, current_temp, preferred_temp)
+            return (
+                f"It's {current_temp}°C in here, and you usually like it around "
+                f"{preferred_temp}°. Want me to warm it up?"
+            )
+        else:
+            return "It’s a little cool but still close to what you usually like."
+
+    # 3b) Generic follow-ups like "more", "again", "keep going" while a light session is active
+    if itype == "lights.adjust" and _get_light_session(user_id):
+        low_follow = text_stripped.lower().strip()
+        generic_followups = [
+            "more",
+            "again",
+            "keep going",
+            "little more",
+            "bit more",
+            "a bit more",
+        ]
+        if low_follow in generic_followups:
+            # Force the router to reuse last_delta instead of NLU's fresh guess
+            delta = None
+
+    # 4) Lights: ON
+    if itype == "lights.on":
+        # If no group was detected, we know there's intent ("turn it on")
+        # but no target. Store this and ask what they mean.
+        if not group:
+            lighting_sessions.set_awaiting_target(user_id, intent)
+            return "Which lights, man? Thor, Bedroom, something else? I'm not a mind reader."
+
+        # If no brightness specified, default to 600 (60%)
+        level = 600 if brightness is None else _clamp_level(brightness)
+
+        set_group_brightness(group, level)
+        _start_light_session(user_id, group, level, last_delta=0)
+        _set_recent_action(user_id, "lighting", group=group, level=level)
+
+        nice_name = group.replace("_", " ")
+        if mode == "max":
+            return f"Turning on {nice_name} to maximum."
+        return f"Turning on {nice_name}."
+
+    # 5) Lights: OFF
+    if itype == "lights.off":
+        sess = _get_light_session(user_id)
+
+        # Prefer explicit group from intent, else use the active session's group
+        target_group = group or (sess["group"] if sess else None)
+
+        if not target_group:
+            # No idea which lights to turn off → treat as chat
+            return brain.chat(text_stripped)
+
+        set_group_brightness(target_group, 0)
+        _end_light_session(user_id)
+        _set_recent_action(user_id, "lighting", group=target_group, level=0)
+
+        nice_name = target_group.replace("_", " ")
+        return f"Turning off {nice_name}."
+
+    # 6) Lights: ADJUST (darker / brighter / max / etc.)
+    if itype == "lights.adjust":
+        sess = _get_light_session(user_id)
+
+        # Determine which group we're adjusting
+        if sess and not group:
+            target_group = sess["group"]
+        else:
+            target_group = group
+
+        if not target_group:
+            # No active session and no group → we don't know what to adjust
+            return brain.chat(text_stripped)
+
+        # Determine starting level + last direction
+        if sess and sess.get("group") == target_group:
+            level = int(sess["level"])
+            last_delta = int(sess.get("last_delta", 0))
+        else:
+            # No prior session for this group → start at 600
+            level = 600
+            last_delta = 0
+
+        # Apply absolute brightness if provided
+        if brightness is not None:
+            level = _clamp_level(brightness)
+            last_delta = 0  # explicit level, no direction implied
+
+        else:
+            # Either use provided delta, or reuse last direction (for "again", "keep going", etc.)
+            if delta is None and last_delta != 0:
+                delta = last_delta
+
+            if delta is not None:
+                # Normalize tiny deltas to a proper step (10%)
+                step = 100
+                delta = int(delta)
+                if abs(delta) < step:
+                    delta = step if delta > 0 else -step
+
+                level = _clamp_level(level + delta)
+                last_delta = delta
+
+        set_group_brightness(target_group, level)
+        _start_light_session(user_id, target_group, level, last_delta=last_delta)
+        _set_recent_action(user_id, "lighting", group=target_group, level=level)
+
+        nice_name = target_group.replace("_", " ")
+        percent = round(level / 10)
+        if level == 0:
+            return f"Lights off."
+        if mode == "max":
+            return f"Setting {nice_name} to maximum brightness."
+        return f"Setting {nice_name} to {percent}%."
+
+    # 7) If NLU says "chat" or "unknown" → normal Ash chat
+    return brain.chat(text_stripped)

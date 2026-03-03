@@ -1,0 +1,107 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_084
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v2 — D1 5of10: Fix entrypoint + router boot breakers (App vs Apps, main.jsx, index.html)
+
+Context: (Ashby / Stuart / System / Other)
+Stuart (Ashby) — Webapp Frontend
+
+Origin:
+Stuart Architecture Transcendence Protocol — Control Sync 2026-02-16 (Dungeon 1)
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- Guild Orders: Ashby_Data/Guild Orders/PAUSED/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt — Dungeon 1
+- Codex: Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt (Sections 1.2, 1.4, 2.1, 2.2, 2.5)
+- Docs: Ashby_Data/Stuart/Docs/STUART_Base44_UI_Code_Audit__2026-02-16.txt
+- Docs: Ashby_Data/Stuart/Docs/STUART_Base44_UI_Surgery_Checklist__2026-02-16.txt
+- Input: Ashby_Data/Stuart/Docs/stuart_app.zip (Base44 UI source pack)
+- Engine anchor: Ashby_Engine/ashby/interfaces/web/ (current FastAPI web door + /static + /templates)
+
+Status: BOARD | ACTIVE | COMPLETED | ABANDONED
+COMPLETED
+
+Audit Bundle Path: Quest Board/Quest Diff Audit Files/QUEST_###__AUDIT.txt
+Ashby_Data/Audits/Execution/QUEST_084__2026-02-17__stuart_v2_d1_5of10_fix_entrypoint_router_boot_breakers_app_vs_apps_main_jsx_index_html
+
+Accepted On:
+2026-02-18
+
+Accepted By:
+Codex (GPT-5)
+
+Completed On:
+2026-02-18
+
+Completed By:
+Codex (GPT-5)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Resolve known boot errors (App.jsx vs Apps.jsx mismatch, main entry import, index.html module reference) so the Vite dev server compiles the app entry cleanly.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Fix src/main.jsx import mismatch: if it imports '@/App.jsx' but the repo has Apps.jsx, standardize to a single canonical entry (prefer App.jsx).
+- Ensure index.html points to the correct entry module (e.g., /src/main.jsx).
+- Ensure the top-level App renders the base layout (header + columns) without crashing (even if data is empty).
+- Capture the exact error before/after in the changelog for traceability (02_CHANGELOG.md).
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Refactoring data layer / API calls (Quest 087).
+- Implementing backend features (Dungeon 2+).
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_082 (Vite config sane) and QUEST_083 (auth wrappers not blocking boot).
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Prefer renaming file to match import rather than adding more special-case imports everywhere.
+- Do not introduce new naming mismatches; pick one canonical entry and move forward.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] Vite dev server starts without 'module not found' for App/App(s) entry.
+- [x] index.html correctly loads the module entry.
+- [x] 02_CHANGELOG.md includes the exact fix and affected files.
+
+────────────────────────────────────────────────────────
+TALENT POINT
+────────────────────────────────────────────────────────
+# On completion:
+# - Talent Point Awarded: YES / NO
+# - Talent Spent On: (TALENT ID — Name in Talent Tree)
+Talent Point Awarded: NO
+Talent Spent On: N/A
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+# Optional closing notes once the quest is completed or abandoned.
+Resolved entrypoint mismatch by creating canonical App entry:
+- /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app/src/App.jsx
+- /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app/src/Apps.jsx (compat re-export)
+- /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app/src/main.jsx (now resolves `@/App.jsx`)
+- /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app/index.html
+
+Dev startup proof:
+- `VITE v6.4.1 ready`
+- `Local: http://127.0.0.1:4173/`
+
+Changelog updated:
+- /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/02_CHANGELOG.md

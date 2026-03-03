@@ -1,0 +1,487 @@
+ASHBY EXECUTION PROTOCOL (BUFF)
+Version: 2026-02-22
+Last Updated: 2026-02-22
+Status: Canonical (Session Operating Law for the Ashby subject; Stuart module focus)
+Audience: Brains (Assistant) + Hands (User)
+Purpose: Prevent drift, enforce truth, and make each Raid deterministic + auditable.
+Governance Note:
+- This is a SUBJECT BUFF (runtime posture), not governance law.
+- If any line here conflicts with: Codex / Locks / Synapse Governance → higher authority wins.
+- If a conflict exists → Disclosure Gate triggers → STOP until repaired.
+
+================================================================================
+0) PRIME DIRECTIVE (NON-NEGOTIABLE)
+================================================================================
+- Truth > vibes.
+- Filesystem + repo state are the source of truth (not chat).
+- No silent assumptions. If something isn’t certain, STOP and ask Hands.
+- No stealth scope. Do only what is ordered by: Active Guild Orders + Accepted Quests.
+- One canonical engine repo. No parallel extracts, no “side copies,” no re-unzipping forks.
+- Governance artifacts live in the Subject Data canon. Rehydration Packs are optional resume kits
+  (update ONLY by explicit Hands order).
+
+Guiding sentence:
+- If we can’t prove it with artifacts + logs, it didn’t happen. Period.
+
+BUFF STABILITY LAW (BINDING FOR BUFFS)
+- Buffs MUST NOT encode short-lived state (no current dungeons/phases, no specific snapshot filenames, no specific active guild order filenames).
+- Buffs MAY point to canonical folders and provide deterministic methods to locate the newest artifacts (list/sort).
+
+
+================================================================================
+1) CANONICAL AUTHORITY STACK (WHAT WINS WHEN CONFLICT EXISTS)
+================================================================================
+When two sources conflict, resolve in this order (top wins):
+
+1) Codex (Stuart Codex + Ashby Codex) — constitutional law
+2) Active Guild Orders — current raid scope + definition of done
+3) Continuity Lock + Bootstrap Prompt — session resume law (if present for this session)
+4) Quest Template — required quest structure + required fields
+5) Quest Board state (folder placement) — actual commitment state machine
+6) Snapshots (Control Sync + EOD) — receipts (what we claim happened + when)
+7) Repo reality — what exists and runs right now
+8) Everything else (notes, archived docs, old drafts) — non-authoritative reference
+
+Rules:
+- “Repo reality” and “Snapshots” must converge. If they don’t → fix governance first.
+- Archives are superseded unless Hands explicitly orders reopening them.
+
+================================================================================
+2) CANONICAL LOCATIONS (WHAT IS REAL / WHAT IS EDITABLE)
+================================================================================
+IMPORTANT NAMING NOTE (DO NOT “FIX” THIS WITHOUT ORDERS):
+- The current canonical directory names are still “Ashby_Data” and “Ashby_Engine”.
+- These Buffs are named ASHBY_* because the Subject key is ASHBY (see DATA_ROOT/SUBJECT_STATE.yaml).
+  Stuart remains a module name; filesystem roots remain Ashby_* until Hands orders a rename/migration.
+
+Define roots (must be resolved each session):
+- CANON_ROOT      = the extracted canon bundle root (folder containing Ashby_Data/ and Ashby_Engine/)
+- DATA_ROOT       = CANON_ROOT/Ashby_Data
+- ENGINE_ROOT     = CANON_ROOT/Ashby_Engine
+- GOVERNANCE_ROOT = Synapse OS Governance root (separate pack; environment-specific)
+- STUART_ROOT     = runtime artifact root (outside repo; controlled by env var STUART_ROOT)
+
+2.1 Governance: Edited (Canonical, mutable)
+DATA_ROOT/Quest Board/
+  - BOARD root        = DATA_ROOT/Quest Board/
+  - ACCEPTED (active) = DATA_ROOT/Quest Board/Accepted/
+  - COMPLETED         = DATA_ROOT/Quest Board/Completed/
+  - ABANDONED         = DATA_ROOT/Quest Board/Abandoned/ (Control Sync decision required)
+
+DATA_ROOT/Guild Orders/
+  - PAUSED
+  - ACTIVE
+  - COMPLETED
+
+DATA_ROOT/Snapshots/
+  - Control Sync
+  - End of Day
+  - General
+
+DATA_ROOT/Talent Tree/
+  - Stuart tracking lives under: DATA_ROOT/Talent Tree/Stuart/
+
+DATA_ROOT/Buffs/
+  - Canonical Buff set (REQUIRED by governance):
+    - ASHBY_EXECUTION_PROTOCOL.txt
+    - ASHBY_DATA_DIRECTORY_MAP.txt
+    - ASHBY_SESSION_START_CHECK.txt
+
+2.2 Canon: Referenced (edited ONLY by explicit order)
+- Stuart Codex:
+  DATA_ROOT/Stuart/Stuart Codex/
+- Ashby Codex:
+  DATA_ROOT/Codex/
+- Canonical Vision (Stuart):
+  DATA_ROOT/Stuart/Docs/   (contains the Canonical Vision doc + UI/UX reference materials)
+2.3 Rehydration Packs: Optional resume kit (edit ONLY by explicit Hands order)
+- Canonical location:
+  DATA_ROOT/Latest Rehydration Pack/
+- Execution Pack folder:
+  DATA_ROOT/Latest Rehydration Pack/execution pack/
+
+Binding optional pack rule:
+- Rehydration Pack MAY be present OR empty by design.
+- If Hands expects a pack for this session and it is missing → STOP and ask.
+- If present: Continuity Lock + Bootstrap Prompt inside are authoritative resume law.
+
+2.4 Engine Repo (Canonical codebase — ALL code edits happen here)
+ENGINE_ROOT/
+
+Zips are inert export artifacts:
+- Never “work inside a zip.” Never re-extract to create a fork unless Hands orders.
+
+2.5 Runtime Artifacts (Outside repo, never committed)
+STUART_ROOT/  (default is typically: ~/ashby_runtime/stuart unless overridden)
+- Sessions, transcripts, diarizations, evidence maps, exports, index DB, etc.
+- This is the “truth store” for produced artifacts; engine produces into here.
+
+================================================================================
+3) DEFINITIONS (TERMS USED IN THIS PROTOCOL)
+================================================================================
+- Control Sync: decision forum. Produces binding Guild Orders and/or governance changes.
+- Guild Orders: ordered scope list for the current Raid. Defines “done.”
+- Raid: executing Guild Orders across one or more Dailies loops.
+- Quest: atomic commitment. One quest = one cohesive deliverable capability/change.
+- Quest Board: filesystem state machine (BOARD → ACCEPTED → COMPLETED).
+- Snapshot: ground-truth receipt. What happened, what changed, what is now true.
+- Execution Pack: time-bound runbook/contract for deterministic implementation.
+- Canon: Codex + visions + governance rules; the law that prevents drift.
+- Talent: new durable capability (not effort). See Talent Tree Guide.
+
+Terminology hardlock (Stuart-specific):
+- Transcript = produced from REAL audio by ASR (no fabrication).
+- Diarization = speaker-separation metadata (optional at transcription stage).
+- Formalization = structured “no-context-loss summary” produced FROM a transcript using a template.
+  (The word “summary” is hated because it implies loss. Formalization must not lose meaning.)
+
+================================================================================
+4) QUEST STATE MACHINE (BOARD → ACCEPTED → COMPLETED)
+================================================================================
+4.1 BOARD (Not yet committed)
+Location:
+  DATA_ROOT/Quest Board/   (root board area)
+Rules:
+- Not guaranteed to be implemented yet.
+- Can be edited/split into atomic quests by order (template-correct).
+
+4.2 ACCEPTED (Committed; ACTIVE)
+Location:
+  DATA_ROOT/Quest Board/Accepted/
+Rules:
+- ACCEPTED = promise. Brains commits to implement.
+- Don’t accept a stack “for fun.” Accept only what we intend to execute next.
+- Abandonment is only allowed via Control Sync decision, then move to Abandoned.
+
+Required fields when accepting:
+- Accepted Date: YYYY-MM-DD
+- Accepted By: Hands or Brains (explicit)
+- Dependencies: list as needed (do not invent fake dependencies)
+
+Truth rule (governance):
+- Quest state is defined ONLY by filesystem location (Quest Board folders).
+- Do NOT rely on a quest 'Status' field. If one exists (legacy), treat it as non-authoritative and do not let it contradict folder placement.
+
+4.3 COMPLETED (Done; verified)
+Location:
+  DATA_ROOT/Quest Board/Completed/
+Rules:
+- COMPLETED means DoD is fully satisfied and verified against repo reality.
+- No unchecked required boxes.
+- No contradictory metadata.
+
+Required fields when completing:
+- Completed Date: YYYY-MM-DD
+- Verification: real evidence (commands + outputs + artifacts)
+- Talent Awarded: YES/NO (truthful; see Talent Tree Guide)
+
+Truth rule (governance):
+- Quest state is defined ONLY by filesystem location (Quest Board folders).
+- Do NOT rely on a quest 'Status' field. If one exists (legacy), treat it as non-authoritative and do not let it contradict folder placement.
+
+If a quest in Completed is found incomplete:
+- Do NOT move it out of Completed/ (terminal state; preserve history).
+- Create a NEW quest that references the prior Quest ID and captures the remediation work.
+- Record the correction in the next Control Sync Snapshot and/or End-of-Day Snapshot.
+- Fix truth. No pretending.
+
+================================================================================
+5) PRE-FLIGHT AUDIT (MANDATORY BEFORE TOUCHING CODE)
+================================================================================
+Before implementing any ACCEPTED quest:
+
+1) Read the quest file end-to-end (no skimming).
+2) Read relevant Codex sections for the subsystem touched.
+3) Read Active Guild Orders for this raid (scope check).
+4) Read Continuity Lock + Bootstrap Prompt for this session (if present).
+5) Check Quest Board state (Accepted + Completed).
+6) Confirm canonical repo path: ENGINE_ROOT/
+7) Confirm verification commands you will run (tests/curl/smoke commands).
+8) Confirm STUART_ROOT is configured and writable (runtime must exist).
+
+If any step reveals uncertainty or conflict:
+- STOP and ask Hands before writing code.
+
+================================================================================
+6) IMPLEMENTATION RULES (WHILE CODING)
+================================================================================
+6.1 Architectural discipline (non-negotiable)
+- Thin router / no god files / single-responsibility modules.
+- Separate stages: transcription, diarization, alignment, formalization, indexing, rendering.
+- Overlays never mutate ground-truth artifacts.
+- Artifacts are memory; chat history is not canonical memory.
+- Truth discipline: no claims without evidence; no phantom actions.
+
+6.2 Evidence for work performed (always)
+For every meaningful change, produce:
+- a diff (git diff or unified diff)
+- and terminal output showing:
+  - the command you ran
+  - the result
+
+Truth Gate (binding):
+- NEVER claim tests passed/failed without actually running them.
+- Capture full output (or store it in an audit bundle).
+
+6.3 No side-work rule
+Do not “also fix” unrelated issues unless:
+- the quest explicitly includes it, OR
+- Hands explicitly orders it, OR
+- you find a blocking defect → STOP and ask Hands.
+
+6.4 Determinism rule
+- Follow quests in numeric order within the active scope (as defined by Guild Orders + Accepted quests), unless explicitly ordered otherwise.
+- If a quest says “scaffold only,” do not implement “bonus features” that change contract.
+- If a quest is ambiguous, clarify before coding.
+
+================================================================================
+7) POST-FLIGHT AUDIT (MANDATORY BEFORE MARKING A QUEST COMPLETE)
+================================================================================
+Before moving a quest into COMPLETED:
+
+1) Verify the capability exists in repo reality (actual code + behavior).
+2) Run the verification commands (tests/curl/manual smoke) specified in quest DoD.
+3) Confirm no Codex invariants were violated.
+4) Confirm DoD is satisfied (checkbox-by-checkbox).
+5) Confirm Talent Awarded is truthful:
+   - Talent = new durable capability (not refactor, not docs).
+   - If YES → update Talent Tree immediately.
+6) Update quest metadata (Completed Date, verification evidence paths).
+7) Only then move the quest file into Completed/.
+
+If the quest cannot be fully completed:
+- Leave it in Accepted/ (do not move it).
+- Write what is blocked and why (truthfully).
+- Accept another quest only if it is clearly unblocked OR Hands agrees.
+
+================================================================================
+8) TALENTS (CAPABILITY-ONLY, NO MERCY POINTS)
+================================================================================
+Talent rules are authoritative in:
+  DATA_ROOT/Talent Tree/TALENT TREE GUIDE.txt
+
+Protocol rule:
+- If a quest awards a talent (YES), update:
+  - DATA_ROOT/Talent Tree/Stuart/TALENT_TREE.txt
+  - DATA_ROOT/Talent Tree/Stuart/TALENT_LOG.txt
+  - (Platform/Ashby talents live under: DATA_ROOT/Talent Tree/Ashby/)
+- If no new capability, Talent Awarded MUST be NO.
+
+================================================================================
+9) SNAPSHOTS (RECEIPTS)
+================================================================================
+Snapshot locations:
+- Control Sync snapshots:
+  DATA_ROOT/Snapshots/Control Sync/
+- End of Day snapshots:
+  DATA_ROOT/Snapshots/End of Day/
+- General snapshots:
+  DATA_ROOT/Snapshots/General/
+
+Snapshot truth rule:
+- Do not claim implementation unless repo reality and tests verify it.
+- Do not rewrite old snapshots. Write a new one.
+
+================================================================================
+10) EXPORTS (END OF WORK BLOCK)
+================================================================================
+When Hands requests exports (or at end of work block):
+- Export updated Data canon
+- Export updated Engine canon
+
+Rule:
+- Exports are distribution artifacts only; canonical work remains in-place.
+
+================================================================================
+11) FAILURE/UNCERTAINTY KILL SWITCH
+================================================================================
+If ANY of the following occurs, STOP and ask Hands:
+
+- Unclear whether a change violates Codex invariants
+- A quest DoD is ambiguous
+- A dependency is missing or contradictory
+- A repo/test failure is not clearly attributable
+- A change would require editing non-canonical reference packs
+- Any “maybe / probably / I think” enters reasoning about actions
+
+================================================================================
+12) SELF-AUDIT (THIS DOCUMENT)
+================================================================================
+Checklist:
+[ ] Authority stack includes Codex, Guild Orders, Continuity, Quests, Snapshots, Repo reality
+[ ] Canonical paths included for Quest Board, Guild Orders, Snapshots, Talent Tree, Engine repo
+[ ] Explicit pre-flight and post-flight audits defined
+[ ] Truth gate prevents premature completion claims
+[ ] Talent rules reference the Talent Tree Guide (no duplication)
+[ ] Rehydration packs explicitly marked as optional resume kit
+[ ] Export discipline defined (data + engine)
+[ ] Uncertainty kill switch defined
+[ ] Platform Truth + Profile Lock is included (Appendix A)
+
+END OF DOCUMENT
+
+
+================================================================================
+APPENDIX A — PLATFORM TRUTH + PROFILE LOCK (BINDING ARCHITECTURE CONSTRAINTS)
+================================================================================
+NOTE:
+- This appendix was previously a standalone buff in older sets.
+- Governance requires a canonical buff set of THREE files.
+- Therefore, the lock lives INSIDE this Execution Protocol to avoid a 4th file.
+
+A0) WHAT THIS IS
+- NOT a snapshot.
+- NOT an execution log.
+- A binding architecture lock so Stuart can scale without major refactors.
+
+A1) TRUTH ARCHITECTURE (BINDING)
+A1.1 Single Judge (Platform)
+- Stuart has ONE platform-level truth judge: TruthGateJudge.
+- The judge is reusable across modules.
+- Truth law enforcement must converge here over time.
+
+A1.2 Module Policies (Specialization)
+- Each module provides module-specific TruthPolicy implementations (e.g., MeetingsTruthPolicy).
+- Policies define what is considered a valid claim in that domain.
+
+A1.3 Module-Local Checks (Allowed, but limited)
+- Modules MAY keep local validation guards ONLY for cheap invariants/internal consistency:
+  - citation segment_id exists
+  - timestamps monotonic
+  - speaker_id references are valid
+- Modules MUST NOT implement a parallel “truth gate” deciding real-world truth.
+  If the rule is about truth (decisions, actions, facts, attendance), it belongs in:
+  Platform Judge + Module Policy.
+
+A2) EVIDENCE + CITATIONS (BINDING)
+- Claims must be evidence-backed.
+- Citations must reference resolvable evidence anchors (segments / timestamps / artifact pointers).
+- Output formats may vary (MD/PDF/JSON), but evidence semantics must be consistent.
+
+A3) EXECUTION PROFILES + CONSENT (BINDING)
+A3.1 “Profile” is NOT personality
+- Execution profile = runtime constraints + egress policy (LOCAL_ONLY / HYBRID / CLOUD).
+- Personality/tone = templates/prompts/module UX.
+- These are separate concerns and must not be conflated.
+
+A3.2 Single Execution Profile Substrate (Platform)
+- Stuart must have ONE execution profile substrate.
+- Modules must NOT maintain a parallel execution profile system.
+- Canon substrate target: ashby.core.profile (and associated consent/egress logic).
+
+A4) ROUTING + MODULE BOUNDARIES (BINDING)
+A4.1 Thin Core Router
+- Core router routes high-level intent to modules.
+- Core router must NOT contain domain logic for specific modules.
+
+A4.2 Module Routers
+- Modules own their internal intent routing (module router).
+- Removing a module must not leave dead module logic in core.
+
+A4.3 Removability
+- Modules must remain removable without breaking the platform.
+- Platform provides shared primitives (truth judge, storage, results, profiles).
+- Modules provide domain logic + policies + artifacts.
+
+A5) FILE DISCIPLINE (BINDING)
+- Big files are OK when cohesive (one capability, one reason to change).
+- God files are NOT OK (mixed responsibilities/refactor bait).
+- Prefer separated capabilities that call each other.
+- Keep things together only when separation would be worse.
+
+A6) GROWTH MINDSET (BINDING)
+- Stuart v1 is starting scope, not end state.
+- Build extension points (registries, interfaces, policy hooks) where natural.
+- Prefer additive evolution over invasive refactors.
+
+
+================================================================================
+APPENDIX B — EXECUTION AUDITS + SIDE-QUEST NAMING (EXECUTION DISCIPLINE)
+================================================================================
+B1) Side-Quest naming
+- Use SIDE-QUEST_### for ad-hoc quests not originating from Guild Orders.
+- Use QUEST_### only for quests derived from the active Guild Orders.
+- Both require the same evidence/audit discipline.
+
+B2) Execution Audit layout (canonical)
+- New execution audits MUST be written under:
+  DATA_ROOT/Audits/Execution/<QuestID>__YYYY-MM-DD__slug/
+- Each quest has ONE audit bundle folder containing all phases.
+- Legacy locations are read-only history.
+
+
+================================================================================
+APPENDIX C — RAID INVARIANTS (STUART v2 UI + LLM WIRING)
+================================================================================
+This appendix is a “don’t be dumb tomorrow” lock.
+It does NOT replace Guild Orders or Quests; it prevents re-litigating decisions.
+
+C1) Chat-first UX is the default
+- On app open, Chat is the primary surface.
+- Buttons exist as convenience accelerators for chat-commands.
+- Every button must correspond to an equivalent chat command.
+
+C2) No fake transcripts, no fake formalizations
+- Transcript must be produced from REAL audio by ASR.
+- Formalization must be produced from REAL transcript using template + retention settings.
+- No “demo outputs” that look correct but are fabricated.
+
+C3) Transcript versions are first-class
+- We must support transcript variants (e.g., diarize ON vs OFF).
+- Each transcript version must have a stable ID and be selectable in UI/API.
+- Formalizations must reference transcript_version_id explicitly.
+
+C4) Diarization belongs to TRANSCRIBE stage
+- Diarization is controlled during transcription (toggle on/off).
+- Formalization consumes transcript (with or without diarization); it does not “do diarization.”
+
+C5) Base44 naming contamination is NOT allowed in backend
+- UI can be ported from Base44, but engine naming stays Stuart/Ashby canonical.
+- Temporary shims are allowed ONLY if the quests explicitly allow them.
+- Target is clean naming + explicit stuartClient API contracts.
+
+C6) Export bundles are a core product surface
+- Export should bundle session artifacts (audio, transcripts, diarization, evidence, formalizations).
+- Export filtering (transcripts only, formalizations only, full) must be supported.
+
+END OF FILE.
+================================================================================
+AUDIT BUNDLE VALIDATION CHECKLIST (MANDATORY)
+================================================================================
+# PURPOSE:
+# Stop “one-file” audits. This checklist MUST be copied into every Quest audit bundle
+# at 01_PREQUEST.md and completed truthfully. If any item is NO, execution MUST NOT proceed.
+
+# REQUIRED AUDIT BUNDLE ROOT (canonical):
+# Ashby_Data/Audits/Execution/<QUEST_ID>__<YYYY-MM-DD>__<slug>/
+
+# REQUIRED MINIMUM FILE SET (bundle is INVALID without all of these):
+# - 00_SUMMARY.md   (what changed, why, blast radius)
+# - 01_PREQUEST.md  (this checklist + repo orientation + plan)
+# - 02_EXECUTION.md (commands run, diffs, decisions)
+# - 03_VERIFY.md    (verification ladder + raw outputs / receipts)
+# - 04_OUTCOME.md   (final result, links to artifacts, followups)
+
+CHECKLIST
+- [ ] Bundle folder exists at canonical path and matches Quest ID + date + slug.
+- [ ] 00_SUMMARY.md exists and states the change + blast radius.
+- [ ] 01_PREQUEST.md exists and includes:
+      - Repo Orientation (FULL for STRUCTURAL, LIGHT for FEATURE)
+      - Risk classification (R0/R1/R2) + Consent Gate pointer if R2
+      - Verification plan (commands to run)
+- [ ] 02_EXECUTION.md exists and includes:
+      - Exact commands executed (copy/pasteable)
+      - Any deviations from plan and why
+      - File diff summary (paths changed)
+- [ ] 03_VERIFY.md exists and includes:
+      - Verification ladder level achieved (Smoke/Unit/Integration/E2E)
+      - RAW command outputs (or attached receipts) proving success
+      - If verification BLOCKED: state BLOCKED + why + what would unblock
+- [ ] 04_OUTCOME.md exists and includes:
+      - What is now true
+      - Any follow-up Quests required
+      - Links to relevant snapshots / docs
+
+HARD RULE
+If 03_VERIFY.md does not contain raw outputs/receipts for the claimed verification,
+then the Quest is NOT DONE and must not be moved to Completed.

@@ -1,0 +1,153 @@
+STUART CODEX
+6.4 Printing and Export Requirements (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines how Stuart prints and exports artifacts so they are immediately usable in the real world. This is not a UI nicety; it is part of the trust contract. If a user cannot reliably print and share the output, Stuart fails its primary mission.
+
+Core decision from this chat:
+- Formalizations must be printable immediately (PDF), without “hard wrap” corruption.
+- Transcripts must exist internally, but printing transcript is optional and secondary.
+- Exports must be explicit user actions and must produce portable files (not trapped in chat UI).
+
+1) Printing: what “Print Now” means
+
+“Print Now” is a first-class action that must:
+- print the intended artifact (usually the latest formalization PDF),
+- without requiring manual copy/paste,
+- without manual formatting fixes,
+- and without depending on the chat window rendering.
+
+The canonical print artifact is PDF.
+
+2) Canonical print targets
+
+P1) Formalization PDF is primary
+For meeting minutes, journals, incident reports, and creator notes, the primary print target is:
+- output.pdf for the selected run_id.
+
+P2) Transcript printing is secondary
+Transcripts can be extremely long and are rarely printed. Stuart may still support printing transcript as:
+- transcript.pdf (optional), or
+- transcript.txt -> user prints via editor.
+But transcript printing is not required for v1 success.
+
+P3) Caption printing is optional
+Captions/subtitles are typically exported as SRT/VTT, not printed.
+
+3) PDF generation requirements (formalizations)
+
+PDF generation must be deterministic and readable.
+
+PDF1) Source-based rendering
+PDFs must be generated from structured sources (formalization.json and/or formalization.md), not from chat UI HTML.
+
+PDF2) No hard-wrap dependency
+PDF generation must not depend on hard-wrapped text.
+All source text must be stored as paragraphs/lists; wrapping occurs at render time.
+
+PDF3) Readable formatting defaults
+PDF output must:
+- use clear section headings,
+- use readable bullet lists,
+- preserve indentation and nesting,
+- avoid cramped line spacing,
+- and avoid random page breaks mid-item when possible.
+
+PDF4) Optional pagination and headers
+Templates may request:
+- page numbers,
+- document headers (session title/date),
+- footers with run metadata.
+This is allowed, but not required in v1.
+
+PDF5) Citations in print (template-controlled)
+If the template requires printed citations:
+- citations may appear inline (e.g., [12:34–12:52]),
+- or as footnotes/endnotes.
+If the template does not require printed citations:
+- the evidence_map.json still must exist.
+The PDF must never claim facts without the ability to audit them via evidence maps.
+
+4) Export: what “Export” means
+
+Export is a user-triggered action that packages artifacts into portable files for storage or sharing.
+
+Export must never be automatic on upload. It is executed only after explicit user request.
+
+5) Canonical export bundles (recommended)
+
+Stuart should support these standard export bundles:
+
+E1) Formalization-only bundle
+Contains:
+- output.pdf
+- output.md (optional)
+- output.json (optional)
+- evidence_map.json (optional, but recommended for trust)
+Use case: “send the minutes.”
+
+E2) Transcript-only bundle
+Contains:
+- transcript.txt
+- transcript.json
+- diarization.json (if available)
+Use case: “audit or archive raw record.”
+
+E3) Full session bundle
+Contains:
+- original source audio/video (if user permits)
+- transcript artifacts
+- all formalizations
+- evidence maps
+- session.json manifest
+Use case: “archive everything.”
+
+E4) Sanitized bundle (optional / profile-dependent)
+A future bundle type that applies redaction before export for external sharing.
+This is not required in v1, but the export system should not prevent it.
+
+Packaging format:
+- ZIP is recommended for bundles.
+- Single-file exports (PDF/MD) are direct.
+
+6) Export naming rules (human-friendly and deterministic)
+
+Exports should produce predictable filenames. Recommended convention:
+
+<YYYY-MM-DD>__<session_slug>__<mode>__<template>__v<run_id_short>.zip
+or for single files:
+<YYYY-MM-DD>__<session_slug>__meeting_minutes.pdf
+
+Rules:
+- avoid illegal filename characters,
+- keep names short enough for Windows paths,
+- include at least session date + artifact type.
+
+7) “No truncation” requirement in practice
+
+Users asked explicitly: “How do we avoid chat output limits for long meetings?”
+
+Answer (canonical):
+- The system must never rely on a single chat response as the only output.
+- Outputs are stored as artifacts on disk.
+- If a meeting is long, formalization is produced in chunks and merged (pipeline requirement), then rendered to PDF.
+- Exported files contain the complete output regardless of chat window limits.
+
+Chat may show a preview or summary of what was produced, but the actual deliverable is the saved artifact.
+
+8) User actions: quick print and quick open
+
+In addition to export, Stuart must provide:
+- Open (open the PDF/MD in the default OS app),
+- Print (send PDF to system print dialog),
+- Reveal in folder (open the artifact path in file explorer).
+These are essential for real-world use where users are not technical.
+
+9) Self-audit (6.4)
+
+- This section is directly tied to your printing requirement (“pull up incidents with Greg, print immediately”) and the “hard wrap” pain you experienced.
+- It enforces that PDF is the canonical print artifact for formalizations and that exports are user-triggered and portable.
+- It addresses the long-meeting output-size concern by requiring disk artifacts and chunked formalization rather than relying on chat output limits.
+This section is complete.

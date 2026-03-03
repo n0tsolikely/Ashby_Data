@@ -1,0 +1,103 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+================================================
+
+QUEST ID:
+QUEST_108
+
+Created By:
+Codex (Brains)
+
+Title:
+Stuart v2 — D3 (7/11) — Outputs Tab Parity (Formalizations Index + Formatted/JSON/Evidence Views)
+
+Subject:
+Stuart
+
+Context: (Ashby / Stuart / System / Other)
+Ashby / Stuart
+
+Origin:
+Guild Orders ACTIVE REV4 -> Dungeon 3 Outputs tab requirements.
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- API: GET /api/sessions/{id}/formalizations
+- Rendering/export artifacts from run outputs
+
+Status: BOARD | ACTIVE | COMPLETED | ABANDONED
+COMPLETED
+
+Audit Bundle Folder Path:
+Ashby_Data/Audits/Execution/QUEST_108__2026-02-18__stuart_v2_d3_outputs_index_views
+
+Accepted On:
+2026-02-18
+
+Accepted By:
+Hands (Peter) via Codex (Brains)
+
+Completed On:
+2026-02-18
+
+Completed By:
+Codex (Brains)
+
+Change Class: (TRIVIAL / FEATURE / STRUCTURAL)
+FEATURE
+
+Vision Delta: (ALIGNED / VARIATION / SHIFT)
+ALIGNED
+
+System Context Statement:
+Outputs tab must be a durable artifact browser for multiple formalizations per session.
+
+Anti-Duplication Plan:
+Use one outputs data source indexed by formalization/run ID; no duplicate per-view fetch stacks.
+
+Placement Intent:
+Outputs tab container and artifact view switcher components.
+
+Codex Anchors (DRAFT):
+- Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_6.2_Canonical_Artifacts_JSON_Markdown_PDF.txt
+- Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_5.3_Evidence_and_Citation_Requirements.txt
+- Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_6.5_Artifact_Indexing_for_Recall_and_Search.txt
+
+Codex Constraint Summary:
+- Outputs are artifact-first and indexable.
+- Evidence map must be a first-class view.
+- Multiple formalizations per session must remain discoverable.
+
+Door Impact:
+Stuart web door (UI)
+
+Testing Level (TL):
+TL2
+
+Talent Point Awarded: (YES / NO)
+YES
+
+DESCRIPTION
+Build Outputs tab parity with formalization list and views: formatted, JSON, evidence map.
+
+SCOPE / OBJECTIVE
+- Load formalization index per active session.
+- Render selectable outputs list.
+- Render formatted/JSON/evidence map tabs from selected output.
+
+OUT OF SCOPE
+- Reformalization authoring from Outputs tab.
+- Bulk global output management.
+
+DEPENDENCIES
+- QUEST_107
+- Dungeon 2 formalizations index endpoint
+
+EXECUTION NOTES
+Ensure old sessions with missing artifacts fail gracefully (no tab crash).
+
+COMPLETION CRITERIA (REQUIRED)
+- [ ] Outputs tab shows multiple formalizations for a session.
+- [ ] Formatted/JSON/evidence views all render from real artifacts.
+- [ ] Switching sessions updates outputs index correctly.

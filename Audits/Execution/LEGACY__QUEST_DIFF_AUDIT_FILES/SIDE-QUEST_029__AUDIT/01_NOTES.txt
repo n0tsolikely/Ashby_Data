@@ -1,0 +1,11 @@
+Renamed folder: /mnt/data/Ashby_Engine/Ashby_Engine/Ashby_Engine/secrets -> /mnt/data/Ashby_Engine/Ashby_Engine/Ashby_Engine/secrets_store
+Files edited:
+- /mnt/data/Ashby_Engine/Ashby_Engine/Ashby_Engine/ashby/control/lights_tuya.py
+- /mnt/data/Ashby_Engine/Ashby_Engine/Ashby_Engine/io/telegram/ashby_telegram_control.py
+- /mnt/data/Ashby_Engine/Ashby_Engine/Ashby_Engine/scripts/ashby_nest_set.py
+
+Import smoke:
+- stdlib_secrets: /usr/lib/python3.11/secrets.py
+- token_hex: OK
+- webapp_import: OK
+- ashby_import: OK

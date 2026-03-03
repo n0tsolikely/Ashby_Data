@@ -1,0 +1,66 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_069
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 6 (2/5): webapp speaker mapping UI + rerender
+
+Context: Stuart webapp
+
+Origin:
+Control Sync — 2026-02-04 (Stuart v1 finish-line: REV5)
+
+Priority: P1
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV5.txt (Dungeon 6)
+
+Status: COMPLETED
+
+Audit Bundle Path:
+  /mnt/data/Ashby_Data/Audits/Execution/QUEST_069__2026-02-10__stuart_v1_d6_2of5_webapp_speaker_mapping_ui_and_rerender
+Accepted On:
+2026-02-10
+Accepted By:
+Hands (Peter)
+Completed On: 2026-02-11
+
+Completed By: Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Add a simple UI to map speaker labels to names for a session and rerender minutes/journal using the new mapping.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- UI to set Speaker 1 → Name, etc
+- Create overlay artifact + set active
+- Trigger a formalize-only rerun to regenerate outputs with names
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Auto-detect names
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_068
+- QUEST_070
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- If diarization confidence is low, rendered minutes must disclose uncertainty.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] User can set speaker names
+- [x] Re-render produces updated minutes/journal with names
+

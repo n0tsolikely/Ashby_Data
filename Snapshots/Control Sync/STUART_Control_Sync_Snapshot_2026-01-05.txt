@@ -1,0 +1,137 @@
+STUART CONTROL SYNC — 2026-01-05 (00:20-ish) — PRO REVIEW + NEXT ORDERS
+================================================================================
+
+Scope of this sync
+- You asked me to re-enter “Stuart headspace” using the existing Stuart history in this chat, but treat THIS message forward as a new control sync.
+- You asked me to review:
+  1) End-of-day snapshots (2025-12-18 and 2025-12-22)
+  2) STUART_v0_Pipeline_Contract.md
+  3) Ashby backup (ASHBY_BACKUP_2025-12-29.tar.gz)
+  4) Ashby V1 Codex zip (read ALL CODEX segments except “ASHBY CODEX FULL”)
+
+What I reviewed (confirmed)
+- Snapshots:
+  - ASHBY_STUART_End_of_Day_Snapshot_2025-12-18.txt
+  - STUART_End_of_Day_Snapshot_2025-12-22.txt
+- Stuart spec:
+  - STUART_v0_Pipeline_Contract.md
+- Ashby codebase snapshot:
+  - ASHBY_BACKUP_2025-12-29.tar.gz (folder + package structure, core router/truth gate, runtime layout, IO)
+- Ashby Codex:
+  - .ASHBY TOC.txt
+  - 165 CODEX segments (0.1 through 36.2, including 16.x Modules, 18.x Adapters/offline-first, 29.x Agents-as-organs, 32.x Platform)
+
+Big takeaways from Ashby Codex (the rules that matter for Stuart)
+1) Ashby is the platform “body”; Stuart is an “agent/organ”
+   - Stuart should not become a separate forked platform with its own rules.
+   - It should run on Ashby’s shared infrastructure: routing, truth gate, storage/IO patterns, state discipline.
+
+2) Offline-first is a platform routing law, not a one-off feature
+   - “Local-only” is a mode/profile (strict privacy).
+   - “Cloud-enabled” is another mode/profile (for customers who don’t care).
+   - The system must be designed so adding cloud later is NOT a refactor — it’s an adapter swap.
+
+3) Adapters are the swap mechanism (model swapping without pipeline rewrite)
+   - Transcription, diarization, summarization/LLM, and search/indexing should each be “capabilities” with adapter implementations.
+   - The pipeline calls the capability interface; the router chooses the adapter.
+
+4) Truth + Evidence are non-negotiable
+   - For Stuart: “no hallucinations” means every extracted item (decision/action/etc.) must be backed by transcript evidence (timestamps/segment IDs).
+   - If evidence isn’t present, Stuart must say “not in the recording” and shut up.
+
+Key takeaways from your Stuart files / prior work
+- The Stuart v0 pipeline contract is good, but it currently bakes in “local-only” as absolute.
+- Your new requirement is “both”: Local-only mode must exist AND cloud-enabled mode must exist.
+- The way to do that without rewriting later is: adapter interfaces + execution profiles (local_only / hybrid / cloud).
+
+Critical product risk found (important)
+- pyannote diarization models are hosted on Hugging Face and (at least for the common model cards) require a Hugging Face account + accepting user conditions + an access token to download.
+- This is fine for a prototype/demo, but it is friction (and possibly licensing/commercial terms) for a packaged offline product.
+- Action: treat “pyannote diarization” as a prototype adapter, not the final guaranteed long-term diarizer.
+
+What we need to change (locked recommendations)
+A) Stuart architecture needs to be “Ashby platform + Stuart agent”, not “random standalone script folder”
+- Keep your current C:\stuart sandbox if you want for experiments.
+- BUT the real build should live inside the Ashby platform repo structure as an agent module.
+- Minimal target layout (Windows equivalent of the Dec-22 snapshot intent):
+  ashby/
+    ashby/                 (platform python package)
+      core/                (router/truth/state/etc)
+      adapters/            (platform adapters)
+      agents/
+        stuart/
+          __init__.py
+          pipeline/
+          adapters/
+          schemas/
+          ui/
+          tests/
+    io/
+      cli/
+      stuart/              (local sessions + artifacts output)
+    configs/
+      stuart.yaml
+
+B) Update Stuart spec: from “local-only product” to “offline-first with cloud options”
+- Add explicit “Execution Profiles” section:
+  1) LOCAL_ONLY (default): no network calls, all artifacts stored locally.
+  2) HYBRID: allow a subset of cloud adapters (e.g., LLM summary), still storing locally.
+  3) CLOUD: allow cloud compute/storage if customer opts in.
+- The selling point stays clean: “LOCAL_ONLY mode = nothing leaves the machine.”
+
+C) CPU baseline + GPU acceleration must be a first-class routing decision
+- Demo path: GPU on your RTX 4070 (fast, accurate, non-embarrassing).
+- Customer baseline: CPU-only must work (slower is acceptable, but must be correct).
+- Pi 8GB: treat as “aspirational edge tier”:
+  - feasible for transcription-only with small/quantized models
+  - diarization may need to be optional or deferred/offloaded.
+
+D) Define the canonical Stuart data model NOW (to avoid refactor)
+- Output should be structured, not just text blobs:
+  - audio/ (original + normalized wav)
+  - diarization.json  (speaker segments)
+  - transcript.json   (word/segment timestamps + text)
+  - aligned.json      (speaker + text merged)
+  - minutes.json      (decisions/actions/incidents with evidence refs)
+  - summary_short.txt, summary_long.txt
+  - index.json (or sqlite) for search
+- This makes “swap diarizer” or “swap transcriber” painless later.
+
+E) “No embarrassment” rules (tighten)
+- Stuart may ONLY output:
+  - transcript text he has
+  - summaries that cite timestamps
+  - extraction items with evidence IDs
+- If confidence is low or evidence is missing: Stuart refuses / flags “uncertain”.
+
+Immediate guild orders (next work session)
+1) Spec update (fast):
+   - produce STUART_Pipeline_Contract_vNext.md reflecting offline-first + execution profiles + adapter boundaries.
+2) Repo placement decision:
+   - choose canonical home: Ashby repo → ashby/agents/stuart (recommended).
+3) Lock dependencies for prototype:
+   - pin working GPU stack you already proved:
+     - python 3.10.x
+     - torch 2.5.1+cu121
+     - faster-whisper (gpu)
+     - pyannote.audio 3.1.1 (prototype diarization)
+   - export requirements.lock (pip freeze) so we don’t “re-break” CUDA.
+4) Build minimal end-to-end CLI:
+   - command: stuart run <audiofile>
+   - outputs session folder with transcript + diarization + aligned transcript + short summary
+5) Add search:
+   - simple keyword search first (grep across aligned segments)
+   - keep the interface so we can later swap in semantic/vector search.
+6) Add “rename speakers” support:
+   - ability to map SPEAKER_00 → “Peter”, etc. stored per-session.
+7) Stress tests:
+   - quiet room, 2 speakers, 5–10 minutes audio
+   - overtalk
+   - noisy background
+   - validate diarization doesn’t implode and summaries don’t hallucinate.
+
+End state after this sync
+- We keep Stuart’s existing prototype environment as proof that the stack works.
+- We update Stuart’s spec to match Ashby Codex laws (platform + agent + adapters + offline-first profiles).
+- We build forward from the spec so we don’t refactor ourselves into a ditch.
+

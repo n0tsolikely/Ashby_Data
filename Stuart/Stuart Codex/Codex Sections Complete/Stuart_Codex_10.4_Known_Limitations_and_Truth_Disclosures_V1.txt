@@ -1,0 +1,129 @@
+STUART CODEX
+10.4 Known Limitations and Truth Disclosures (V1) (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section states V1 limitations plainly so users don’t confuse “high trust behavior” with “perfect results.”
+
+Chat-canon driver:
+You want “no mistakes” as the #1 requirement.
+We cannot guarantee zero ASR or diarization errors in all audio conditions, but we CAN guarantee:
+- the system does not fabricate,
+- uncertainty is disclosed,
+- evidence is preserved,
+- outputs are complete (no truncation),
+- and corrections are supported via auditable overlays.
+
+1) Audio reality: transcription is probabilistic
+
+LIM-1) ASR can mis-hear words
+Audio quality, accents, noise, overlap, microphone distance, and compression all affect ASR accuracy.
+V1 will be best-effort verbatim, but it cannot guarantee perfection.
+
+Truth disclosure behavior:
+- unclear regions must be marked as [unclear]/[inaudible] instead of guessed
+- low-confidence intervals should be flagged in reports
+- timestamps remain so the user can verify by listening
+
+LIM-2) Proper nouns and jargon are hard
+Names, acronyms, and domain-specific jargon are frequent failure points.
+V1 may improve with custom vocabulary support later, but V1 must at least:
+- allow correction overlays
+- preserve evidence anchors
+
+2) Speaker diarization is inherently uncertain
+
+LIM-3) Diarization can mis-attribute speakers
+Especially when:
+- voices are similar
+- people talk over each other
+- the meeting is recorded poorly
+V1 must handle this by:
+- conservative attribution thresholds
+- overlap marking
+- UNKNOWN attribution when uncertain
+- no real-name attribution without user mapping overlay
+
+3) “Attendance vs mention” is not magic
+
+LIM-4) Without speaker mapping, “Greg attended” cannot be proven
+V1 can always answer “Greg mentioned” (text search), but cannot confirm attendance/spoke without:
+- explicit participant metadata, or
+- speaker mapping overlay (SPEAKER_00 → Greg)
+
+This is a trust feature, not a limitation to hide.
+
+4) Long sessions: complete output is guaranteed, not instant output
+
+LIM-5) Long sessions may take significant compute time locally
+A 60–180 minute meeting with diarization + transcription + formalization is compute-heavy on CPU-only machines.
+
+Truth disclosure:
+- processing time scales with audio duration and hardware capability
+- V1 solves output-size/truncation via chunking and artifacts, not by “printing everything in chat”
+- Stuart should expose progress (chunk completion) and resumability
+
+(No time estimates are required; correctness is the focus.)
+
+5) V1 is not live and not a meeting bot
+
+LIM-6) No “join Teams/Zoom/RingCentral” in V1
+V1 focuses on:
+- uploaded recordings
+- (optional) local capture to file
+Live participation is vNext.
+
+LIM-7) No real-time transcription guarantees in V1
+V1 focuses on high-trust offline results.
+Real-time streaming transcription is vNext.
+
+6) Template ecosystem is limited in V1
+
+LIM-8) No marketplace in V1
+Community template sharing is future/gated.
+V1 includes:
+- a small set of default templates
+- user-local template creation/import
+But no background upload to us.
+
+LIM-9) Template recommendation is optional / careful
+If V1 provides “suggest a template,” it must be a suggestion only and must not hallucinate templates.
+This can ship later if it risks confusion.
+
+7) Search is functional but may start as keyword-first
+
+LIM-10) V1 retrieval may be keyword-based
+SQLite FTS keyword search is enough for many core needs (“time off”, “donuts”, “Greg”).
+Semantic embeddings search can come later.
+V1 must still provide evidence pointers for results.
+
+8) Networked chat frontends are not “true local-only”
+
+LIM-11) Using Telegram (or any network chat) means the upload path is networked
+Even if Stuart processes locally, the file traversed the chat platform.
+Therefore:
+- LOCAL_ONLY privacy guarantees are best achieved via local UI or local network.
+
+V1 must disclose this if a network frontend is used.
+
+9) Output ethics: minutes/incidents are not infallible “court transcripts”
+
+LIM-12) These are ASR-derived artifacts
+Even with strong truth discipline, they are not perfect recordings of reality.
+V1 must:
+- maintain evidence maps
+- allow correction overlays
+- disclose uncertainty
+- avoid confident claims where evidence is weak
+
+10) Self-audit (10.4)
+
+Chat-canon alignment checklist:
+- “No mistakes” is interpreted correctly: no fabrication + uncertainty disclosure + evidence preservation + correction overlays, not impossible ASR perfection. (Maintained.)
+- Diarization uncertainty and overlap honesty are explicit. (Maintained.)
+- Output-size limits are solved via chunking/artifacts, not by relying on chat output. (Maintained.)
+- V1 scope is honest: no meeting bots, no marketplace, no stealth capabilities. (Maintained.)
+- Privacy truth: network frontends can’t pretend to be fully local-only. (Maintained.)
+
+This section is complete.

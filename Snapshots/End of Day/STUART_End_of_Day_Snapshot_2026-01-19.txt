@@ -1,0 +1,328 @@
+STUART END OF DAY SNAPSHOT — 2026-01-19
+MERGED EXECUTION SNAPSHOT (ASHBY + STUART)
+
+This document is a verbatim merge of TWO execution snapshots from 2026-01-19.
+No truncation. No summarization. Original contents are preserved exactly.
+
+
+================================================================================
+BEGIN SNAPSHOT A
+SOURCE FILE: ASHBY_EXECUTION_SNAPSHOT_2026-01-19__POST_OPTION_A_VERIFICATION_AND_SCOPE_LOCK.txt
+BEGIN CONTENT
+
+================================================================================
+ASHBY_EXECUTION_SNAPSHOT_2026-01-19__POST_OPTION_A_VERIFICATION_AND_SCOPE_LOCK
+
+Timestamp: 2026-01-19 23:24:40
+Snapshot Type: Execution Snapshot (Merge Into End-of-Day)
+Project: Ashby Platform / Stuart Module
+Phase: Post-Option A Verification, Pre-QUEST_014 Execution
+
+================================================================================
+PURPOSE
+================================================================================
+This snapshot captures ALL work completed, decisions made, and structural
+clarifications agreed upon AFTER the Option A foundation was completed,
+and BEFORE beginning QUEST_014.
+
+This snapshot is intended to be MERGED into the final End-of-Day Snapshot
+for 2026-01-19. It is NOT a Control Sync snapshot.
+
+================================================================================
+ROLES
+================================================================================
+Hands (Executor / Environment Authority):
+- Peter (notsolikely)
+
+Brains (Architecture / System Design Authority):
+- Ash
+
+================================================================================
+ENVIRONMENT (CANONICAL)
+================================================================================
+
+Repository Root:
+- /home/notsolikely/ashby
+
+Ashby Platform venv:
+- ~/venvs/ashby-env
+- Python 3.12.x
+- Status: unchanged, not used for Stuart execution
+
+Stuart Runtime venv (CANONICAL):
+- ~/venvs/stuart-env_py310
+- Python 3.10.19
+- Activation:
+  source ~/venvs/stuart-env_py310/bin/activate
+
+This venv supersedes all historical Stuart venv references.
+
+================================================================================
+WORK COMPLETED SINCE LAST EXECUTION SNAPSHOT
+================================================================================
+
+1) QUEST_002 — VERIFIED COMPLETE (FINAL-SHAPE CONFIRMATION)
+
+The Stuart module now satisfies final acceptance criteria.
+
+Canonical module path:
+- ashby/modules/meetings/
+
+Final-shape internal structure created to prevent future refactors:
+
+ashby/modules/meetings/
+├── router/
+├── pipeline/
+├── adapters/
+├── templates/
+├── render/
+├── schemas/
+├── errors/
+├── index/
+
+Each directory contains __init__.py to ensure clean imports.
+
+All Python bytecode caches (__pycache__) were removed to keep the repo clean.
+
+QUEST_002 is now fully verified and complete.
+
+2) OPTION A FOUNDATION — CONFIRMED COMPLETE
+
+The following quests remain completed and unchanged:
+
+- QUEST_011 — STUART_ROOT configuration and deterministic layout
+- QUEST_012 — IDs, hashing, write-once manifests
+- QUEST_013 — immutability, rerun semantics, video→audio policy rails
+
+Runtime structure (verified on disk):
+~/ashby_runtime/stuart/
+  ├── sessions/
+  ├── contributions/
+  ├── runs/
+  ├── overlays/
+  └── exports/
+
+================================================================================
+ARCHITECTURAL CLARIFICATIONS LOCKED DURING EXECUTION
+================================================================================
+
+1) DOMAIN-BASED MODULE NAMING (CRITICAL)
+
+Decision:
+- Modules are named after DOMAINS, not AGENTS.
+
+Therefore:
+- Stuart (agent) inhabits the 'meetings' domain.
+- The module remains ashby/modules/meetings/.
+- We do NOT rename the module to 'stuart' in this raid.
+
+Rationale:
+- Ashby routes by domain intent (meetings.*, lights.*, etc.).
+- Agent identity is layered on top of domain modules.
+- This prevents premature abstraction and routing ambiguity.
+
+2) MODULE REMOVABILITY (NON-NEGOTIABLE)
+
+Modules are removable organs.
+
+Removing a module means:
+- Delete ashby/modules/<domain>/
+- Remove the module’s registry entry (once registry wiring exists)
+- Ashby core continues operating without that capability
+
+Artifact behavior on removal:
+- Artifacts produced by the module (e.g., Stuart files under STUART_ROOT)
+  persist on disk by default.
+- Interpreting or generating new artifacts requires the module.
+- Data purge is an explicit, separate operation.
+
+This enables:
+- Shipping Ashby with or without Stuart
+- Shipping Ashby with or without future modules (e.g., cameras/AshEyes)
+- No platform refactors when modules are added or removed
+
+================================================================================
+CURRENT POSITION
+================================================================================
+
+- Option A (Foundation) is complete and verified.
+- QUEST_002 verification is complete.
+- Mid-raid Control Sync snapshot has already locked next scope.
+- Execution is paused at a clean boundary.
+
+Next quest to execute:
+- QUEST_014 (Mode Registry)
+
+================================================================================
+NEXT ACTION (AFTER REHYDRATION)
+================================================================================
+
+1) Rehydrate using:
+   - Existing Continuity Lock
+   - Existing Bootstrap Prompt
+   - Mid-Raid Control Sync snapshot
+   - Execution snapshots (including this one)
+
+2) Activate Stuart venv:
+   source ~/venvs/stuart-env_py310/bin/activate
+
+3) Resume execution at:
+   QUEST_014 — Mode Registry
+
+END OF EXECUTION SNAPSHOT
+
+================================================================================
+END CONTENT
+END SNAPSHOT A
+
+================================================================================
+BEGIN SNAPSHOT B
+SOURCE FILE: STUART_EXECUTION_SNAPSHOT_2026-01-19__OPTION_A_FOUNDATION_COMPLETE.txt
+BEGIN CONTENT
+
+================================================================================
+STUART_EXECUTION_SNAPSHOT_2026-01-19__OPTION_A_FOUNDATION_COMPLETE
+
+Timestamp: 2026-01-19 22:09:05
+Snapshot Type: Execution Snapshot (Mid-Raid / Merge-Into-End-of-Day)
+Scope: Stuart v1 — Option A (Foundation) COMPLETE
+
+WHY THIS SNAPSHOT EXISTS
+This is not an End-of-Day Snapshot and not a Control Sync Snapshot.
+It is an Execution Snapshot captured immediately after completing a discrete scope block (Option A).
+Save it under Ashby Data -> Snapshots, then merge it into the End-of-Day Snapshot for 2026-01-19.
+
+WHERE TO SAVE (AUTHORITATIVE)
+Ashby Data folder:
+- Ashby Data/Snapshots/
+
+Recommended filename:
+- STUART_EXECUTION_SNAPSHOT_2026-01-19__OPTION_A_FOUNDATION_COMPLETE.txt
+
+MERGE POLICY
+At end of day, append this snapshot into:
+- ASHBY_End_of_Day_Snapshot_2026-01-19.txt
+Keep this file as a standalone mid-raid artifact for continuity and receipts.
+
+ROLES
+- Hands: Peter
+- Brains: Ash
+
+ENVIRONMENT (NEW CANONICAL REALITY)
+We discovered the previously referenced Stuart venv path did not exist on disk.
+We re-anchored reality using filesystem inspection and created a clean, dedicated Stuart venv.
+
+Repo root:
+- /home/notsolikely/ashby
+
+System Python:
+- python3 -> 3.12.3 (/usr/bin/python3)
+- python3.10 -> 3.10.19 (/usr/bin/python3.10)
+
+Ashby venv (existing):
+- ~/venvs/ashby-env (present; not used for Stuart work today)
+
+Stuart venv (created today; NEW canonical path):
+- ~/venvs/stuart-env_py310
+  - python -> 3.10.19
+  - activation: source ~/venvs/stuart-env_py310/bin/activate
+
+NOTE:
+Future Stuart work uses the Stuart venv unless an explicit Ashby platform raid requires otherwise.
+
+SCOPE COMPLETED (OPTION A — FOUNDATION)
+Option A goal:
+Pour the concrete layer for Stuart v1 inside Ashby without touching Ashby core router and without any hacks.
+Deliver: canonical module home + STUART_ROOT layout + IDs/hashing + write-once manifests + immutability rails + rerun semantics rails.
+
+QUEST STATUS
+Accepted and completed:
+- QUEST_002 — quest complete
+  - Created canonical module scaffold:
+    - ashby/modules/
+    - ashby/modules/meetings/
+    - __init__.py files added
+    - ashby/modules/meetings/README.md added
+
+- QUEST_011 — quest complete
+  - Implemented STUART_ROOT config and deterministic layout:
+    - ashby/modules/meetings/config.py
+    - ashby/modules/meetings/layout.py
+    - ashby/modules/meetings/init_root.py
+  - Default root resolved to:
+    - /home/notsolikely/ashby_runtime/stuart
+  - Deterministic buckets created:
+    - sessions/
+    - contributions/
+    - runs/
+    - overlays/
+    - exports/
+
+- QUEST_012 — quest complete
+  - Implemented IDs, hashing, and manifest schemas (write-once):
+    - ashby/modules/meetings/ids.py
+    - ashby/modules/meetings/hashing.py
+    - ashby/modules/meetings/manifests.py
+  - Verified:
+    - ID uniqueness
+    - sha256 hashing works
+    - manifest overwrite is blocked (FileExistsError)
+
+- QUEST_013 — quest complete
+  - Implemented immutability + rerun semantics rails + video->audio policy rail:
+    - ashby/modules/meetings/store.py
+  - Verified (smoke test):
+    - created session
+    - stored contribution immutably
+    - created two runs with distinct run_ids (rerun semantics)
+    - no overwrites allowed by design
+
+FILES/STRUCTURE CREATED OR MODIFIED
+New directories:
+- ashby/modules/
+- ashby/modules/meetings/
+
+New files:
+- ashby/modules/__init__.py
+- ashby/modules/meetings/__init__.py
+- ashby/modules/meetings/README.md
+- ashby/modules/meetings/config.py
+- ashby/modules/meetings/layout.py
+- ashby/modules/meetings/init_root.py
+- ashby/modules/meetings/ids.py
+- ashby/modules/meetings/hashing.py
+- ashby/modules/meetings/manifests.py
+- ashby/modules/meetings/store.py
+
+Runtime directories created (deterministic Stuart root):
+- ~/ashby_runtime/stuart/
+  - sessions/
+  - contributions/
+  - runs/
+  - overlays/
+  - exports/
+
+ANTI-DRIFT / LAW COMPLIANCE CHECK
+- Stuart is inside Ashby as a module (meets Preservation Pack #10 constraints).
+- No Ashby core router refactors or modifications were performed.
+- Immutability is enforced (write-once manifests; no overwrite paths).
+- Rerun semantics are enforced (new run_id per execution).
+- Video->audio is explicitly treated as a future pipeline stage; manifest reserves derived_audio_path.
+- All foundation code compiles cleanly (py_compile used).
+
+CURRENT POSITION (READY FOR NEXT CONTROL SYNC)
+Option A foundation is complete.
+Next expansion requires a short follow-up Control Sync to accept additional quests.
+
+Candidate next scopes (NOT accepted yet):
+- Option B: QUEST_014 + QUEST_015 (mode registry + template registry)
+- Pipeline: QUEST_016-018 + QUEST_019-021 (plan + gating + runner + transcript + formalize + PDF/MD + evidence)
+- Door: QUEST_010 (Telegram dumb transport) AFTER runner exists
+
+END OF SNAPSHOT
+
+================================================================================
+END CONTENT
+END SNAPSHOT B
+
+================================================================================

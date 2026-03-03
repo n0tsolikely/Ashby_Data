@@ -1,0 +1,105 @@
+STUART CODEX
+2.2 Explicit Execution Gating (Submit / Confirm) (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines the execution gating rules: how Stuart decides when to run compute (transcription, diarization, formalization, exporting). These rules are canonical because they protect privacy, prevent wasted processing, and avoid “wrong file processed” disasters.
+
+1) The core rule: explicit “go” is required
+
+Stuart MUST NOT process content merely because:
+- a file was dropped,
+- a session exists,
+- or a mode/template is selected.
+
+Stuart MUST require an explicit user “go” signal before extracting speech content. The user’s “go” can take these forms:
+- clicking a Submit/Run button,
+- typing a command that resolves to a concrete, enumerated action (“Run transcription now.”),
+- or confirming a plan that Stuart proposes (“Yes, proceed.”).
+
+2) Two-phase interaction model (recommended)
+
+Phase 1: Intake (no content processing)
+- User drops file(s).
+- Stuart acknowledges and stores them in the session (local storage namespace).
+- Stuart may show safe metadata (duration, format).
+- Stuart asks: “What would you like to do?”
+
+Phase 2: Execution (content processing)
+- User selects mode/template (optional for general query).
+- User instructs Stuart to run a stage or a full pipeline.
+- Stuart confirms what it will do and (if remote stages exist) what will be sent.
+- User confirms or cancels.
+- Stuart executes and produces artifacts.
+
+This two-phase model is the simplest way to prevent accidental processing and protect privacy.
+
+3) Gating for general queries (the “I asked a question” case)
+
+In general query mode, the user may ask a question before any transcript exists.
+
+Example:
+User: “What did they say about changing locks?”
+But the file has not been transcribed yet.
+
+Stuart MUST respond with a plan rather than silently transcribing:
+- “To answer that, I need to transcribe the audio. I can do that now. Proceed?”
+
+If the user says yes (or clicks Run), Stuart transcribes and then answers with citations.
+If the user says no, Stuart does not transcribe and must not pretend it can answer.
+
+This protects the explicit execution invariant even when the user is conversational.
+
+4) Gating for remote stages (profile + confirmation)
+
+If the active profile permits remote adapters (HYBRID/CLOUD), then before any remote stage runs, Stuart MUST:
+- identify the stage(s) that will run remotely,
+- specify what exact data is sent (audio chunks, transcript text, etc.),
+- specify which provider/adapter will be used,
+- and require explicit confirmation.
+
+If the profile is LOCAL_ONLY:
+- remote stages are not allowed,
+- Stuart must refuse and offer local alternatives or graceful degradation.
+
+5) Partial runs are allowed and must be explicit
+
+Stuart MUST allow running the pipeline in parts, because users may want:
+- transcription only,
+- diarization only,
+- transcription + alignment,
+- formalization later,
+- re-run formalization with a different template without re-transcribing.
+
+Therefore:
+- “Run transcription” is a valid explicit action.
+- “Run meeting minutes using Template X” is a valid explicit action.
+- “Re-run formalization using Template Y” is a valid explicit action.
+
+But each action still requires explicit triggering.
+
+6) Cancellation and safety stops
+
+Before execution begins, the user must be able to cancel.
+If execution is running, the user should be able to stop the run and preserve partial outputs with clear labeling (e.g., “transcription incomplete”).
+
+Stuart MUST not present partial outputs as complete.
+
+7) Default behavior after execution
+
+After a successful run, Stuart should:
+- summarize what artifacts were created (without re-summarizing content),
+- provide direct actions (Open / Print / Export / Show transcript),
+- and remain ready for follow-up queries and re-formalization requests.
+
+8) Self-audit (2.2)
+
+This section encodes the explicit execution requirements from our chat:
+- no auto-run on upload,
+- explicit submit/confirm trigger,
+- general queries that require transcription must propose a plan and request permission,
+- remote stages require disclosure and confirmation,
+- partial runs and re-formalizations are supported without re-uploading audio.
+
+This section is complete.

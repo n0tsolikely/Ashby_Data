@@ -1,0 +1,210 @@
+QUEST TEMPLATE — SYNAPSE OS
+Version: v1.5
+Last Updated: 2026-02-14
+Status: Canon Template (must comply with Quest Validation Rules)
+Subject Copy: Ashby_Data/Quest Board/QUEST_TEMPLATE.txt
+Provenance: Synapse OS governance/Quest Board/QUEST_TEMPLATE.txt (v1.5)
+Sync Date: 2026-02-22
+
+
+(duplicate this file for each new Quest)
+
+CORE LAW Reminder:
+- Quest state is defined ONLY by WHERE THIS FILE LIVES (Quest Board folder), not by metadata.
+- This Quest file is the execution contract. It MUST be unambiguous enough to execute, audit, verify, and resume.
+- If any REQUIRED field is missing or ambiguous, the Quest MUST remain on BOARD (validation fails).
+- Verification is NOT optional:
+  - Execution MUST NOT begin until a Verification Plan exists.
+  - The Verification Plan may be recorded here OR deferred to the Pre-Quest Audit (01_PREQUEST.md).
+
+NOTE:
+- Do not “change status” in text. Move the file between folders.
+- Location wins over text. If this file claims a state that conflicts with its folder, the folder is authoritative.
+
+================================================================================
+IDENTITY (REQUIRED)
+================================================================================
+Quest ID:
+QUEST_142
+
+Title:
+Dungeon 9A (3/4): Schema validation + error rails (HTTP 422) for gateway outputs
+
+Subject:
+STUART
+
+Origin:
+Origin: Guild Orders REV5 — Dungeon 9A.
+Canonical Guild Orders = REV5; older Guild Orders in Ashby_Data are deprecated.
+
+Priority: (P0 / P1 / P2)
+P1
+
+Links:
+- Canonical Guild Orders REV5: GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-23_REV5.txt (SHA256 09f018aa3adcbcd068de33b4688aa6ae9f39414502c13d823d3c4dd804407f53)
+- Dungeon 9A — LLM Gateway Infrastructure (Local SaaS simulation)
+- REV5 split: Dungeon 9A builds gateway; Dungeon 9B wires Stuart routing.
+
+================================================================================
+CODEX ANCHORS + CONSTRAINT SUMMARY (DRAFT)
+================================================================================
+Codex Anchors (DRAFT):
+- Stuart Codex 1.2 Core Invariants (Truth, Evidence, Explicit Execution)
+- Stuart Codex 1.3 Profiles (LOCAL_ONLY / HYBRID / CLOUD)
+- Stuart Codex 5.3 Evidence and Citation Requirements
+- Stuart Codex 8.4 Formalizer Adapters (Local / Remote)
+- Stuart Codex 9.1 Data Locality Rules
+
+Codex Constraint Summary (DRAFT):
+- Gateway response MUST include 'version': 1 at top level.
+- Gateway binds to 127.0.0.1 only.
+- No provider keys in Stuart core repo or frontend assets.
+- Gateway must be swappable to hosted SaaS by URL/config only.
+- No transcript content logging by default (only request_id/timing/usage metadata).
+
+
+================================================================================
+QUEST CREATION VISION ALIGNMENT (REQUIRED)
+================================================================================
+Change Class: (TRIVIAL / FEATURE / STRUCTURAL)
+FEATURE
+
+Vision Delta: (ALIGNED / VARIATION / SHIFT)
+ALIGNED
+
+System Context Statement:
+This quest builds a local HTTP LLM Gateway process that mimics SaaS call architecture.
+Gemini API key lives only in gateway environment variables; Stuart core must never contain keys.
+Gateway API contract is versioned (version=1) and schema validated; later hosted SaaS is a URL swap.
+
+If Vision Delta = VARIATION:
+# REQUIRED only if Vision Delta = VARIATION.
+# - Codex intent class it maps to: <e.g., Door: chat interface>
+# - Codification path: <SIDE-QUEST id or "TBD — requires Hands approval">
+# NOTE: Variations may be allowed to execute if anchored + oriented, but MUST spawn a Side-Quest to codify.
+
+If Vision Delta = SHIFT:
+# REQUIRED only if Vision Delta = SHIFT.
+# Write: BLOCKED — CONTROL_SYNC_REQUIRED
+# Briefly state what would need to change in Codex for this to become valid.
+
+Anti-Duplication Plan:
+Confirm we reuse existing schema definitions for minutes/journal JSON (do not create parallel schemas).
+rg -n "minutes_json" Ashby_Engine/ashby/modules/meetings/schemas || true
+
+Placement Intent:
+Layer: interface validation
+Targets: Ashby_Engine/ashby/interfaces/llm_gateway/validate.py (or schemas.py)
+
+
+================================================================================
+ATOMICITY CHECK (REQUIRED)
+================================================================================
+Atomicity Statement:
+Atomic: YES — enforce schema validation and return 422 on invalid output.
+
+================================================================================
+RISK + CONSENT GATE (CONDITIONAL)
+================================================================================
+Risk: (R0 / R1 / R2)
+R1
+
+R2 Confirmation Artifact (REQUIRED if Risk = R2):
+# REQUIRED ONLY IF Risk = R2.
+# confirmations/CONFIRM_R2__<quest_id>__YYYY-MM-DD__<slug>.txt
+# The file must exist and contain:
+# CONFIRM: YES
+
+================================================================================
+STATE (BY LOCATION; CANON)
+================================================================================
+Canonical Quest Board locations:
+- BOARD:     Ashby_Data/Quest Board/
+- ACCEPTED:  Ashby_Data/Quest Board/Accepted/
+- COMPLETED: Ashby_Data/Quest Board/Completed/
+- ABANDONED: Ashby_Data/Quest Board/Abandoned/
+
+================================================================================
+DESCRIPTION (REQUIRED)
+================================================================================
+Enforce schema validation in gateway: reject malformed model outputs and respond with HTTP 422 while preserving privacy (no transcript logging).
+
+================================================================================
+SCOPE / OBJECTIVE (REQUIRED)
+================================================================================
+- Validate output_json against Stuart minutes/journal JSON schema before returning.
+- Reject invalid output with HTTP 422 and safe error body (no transcript content).
+- Ensure response still includes version=1 + request_id on errors.
+
+================================================================================
+OUT OF SCOPE (REQUIRED)
+================================================================================
+- No writing artifacts to STUART_ROOT from gateway.
+- No quota enforcement.
+
+================================================================================
+DEPENDENCIES (REQUIRED: LIST OR EXPLICIT NONE)
+================================================================================
+- QUEST_141 complete.
+
+================================================================================
+DOORS + TESTING LEVEL (CONDITIONAL: CODE/SOFTWARE)
+================================================================================
+Door Impact:
+API
+
+Testing Level (TL):
+TL2
+
+================================================================================
+VERIFICATION PLAN (REQUIRED BEFORE EXECUTION)
+================================================================================
+Verification Plan:
+- Add test hook or mock provider path to simulate invalid output_json.
+- Confirm HTTP 422 returned for invalid output and 200 for valid output.
+- Confirm version=1 and request_id included.
+
+PASS/FAIL Criteria:
+- PASS: invalid outputs rejected (422) and valid outputs succeed; privacy preserved.
+- FAIL: invalid outputs pass through or errors leak transcript content.
+
+================================================================================
+EXECUTION NOTES (OPTIONAL)
+================================================================================
+# OPTIONAL.
+# Constraints, implementation notes, reminders, discovered caveats.
+# (Detailed step-by-step execution receipts belong in the Execution Audit bundle.)
+
+================================================================================
+TALENT POINTS (REQUIRED: YES/NO)
+================================================================================
+Talent Point Awarded: (YES / NO)
+NO
+
+If YES:
+# State the capability unlocked/expanded so it can be logged in the Talent Tree.
+
+================================================================================
+EXECUTION AUDIT BUNDLE (REQUIRED ONCE ACCEPTED)
+================================================================================
+Execution Audits are mandatory when executing a Quest.
+See: Processes/SYNAPSE_GUILD__EXECUTION_AUDITS.txt
+
+Validation gate:
+- A Quest may NOT be accepted unless it passes quest validation.
+See: Quest Board/SYNAPSE_GUILD__QUEST_VALIDATION_RULES.txt
+
+Audit Bundle Folder Path (required once ACCEPTED):
+# REQUIRED ONCE ACCEPTED.
+# Ashby_Data/Audits/Execution/QUEST_###__YYYY-MM-DD__<short_slug>/
+
+Required files inside the bundle (canonical minimum):
+# 00_SUMMARY.md
+# 01_PREQUEST.md
+# 02_EXECUTION.md
+# 03_VERIFY.md
+# 04_OUTCOME.md
+
+MULTI-DAY / RETRY RULE:
+# If this Quest spans multiple Dailies (or requires retries), the audit bundle path above remains canonical.
+# Do NOT create a second audit bundle. Append new timestamped attempt entries inside the existing phase files.

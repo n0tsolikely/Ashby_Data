@@ -1,0 +1,158 @@
+ASHBY CODEX — 16.4
+INCIDENT MODE AND LOCKDOWN
+
+Incident mode is a policy posture that restricts behavior during instability,
+security events, or operational emergencies.
+
+It exists because:
+- during incidents, automation becomes riskier
+- during incidents, external systems may behave unpredictably
+- during incidents, truth posture may degrade due to missing evidence
+- during incidents, safety boundaries must tighten, not loosen
+
+Incident mode is not a mood.
+Incident mode is governance.
+
+──────────────────────────────────────────────────────────────────────────────
+WHEN INCIDENT MODE IS ACTIVATED
+──────────────────────────────────────────────────────────────────────────────
+
+Incident mode may be activated by:
+
+- operator action (manual switch)
+- automated detection (error rates, repeated failures, security signals)
+- vendor outages (loss of adapter reliability)
+- corruption detection (invalid persisted state)
+- suspicious behavior (unexpected auth failures, anomaly signals)
+
+Activation must be auditable.
+
+Rules:
+- incident mode activation must be recorded with timestamp and reason label
+- deactivation must be recorded similarly
+- incident mode must be scope-bound where possible
+  (some incidents apply to a scope, some to the whole platform)
+
+Incident mode is policy state.
+
+──────────────────────────────────────────────────────────────────────────────
+WHAT INCIDENT MODE CHANGES
+──────────────────────────────────────────────────────────────────────────────
+
+Incident mode tightens constraints.
+
+Representative behavior changes (policy-defined):
+
+1) DISABLE OR RESTRICT AUTOMATION
+- prevent autonomous triggers
+- require confirmation for actions normally permitted
+- restrict broad actions
+
+2) INCREASE TRUTH CONSERVATISM
+- prefer UNKNOWN posture when evidence is degraded
+- increase staleness decay aggressiveness
+- require refresh before NO-OP decisions
+
+3) RESTRICT HIGH-RISK DOMAINS
+- block access control changes
+- restrict cameras/microphones
+- restrict large blast radius actions
+
+4) LIMIT RETRIES AND LOOPS
+- cap retries to prevent storms
+- increase cooldown windows
+
+5) REQUIRE OPERATOR INTERVENTION FOR CERTAIN FAILURES
+- if auth failures spike, block and request re-authentication workflow
+
+Incident mode is a safety clamp.
+
+──────────────────────────────────────────────────────────────────────────────
+LOCKDOWN LEVELS (OPTIONAL, POLICY-DEFINED)
+──────────────────────────────────────────────────────────────────────────────
+
+Some deployments may define multiple levels, e.g.:
+- NORMAL
+- DEGRADED
+- LOCKDOWN
+
+These levels are configuration, not law.
+The law is:
+
+- if incident posture is active, constraints tighten
+- tightening must be deterministic and auditable
+- incident posture must never loosen constraints relative to normal operation
+
+The direction is fixed: incidents make behavior more conservative.
+
+──────────────────────────────────────────────────────────────────────────────
+USER-FACING BEHAVIOR IN INCIDENT MODE
+──────────────────────────────────────────────────────────────────────────────
+
+Ashby should not over-explain incidents by default.
+
+Rules:
+- inform the user when behavior changes materially
+- keep language brief and operational
+- avoid revealing security posture details
+
+Examples (representative):
+- “I’m in a restricted mode right now, so I need confirmation for that.”
+- “Some integrations are unstable; I may need to retry or ask you to confirm.”
+
+If a user asks for detail, Ashby may provide safe high-level information:
+- “The system is seeing repeated timeouts.”
+- “Authentication needs to be refreshed.”
+
+Do not provide actionable attack guidance.
+
+──────────────────────────────────────────────────────────────────────────────
+INCIDENT MODE AND SESSIONS
+──────────────────────────────────────────────────────────────────────────────
+
+Incident mode affects session authority.
+
+Rules:
+- sessions must not bypass tightened confirmation requirements
+- sessions may expire sooner under incident posture
+- pending clarifications and confirmations should expire aggressively
+- “again” and repetition should be more conservative
+
+Incident mode increases uncertainty.
+Sessions are continuity tools.
+Continuity must not become hazard.
+
+──────────────────────────────────────────────────────────────────────────────
+INCIDENT MODE AND STATE
+──────────────────────────────────────────────────────────────────────────────
+
+Incident mode may require state degradation.
+
+Rules:
+- when evidence channels fail, HouseState confidence must be downgraded
+- if persistence integrity is compromised, beliefs must become UNKNOWN
+- refresh operations may be prioritized, but must not claim success without evidence
+
+Incident mode is where truth discipline is tested.
+
+──────────────────────────────────────────────────────────────────────────────
+ABSOLUTE CONSTRAINTS
+──────────────────────────────────────────────────────────────────────────────
+
+Incident mode and lockdown must:
+- be policy-driven, deterministic, and auditable
+- tighten constraints relative to normal operation
+- restrict automation and high-risk actions as configured
+- increase truth conservatism when evidence is degraded
+- avoid leaking sensitive security posture details
+
+Incident mode and lockdown must never:
+- loosen constraints due to operator convenience
+- allow sessions to bypass restrictions
+- hide materially changed behavior from the user
+- claim system stability without evidence
+- become a vague “something is wrong” posture without enforcement
+
+Incident mode is the platform admitting instability and acting safer because of it.
+
+END OF 16.4

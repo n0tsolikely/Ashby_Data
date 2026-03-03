@@ -1,0 +1,90 @@
+STUART — BOOTSTRAP PROMPT (NEW CHAT)
+Date: 2026-02-12
+Owner: Hands (Peter) / Brains (Ash)
+Scope: Stuart v1 (Meetings + Journal) — Post EOD 2026-02-12 (Dungeon 6 COMPLETE + Side Quests COMPLETE)
+
+PURPOSE
+- Rehydrate a brand new chat into the exact governed state of the Stuart v1 raid.
+- This prompt is NOT permission to execute; it is permission to become consistent.
+
+CANONICAL ROOTS (ABSOLUTE)
+- Governance: /mnt/data/Synapse_OS_Governance
+- Data:       /mnt/data/Ashby_Data
+- Engine:     /mnt/data/Ashby_Engine
+
+MANDATORY NO-HEURISTICS LAW (HARD)
+- Do not assume. Verify against on-disk artifacts.
+- If an assertion cannot be verified, stop and request evidence.
+
+PACK RULE (IMPORTANT)
+- Latest Rehydration Pack is authoritative resume law.
+- Execution Pack is ARCHIVED as of 2026-02-12; a pointer/stub remains.
+
+MANDATORY READ ORDER (SESSION START)
+1) Synapse Governance (Tier 0)
+   - /mnt/data/Synapse_OS_Governance/README.txt
+   - /mnt/data/Synapse_OS_Governance/INDEX.txt
+   - /mnt/data/Synapse_OS_Governance/Processes/SYNAPSE_GUILD__THE_LOOP.txt
+   - /mnt/data/Synapse_OS_Governance/Processes/SYNAPSE_GUILD__TRUTH_GATE.txt
+
+2) Subject Buffs (Ashby) — Tier 0
+   - /mnt/data/Ashby_Data/Buffs/ASHBY_SESSION_START_CHECK.txt
+   - /mnt/data/Ashby_Data/Buffs/ASHBY_EXECUTION_PROTOCOL.txt
+   - /mnt/data/Ashby_Data/Buffs/ASHBY_DATA_DIRECTORY_MAP.txt
+   - /mnt/data/Ashby_Data/Buffs/ASHBY_PLATFORM_TRUTH_AND_PROFILE_LOCK.txt
+
+3) Vision addendum (profile vs personality + platform truth wiring)
+   - /mnt/data/Ashby_Data/Docs/ASHBY_VISION_ADDENDUM__2026-02-07__TRUTH_PROFILE_ROUTING_CLARITY.txt
+
+4) Continuity Lock (THIS folder) — binding resume law
+   - /mnt/data/Ashby_Data/Latest Rehydration Pack/CONTINUITY_LOCK_2026-02-12.txt
+
+5) Codex freeze marker (execution authorization)
+   - /mnt/data/Ashby_Data/Codex/CODEX_FREEZE.md
+
+6) Active Guild Orders (current raid scope)
+   - /mnt/data/Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS_STUART_V1_2026-02-04_REV7.txt
+   (Note: Hands intends to revise Guild Orders after operator testing next session.)
+
+7) Quest Board truth (commitment state machine)
+   - /mnt/data/Ashby_Data/Quest Board/Accepted/
+   - /mnt/data/Ashby_Data/Quest Board/Completed/
+
+8) Latest snapshots (resume anchors)
+   - Latest Control Sync:
+     - /mnt/data/Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-02-11__SIDEQUESTS_CREATED_PHASE2_ACCEPTED.txt
+   - Latest End-of-Day:
+     - /mnt/data/Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2026-02-12__D6_COMPLETE_SQ078-079.txt
+
+9) Archived Execution Pack (reference only)
+   - /mnt/data/Ashby_Data/Latest Rehydration Pack/execution pack/00_EXECUTION_PACK_INDEX__2026-02-12.txt
+
+CURRENT STATE (WHERE WE ARE RIGHT NOW)
+- Dungeon 5 (QUEST_061 → QUEST_067) COMPLETE.
+- Dungeon 6 (QUEST_068 → QUEST_075) COMPLETE.
+- Side Quest 078 (Diarization integrity) COMPLETE.
+- Side Quest 079 (Webapp UX/status/progress/output surfacing) COMPLETE.
+- Quest Board/Accepted is EMPTY.
+- There is no active quest stack. No execution without a new Control Sync + acceptance.
+
+RESOLVED OPERATOR ISSUES (CLOSED)
+- Diarization dependency mismatch (pyannote auth kwarg drift) — resolved via SIDE-QUEST_078.
+- Webapp UX/status clarity gaps (upload completion, selected-file visibility, progress accuracy, output surfacing) — resolved via SIDE-QUEST_079.
+
+RUNTIME ROOT (REMINDER)
+- Stuart runtime root is configured via:
+  - /mnt/data/Ashby_Engine/ashby/modules/meetings/config.py
+- Default: ~/ashby_runtime/stuart
+- Override via env: STUART_ROOT
+
+CANONICAL RULES (NON-NEGOTIABLE)
+- Execute only Accepted quests.
+- Truth Gate: no “done” without receipts (diffs, commands, tests, artifacts).
+- Testing law: never claim a test passed/failed without running it and capturing output.
+- Zip law: every change to Ashby_Data or Ashby_Engine ships as a new combined zip.
+- No-heuristics law: verification only.
+
+NEXT ACTION (DO NOT EXECUTE UNTIL HANDS SAYS GO)
+- Start a new Control Sync.
+- Run operator testing on Stuart v1 (web + telegram + CLI).
+- Then update Guild Orders based on real usage findings.

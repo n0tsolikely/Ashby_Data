@@ -1,0 +1,75 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_053
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 3 (1/3): evidence_map v2 schema + builder (claim-level anchors)
+
+Context: Stuart evidence map
+
+Origin:
+Control Sync — 2026-02-04 (Stuart v1 finish-line: REV5)
+
+Priority: P0
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV5.txt (Dungeon 3)
+- Stuart Codex 3.2/3.3: evidence_map.json required
+- Engine: ashby/modules/meetings/render/evidence_map.py
+
+Status: DONE
+
+Audit Bundle Path:
+  /mnt/data/Ashby_Data/Audits/Execution/QUEST_053__2026-02-07__evidence_map_v2_schema_builder
+
+Accepted On:
+2026-02-07
+Accepted By:
+Hands (Peter)
+Completed On:
+
+2026-02-07
+Completed By:
+
+Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Upgrade evidence_map to v2 so it ties minutes/journal claims back to transcript anchors/timestamps at the claim level.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Define evidence_map v2 schema (claim objects)
+- Builder reads minutes.json/journal.json + transcript/aligned transcript and emits evidence_map.json
+- Each claim includes anchors: segment_id + time ranges + speaker label (when known)
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- External fact checking
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_048
+- QUEST_049
+- QUEST_050
+- QUEST_051
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Keep evidence_map.json name stable; put version inside file.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] evidence_map.json contains claim-level anchors
+- [x] Evidence builder supports both meeting and journal runs
+- [x] `python3 -m pytest -q` passes
+

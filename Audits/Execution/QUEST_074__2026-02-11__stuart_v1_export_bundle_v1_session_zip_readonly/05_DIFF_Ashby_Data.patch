@@ -1,0 +1,32 @@
+# NOTE: Quest file moved from Accepted/ -> Completed/\n
+--- /mnt/data/Ashby_Data/Audits/Execution/QUEST_074__2026-02-11__stuart_v1_export_bundle_v1_session_zip_readonly/91_BEFORE/QUEST_074_before.txt	2026-02-11 23:42:50.236044827 +0000
++++ "/mnt/data/Ashby_Data/Quest Board/Completed/QUEST_074__Stuart_v1_Export_Bundle_v1_Session_Zip_ReadOnly_2026-02-04.txt"	2026-02-11 23:41:04.506460511 +0000
+@@ -18,7 +18,7 @@
+ Links:
+ - Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV5.txt (Export requirement)
+ 
+-Status: ACTIVE
++Status: COMPLETED
+ Audit Bundle Path:
+   /mnt/data/Ashby_Data/Audits/Execution/QUEST_074__2026-02-11__stuart_v1_export_bundle_v1_session_zip_readonly
+ Accepted On:
+@@ -26,8 +26,10 @@
+ Accepted By:
+ Hands (Peter)
+ Completed On:
++2026-02-11
+ 
+ Completed By:
++Ash (Brains)
+ 
+ ────────────────────────────────────────────────────────
+ DESCRIPTION
+@@ -59,6 +61,6 @@
+ ────────────────────────────────────────────────────────
+ COMPLETION CRITERIA (REQUIRED)
+ ────────────────────────────────────────────────────────
+-- [ ] Export bundle zip is created deterministically
+-- [ ] Zip contains primary outputs + run manifest
++- [x] Export bundle zip is created deterministically
++- [x] Zip contains primary outputs + run manifest
+ 

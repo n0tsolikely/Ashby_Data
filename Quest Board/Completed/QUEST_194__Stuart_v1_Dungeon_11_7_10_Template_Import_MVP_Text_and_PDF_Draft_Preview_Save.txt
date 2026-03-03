@@ -1,0 +1,148 @@
+# QUEST_194 — Stuart v1 — Dungeon 11 (7/10) — Template Import MVP: Text + PDF → Draft Preview → Save
+
+(Quest template: Synapse OS — Architecture Transcendence Protocol, Stuart v1)
+
+IDENTITY
+- Quest ID: QUEST_194
+- Title: Stuart v1 — Dungeon 11 (7/10) — Template Import MVP: Text + PDF → Draft Preview → Save
+- Dungeon: 11 (Templates as first-class artifacts)
+- Owner: OpenAI Codex (CLI execution)
+- Priority: P1
+- Risk Class: R2
+- Expected Testing Level: TL2 (unit + API) unless explicitly upgraded in this quest
+- Date Authored: 2026-03-03
+
+CANON LOCKS (sha256)
+- Guild Orders (ACTIVE): Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-25_REV14.txt
+  sha256: d10c278cd45a543c32c27102a912ce6f1c0569401c5ec0e00f6dc1e5c5b9b094
+
+- Guild Orders — Dungeon 11 block (verbatim) sha256: 00aff20ab5689f18747d0931ed6eea4432d0828df6dd180f0994337193b3905b
+
+- Stuart Codex anchors:
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_4.1_Mode_vs_Template_Separation.txt
+    sha256: 3823c6a3fa132e600d2b8b8c3cf825a6dc950c65b1dfa3c62a06a5a319bd7424
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_4.2_Template_Schema_Sections_Required_vs_Optional.txt
+    sha256: 2e6ca9a2caef22ec2eb432254afbe37cd5b53502aec9afe87e3b86f87f439611
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_4.4_Template_Creation_Chat_Guided.txt
+    sha256: c27b38f828095b60d21fc591c664c47ca44f987275ba438b3896220f83c50ca7
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_4.5_Template_Import_Document_or_Image_Based.txt
+    sha256: f10e6c36bd1206efb11d0f2da84b47797d705d31f89f7788d1a142747f96a047
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_4.6_Template_Versioning_and_Compatibility.txt
+    sha256: c359eed7780c19aef3b54fafc50ddc3e941ef25b367c958d8f6b0f3b9fc0b68f
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_2.4_Template_Selection_Scoped_by_Mode.txt
+    sha256: 03d3aa53371845a759f165fe1f542b38e7694829a0618b881316a0802d18c165
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_6.2_Canonical_Artifacts_JSON_Markdown_PDF.txt
+    sha256: aaf3db33935220866ed5f48dc0bf5d0e95a92ea6f690fa008ff47e01bee5bfc0
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_6.3_File_Naming_and_Deterministic_Paths.txt
+    sha256: f551b5e5166d175eac545518cde1a9d9dcea0bae7d43477c298471d42bf6371d
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_1.2_Core_Invariants_Truth_Evidence_Explicit_Execution.txt
+    sha256: 2f15b9014fc6f787986f990020867c177561e268950bafda58d6f0cbe8472953
+  - Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_2.2_Explicit_Execution_Gating_Submit_Confirm.txt
+    sha256: 322b838cce234e1c17d36f6a9a4c35a612dba211000b3ee8878be4e5dec6b602
+
+- Monster (Canon16 reference): MONSTER_ASHBY__THE_MONSTER_WORKSPACE__20260303_170000.zip
+  Routes index: MONSTER/repomap/snapshot_repomap_pack_current/WEB_API.md
+  sha256: df6c574135ac970896d89513b3aa87923d50feded9f91d2695a6f04a82f9dd4e
+
+
+SYSTEM CONTEXT STATEMENT
+- Dungeon 11 import requirement (MVP):
+  - Allow users to import a template from **text** or **PDF**
+  - Convert into markdown-first template draft
+  - Show preview
+  - Save only after explicit approval
+- Image import is explicitly deferred (users can use external LLMs to convert images to text/PDF).
+
+REPO / MONSTER ANCHORS
+- Backend templates API draft route (from QUEST_191): `/api/templates/draft`
+- Frontend Templates page (from QUEST_193)
+- Requirements file (for PDF parsing deps):
+  - Ashby_Engine/requirements-stuart-v1.txt
+
+CONSTRAINT SUMMARY
+- No pixel-perfect layout extraction (out of scope).
+- PDF import is text-structure extraction only.
+- Must not persist anything during draft generation.
+- Keep a seam so image import later is additive (no refactor pain).
+
+ANTI-DUP PLAN
+- `rg -n "pypdf|pdf|TemplateImport|templates/draft" Ashby_Engine/ashby`
+- If a PDF text extractor already exists, reuse it.
+
+DELIVERABLES
+- Backend:
+  - Extend `/api/templates/draft` to accept:
+    - source_kind: "text" | "pdf"
+    - filename, mime_type (optional)
+    - bytes_b64 for pdf (base64)
+    - raw_text for text
+  - Extract PDF text (best-effort), then convert to a draft template_text (heuristic or LLM-assisted later)
+  - Return TemplateDraftV1 for preview
+- Frontend:
+  - “Import template” action in Templates page
+  - Upload .txt/.md/.pdf
+  - Preview draft
+  - Save (POST /api/templates)
+- Dependencies:
+  - Add a lightweight PDF text extraction dependency (suggest: `pypdf`) if not already present
+
+TASK BREAKDOWN
+1) Backend: add a template import helper module
+   - Add: `ashby/modules/meetings/templates/importer.py`
+   - Function: `extract_text_from_pdf(pdf_bytes) -> str`
+     - Best effort; return empty string if extraction fails
+   - Function: `draft_from_source_text(mode, title, source_text) -> TemplateDraft`
+     - MVP heuristic:
+       - Use the source text as “requirements” to build headings/sections
+       - Always output markdown template with front matter + headings
+   - Keep a seam:
+     - `draft_from_source_text(..., llm_service=None)` to allow later LLM upgrade
+
+2) Backend: extend `/api/templates/draft`
+   - Edit templates_api.py
+   - Support:
+     - If source_kind=="pdf": decode bytes_b64, run extract_text_from_pdf
+     - If source_kind=="text": use raw_text directly
+   - Return TemplateDraftV1 with template_text and defaults
+
+3) Add dependency (if needed)
+   - Edit `requirements-stuart-v1.txt`
+   - Add `pypdf>=5,<6` (or a compatible range)
+   - NOTE: keep pins consistent with existing repo style
+
+4) Frontend: add Import UI
+   - In Templates page, add “Import” button:
+     - Accept file types: .txt, .md, .pdf
+   - Flow:
+     - If .md: treat as template_text directly (skip /draft, just preview)
+     - Else: call POST /api/templates/draft with extracted content
+     - Show preview modal/panel
+     - Save triggers POST /api/templates
+
+5) Tests
+   - Backend unit test:
+     - Add `tests/test_templates_import_pdf_text_extraction.py`
+     - Provide a small fixture PDF (or generate one in-test) and assert extract_text returns something
+   - API test:
+     - Extend `tests/test_templates_api_crud_and_registry.py` to include draft endpoint for text import
+
+ACCEPTANCE CRITERIA
+- Import (.txt/.pdf) produces a previewable TemplateDraft (no persistence until save).
+- Saving creates a template record visible in list + registry.
+- Tests pass:
+  - `pytest -q tests/test_templates_import_pdf_text_extraction.py`
+  - `pytest -q tests/test_templates_api_crud_and_registry.py`
+
+VERIFICATION PLAN
+- Backend:
+  - `pytest -q tests/test_templates_import_pdf_text_extraction.py`
+- Manual:
+  - Import a PDF with headings; confirm draft preview; save; template appears in dropdown.
+
+ROLLBACK PLAN
+- Remove importer module and draft endpoint extension; remove pypdf dep if added.
+- UI import button removal is straightforward.
+
+AUDIT BUNDLE
+- `/home/notsolikely/Ashby_Data/Audit Bundles/QUEST_194/`
+  - diff + pytest outputs + screenshot of imported template preview.

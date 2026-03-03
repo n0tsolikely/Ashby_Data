@@ -1,0 +1,11 @@
+## Command Receipt Log
+WRAPPER: synapse_quest_run.sh
+ENGINE_ROOT: /home/notsolikely/Ashby_Engine
+DATA_ROOT: /home/notsolikely/Ashby_Data
+---
+CMD: cd /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app && npx eslint src/api/stuartClient.js src/hooks/useRegistry.js src/components/stuart/ModeTemplateConfig.jsx src/components/stuart/RunControls.jsx --quiet
+RC: 0
+PASS: governance validation OK for QUEST_192 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_192__2026-03-03__stuart_v1_dungeon_11_5_10_frontend_registry_fetch_dynamic_template_dropdown_no_hardcodes
+OK: finalize complete (validation PASS recorded).
+PASS: governance validation OK for QUEST_192 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_192__2026-03-03__stuart_v1_dungeon_11_5_10_frontend_registry_fetch_dynamic_template_dropdown_no_hardcodes
+OK: finalize complete (validation PASS recorded).

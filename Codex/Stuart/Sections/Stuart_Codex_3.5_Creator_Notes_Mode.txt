@@ -1,0 +1,109 @@
+STUART CODEX
+3.5 Creator Notes Mode (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines Creator Notes Mode. This mode covers creator workflows broadly (ideas, planning, content structure). It intentionally subsumes “comedy mode” as a specialization rather than singling out comedians. The key requirement is preserving valuable phrasing and organizing it without flattening it into generic summaries.
+
+Creator Notes Mode produces:
+- a verbatim transcript (always generated internally), and
+- a creator formalization shaped by a selected template and retention level, with clear separation between evidence and suggestions.
+
+1) Inputs and assumptions
+
+Typical inputs:
+- Single-speaker voice note (idea dump, brainstorming, journaling-like but goal-oriented).
+- Multi-speaker collaboration recordings (two people iterating on a concept).
+- Audio may include rapid topic shifts, repeated phrases, and partial ideas.
+
+Assumptions:
+- The value often lies in the exact wording (hooks, lines, phrasing).
+- The user wants organization more than compression.
+
+2) Required artifacts (minimum)
+
+Upon execution (transcription + creator notes run), Stuart must produce at minimum:
+- transcript.json
+- transcript.txt
+- creator_notes.json
+- creator_notes.md
+- creator_notes.pdf
+- evidence_map.json (for extracted claims and references; creator notes may include near-verbatim quote blocks linked to transcript)
+
+3) What Creator Notes must contain (template-driven, but canonical intent)
+
+Creator Notes are “organized thought artifacts,” not minutes.
+
+Core elements (template controls exact sections):
+C1) Idea clusters / themes
+Group related thoughts into clusters with headings.
+
+C2) Key phrases / near-verbatim blocks
+Preserve important wording as quotes or near-verbatim blocks, especially at HIGH/NEAR-VERBATIM retention.
+
+C3) Candidate hooks / titles / angles
+If the user explicitly states hooks, extract them.
+If Collaborator voice is invited, Stuart may propose additional hooks but must label them as suggestions.
+
+C4) Steps / plan / next actions
+If the user states steps, capture them as action items (assigned/unassigned) with citations.
+If the user states decisions (“No, cancel that; do X instead”), track superseded vs current plans with citations.
+
+C5) Open questions
+Capture questions the user asked themselves or left unresolved.
+
+4) Multi-contribution merging (collaboration over time)
+
+Creator Notes Mode supports sessions with multiple contributions:
+- Contribution A: creator’s initial idea recording
+- Contribution B: collaborator’s feedback recording
+- Contribution C: creator’s follow-up
+
+Rules:
+- Each contribution must be transcribed and preserved.
+- Combined creator notes may integrate all contributions, but must preserve attribution and chronology.
+- If later contributions override earlier plans, Stuart must mark superseded vs current decisions/plans with citations.
+
+This supports “two people building an idea” without erasing history.
+
+5) Retention levels in Creator Notes
+
+Retention is central to this mode.
+
+Guidelines:
+- LOW: higher-level clustering, fewer quote blocks
+- MED: clusters + representative quotes
+- HIGH: many quote blocks, minimal paraphrase
+- NEAR-VERBATIM: “organized transcript” style, removing disfluencies but preserving wording
+
+The goal is to avoid the failure mode you called out:
+- “There was a joke about a pig” (too abstract) is not acceptable unless user explicitly requests LOW retention.
+
+6) Analyst vs Collaborator behavior in creator work
+
+Default is Analyst: extracted organization derived from transcript.
+If the user explicitly asks for suggestions (“What else should I add?”), Stuart may enter Collaborator stance:
+- proposals must be labeled as suggestions
+- suggestions must not be inserted into creator notes unless user asks
+
+7) Printing and export
+
+Creator notes must be printable for:
+- planning sessions,
+- brainstorming review,
+- and sharing with collaborators.
+
+PDF export is required. Markdown export allows editing; edits outside Stuart are user modifications.
+
+8) Self-audit (3.5)
+
+This section reflects our chat decisions:
+- “creator mode” is broad, not comedian-specific.
+- organization and phrase preservation are prioritized over generic summarization.
+- retention knob is essential, especially HIGH/NEAR-VERBATIM.
+- multi-person contribution merging and superseded decision tracking are supported.
+- analyst vs collaborator gating prevents mixing suggestions with facts.
+- print-ready outputs are required.
+
+This section is complete.

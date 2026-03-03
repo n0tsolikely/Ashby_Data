@@ -1,0 +1,202 @@
+STUART_Control_Sync_Snapshot_2026-03-01_FINAL.txt
+===============================================================================
+TYPE: CONTROL SYNC SNAPSHOT (FINALIZED FROM DRAFTSHOT REV7)
+SUBJECT: STUART (Ashby Meetings Module)
+DATE (America/Toronto): 2026-03-01
+PARTICIPANTS: Hands (Peter), Brains (Ash)
+WORLD STATE: Fog Lifted (Codex Freeze Proven)
+CONTROL SYNC STATUS: CLOSED
+BASE DRAFTSHOT CONSUMED: DRAFTSHOT__2026-02-25__CONTROL_SYNC__REV7.txt
+===============================================================================
+
+I. PURPOSE
+
+This document formally consumes and finalizes the Draftshot (REV7) into a binding
+Control Sync Snapshot. It captures the complete decision state across Dungeons
+6–12 hardening, quest pack generation, governance re-anchor, Monster analysis,
+and execution sequencing rules.
+
+This snapshot represents the authoritative “What Is Now True” state at close.
+
+===============================================================================
+II. GOVERNANCE ANCHOR (RE-VERIFIED)
+===============================================================================
+
+- Synapse OS Governance (v1.5 era, Synapse_OS(5)) re-reviewed.
+- Truth Gate, Disclosure Gate, Control Sync, Quest Law, Consent Gate confirmed.
+- Codex Freeze file exists and is valid. Fog Lifted is PROVEN.
+
+No ambiguity remains regarding execution authority for post-snapshot quests.
+
+===============================================================================
+III. EXECUTION SEQUENCING DECISION (BINDING)
+===============================================================================
+
+DECISION_A01:
+D6 must execute first. After D6 completes:
+
+1. Re-run Monster against updated Ashby Canon.
+2. Reconcile D7 and D8 quest packs against actual repo reality.
+3. Patch quest text if needed (not code).
+4. Only then execute D7.
+5. Then execute D8.
+6. Only after D6–D8 are complete and re-scanned will D10–D12 quest packs be authored/executed.
+
+Rationale:
+Prevent sideways builds, zombie plumbing, contract drift.
+
+===============================================================================
+IV. DUNGEON 6 (FINAL STATE)
+===============================================================================
+
+Speaker Mapping Discipline:
+- Internal labels remain 0-based: SPEAKER_00, SPEAKER_01, etc.
+- UI displays 1-based labels: Speaker-01, Speaker-02.
+- When mapped, UI shows ONLY mapped name.
+- Overlay scoped per transcript_version_id.
+- Forward-seeded for new transcript versions within same session.
+- No retro-mutation of older transcript versions.
+- Rerender regenerates derived artifacts only (never re-transcribe).
+
+Search Semantics Locked:
+- Mentioned = transcript keyword match only.
+- Attendee = overlay-backed speaker presence only (ACTIVE overlay).
+- All = union of:
+  - session title
+  - session_id
+  - transcript_version_id
+  - run_id
+  - Mentioned
+  - Attendee
+
+Session rename edits metadata only. Folder remains session_id.
+
+===============================================================================
+V. DUNGEON 7 (FINAL STATE)
+===============================================================================
+
+Formalization Contract:
+
+- Transcript passed to LLM as annotated speaker-turn segments.
+- Template shaping = D3 (schema + raw template).
+- show_empty_sections = template default + UI override (default false).
+- include_citations = template default + UI override (default false).
+- Evidence map always generated (dev-only visibility).
+- PDF required.
+- TXT output required.
+- USER_EXPORT vs DEV_EXPORT separation established.
+- Deletion model tiered (run, transcript, session) with dependency warnings.
+
+Transcript is arbiter of truth over formalization.
+
+===============================================================================
+VI. DUNGEON 8 (FINAL STATE)
+===============================================================================
+
+Export Architecture:
+
+- USER_EXPORT vs DEV_EXPORT implemented.
+- dev_bundle export_type added.
+- Deterministic zip layout locked.
+- No absolute paths.
+- No recursive exports.
+- Formalization titles optional (auto-generated, renameable).
+- PDF footer includes session_id + formalization_id.
+- ID Match search category required.
+- Export includes format picker (PDF/MD/TXT).
+- Evidence maps excluded from USER_EXPORT.
+
+===============================================================================
+VII. DUNGEON 10 (FINAL STATE)
+===============================================================================
+
+Chat Scope Model:
+
+SESSION mode = hard lock to selected_session_id.
+GLOBAL mode = archive scope with soft focus.
+
+Soft Focus Rules:
+- Triggered by explicit session title/date/id reference or UI selection.
+- Not keyword heuristics.
+- If answer not in focused meeting → expand globally and respond with citations.
+
+Persistent Chat Model:
+- Single continuous thread.
+- Scoped memory (meeting facts citation-gated).
+- UI-state injection per turn (scope, selected session, transcript_version_id, overlay, template, retention, profile, last action).
+
+Match Reasons Required:
+TITLE_MATCH
+ID_MATCH
+ATTENDEE_MATCH
+MENTION_MATCH
+FORMALIZATION_MATCH
+
+===============================================================================
+VIII. DUNGEON 11 (FINAL STATE)
+===============================================================================
+
+Template System:
+
+- Local-first runtime template store (not Ashby_Data governance).
+- System templates committed in Engine.
+- User templates stored in runtime product data.
+- Import: PDF + Text (image deferred unless low-risk structure-only).
+- Approval gate: chat draft + UI preview + Save.
+- Template format: Markdown + JSON metadata.
+- TemplateStoreRoot abstraction for future migration (no refactor pain).
+- Monster-first plumbing discovery required before any quest writing.
+
+===============================================================================
+IX. DUNGEON 12 (FINAL STATE)
+===============================================================================
+
+Full System Smoke Test Pack:
+
+- scripts/full_system_smoke_test.sh
+- docs/full_system_smoke_test.md
+- docs/smoke_outputs/<date>/
+
+Must validate:
+- Transcript versioning
+- Speaker map persistence
+- Formalization metadata
+- Evidence map existence (dev)
+- PDF traceability footer
+- Session/Global scope behavior
+- Cold-start global chat
+- Single UI surface at "/"
+- USER_EXPORT + DEV_EXPORT integrity
+
+LOCAL_ONLY baseline must pass.
+HYBRID allowed only via explicit consent gate.
+
+===============================================================================
+X. ARTIFACTS GENERATED DURING THIS CONTROL SYNC
+===============================================================================
+
+- Monster Ashby workspace zip
+- D6 Quest Pack (153–158)
+- D7 Quest Pack (159–168)
+- D8 Quest Pack (169–175)
+- Guild Orders updated through REV14
+- Draftshot appended through REV7
+
+===============================================================================
+XI. FINAL STATE DECLARATION
+===============================================================================
+
+The Draftshot REV7 is now formally CONSUMED.
+This document is the canonical Control Sync Snapshot.
+
+All prior ambiguities resolved.
+All dungeons hardened.
+Execution sequencing locked.
+Governance re-anchored.
+Monster-first quest authoring policy binding.
+
+Control Sync is CLOSED.
+
+===============================================================================
+END CONTROL SYNC SNAPSHOT
+===============================================================================

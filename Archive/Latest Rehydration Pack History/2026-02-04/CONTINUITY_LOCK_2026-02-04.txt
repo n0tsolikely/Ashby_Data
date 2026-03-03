@@ -1,0 +1,37 @@
+================================================================================
+CONTINUITY LOCK (LATEST)
+DATE: 2026-02-04
+================================================================================
+
+LOCKED FACTS
+1) Canon roots
+- Data:  /mnt/data/Ashby_Data
+- Engine: /mnt/data/Ashby_Engine
+- Governance: /mnt/data/Synapse_OS_Governance (must be extracted and read)
+
+2) Completed Quest Phase
+- Stuart pipeline build phase is complete through QUEST_041.
+- Artifacts are versioned, write-once, and verified by tests + smoke.
+- NOTE: The engine still contains truthful fallback paths if real deps/models are not installed. V1 completion requires executing the real-engine enablement pack and verifying engine=faster-whisper/pyannote/weasyprint.
+
+3) Guild Orders State
+- All prior ACTIVE Guild Orders have been moved into COMPLETED.
+- Control Sync is open to define new Guild Orders (target state).
+
+4) Execution Pack Lifecycle
+- Stuart Execution Pack (2026-01-13) is considered CONSUMED and archived:
+  Ashby_Data/Archive(IGNORE)/Stuart Execution Pack__CONSUMED_2026-02-04
+- New “next-phase” Execution Pack lives in:
+  Ashby_Data/Latest Rehydration Pack/execution pack/
+  It defines the V1 completion requirement:
+    REAL ASR + REAL DIARIZATION + REAL PDF (no stubs) on target machine.
+
+5) Talents
+- Stuart talents are locked under:
+  Ashby_Data/Talent Tree/Stuart/
+- Evidence: Retro sanity audit bundle under Ashby_Data/Audits/Retro.
+
+NON-NEGOTIABLE RULES
+- No God Files: orchestrators orchestrate only; capability logic lives in dedicated modules.
+- Action-Gated Truth: no claims without receipts (diffs/tests/artifacts).
+- Execution Audits required for any new quest execution.

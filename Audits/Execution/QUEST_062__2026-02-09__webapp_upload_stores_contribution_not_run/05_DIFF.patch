@@ -1,0 +1,380 @@
+--- /tmp/quest062_orig/app.py	2026-02-09 02:37:20.112740553 +0000
++++ /mnt/data/Ashby_Engine/ashby/interfaces/web/app.py	2026-02-09 02:17:10.816953318 +0000
+@@ -15,6 +15,9 @@
+ from ashby.interfaces.web.runs import list_run_artifacts, artifact_response
+ 
+ from ashby.modules.meetings.clarify_or_preview import clarify_or_preview
++from ashby.modules.meetings.init_root import init_stuart_root
++from ashby.modules.meetings.manifests import load_manifest
++from ashby.modules.meetings.mode_registry import validate_mode
+ from ashby.modules.meetings.pipeline.job_runner import run_job
+ from ashby.modules.meetings.router.router import build_intent_and_plan
+ from ashby.modules.meetings.store import create_run, get_run_state
+@@ -53,10 +56,21 @@
+         return {"session_id": sid}
+ 
+     @app.post("/api/upload")
+-    async def api_upload(session_id: str, request: Request) -> Dict[str, Any]:
+-        """Upload media -> store as contribution. Returns attachment meta for planning.
++    async def api_upload(
++        request: Request,
++        session_id: Optional[str] = None,
++        mode: Optional[str] = None,
++        title: Optional[str] = None,
++    ) -> Dict[str, Any]:
++        """Upload media -> store as contribution (UPLOAD ≠ PROCESS).
++
++        QUEST_062 policy rail:
++          - Upload stores a contribution and (if needed) creates a session.
++          - Upload does NOT start a run / transcribe / diarize / formalize.
++          - Upload returns a deterministic plan preview using defaults:
++              template=default, retention=MED, speakers=mode-default.
+ 
+-        We support two paths:
++        We support two upload paths:
+           1) Raw bytes body (no extra deps): send bytes in body + set headers:
+              - Content-Type: audio/wav (or video/mp4, etc)
+              - X-Filename: test.wav
+@@ -67,11 +81,19 @@
+         the browser upload UX where available.
+         """
+ 
++        # If caller didn't provide a session_id, create a fresh one (append-only).
+         if not session_id:
+-            return JSONResponse(status_code=400, content={"error": "session_id is required"})
++            eff_mode = (mode or "meeting").strip().lower()
++            mv = validate_mode(eff_mode)
++            if not mv.ok or mv.canonical is None:
++                return JSONResponse(status_code=400, content={"error": mv.message or "invalid mode"})
++            session_id = create_session(mode=mv.canonical, title=title or None)
+ 
+         ct = (request.headers.get("content-type") or "").lower()
+ 
++        con_id: Optional[str] = None
++        meta: Optional[AttachmentMeta] = None
++
+         # Multipart path (best UX), but may be unavailable in minimal envs.
+         if ct.startswith("multipart/form-data"):
+             try:
+@@ -90,17 +112,62 @@
+             if file is None:
+                 return JSONResponse(status_code=400, content={"error": "missing form field: file"})
+ 
+-            con_id, meta = await store_upload(session_id=session_id, file=file)
+-            return {"ok": True, "contribution_id": con_id, "attachment": asdict(meta)}
++            try:
++                con_id, meta = await store_upload(session_id=session_id, file=file)
++            except Exception as e:
++                return JSONResponse(status_code=400, content={"error": f"upload failed: {type(e).__name__}: {e}"})
++
++        else:
++            # Raw bytes path (no python-multipart dependency)
++            filename = request.headers.get("x-filename") or "upload.bin"
++            data = await request.body()
++            if not data:
++                return JSONResponse(status_code=400, content={"error": "empty body"})
++
++            try:
++                con_id, meta = await store_upload_bytes(
++                    session_id=session_id,
++                    filename=filename,
++                    data=data,
++                    mime_type=ct or None,
++                )
++            except Exception as e:
++                return JSONResponse(status_code=400, content={"error": f"upload failed: {type(e).__name__}: {e}"})
+ 
+-        # Raw bytes path (no python-multipart dependency)
+-        filename = request.headers.get("x-filename") or "upload.bin"
+-        data = await request.body()
+-        if not data:
+-            return JSONResponse(status_code=400, content={"error": "empty body"})
++        if con_id is None or meta is None:
++            return JSONResponse(status_code=500, content={"error": "internal error: upload missing contribution/meta"})
+ 
+-        con_id, meta = await store_upload_bytes(session_id=session_id, filename=filename, data=data, mime_type=ct or None)
+-        return {"ok": True, "contribution_id": con_id, "attachment": asdict(meta)}
++        # Determine effective mode for preview (prefer session manifest truth).
++        sess_mode = (mode or "meeting").strip().lower() or "meeting"
++        try:
++            lay = init_stuart_root()
++            sm = load_manifest(lay.sessions / session_id / "session.json")
++            smode = sm.get("mode")
++            if isinstance(smode, str) and smode.strip():
++                sess_mode = smode.strip().lower()
++        except Exception:
++            pass
++
++        # Plan preview (no run created).
++        rr = RunRequest(mode=sess_mode)
++        session_ctx = SessionContext(active_session_id=session_id, last_run_id=None)
++        preview_out = clarify_or_preview(
++            text="formalize",
++            attachments=[meta],
++            run_request=rr,
++            session=session_ctx,
++            door="web",
++        )
++
++        return {
++            "ok": True,
++            "session_id": session_id,
++            "contribution_id": con_id,
++            "attachment": asdict(meta),
++            "plan_preview": asdict(preview_out.preview) if preview_out.preview else None,
++            "needs_clarification": bool(preview_out.needs_clarification),
++            "clarify": asdict(preview_out.clarify) if preview_out.clarify else None,
++        }
+ 
+     @app.post("/api/message")
+     async def api_message(payload: Dict[str, Any]) -> Dict[str, Any]:
+--- /tmp/quest062_orig/webapp_main.py	2026-02-09 02:37:20.211567795 +0000
++++ /mnt/data/Ashby_Engine/webapp/main.py	2026-02-09 02:25:31.603654739 +0000
+@@ -1,12 +1,22 @@
++from __future__ import annotations
++
++from dataclasses import asdict
++from pathlib import Path
++
++import os
++
+ from fastapi import FastAPI, Request, UploadFile, File, HTTPException
+ from fastapi.responses import HTMLResponse, Response, JSONResponse
+ from fastapi.staticfiles import StaticFiles
+ from fastapi.templating import Jinja2Templates
+-from pathlib import Path
+-from datetime import datetime
+-import os
+ 
+-from ashby.interfaces.telegram.stuart_runner import run_default_pipeline
++from ashby.interfaces.web.uploads import store_upload
++from ashby.modules.meetings.clarify_or_preview import clarify_or_preview
++from ashby.modules.meetings.mode_registry import validate_mode
++from ashby.modules.meetings.schemas.plan import SessionContext, AttachmentMeta
++from ashby.modules.meetings.schemas.run_request import RunRequest
++from ashby.modules.meetings.store import create_session
++
+ 
+ app = FastAPI()
+ 
+@@ -14,12 +24,15 @@
+ app.mount("/static", StaticFiles(directory=str(BASE / "static")), name="static")
+ templates = Jinja2Templates(directory=str(BASE / "templates"))
+ 
++
+ def _stuart_root() -> Path:
++    # For download sandboxing / path validation only. The Meetings module uses STUART_ROOT.
+     sr = os.environ.get("STUART_ROOT") or os.environ.get("ASHBY_STUART_ROOT")
+     if sr:
+         return Path(sr)
+     return Path.home() / "ashby_runtime" / "stuart"
+ 
++
+ def _safe_resolve_under(root: Path, p: Path) -> Path:
+     root_r = root.resolve()
+     p_r = p.resolve()
+@@ -27,46 +40,66 @@
+         raise ValueError("path escapes root")
+     return p_r
+ 
++
+ @app.get("/", response_class=HTMLResponse)
+ async def index(request: Request):
+-    return templates.TemplateResponse("index.html", {
+-        "request": request,
+-        "mode": "Meeting",
+-        "template": "Default"
+-    })
++    return templates.TemplateResponse(
++        "index.html",
++        {
++            "request": request,
++            "mode": "Meeting",
++            "template": "Default",
++        },
++    )
++
+ 
+ @app.post("/upload")
+-async def upload(file: UploadFile = File(...), mode: str = "meeting", source_kind: str = "audio"):
+-    sr = _stuart_root()
+-    inbox = sr / "inbox" / "webapp"
+-    inbox.mkdir(parents=True, exist_ok=True)
++async def upload(file: UploadFile = File(...), mode: str = "meeting"):
++    """Upload-only path (QUEST_062).
++
++    Policy rail: Upload ≠ process.
++    This endpoint only stores a contribution + returns a plan preview.
++    The actual run/processing will be triggered by a later confirm gate (QUEST_063).
++    """
++
++    mv = validate_mode(mode)
++    if not mv.ok or mv.canonical is None:
++        return JSONResponse(status_code=400, content={"error": mv.message or "invalid mode"})
++
++    # Create a new session per upload (scaffold behavior).
++    session_id = create_session(mode=mv.canonical, title=None)
++
++    # Store the upload as a contribution (immutable). No run created here.
++    con_id, meta = await store_upload(session_id=session_id, file=file)
++
++    # Deterministic plan preview (no execution).
++    rr = RunRequest(mode=mv.canonical)
++    session_ctx = SessionContext(active_session_id=session_id, last_run_id=None)
++    preview_out = clarify_or_preview(
++        text="formalize",
++        attachments=[meta],
++        run_request=rr,
++        session=session_ctx,
++        door="web",
++    )
++
++    return JSONResponse(
++        {
++            "ok": True,
++            "session_id": session_id,
++            "contribution_id": con_id,
++            "attachment": asdict(meta),
++            "plan_preview": asdict(preview_out.preview) if preview_out.preview else None,
++            "needs_clarification": bool(preview_out.needs_clarification),
++            "clarify": asdict(preview_out.clarify) if preview_out.clarify else None,
++        }
++    )
+ 
+-    ts = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+-    safe_name = (file.filename or "upload.bin").replace("/", "_").replace("\\", "_")
+-    dest = inbox / f"{ts}__{safe_name}"
+-
+-    data = await file.read()
+-    dest.write_bytes(data)
+-
+-    out = run_default_pipeline(local_path=str(dest), source_kind=source_kind, mode=mode, template="default")
+-    rn = out.get("run") or {}
+-    run_id = rn.get("run_id") if isinstance(rn, dict) else None
+-
+-    pdf_path = out.get("pdf_path")
+-    pdf_url = None
+-    if isinstance(pdf_path, str) and pdf_path:
+-        pdf_url = "/download?path=" + pdf_path
+-
+-    return JSONResponse({
+-        "ok": True,
+-        "filename": safe_name,
+-        "run_id": run_id,
+-        "pdf_path": pdf_path,
+-        "pdf_url": pdf_url,
+-    })
+ 
+ @app.get("/download")
+ async def download(path: str):
++    # NOTE: This scaffold download path is retained for legacy testing/manual use.
++    # In the v1 web door, downloads are served from /download/{run_id}/{filename}.
+     if not path:
+         raise HTTPException(status_code=400, detail="missing path")
+     sr = _stuart_root()
+--- /tmp/quest062_orig/webapp_app.js	2026-02-09 02:37:20.267211695 +0000
++++ /mnt/data/Ashby_Engine/webapp/static/js/app.js	2026-02-09 02:27:15.266209631 +0000
+@@ -47,7 +47,7 @@
+     if (!text) return;
+     addBubble("user", text);
+     prompt.value = "";
+-    addBubble("assistant", "Got it. (Chat is scaffold-only; uploads run Stuart and return a PDF link.)");
++    addBubble("assistant", "Got it. (Chat scaffold; uploads store only and return a plan preview.)");
+   }
+ 
+   sendBtn?.addEventListener("click", (e) => {
+@@ -69,12 +69,15 @@
+     addBubble("user", `Uploading: ${file.name} ...`);
+     try {
+       const out = await uploadFile(file);
+-      addBubble("assistant", `Uploaded: ${out.filename}`);
+-      if (out.pdf_url) {
+-        addBubble("assistant", "PDF ready:");
+-        addDownloadLink(out.pdf_url);
++      const fname = (out.attachment && out.attachment.filename) || out.filename || file.name;
++      addBubble("assistant", `Stored upload: ${fname}`);
++
++      if (out.plan_preview && out.plan_preview.ordered_steps) {
++        const steps = out.plan_preview.ordered_steps.map(s => s.kind).join(" → ") || 'none';
++        addBubble("assistant", `Plan preview: ${steps}`);
++        addBubble("assistant", "Upload ≠ process. Confirm-to-run is implemented in the main /api web door.");
+       } else {
+-        addBubble("assistant", "Run completed but no PDF URL was returned.");
++        addBubble("assistant", "Upload stored. No plan preview payload was returned.");
+       }
+     } catch (err) {
+       addBubble("assistant", `Upload error: ${err.message || err}`);
+--- /dev/null	2026-02-09 01:58:24.459558630 +0000
++++ /mnt/data/Ashby_Engine/tests/test_meetings_web_upload_preview_no_run.py	2026-02-09 02:21:23.637157748 +0000
+@@ -0,0 +1,71 @@
++from __future__ import annotations
++
++from pathlib import Path
++
++import httpx
++import pytest
++
++from ashby.interfaces.web.app import create_app
++
++
++@pytest.mark.asyncio
++async def test_web_upload_returns_plan_preview_and_does_not_start_run(tmp_path: Path, monkeypatch):
++    """QUEST_062 rail: upload stores contribution only (no processing), returns plan preview."""
++
++    monkeypatch.setenv("STUART_ROOT", str(tmp_path / "stuart_runtime"))
++
++    app = create_app()
++    transport = httpx.ASGITransport(app=app)
++
++    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as c:
++        # Create an explicit session (journal) and upload bytes.
++        r = await c.post("/api/sessions", json={"mode": "journal", "title": "web test"})
++        sid = r.json()["session_id"]
++
++        r2 = await c.post(
++            f"/api/upload?session_id={sid}",
++            content=b"fake-wav-bytes",
++            headers={"x-filename": "test.wav", "content-type": "audio/wav"},
++        )
++        j = r2.json()
++        assert j["ok"] is True
++        assert j["session_id"] == sid
++        assert isinstance(j.get("contribution_id"), str) and j["contribution_id"]
++
++        # Plan preview must be present and must disclose defaults.
++        pp = j.get("plan_preview")
++        assert isinstance(pp, dict)
++        assert pp.get("mode") == "journal"
++        assert pp.get("template") == "default"
++        assert pp.get("speakers") == "1"  # journal default
++        defaults_used = pp.get("defaults_used") or []
++        assert "retention=MED" in defaults_used
++        assert "template=default" in defaults_used
++
++        kinds = [s.get("kind") for s in (pp.get("ordered_steps") or []) if isinstance(s, dict)]
++        assert "validate" in kinds
++        assert "formalize" in kinds
++
++        # No run should exist yet.
++        runs_dir = tmp_path / "stuart_runtime" / "runs"
++        assert runs_dir.exists()
++        assert list(runs_dir.iterdir()) == []
++
++        # Also support implicit session creation when session_id is omitted.
++        r3 = await c.post(
++            "/api/upload?mode=meeting",
++            content=b"fake-wav-bytes-2",
++            headers={"x-filename": "test2.wav", "content-type": "audio/wav"},
++        )
++        j3 = r3.json()
++        assert j3["ok"] is True
++        assert isinstance(j3.get("session_id"), str) and j3["session_id"]
++        assert isinstance(j3.get("contribution_id"), str) and j3["contribution_id"]
++        pp3 = j3.get("plan_preview")
++        assert isinstance(pp3, dict)
++        assert pp3.get("mode") == "meeting"
++        assert pp3.get("template") == "default"
++        assert pp3.get("speakers") == "auto"  # meeting default
++
++        # Still no runs created by upload.
++        assert list(runs_dir.iterdir()) == []

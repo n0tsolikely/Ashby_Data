@@ -1,0 +1,241 @@
+ASHBY DATA DIRECTORY MAP (BUFF)
+Version: 2026-02-06
+Status: Canonical (Orientation + Review Tiers)
+Purpose: Tell Brains exactly where to look, what is canonical vs reference, and what to edit vs never touch.
+Scope: Ashby_Data + Ashby_Engine + zip quarantine (mnt/data).
+
+================================================================================
+0) PRIME RULES (READ FIRST)
+================================================================================
+- Canonical governance artifacts live in: /mnt/data/Ashby_Data/
+- Canonical codebase lives in: /mnt/data/Ashby_Engine/
+- Rehydration packs are OPTIONAL resume artifacts; treat as authoritative when present; update ONLY when Hands explicitly orders.
+- Archive folders are superseded unless Hands explicitly orders reopening them.
+- If a directory is “Reference Only,” do not edit it. Edit the canonical source instead.
+
+================================================================================
+1) REVIEW TIERS (HOW MUCH TO REVIEW EACH SESSION)
+================================================================================
+Tier 0 (Always Review — Mandatory before any Raid work)
+- Continuity Lock + Bootstrap Prompt (if provided for the session)
+- Active Guild Orders (current raid)
+- Quest Board state (Accepted + Completed)
+- Latest Control Sync Snapshot
+- Latest End-of-Day Snapshot
+- Confirm canonical engine repo exists and tests can run
+
+Tier 1 (Review Only When Relevant to the quest being executed)
+- Codex sections relevant to the subsystem touched (storage, truth, overlays, indexing, profiles, etc.)
+- Prior quests that are direct dependencies of the current quest
+- Canonical Vision docs ONLY if the quest changes UX/flows/contract wording
+
+Tier 2 (Do NOT review unless troubleshooting a contradiction)
+- Old snapshots (beyond latest CS + latest EOD)
+- Idea dumps / To Do lists / long-term brainstorming
+- Archives / deprecated contracts
+
+================================================================================
+2) CANONICAL GOVERNANCE TREE (EDITED)
+================================================================================
+2.1 Quest Board (Filesystem state machine)
+Path:
+- /mnt/data/Ashby_Data/Quest Board/
+State folders:
+- /mnt/data/Ashby_Data/Quest Board/Accepted/    (ACTIVE commitments)
+- /mnt/data/Ashby_Data/Quest Board/Completed/   (DONE commitments)
+- /mnt/data/Ashby_Data/Quest Board/Abandoned/   (Control Sync only)
+Templates:
+- /mnt/data/Ashby_Data/Quest Board/QUEST_TEMPLATE.txt
+
+Review tier:
+- Tier 0 (always)
+
+Edit policy:
+- YES (canonical; always edit here, not in rehydration pack copies)
+
+2.2 Guild Orders
+Paths:
+- /mnt/data/Ashby_Data/Guild Orders/PAUSED/
+- /mnt/data/Ashby_Data/Guild Orders/ACTIVE/    (current raid)
+- /mnt/data/Ashby_Data/Guild Orders/COMPLETED/  (history)
+
+Review tier:
+- Tier 0 (always read ACTIVE raid)
+
+Edit policy:
+- YES (canonical)
+
+2.3 Snapshots (Receipts / Ground Truth)
+Paths:
+- /mnt/data/Ashby_Data/Snapshots/
+- /mnt/data/Ashby_Data/Snapshots/Control Sync/
+- /mnt/data/Ashby_Data/Snapshots/End of Day/
+- /mnt/data/Ashby_Data/Snapshots/General/
+
+Review tier:
+- Tier 0 (latest Control Sync + latest End of Day)
+
+Edit policy:
+- YES (new snapshots only)
+- NO (do not rewrite old snapshots; append new snapshot instead)
+
+2.4 Talent Tree (Capability ledger)
+Paths:
+- /mnt/data/Ashby_Data/Talent Tree/
+- /mnt/data/Ashby_Data/Talent Tree/Stuart/      (Stuart-specific tree + log)
+Talent rules (authoritative):
+- /mnt/data/Ashby_Data/Talent Tree/TALENT TREE GUIDE.txt
+
+Review tier:
+- Tier 1 (when completing a quest with Talent Awarded: YES)
+
+Edit policy:
+- YES (canonical)
+
+2.5 Buffs (Session “buff up” documents)
+Path:
+- /mnt/data/Ashby_Data/Buffs/
+
+Files (canonical buffs):
+- ASHBY_EXECUTION_PROTOCOL.txt
+- ASHBY_DATA_DIRECTORY_MAP.txt
+- ASHBY_SESSION_START_CHECK.txt
+
+Review tier:
+- Tier 0 (read protocol + start check at session start)
+
+Edit policy:
+- YES (but rarely; controlled updates only)
+
+================================================================================
+3) CANONICAL CANON TREE (REFERENCED)
+================================================================================
+3.1 Ashby Codex
+Path:
+- /mnt/data/Ashby_Data/Codex/
+
+Review tier:
+- Tier 1 (only sections relevant to current quest)
+
+Edit policy:
+- Reference-only unless Hands explicitly orders codex updates
+
+3.2 Stuart Codex
+Path:
+- /mnt/data/Ashby_Data/Stuart/Stuart Codex/
+Recommended to store FULL codex here:
+- /mnt/data/Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt
+
+Review tier:
+- Tier 1 (only sections relevant to current quest; Tier 0 only if continuity demands)
+
+Edit policy:
+- Reference-only unless Hands explicitly orders codex updates
+
+3.3 Canonical Vision docs
+Ashby vision/blueprint:
+- /mnt/data/Ashby_Data/Docs/
+Stuart vision:
+- /mnt/data/Ashby_Data/Stuart/Docs/
+
+Review tier:
+- Tier 1 (only when quest touches UX/flows/contract meaning)
+
+Edit policy:
+- Reference-only unless Hands explicitly orders updates
+
+================================================================================
+4) PROJECT WORK AREAS (EDITED)
+================================================================================
+4.1 Canonical Engine Repo (ALL code edits happen here)
+Path:
+- /mnt/data/Ashby_Engine/
+
+Review tier:
+- Tier 0 (confirm presence + tests runnable), Tier 1 (relevant modules)
+
+Edit policy:
+- YES (canonical)
+
+4.2 IGNORE the Github folder under Ashby_Data (Reference / mirrors / tokens)
+Path:
+- /mnt/data/Ashby_Data/GitHub(IGNORE)/
+
+Review tier:
+- Tier 2 (only for troubleshooting / ops)
+
+Edit policy:
+- Avoid editing unless Hands orders it.
+Security note:
+- Treat any tokens/keys inside as secrets; do not paste them into chat.
+
+================================================================================
+5) REHYDRATION PACKS (OPTIONAL RESUME KIT)
+================================================================================
+Canonical location:
+- /mnt/data/Ashby_Data/Latest Rehydration Pack/
+
+Optional Pack Rule (binding):
+- Rehydration Packs + Execution Packs are ONLY present when there is a current active one.
+- If the folder exists but is empty (or missing continuity/bootstrap), that is NOT an error.
+  It means there is no active rehydration pack for the session.
+- If Hands expects a pack for this session and it is missing, STOP and ask.
+
+Contents usually include (when active):
+- Continuity Lock
+- Bootstrap Prompt
+- Execution Pack (current runbook)
+- Pointers to latest snapshots / guild orders / quest stack
+
+Review tier:
+- Tier 0 (Continuity + Bootstrap if provided for the session)
+- Tier 1 (Execution Pack when you are executing an accepted stack)
+
+Edit policy:
+- Default: NO (treat as read-only)
+- Allowed: YES ONLY when Hands explicitly orders a rehydration refresh
+  (example: end of accepted quest stack; preparing for a new chat)
+- Old packs should be archived under:
+  - /mnt/data/Ashby_Data/Archive(IGNORE)/Stuart Rehydration Pack <Month Day>/
+
+================================================================================
+6) ARCHIVE (IGNORE UNLESS ORDERED) (IGNORE UNLESS ORDERED)
+================================================================================
+Paths:
+- /mnt/data/Ashby_Data/Archive/
+- /mnt/data/Ashby_Data/Stuart/Archive/
+- any /Archive/ folders
+
+Review tier:
+- Tier 2 only, and only if Hands orders it
+
+Edit policy:
+- NO (superseded by newer files)
+
+================================================================================
+7) OUTSIDE ASHBY_DATA (SESSION ENVIRONMENT)
+================================================================================
+7.1 Zip quarantine (distribution artifacts only)
+Path:
+- /mnt/data/zips/
+Policy:
+- Keep zips here to avoid confusion.
+- Never work in an extracted “fresh copy” unless Hands explicitly orders it.
+
+7.2 Synapse Governance (reference pack, not edited during Stuart work unless ordered)
+Path:
+- /mnt/data/Synapse_OS_Governance/
+Review tier:
+- Tier 0 at the start of a new session (per Hands’ rule)
+
+================================================================================
+8) SELF-AUDIT (THIS DOCUMENT)
+================================================================================
+Checklist:
+[ ] Paths included for Quest Board, Guild Orders, Snapshots, Talent Tree, Codices, Engine repo, Rehydration Pack, Archives, zips
+[ ] Review tiers (0/1/2) defined and usable
+[ ] Edit vs reference-only rules are explicit
+[ ] Talent Tree Guide location included (authoritative)
+[ ] Synapse Governance location included
+
+End of document.

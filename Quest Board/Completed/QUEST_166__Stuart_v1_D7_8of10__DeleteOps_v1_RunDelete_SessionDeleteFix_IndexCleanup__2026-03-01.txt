@@ -1,0 +1,124 @@
+QUEST_ID: QUEST_166
+TITLE: Stuart v1 — D7 8/10 — Delete Ops v1 (Run delete + Session delete fix + index cleanup)
+DATE: 2026-03-01
+STATUS: ACCEPTED (Ready for Codex execution)
+RISK_CLASS: R4 (Destructive ops; must be safe + consistent)
+OWNER: OpenAI Codex (local CLI)
+
+CONTEXT / WHY
+Dungeon 7 requires deletion controls with strict semantics:
+- Delete FORMALIZATION RUN: deletes outputs/receipts/evidence_map for that run, but does NOT delete transcripts.
+- Delete SESSION: deletes everything in the session (transcripts, overlays, runs, receipts, evidence maps, outputs) — full nuke.
+
+Repo reality problem:
+- The current session delete endpoint in Ashby_Engine/ashby/interfaces/web/app.py calls delete_session(session_id) but there is no implementation/import in canon code (it would NameError).
+- Also, even if session dir were deleted, run artifacts live under STUART_ROOT/runs/<run_id> and would be orphaned unless explicitly removed.
+- sqlite_fts index will retain rows unless explicitly cleaned up, causing zombie search hits.
+
+This quest creates a proper deletion ops module and fixes the broken session delete endpoint.
+
+CANON ANCHORS
+- Guild Orders D7: deletion semantics for session/transcript/run
+- User decision: “Delete session means delete EVERYTHING in that session.”
+- Synapse governance: destructive actions require confirmation + receipts.
+
+REPO REALITY
+- Web API: Ashby_Engine/ashby/interfaces/web/app.py
+  - DELETE /api/sessions/{session_id} currently calls missing delete_session()
+- Runs store: STUART_ROOT/runs/<run_id>
+- Sessions store: STUART_ROOT/sessions/<session_id>
+- Search index:
+  - Ashby_Engine/ashby/modules/meetings/index/sqlite_fts.py
+  - Ashby_Engine/ashby/modules/meetings/index/ingest.py
+- UI:
+  - deleteSession API exists: Ashby_Engine/webapp/stuart_frontend/stuart_app/src/api/stuartClient.js
+  - session delete button likely in: SessionsPanel.jsx
+
+SCOPE LOCK
+IN SCOPE
+1) Implement backend delete operations:
+   A) delete_run(run_id)
+      - deletes run dir under STUART_ROOT/runs/<run_id>
+      - cleans sqlite_fts rows for that run
+      - returns session_id for UI refresh
+   B) delete_session(session_id)
+      - deletes the session dir under STUART_ROOT/sessions/<session_id>
+      - finds and deletes ALL runs belonging to that session (rm -rf STUART_ROOT/runs/<run_id>)
+      - cleans sqlite_fts rows for that session (and/or for each run)
+2) Fix web API endpoints to call these real functions:
+   - DELETE /api/runs/{run_id}
+   - DELETE /api/sessions/{session_id}  (fix the current broken endpoint)
+3) Frontend:
+   - Add “Delete” control for runs (formalizations list)
+   - Ensure Session delete flow still works (and is confirmed)
+4) Tests:
+   - delete_run removes fs + index rows
+   - delete_session removes fs session dir + all session runs + index rows
+
+OUT OF SCOPE
+- Delete transcript versions (next quest)
+- Permission/auth (single-user local)
+- “Undo” / trash bin
+
+IMPLEMENTATION (deterministic)
+Backend
+1) Create deletion ops module (keep it modular; no god file)
+- New file: Ashby_Engine/ashby/modules/meetings/delete_ops.py
+  - delete_run(run_id: str) -> dict
+  - delete_session(session_id: str) -> dict
+  - helper: list_runs_for_session(session_id) using existing run.json scanning logic (reuse from interfaces if needed, but prefer placing the canonical implementation in modules/meetings/)
+- delete_session must:
+  - enumerate all run dirs under STUART_ROOT/runs
+  - read run.json and match session_id
+  - delete those runs (call delete_run for each)
+  - rm -rf the session dir
+  - cleanup sqlite rows (delete_session_rows or per-run delete)
+
+2) sqlite index cleanup
+- Update: Ashby_Engine/ashby/modules/meetings/index/sqlite_fts.py
+  - add delete_run_rows(conn, run_id)
+  - add delete_session_rows(conn, session_id)
+    - must delete from: speaker_maps, segments, segments_fts, runs
+    - ensure referential consistency (transaction)
+
+3) Web API endpoints
+- File: Ashby_Engine/ashby/interfaces/web/app.py
+  - Add @app.delete("/api/runs/{run_id}") → calls delete_ops.delete_run
+  - Fix @app.delete("/api/sessions/{session_id}") → calls delete_ops.delete_session
+  - Return JSON receipts:
+    - run delete: {"ok":true,"run_id":...,"session_id":...}
+    - session delete: {"ok":true,"session_id":...,"deleted_runs":[...]}
+  - Return 404 when the target does not exist.
+
+Frontend
+1) Run delete UI
+- OutputsList.jsx (or wherever formalizations are listed)
+  - Add delete icon/button per run
+  - Confirm modal required
+  - On success refresh outputs list and close viewer if viewing that run
+
+2) Session delete UI sanity
+- Locate existing delete session control; ensure it still calls stuartClient.deleteSession(session_id)
+- Ensure confirmation modal exists (if not, add it — destructive op)
+
+Tests
+- Add tests:
+  - test_delete_run_removes_fs_and_index.py
+  - test_delete_session_removes_runs_and_index.py
+- Use tmp STUART_ROOT + temp sqlite db.
+
+ACCEPTANCE CRITERIA
+- Session delete endpoint no longer NameErrors; actually deletes session + its runs.
+- Run delete endpoint works and does not delete transcripts.
+- sqlite index no longer contains rows for deleted run/session.
+- UI supports deleting runs + sessions with confirmation.
+- pytest passes.
+
+RECEIPTS REQUIRED
+- Diff/patch
+- pytest output
+
+FAIL CONDITIONS
+- Session delete deletes only the session folder but leaves orphan runs behind
+- Session delete or run delete leaves sqlite rows behind (search ghosts)
+- UI has destructive delete without confirmation

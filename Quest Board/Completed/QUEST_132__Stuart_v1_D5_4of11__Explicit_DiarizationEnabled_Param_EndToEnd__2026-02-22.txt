@@ -1,0 +1,151 @@
+================================================================================
+IDENTITY (REQUIRED)
+================================================================================
+Quest ID:
+QUEST_132
+
+Title:
+Stuart v1 — Dungeon 5 (4/11): Add explicit diarization_enabled param (end-to-end) with backward compatibility
+
+Subject:
+Ashby / Stuart
+
+Origin:
+Control Sync 2026-02-22: user needs a simple diarization ON/OFF toggle that maps deterministically to backend behavior.
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- Stuart Codex: Ashby_Data/Codex/Stuart/Stuart_Codex_Full.txt (§7.3 Diarization; §7A transcript versions ON/OFF)
+- Backend schemas:
+  - Ashby_Engine/ashby/modules/meetings/schemas/plan.py (UIState)
+  - Ashby_Engine/ashby/modules/meetings/schemas/run_request.py (RunRequest)
+- Backend executor:
+  - Ashby_Engine/ashby/modules/meetings/pipeline/job_runner.py
+- Frontend mapping:
+  - Ashby_Engine/webapp/stuart_frontend/stuart_app/src/pages/Stuart.jsx (mapRunConfigToUi)
+
+================================================================================
+CODEX ANCHORS + CONSTRAINT SUMMARY (DRAFT)
+================================================================================
+Codex Anchors (DRAFT):
+- Stuart_Codex_Full.txt §7.3 (Diarization optional; explicit control)
+- Stuart_Codex_Full.txt §7A (Transcript versions: diarization ON/OFF)
+- Guild Orders Rev4 — Dungeon 5 (Toggle belongs to Transcribe)
+
+Codex Constraint Summary:
+- Diarization MUST be explicitly controlled.
+- System must not infer diarization state from unrelated hints.
+
+================================================================================
+QUEST BOARD FOLDER STATE
+================================================================================
+Quest Board Folder State: BOARD
+
+================================================================================
+DESCRIPTION
+================================================================================
+The frontend already has a diarization_enabled boolean, but it gets collapsed into speakers (auto vs 1) and the backend infers diarization_enabled from speakers.
+
+This is brittle and non-obvious.
+
+We want:
+- an explicit diarization_enabled boolean in the run request contract
+- backward compatibility with speakers (speaker count remains a hint)
+
+================================================================================
+SCOPE / OBJECTIVE
+================================================================================
+Backend:
+- Add diarization_enabled: Optional[bool] to UIState (schemas/plan.py)
+- Add diarization_enabled: Optional[bool] to RunRequest (schemas/run_request.py)
+  - Parse from payload keys:
+    - diarization_enabled (canonical)
+    - diarize (legacy alias allowed)
+- Update RunRequest.to_ui_state / from_ui_state accordingly.
+- Update router/plan_builder to pass diarization_enabled into step params for both:
+  - formalize step
+  - transcribe step
+
+Executor:
+- In job_runner:
+  - Determine diarization_enabled using:
+    1) explicit params.diarization_enabled when provided
+    2) else fallback to legacy speakers inference (speakers <= 1 => diarization disabled)
+  - Ensure diarize+align runs ONLY when diarization_enabled is True.
+
+Frontend:
+- Update mapRunConfigToUi() to include diarization_enabled explicitly.
+- Keep speakers as speaker-count hint only (auto/2/3) — do not use speakers=1 as the diarization toggle.
+
+================================================================================
+OUT OF SCOPE
+================================================================================
+- Speaker label removal rules when diarization is off (QUEST_133)
+
+================================================================================
+DEPENDENCIES
+================================================================================
+QUEST_129 (transcribe step params)
+
+================================================================================
+RISK
+================================================================================
+Risk: R1
+
+================================================================================
+DOOR IMPACT
+================================================================================
+Door Impact:
+- WEB
+
+================================================================================
+TESTING LEVEL
+================================================================================
+Testing Level: TL2
+
+================================================================================
+VERIFICATION PLAN (DRAFT)
+================================================================================
+- Unit tests:
+  - RunRequest.from_dict parses diarization_enabled
+  - job_runner respects diarization_enabled even when speakers hint conflicts
+- Manual:
+  - diarization_enabled=false, speakers='auto' => diarize skipped
+  - diarization_enabled=true, speakers=1 => diarize runs (but speaker hint file may be written; see notes)
+
+================================================================================
+CHANGE CLASS + VISION DELTA
+================================================================================
+Change Class: STRUCTURAL
+Vision Delta: ALIGNED
+
+================================================================================
+SYSTEM CONTEXT STATEMENT
+================================================================================
+We already have a UI toggle in the frontend. This quest makes it a first-class backend contract so execution is deterministic and explainable.
+
+================================================================================
+ANTI-DUPLICATION PLAN
+================================================================================
+- rg -n "diarization_enabled" Ashby_Engine/ashby/modules/meetings
+- Ensure we are not creating a second similar flag.
+
+================================================================================
+PLACEMENT INTENT
+================================================================================
+- schemas/plan.py + schemas/run_request.py
+- plan_builder.py (params wiring)
+- job_runner.py (execution gating)
+- Stuart.jsx (UI payload)
+
+================================================================================
+TALENT POINT
+================================================================================
+Talent Point Awarded: NO
+
+================================================================================
+EXECUTION AUDIT BUNDLE
+================================================================================
+Audit Bundle Folder Path: (set when moving to ACCEPTED)

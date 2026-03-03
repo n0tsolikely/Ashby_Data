@@ -1,0 +1,376 @@
+SYNAPSE GUILD — GUILD ORDERS
+STUART v1 (Meetings Module)
+
+Created: 2026-01-16
+Status: ACTIVE (file under: Raids/Active/)
+Format: This document is broken into DUNGEONS. “Raiding” means executing these Guild Orders. Dungeons may be raided in any order where dependencies allow.
+
+──────────────────────────────────────────────────────────────────────────────
+A) DEFINITION OF DONE (WHAT SUCCESS LOOKS LIKE)
+──────────────────────────────────────────────────────────────────────────────
+When all Dungeons are complete, Stuart v1 is demo-ready and reliable:
+
+1) Webapp (primary)
+- Chat UI (ChatGPT-like) + session history.
+- User can select:
+  - Mode: Journal/Diary OR Meeting (no default mode preselected).
+  - Speakers: Auto / 1 (Just me) / 2 / 3+
+  - Template: Default (v1 ships with one template; system is built to add more later).
+- User drops an audio/video file and types naturally:
+  - “Formalize this as meeting mode.”
+  - “Find the entry where I talked about kimchi.”
+  - “SPEAKER_00 is Greg.”
+- Stuart stores the source internally, produces:
+  - diarized transcript (meeting mode)
+  - transcript (journal mode default 1 speaker)
+  - formalization output (PDF + MD)
+  - citations/evidence mapping back to transcript segments
+- User can download outputs without digging in folders.
+- User can rename speakers and re-render outputs with names.
+- User can re-formalize the same transcript (later: multiple templates; in v1, this is ready but only one template ships).
+
+2) Telegram (secondary door)
+- User can send an audio/video file from phone.
+- Stuart responds with inline buttons:
+  - Step 1: Mode (Journal/Diary or Meeting)
+  - Step 2: Speakers (Auto / 1 / 2 / 3+)
+- Stuart runs DEFAULT TEMPLATE ONLY and returns the PDF as an attachment.
+- Text queries work minimally (“find kimchi entry”) and return top results + attachments/links.
+
+3) Reliability + audit
+- No silent overwrite of canonical artifacts.
+- Runs are recorded with manifests and settings.
+- Transcript exists always (ground truth), with optional visibility toggles in UI.
+- Search is deterministic-first (SQLite FTS); LLM is used for intent parsing + presentation, not brute-force filesystem scanning.
+
+──────────────────────────────────────────────────────────────────────────────
+B) BUILD LAWS (THE RULES THAT PREVENT DRIFT)
+──────────────────────────────────────────────────────────────────────────────
+B1) Stuart is a removable module; Ashby core/router stays clean
+- Stuart lives at ashby/modules/meetings/.
+- Ashby core/router must not contain Stuart-specific domain logic.
+- Doors (web/telegram) must not embed business logic beyond transport + UI.
+
+B2) Canonical memory is artifacts, not chat
+- Transcript is ground truth.
+- Formalizations/derivatives must cite transcript anchors.
+- Any “extract-only” outputs must cite the segments they came from.
+
+B3) Explicit execution gating (privacy + correctness)
+- Upload ≠ process.
+- Stuart only runs heavy work (diarize/transcribe/formalize) when an explicit “go” signal exists:
+  - user instruction in chat that fully specifies intent (“Formalize this in meeting mode…”) OR
+  - user taps Run/Confirm in webapp OR
+  - user taps Telegram buttons.
+- Stuart must present a plan preview whenever any required input is ambiguous or coming from UI state.
+
+B4) Immutability + overlays
+- No silent overwrite of canonical artifacts. Re-run = new run_id + new output paths.
+- Corrections are overlays (speaker naming, revisions), never destructive edits to ground truth transcript artifacts.
+
+B5) Enumerated modes/templates (no hallucinated options)
+- Modes in v1: Journal/Diary, Meeting.
+- Templates: registry-based. Unknown requests trigger clarification (list available values).
+- Telegram uses default template only.
+
+B6) Expandability-first
+- Interfaces and placeholders exist so v2 is additive.
+- No “v1 hacks” that require deletion/refactor later.
+
+Note: Implementation should follow the Stuart Execution Pack contracts for IDs, schemas, immutability, overlays, evidence mapping, and retrieval discipline. The Execution Pack does not override these Guild Orders; it stabilizes how we implement them.
+
+──────────────────────────────────────────────────────────────────────────────
+C) CORE CONCEPTS (TERMS USED IN DUNGEONS)
+──────────────────────────────────────────────────────────────────────────────
+Session: container for one meeting/journal event.
+Contribution: one input media item (audio/video; future: URL).
+Run: one execution instance (transcribe run, formalize run, rerender run, etc).
+STUART_ROOT: root directory for Stuart’s canonical artifact storage (local).
+Ground truth: transcript.json produced by transcription (with speaker labels if diarized).
+Overlay: a separate artifact that modifies presentation/interpretation (e.g., speaker map).
+Door: interface layer (webapp, telegram). Doors call the module engine; they do not own truth.
+
+──────────────────────────────────────────────────────────────────────────────
+D) DUNGEONS
+──────────────────────────────────────────────────────────────────────────────
+
+Dungeon 1 — Module scaffold + “final-shape” directories
+Objective:
+Create the canonical module zone so all Stuart work is placed correctly from day 1.
+
+Deliverables:
+- ashby/modules/meetings/
+  - router/
+  - pipeline/
+  - schemas/
+  - templates/
+  - render/
+  - index/
+  - adapters/
+  - errors/
+- Minimal module metadata (module_key, display name, version, supported modes).
+
+Definition of Done:
+- Module imports cleanly.
+- No Stuart-specific code is added to ashby/core/router.py.
+
+Dependencies:
+- None.
+
+──────────────────────────────────────────────────────────────────────────────
+
+Dungeon 2 — Canonical artifact storage contract (STUART_ROOT + manifests + immutability)
+Objective:
+Lock the on-disk reality so everything else can rely on stable paths and invariants.
+
+Deliverables:
+- STUART_ROOT config (default under runtime/stuart/, override via env/config).
+- Deterministic directory layout for:
+  - sessions/
+  - contributions/
+  - runs/
+  - overlays/
+  - exports/ (optional staging for downloads)
+- IDs (ULID): session_id, contribution_id, run_id.
+- Hashes (sha256) for source media.
+- Manifests (schema-versioned JSON):
+  - session.json
+  - contribution.json (metadata + hashes + media type + created_at)
+  - run.json (stage settings, status transitions, timestamps)
+- Immutability enforcement:
+  - transcripts/formalizations are not overwritten
+  - rerun creates a new run_id folder
+
+Media handling (v1):
+- Accept audio and video uploads.
+- If input is video: extract audio to a canonical audio file for processing and store it inside the contribution.
+- Keep original uploaded file as well when feasible.
+
+Definition of Done:
+- Upload → session + contribution created with manifests and hashes.
+- Two runs do not overwrite each other.
+- Session manifest can point to “latest” run artifacts without deleting prior ones.
+
+Dependencies:
+- Dungeon 1.
+
+──────────────────────────────────────────────────────────────────────────────
+
+Dungeon 3 — Mode/Template registry + template storage placeholders
+Objective:
+Make “modes” and “templates” first-class registries so adding/editing later is additive.
+
+Deliverables:
+- Mode registry (v1 only):
+  - journal (alias: diary)
+  - meeting
+- Mode defaults:
+  - journal: speakers default 1
+  - meeting: speakers default auto
+- Template registry per mode:
+  - v1 ships with exactly one template per mode: “default”
+  - system supports multiple templates later (names, ids, metadata)
+- Template storage directory + schema placeholder (not implemented fully in v1):
+  - templates/system/<mode>/<template_id>.json (or .md)
+  - templates/user/ (reserved for future “create/edit template” flows)
+- Router/engine can answer:
+  - “What modes are available?”
+  - “What templates are available for meeting?”
+
+Definition of Done:
+- Mode/template validation is enforced (no hallucinated options).
+- Template subsystem is structured so v2 can add CRUD and naming prompts without refactor.
+
+Dependencies:
+- Dungeon 1.
+
+──────────────────────────────────────────────────────────────────────────────
+
+Dungeon 4 — Meetings module router + NLU (natural language → executable plan)
+Objective:
+Users talk normally; the module produces a validated plan, clarifies when needed, and gates execution.
+
+Deliverables:
+- Meetings module router that accepts:
+  - user text
+  - attachment metadata (if present)
+  - UI selections (mode/template/speakers) when applicable
+  - session context (active session, last run)
+- Outputs:
+  - structured intent
+  - executable plan (ordered steps)
+  - clarification prompt (with enumerated options) when needed
+  - explicit “go” requirement when ambiguous
+
+Minimum intents (v1):
+- Set mode (“Engage meeting mode”, “Switch to diary”)
+- Set speakers (“Just me”, “2 speakers”, “3+ speakers”, “auto”)
+- Intake: store uploaded file into a new session (or into current session if explicitly requested)
+- Formalize: run pipeline for selected mode/template/speakers
+- Search: “Find the entry where I talked about X”
+- Export: “Send me the PDF from Jan 1”
+- Speaker map overlay: “SPEAKER_00 is Greg…” + request rerender
+- Extract-only outputs:
+  - “Make a file with only decisions”
+  - “Make a file with only what Greg said” (requires speaker map)
+
+Clarification contract:
+- If mode is missing: ask mode (journal/meeting).
+- If speakers missing: use mode default (journal=1, meeting=auto) and state it in the plan preview.
+- If template missing: use default template and state it in the plan preview.
+- If Telegram: never ask for template (default only). If user requests non-default template in Telegram, respond that Telegram uses default template.
+
+Execution gating contract:
+- If the user’s message + attachment fully specifies the plan, it can proceed.
+- If relying on UI state or anything ambiguous, Stuart must plan-preview and require confirmation.
+
+Definition of Done:
+- “Formalize this as meeting mode” + file produces a plan and a deterministic execution path.
+- “Pull up kimchi entry” produces a deterministic search plan (index-first).
+
+Dependencies:
+- Dungeon 2, Dungeon 3.
+
+──────────────────────────────────────────────────────────────────────────────
+
+Dungeon 5 — Pipeline engine + stages (v1 spine, final-shape placement)
+Objective:
+Run long jobs reliably and produce canonical artifacts.
+
+Deliverables:
+- Job runner:
+  - consistent status transitions in run.json (queued/running/succeeded/failed)
+  - progress reporting for UI polling
+- Stages (placements final-shape; implementations v1-complete):
+  - normalize/extract audio (always; video → audio)
+  - diarize (meeting mode default; uses speaker hint auto/2/3+ if supported)
+  - transcribe (produces segments with timestamps; speaker labels if diarized)
+  - formalize (template-driven)
+  - render outputs (MD + PDF)
+  - evidence_map.json (formalization statements → transcript segments)
+
+Outputs (minimum):
+- transcript.json + transcript.txt
+- formalization.md + formalization.pdf
+- evidence_map.json
+
+Definition of Done:
+- 30–60 min 3-person meeting → diarized transcript + PDF.
+- Journal default (1 speaker) → transcript + PDF.
+- Rerun produces a new run_id output.
+
+Dependencies:
+- Dungeon 2, Dungeon 4.
+
+──────────────────────────────────────────────────────────────────────────────
+
+Dungeon 6 — Speaker identity overlay + rerender pipeline
+Objective:
+Allow “SPEAKER_00 is Greg” and make outputs reflect names without mutating ground truth.
+
+Deliverables:
+- Speaker map overlay artifacts stored under overlays/ (new overlay per change).
+- Session tracks “active speaker map overlay” pointer.
+- Rerender capability:
+  - apply active speaker map to rendered transcript view (optional)
+  - re-render formalizations so they say “Greg” instead of SPEAKER_00
+- Extract-only outputs support named speakers once mapping exists.
+
+Definition of Done:
+- User maps speakers → outputs re-render with names.
+- “Only what Greg said” generates an artifact with citations.
+
+Dependencies:
+- Dungeon 5.
+
+──────────────────────────────────────────────────────────────────────────────
+
+Dungeon 7 — Minimal index/search (SQLite FTS, expandable)
+Objective:
+Fast retrieval without “LLM scans every file.”
+
+Deliverables:
+- Indexer interface + SQLite FTS implementation.
+- Index content:
+  - session metadata (date/title/mode)
+  - transcript text (segment-level or chunk-level)
+  - speaker labels (+ mapped names if present)
+  - pointers (session_id/run_id/segment ids)
+- Query result includes:
+  - ranked hits
+  - snippets
+  - citations back to transcript segments
+- LLM used only after retrieval:
+  - intent parsing
+  - optional reranking of top-N
+  - summarizing results while preserving citations
+
+Definition of Done:
+- “kimchi” returns matching sessions/snippets quickly.
+- User can export/download the relevant PDF.
+
+Dependencies:
+- Dungeon 5.
+
+──────────────────────────────────────────────────────────────────────────────
+
+Dungeon 8 — Webapp door (primary)
+Objective:
+Chat-first UI + session history + file drop + downloads.
+
+Deliverables:
+- UI:
+  - session history list
+  - chat pane
+  - controls: Mode, Speakers, Template (default only shipped)
+  - transcript visibility toggle
+- Upload flow:
+  - upload stores contribution (intake)
+  - if the same message specifies the run (mode/speakers/template), proceed
+  - otherwise plan-preview + require confirm
+- State sync:
+  - chat commands override UI selection
+  - UI updates to reflect overridden state
+- Downloads:
+  - PDF/MD outputs
+  - transcript optionally gated (but always accessible)
+
+Definition of Done:
+- User can upload, converse naturally, run, and download outputs from the webapp.
+
+Dependencies:
+- Dungeon 4, Dungeon 5, Dungeon 7.
+
+──────────────────────────────────────────────────────────────────────────────
+
+Dungeon 9 — Telegram door (dead simple)
+Objective:
+Remote demo: send file → tap mode → tap speakers → receive PDF.
+
+Deliverables:
+- Inline buttons:
+  - Mode: Journal/Diary | Meeting | Cancel
+  - Speakers: Auto | 1 | 2 | 3+
+- Default template only.
+- Return PDF as Telegram attachment.
+- Minimal text queries (search) supported.
+
+Door abstraction requirement:
+- Engine emits clarify prompts and options in a door-agnostic structure.
+- Telegram renders those options as buttons.
+- This is designed so a future Discord door can reuse the same “clarify prompt” contract without rewriting engine logic.
+
+Definition of Done:
+- Send audio from phone, tap selections, receive PDF.
+
+Dependencies:
+- Dungeon 4, Dungeon 5, Dungeon 7.
+
+──────────────────────────────────────────────────────────────────────────────
+E) OPERATOR NOTE
+──────────────────────────────────────────────────────────────────────────────
+You can raid any Dungeon in any order if dependencies are satisfied. The clean spine is:
+1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9
+
+──────────────────────────────────────────────────────────────────────────────
+END OF GUILD ORDERS

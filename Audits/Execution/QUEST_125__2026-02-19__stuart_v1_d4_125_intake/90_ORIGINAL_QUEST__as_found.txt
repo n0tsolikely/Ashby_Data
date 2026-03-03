@@ -1,0 +1,111 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_125
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 4 (12/15): Chat support — list transcript versions + switch active version
+
+Context: (Ashby / Stuart / System / Other)
+Stuart chat — transcript version commands
+
+Origin:
+Guild Orders — Dungeon 4 task #5
+
+Priority: (P0 / P1 / P2)
+P2
+
+Links:
+- Guild Orders: Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt (Dungeon 4 + Dungeon 5 dependencies)
+- Stuart Codex (full): Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_7.4_Stage_3_Transcription.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_7.3_Stage_2_Diarization.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_6.2_Canonical_Artifacts_JSON_Markdown_PDF.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_8.1_Evidence_Anchors_and_Citations.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_3.2_Meeting_Minutes_Mode.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 30.1.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 28.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 8A.4.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 26.txt
+- Backend anchors:
+  - Ashby_Engine/ashby/interfaces/web/app.py (/api/chat)
+  - Ashby_Engine/ashby/modules/meetings/intent_parser.py (optional if adding intents)
+- Frontend anchors (if chat UI handles locally):
+  - Ashby_Engine/webapp/stuart_frontend/stuart_app/src/components/stuart/ChatInterface.jsx
+
+Status: ACTIVE
+
+Audit Bundle Path:
+  /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_125__2026-02-19__stuart_v1_d4_125_intake
+
+Accepted On:
+2026-02-19
+Accepted By:
+Hands (Peter) via Codex (Brains)
+Completed On:
+
+Completed By:
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Implement minimal transcript version commands so a user can type a command and switch which transcript is active without clicking.
+
+This can be implemented either server-side in /api/chat or client-side in the chat UI, but MUST be deterministic and testable.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+Add two commands:
+
+1) List versions:
+- Command: `/transcripts` OR `transcripts`
+- Behavior: return a formatted list of available transcript versions (id, created_ts short, diarization_enabled, segments_count, active marker)
+
+2) Switch active version:
+- Command: `/use <transcript_version_id>` OR `use <transcript_version_id>`
+- Behavior: call the same logic as the active pointer endpoint (QUEST_121)
+- Reply with confirmation + new active id
+
+Implementation options (pick one):
+A) Server-side: /api/chat detects these commands before planner logic and returns a reply without creating a run.
+B) Client-side: Chat UI intercepts and calls API endpoints directly.
+
+Must not break existing chat planner behavior.
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Full natural language transcript selection (future).
+- Auto-creating new transcripts via chat (Dungeon 5).
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+QUEST_119, QUEST_121
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────
+Do not overload the intent parser unless you also add deterministic tests. Keeping it as a chat pre-parser is probably cleaner.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] User can list transcript versions via chat
+- [ ] User can switch active transcript version via chat and it updates session_state
+- [ ] No regressions to /api/chat planner route
+
+────────────────────────────────────────────────────────
+TALENT POINT
+────────────────────────────────────────────────────────
+# On completion:
+# - Talent Point Awarded: YES / NO
+# - Talent Spent On: (TALENT ID — Name in Talent Tree)
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+# Optional closing notes once the quest is completed or abandoned.

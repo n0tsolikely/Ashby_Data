@@ -1,0 +1,112 @@
+STUART CODEX
+1.3 Profiles (LOCAL_ONLY / HYBRID / CLOUD) (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines execution profiles: how Stuart controls where computation occurs and what data may leave the machine. This profile system is a core evolution from earlier “local-only absolute” drafts: Stuart must support truly local operation AND optional cloud horsepower without changing what Stuart means.
+
+Profiles are not cosmetic settings. They define enforceable constraints on adapters, network access, and disclosure.
+
+A. Shared requirements across all profiles
+
+A1) Same meaning, same outputs
+Across all profiles, Stuart MUST preserve:
+- the same session model,
+- the same canonical artifact schema (transcript, formalizations, evidence map, exports),
+- the same truth discipline (no hallucinated facts),
+- and the same explicit execution gating.
+
+Only the implementation of adapters changes.
+
+A2) Explicit disclosure
+If any profile permits remote processing, Stuart MUST be able to show:
+- which stage is remote,
+- what exact data is sent,
+- what provider/adapter is used,
+- and whether redaction is enabled.
+Stuart MUST require explicit confirmation before sending data remotely.
+
+A3) “No silent network” rule
+Stuart MUST NOT make network calls in any profile unless:
+- the active profile permits it, AND
+- the user has explicitly triggered execution, AND
+- the user has confirmed any remote sending described above.
+
+B. LOCAL_ONLY profile
+
+Definition
+LOCAL_ONLY means no data leaves the machine. No remote inference. No cloud diarization. No remote ASR. No remote formalization. No “telemetry that includes content.”
+
+Requirements
+B1) Network calls MUST be disabled for content processing.
+B2) All processing stages MUST run locally through local adapters:
+- audio ingestion/normalization local,
+- diarization local (or diarization disabled if unavailable, but never remote),
+- ASR local,
+- formalization local (local LLM or local rule-based fallback),
+- indexing local.
+
+B3) Stuart MUST degrade gracefully rather than violating locality:
+- If a local diarizer is not available, Stuart may proceed with unknown speakers.
+- If a local formalizer is weak, Stuart may produce a simpler formalization while staying truthful and evidence-backed.
+Stuart must never “upgrade” to remote services in LOCAL_ONLY.
+
+Use cases (why LOCAL_ONLY exists)
+- Sensitive environments (healthcare, elder care, regulated incidents).
+- Private meetings where participants demand offline operation.
+- Any scenario where “where does this data go?” must have the answer: “nowhere.”
+
+C. HYBRID profile
+
+Definition
+HYBRID means Stuart runs primarily locally but can optionally use remote adapters for selected stages to improve quality and speed. HYBRID exists so that users can spend horsepower where it matters without committing to fully cloud execution.
+
+Requirements
+C1) HYBRID MUST support per-stage adapter selection (enumerated).
+C2) Before executing a remote stage, Stuart MUST disclose what data is sent.
+Examples of remote stages:
+- remote diarization (sending audio segments),
+- remote ASR (sending audio),
+- remote formalization (sending transcript text),
+- remote translation (sending transcript/formalization text),
+- remote indexing (sending text/embeddings).
+C3) HYBRID MUST allow users to choose fully-local behavior for any stage, even if a remote option exists.
+
+Recommended behavior
+C4) Default HYBRID stance should be conservative:
+- Prefer local ASR and local indexing if adequate.
+- Offer remote formalization as an optional acceleration/quality upgrade when privacy allows.
+C5) HYBRID SHOULD support redaction prior to remote calls (names, phone numbers, addresses, identifiers), as a user-controlled option.
+
+Use cases
+- Creator workflows where privacy is less sensitive but speed/quality matters.
+- Internal teams that accept remote tooling for minutes generation.
+- Mixed environments where some sessions are sensitive and others are not.
+
+D. CLOUD profile
+
+Definition
+CLOUD means Stuart may run remote-first. This profile exists for maximum horsepower and convenience, while still preserving Stuart’s canonical artifact schema and evidence discipline.
+
+Requirements
+D1) CLOUD MUST still preserve the same outputs and evidence standards.
+D2) CLOUD MUST still disclose what data is sent and to whom.
+D3) CLOUD MUST still require explicit execution triggers.
+D4) CLOUD MUST preserve local copies of artifacts if the user’s storage is local; “cloud run” must not imply “no artifacts on disk” unless explicitly configured.
+
+Use cases
+- Organizations that want central processing at scale.
+- Users who accept cloud for performance and do not require offline operation.
+
+E. Profile selection and UX
+
+E1) The active profile MUST be visible in the UI (and available via chat query).
+E2) Changing profiles MUST be explicit and auditable.
+E3) If a requested action violates the active profile (e.g., asking to use a remote formalizer in LOCAL_ONLY), Stuart MUST refuse and explain why.
+
+Self-audit (1.3)
+- This section captures the key post-draft evolution we made in chat: locality is not absolute; it is a profile constraint (LOCAL_ONLY/HYBRID/CLOUD).
+- It preserves your privacy requirements: no auto-sending, explicit disclosure/confirmation, and “no silent network.”
+- It ties profiles to adapter selection without changing canonical outputs, matching our earlier pipeline and artifact decisions.
+This section is complete.

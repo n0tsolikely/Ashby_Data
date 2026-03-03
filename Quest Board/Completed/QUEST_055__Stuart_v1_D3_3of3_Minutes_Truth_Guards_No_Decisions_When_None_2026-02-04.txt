@@ -1,0 +1,70 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_055
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 3 (3/3): minutes truth guards (no invented decisions/actions)
+
+Context: Stuart truth discipline
+
+Origin:
+Control Sync — 2026-02-04 (Stuart v1 finish-line: REV5)
+
+Priority: P0
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV5.txt (Dungeon 3)
+- Stuart Codex 3.2: preventing 'minutes lies'
+
+Status: DONE
+
+Audit Bundle Path:
+  /mnt/data/Ashby_Data/Audits/Execution/QUEST_055__2026-02-07__minutes_truth_guards_no_decisions_when_none
+
+Accepted On:
+2026-02-07
+Accepted By:
+Hands (Peter)
+Completed On:
+2026-02-07
+
+Completed By:
+Ash (Brains)
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Add enforcement so minutes cannot silently contain invented decisions/actions/attendance. If a decision/action lacks evidence anchors, it must be dropped or marked as uncertain (and preferably excluded from official minutes).
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Post-validate minutes.json: decisions/actions MUST have citations
+- If none exist, minutes must explicitly state 'No explicit decisions recorded.' and/or 'No action items recorded.'
+- Add regression tests for these truth gates
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Full semantic consistency checking
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_050
+- QUEST_053
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Keep this strict. It's better to omit than to hallucinate.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] Minutes with uncited decisions/actions fail validation or auto-drop the items
+- [x] When empty, minutes includes explicit 'No explicit decisions recorded.'
+- [x] `python3 -m pytest -q` passes
+

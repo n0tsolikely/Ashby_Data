@@ -1,0 +1,69 @@
+STUART RUNBOOK — ENV + DEPENDENCY TRUTH + SMOKE TEST (DRAFT) — 2026-01-25
+Purpose: Make Stuart runnable and testable on Peter’s PC with deterministic install + a single smoke command.
+Suggested placement in repo (next session): Ashby_Engine/docs/STUART_RUNBOOK.md (or Ashby_Engine/ashby/modules/meetings/docs/)
+
+1) SYSTEM DEPENDENCIES (PC)
+- Python 3.11+
+- ffmpeg (required for audio ingest/transcoding)
+- sqlite3 (usually bundled; ensure available)
+- Optional (GPU): CUDA toolkit compatible with chosen transcription/diarization stack
+
+2) VENV BOOTSTRAP (PIP)
+Windows (PowerShell):
+  py -3.11 -m venv .venv
+  .\.venv\Scripts\Activate.ps1
+  python -m pip install -U pip wheel setuptools
+
+Linux/WSL:
+  python3.11 -m venv .venv
+  source .venv/bin/activate
+  python -m pip install -U pip wheel setuptools
+
+3) DEPENDENCY MANIFEST (MISSING TODAY)
+Repo currently needs ONE canonical dependency manifest. Choose one:
+A) requirements.txt (+ optional requirements-dev.txt)
+B) pyproject.toml (Poetry/uv/pdm)
+
+Minimum baseline deps (to be verified next session by repo scan):
+- fastapi + uvicorn (if/when web UI starts)
+- pytest
+- pydantic (if used)
+- any transcript pipeline deps (whisper / faster-whisper / diarization libs) must be behind adapters
+
+4) STUART ROOT / RUNTIME LOCATION
+Use STUART_ROOT to point runtime artifacts to a known folder.
+Example:
+  set STUART_ROOT=C:\Users\Peter\StuartRuntime   (Windows)
+  export STUART_ROOT=~/StuartRuntime               (Linux)
+
+5) SMOKE TEST (NO WEB UI)
+Goal: prove end-to-end “session + run + transcript stub + index + query” works.
+
+Command pattern (final script to add next session):
+  python -m ashby.modules.meetings.smoke
+
+Smoke should:
+- create a new session
+- create a run
+- generate a transcript stub artifact
+- ingest into SQLite FTS index
+- execute a query and print top hits with citation pointers
+
+6) TEST SUITE
+Run:
+  python -m pytest -q
+
+7) WEB UI LATER
+Web UI is built only after:
+- dependency manifest exists
+- smoke test exists
+- receipts/audit bundles are enforced
+
+NEXT SESSION TODO (IMPLEMENT INTO REPO)
+- Add dependency manifest (requirements.txt or pyproject.toml)
+- Add smoke entrypoint module + tiny README instructions
+- Add Makefile / scripts:
+    - make venv
+    - make install
+    - make test
+    - make smoke

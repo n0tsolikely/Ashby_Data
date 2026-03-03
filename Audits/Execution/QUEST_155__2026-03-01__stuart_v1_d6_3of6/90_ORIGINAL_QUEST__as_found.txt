@@ -1,0 +1,200 @@
+QUEST TEMPLATE — SYNAPSE OS [v1.5]
+(duplicate this file for each new Quest)
+
+================================================================================
+QUEST ID: QUEST_155
+QUEST TITLE: Stuart v1 — Dungeon 6 (3/6): Transcript-Scoped Speaker Map API + UI Persistence + Index Refresh
+QUEST SUBTITLE: GET/PUT speaker_map on transcript_version_id; transcript endpoint returns speaker_map; UI no longer saves via run_id
+PRIORITY: P0
+OWNER: OpenAI Codex (CLI Execution)
+STATUS: ACCEPTED (Ready for execution)
+CREATED: 2026-03-01
+LAST UPDATED: 2026-03-01
+================================================================================
+
+SUBJECT: ASHBY / STUART (Meetings Module)
+ORIGIN: Guild Orders REV14 — Dungeon 6 + Control Sync decisions (speaker overlay scoped per transcript_version_id; no transcript mutation)
+
+LINKS:
+- /mnt/data/Ashby_Canon12_EXTRACTED/Ashby_Canon(12)/Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-25_REV14.txt  (sha256: d10c278cd45a543c32c27102a912ce6f1c0569401c5ec0e00f6dc1e5c5b9b094)
+- Dungeon 6 excerpt sha256: 6d0a02ce22d961dd4eb1fbb4bf0cab4be8d5f3f42bf4c577ceee5b4012af3816
+- /mnt/data/ANALYSIS__D6__MONSTER_ASHBY__2026-03-01.md  (sha256: a086f46d5bf54c4cf3267139f9d8d581f1ecb719dc4f6bceda80ff9a627ef5a9)
+
+================================================================================
+CODEX ANCHORS (read these before making changes)
+- Ashby_Data/Codex/Stuart/Stuart_Codex_6.1_Session_Model.txt  (transcript_version is its own artifact)
+- Ashby_Data/Codex/Stuart/Stuart_Codex_6.5_Artifact_Indexing.txt  (speaker maps indexed separately)
+- Guild Orders REV14 — DUNGEON 6 (overlay scoped per transcript_version_id; UI must reflect mapping)
+
+================================================================================
+CONSTRAINTS (hard rules)
+- Speaker map edits must be possible AFTER transcription, without requiring a formalization run.
+- Saving a speaker map MUST persist and reload; UI must not wipe names on save.
+- Clearing a speaker name (empty mapping) MUST be supported (set mapping to empty / clear overlay pointer).
+- Transcript artifacts remain immutable. Applying names is a VIEW concern via overlay.
+- Index updates for attendee lookup must be driven by speaker_maps, not transcript content.
+
+================================================================================
+CHANGE CLASS: Modification (backend endpoints + frontend wiring)
+RISK CLASS: R2 (touches API contracts + UI wiring)
+
+VISION DELTA
+- Current backend transcript endpoint returns speaker_map={} always.
+- Current UI saves speaker maps via /api/runs/{run_id}/speaker_map, which breaks when no run/formalization exists.
+- This quest makes speaker mapping transcript-native and persistent.
+
+================================================================================
+SYSTEM CONTEXT (repo truth)
+Backend:
+- Transcript retrieval endpoint currently hardcodes speaker_map={}:
+  - Ashby_Engine/ashby/interfaces/web/app.py  → GET /api/transcripts/{transcript_version_id}
+- Speaker map save endpoint is run-scoped:
+  - POST /api/runs/{run_id}/speaker_map
+- Speaker overlay storage:
+  - Ashby_Engine/ashby/modules/meetings/overlays.py
+- SQLite speaker_maps index:
+  - Ashby_Engine/ashby/modules/meetings/index/sqlite_fts.py
+  - Ashby_Engine/ashby/modules/meetings/index/ingest.py
+
+Frontend:
+- Speaker map editor is currently wired to run_id:
+  - Ashby_Engine/webapp/stuart_frontend/stuart_app/src/pages/Stuart.jsx (handleSpeakerMapUpdate uses runs.setSpeakerMap)
+- Transcript viewer consumes speaker_map when provided:
+  - .../TranscriptViewer.jsx (already supports mapping but backend provides {})
+
+================================================================================
+ANTI-DUPLICATION PLAN (do this first)
+- Confirm existing transcript endpoints:
+  - rg -n "/api/transcripts" Ashby_Engine/ashby/interfaces/web/app.py
+- Confirm existing speaker map endpoints:
+  - rg -n "speaker_map" Ashby_Engine/ashby/interfaces/web/app.py
+- Confirm UI client wiring:
+  - rg -n "setSpeakerMap" Ashby_Engine/webapp/stuart_frontend/stuart_app/src
+  - rg -n "activeSpeakerRunId" Ashby_Engine/webapp/stuart_frontend/stuart_app/src/pages/Stuart.jsx
+- Confirm existing index update patterns:
+  - rg -n "DELETE FROM speaker_maps" Ashby_Engine/ashby/modules/meetings/index
+
+================================================================================
+PLACEMENT INTENT
+Backend:
+- Add transcript-scoped endpoints in:
+  - Ashby_Engine/ashby/interfaces/web/app.py
+- Add small helper(s) near session_state / overlays (no new “god module”):
+  - Preferred: extend ashby/modules/meetings/overlays.py with transcript-aware load/save wrappers
+- Add a tiny index refresh helper:
+  - Preferred: ashby/modules/meetings/index/sqlite_fts.py (or ingest.py) — single-purpose function
+
+Frontend:
+- Update API client:
+  - Ashby_Engine/webapp/stuart_frontend/stuart_app/src/api/stuartClient.js
+- Update page wiring:
+  - .../src/pages/Stuart.jsx
+- Keep UI label formatting changes from QUEST_153; don’t duplicate.
+
+================================================================================
+ATOMICITY STATEMENT
+This quest is atomic when:
+- A speaker map can be saved and reloaded per transcript_version_id.
+- The transcript endpoint returns speaker_map and the UI uses it, so names persist after save + reload.
+- Index updates occur on save (so attendee query can work without re-running the pipeline).
+
+================================================================================
+SCOPE
+Backend — add transcript-scoped speaker map contract:
+1) Update GET /api/transcripts/{transcript_version_id}
+   - Include these fields in the response:
+     - speaker_map: { "SPEAKER_00": "Greg", ... } (empty dict if none)
+     - speaker_overlay_id: "<overlay_id>" | null
+     - speakers: ["SPEAKER_00", "SPEAKER_01", ...] (unique labels derived from transcript segments)
+2) Add GET /api/transcripts/{transcript_version_id}/speaker_map
+   - Returns: { "speaker_overlay_id": ..., "speaker_map": {...} }
+3) Add PUT (or POST) /api/transcripts/{transcript_version_id}/speaker_map
+   Request body:
+     - mapping: dict[str,str]  (may be empty)
+     - author: optional str ("user" default)
+   Behavior:
+     - If mapping is empty OR all values are empty/whitespace:
+       - Clear the speaker overlay pointer for that transcript_version_id.
+       - Return speaker_map={} and speaker_overlay_id=null.
+     - Else:
+       - Create a new overlay artifact (immutable).
+       - Set overlay pointer for transcript_version_id (QUEST_154 structure).
+       - Return the saved mapping + overlay id.
+   Side effect:
+     - Refresh sqlite speaker_maps rows for (session_id, transcript_version.run_id) to reflect the new ACTIVE mapping.
+       - If mapping cleared: delete rows for that (session_id, run_id).
+       - If mapping saved: delete then insert new rows.
+
+Backend — keep compatibility and avoid zombie endpoints:
+4) Update POST /api/runs/{run_id}/speaker_map
+   - Resolve run_id → transcript_version_id (if possible).
+   - Delegate to the transcript endpoint logic so it updates transcript-scoped overlay pointers, not session-global.
+   - Keep response shape compatible for the UI, but mark via log/comment that transcript-scoped is canonical.
+
+Frontend — persist mapping in UI:
+5) Update stuartClient:
+   - Add transcripts.getSpeakerMap(transcript_version_id)
+   - Add transcripts.setSpeakerMap(transcript_version_id, mapping)
+6) Update Stuart.jsx wiring:
+   - Replace activeSpeakerRunId dependency for saving mapping.
+   - Use the selected transcript_version_id as the canonical target for speaker map save/load.
+   - After saving:
+     - Update selectedSessionView.speaker_map in local state OR refetch transcript view so the UI shows the updated mapping immediately.
+   - Result: speaker names DO NOT disappear from the overlay editor after clicking Save.
+7) Ensure TranscriptViewer receives the updated speaker_map so the transcript preview updates live.
+
+OUT OF SCOPE
+- Attendee filter API (/api/sessions?attendee=...) is QUEST_156.
+- Search UI rewiring is QUEST_157.
+- Formalization rerender behavior (minutes/pdf regeneration) is D7 scope unless already trivial.
+
+================================================================================
+DEPENDENCIES
+- Requires QUEST_154 (session_state v2) or equivalent implementation for transcript-scoped overlay pointers.
+
+================================================================================
+DOOR IMPACT
+- Backend API (transcripts + runs)
+- Frontend (speaker map editor + transcript view)
+
+================================================================================
+TESTING LEVEL
+- TL3 (backend tests + manual UI verify)
+
+================================================================================
+VERIFICATION PLAN
+Backend:
+- pytest -q
+- Add tests covering:
+  - PUT transcript speaker_map then GET transcript returns same mapping.
+  - Clearing mapping sets overlay_id null and returns empty speaker_map.
+  - Index table updated (speaker_maps rows inserted/deleted) accordingly.
+
+Frontend:
+- npm run build (or lint)
+- Manual UI check:
+  - Transcribe a session → open transcript → map SPEAKER_00 to a name → Save
+  - Names remain visible in overlay inputs after save.
+  - Transcript preview shows mapped name (QUEST_153 formatting).
+  - Reload page → mapping still present.
+
+================================================================================
+ACCEPTANCE CRITERIA
+- GET /api/transcripts/{id} returns speaker_map populated when mapping exists (no longer always {}).
+- Speaker map save does NOT require a run/formalization; it is transcript_version-scoped.
+- UI: speaker map names remain visible after Save and survive reload.
+- Clearing names + saving clears mapping for that transcript version.
+- sqlite speaker_maps index is refreshed on save (enables attendee search in QUEST_156).
+
+================================================================================
+RECEIPTS REQUIRED
+- Diff patch for backend + frontend changes.
+- pytest output showing PASS.
+- npm build/lint output showing PASS.
+- Screenshot(s) showing:
+  - speaker map editor retains names after save
+  - transcript preview reflects mapped name
+
+================================================================================
+NOTES
+- This is the core “why do my names disappear” fix. Don’t half-ass it. Persist + reload is non-negotiable.

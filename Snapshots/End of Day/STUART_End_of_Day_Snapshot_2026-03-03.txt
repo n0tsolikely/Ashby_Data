@@ -1,0 +1,213 @@
+================================================================================
+END OF DAY SNAPSHOT
+================================================================================
+A) Header (required)
+- Subject: STUART
+- Date: 2026-03-03
+- Topic: Auto EOD: Accepted queue drained after validated quest wave
+- Snapshot Type: End_of_Day
+- World State: Fog Lifted
+- Codex Freeze status: PRESENT (/home/notsolikely/Ashby_Data/Codex/CODEX_FREEZE.md)
+
+B) Work Performed (Quest-by-Quest) (required)
+- Quest ID + Title: QUEST_177 — Stuart_v1_Dungeon_10_2_12_Chat_Evidence_Retrieval_FTS_Segments_Speaker_Map_Session_Resolver.txt
+  - Status at end of day: COMPLETED
+  - Preconditions referenced: quest in Accepted + validated bundle gate before move
+  - Actions performed: see /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_177__2026-03-03__stuart_v1_dungeon_10_2_12_chat_evidence_retrieval_fts_segments_speaker_map_session_resolver/02_EXECUTION.md
+  - Artifacts changed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_177__2026-03-03__stuart_v1_dungeon_10_2_12_chat_evidence_retrieval_fts_segments_speaker_map_session_resolver/06_CHANGED_FILES.txt
+  - Verification performed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_177__2026-03-03__stuart_v1_dungeon_10_2_12_chat_evidence_retrieval_fts_segments_speaker_map_session_resolver/03_VERIFY.md + /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_177__2026-03-03__stuart_v1_dungeon_10_2_12_chat_evidence_retrieval_fts_segments_speaker_map_session_resolver/06_TESTS.txt
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_177__2026-03-03__stuart_v1_dungeon_10_2_12_chat_evidence_retrieval_fts_segments_speaker_map_session_resolver/04_OUTCOME.md
+- Quest ID + Title: QUEST_178 — Stuart_v1_Dungeon_10_3_12_LLM_Gateway_Chat_Capability_Evidence_Grounded_Answerer.txt
+  - Status at end of day: COMPLETED
+  - Preconditions referenced: quest in Accepted + validated bundle gate before move
+  - Actions performed: see /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_178__2026-03-03__stuart_v1_dungeon_10_3_12_llm_gateway_chat_capability_evidence_grounded_answerer/02_EXECUTION.md
+  - Artifacts changed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_178__2026-03-03__stuart_v1_dungeon_10_3_12_llm_gateway_chat_capability_evidence_grounded_answerer/06_CHANGED_FILES.txt
+  - Verification performed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_178__2026-03-03__stuart_v1_dungeon_10_3_12_llm_gateway_chat_capability_evidence_grounded_answerer/03_VERIFY.md + /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_178__2026-03-03__stuart_v1_dungeon_10_3_12_llm_gateway_chat_capability_evidence_grounded_answerer/06_TESTS.txt
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_178__2026-03-03__stuart_v1_dungeon_10_3_12_llm_gateway_chat_capability_evidence_grounded_answerer/04_OUTCOME.md
+- Quest ID + Title: QUEST_179 — Stuart_v1_Dungeon_10_4_12_api_chat_Session_Scope_Command_Router_Evidence_Grounded_Q_A.txt
+  - Status at end of day: COMPLETED
+  - Preconditions referenced: quest in Accepted + validated bundle gate before move
+  - Actions performed: see /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_179__2026-03-03__stuart_v1_dungeon_10_4_12_api_chat_session_scope_command_router_evidence_grounded_q_a/02_EXECUTION.md
+  - Artifacts changed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_179__2026-03-03__stuart_v1_dungeon_10_4_12_api_chat_session_scope_command_router_evidence_grounded_q_a/06_CHANGED_FILES.txt
+  - Verification performed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_179__2026-03-03__stuart_v1_dungeon_10_4_12_api_chat_session_scope_command_router_evidence_grounded_q_a/03_VERIFY.md + /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_179__2026-03-03__stuart_v1_dungeon_10_4_12_api_chat_session_scope_command_router_evidence_grounded_q_a/06_TESTS.txt
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_179__2026-03-03__stuart_v1_dungeon_10_4_12_api_chat_session_scope_command_router_evidence_grounded_q_a/04_OUTCOME.md
+- Quest ID + Title: QUEST_180 — Stuart_v1_Dungeon_10_5_12_api_chat_global_Global_Q_A_Soft_Focus_open_session_Actions.txt
+  - Status at end of day: COMPLETED
+  - Preconditions referenced: quest in Accepted + validated bundle gate before move
+  - Actions performed: see /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_180__2026-03-03__stuart_v1_dungeon_10_5_12_api_chat_global_global_q_a_soft_focus_open_session_actions/02_EXECUTION.md
+  - Artifacts changed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_180__2026-03-03__stuart_v1_dungeon_10_5_12_api_chat_global_global_q_a_soft_focus_open_session_actions/06_CHANGED_FILES.txt
+  - Verification performed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_180__2026-03-03__stuart_v1_dungeon_10_5_12_api_chat_global_global_q_a_soft_focus_open_session_actions/03_VERIFY.md + /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_180__2026-03-03__stuart_v1_dungeon_10_5_12_api_chat_global_global_q_a_soft_focus_open_session_actions/06_TESTS.txt
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_180__2026-03-03__stuart_v1_dungeon_10_5_12_api_chat_global_global_q_a_soft_focus_open_session_actions/04_OUTCOME.md
+- Quest ID + Title: QUEST_181 — Stuart_v1_Dungeon_10_6_12_Frontend_API_Plumbing_ChatRequestV1_ui_state_Injection.txt
+  - Status at end of day: COMPLETED
+  - Preconditions referenced: quest in Accepted + validated bundle gate before move
+  - Actions performed: see /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_181__2026-03-03__stuart_v1_dungeon_10_6_12_frontend_api_plumbing_chatrequestv1_ui_state_injection/02_EXECUTION.md
+  - Artifacts changed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_181__2026-03-03__stuart_v1_dungeon_10_6_12_frontend_api_plumbing_chatrequestv1_ui_state_injection/06_CHANGED_FILES.txt
+  - Verification performed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_181__2026-03-03__stuart_v1_dungeon_10_6_12_frontend_api_plumbing_chatrequestv1_ui_state_injection/03_VERIFY.md + /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_181__2026-03-03__stuart_v1_dungeon_10_6_12_frontend_api_plumbing_chatrequestv1_ui_state_injection/06_TESTS.txt
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_181__2026-03-03__stuart_v1_dungeon_10_6_12_frontend_api_plumbing_chatrequestv1_ui_state_injection/04_OUTCOME.md
+- Quest ID + Title: QUEST_182 — Stuart_v1_Dungeon_10_7_12_Chat_UI_Persistent_Thread_Rich_Reply_Rendering_Citations_Hits_Actions.txt
+  - Status at end of day: COMPLETED
+  - Preconditions referenced: quest in Accepted + validated bundle gate before move
+  - Actions performed: see /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_182__2026-03-03__stuart_v1_dungeon_10_7_12_chat_ui_persistent_thread_rich_reply_rendering_citations_hits_actions/02_EXECUTION.md
+  - Artifacts changed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_182__2026-03-03__stuart_v1_dungeon_10_7_12_chat_ui_persistent_thread_rich_reply_rendering_citations_hits_actions/06_CHANGED_FILES.txt
+  - Verification performed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_182__2026-03-03__stuart_v1_dungeon_10_7_12_chat_ui_persistent_thread_rich_reply_rendering_citations_hits_actions/03_VERIFY.md + /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_182__2026-03-03__stuart_v1_dungeon_10_7_12_chat_ui_persistent_thread_rich_reply_rendering_citations_hits_actions/06_TESTS.txt
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_182__2026-03-03__stuart_v1_dungeon_10_7_12_chat_ui_persistent_thread_rich_reply_rendering_citations_hits_actions/04_OUTCOME.md
+- Quest ID + Title: QUEST_183 — Stuart_v1_Dungeon_10_8_12_Chat_Actions_open_session_jump_to_segment_Wiring_Transcript_Jump_UX.txt
+  - Status at end of day: COMPLETED
+  - Preconditions referenced: quest in Accepted + validated bundle gate before move
+  - Actions performed: see /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_183__2026-03-03__stuart_v1_dungeon_10_8_12_chat_actions_open_session_jump_to_segment_wiring_transcript_jump_ux/02_EXECUTION.md
+  - Artifacts changed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_183__2026-03-03__stuart_v1_dungeon_10_8_12_chat_actions_open_session_jump_to_segment_wiring_transcript_jump_ux/06_CHANGED_FILES.txt
+  - Verification performed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_183__2026-03-03__stuart_v1_dungeon_10_8_12_chat_actions_open_session_jump_to_segment_wiring_transcript_jump_ux/03_VERIFY.md + /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_183__2026-03-03__stuart_v1_dungeon_10_8_12_chat_actions_open_session_jump_to_segment_wiring_transcript_jump_ux/06_TESTS.txt
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_183__2026-03-03__stuart_v1_dungeon_10_8_12_chat_actions_open_session_jump_to_segment_wiring_transcript_jump_ux/04_OUTCOME.md
+- Quest ID + Title: QUEST_184 — Stuart_v1_Dungeon_10_9_12_Slash_Commands_v1_help_sessions_open_rename_transcribe_formalize_export_map_speakers_set_speaker.txt
+  - Status at end of day: COMPLETED
+  - Preconditions referenced: quest in Accepted + validated bundle gate before move
+  - Actions performed: see /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_184__2026-03-03__stuart_v1_dungeon_10_9_12_slash_commands_v1_help_sessions_open_rename_transcribe_formalize_export_map_speakers_set_speaker/02_EXECUTION.md
+  - Artifacts changed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_184__2026-03-03__stuart_v1_dungeon_10_9_12_slash_commands_v1_help_sessions_open_rename_transcribe_formalize_export_map_speakers_set_speaker/06_CHANGED_FILES.txt
+  - Verification performed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_184__2026-03-03__stuart_v1_dungeon_10_9_12_slash_commands_v1_help_sessions_open_rename_transcribe_formalize_export_map_speakers_set_speaker/03_VERIFY.md + /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_184__2026-03-03__stuart_v1_dungeon_10_9_12_slash_commands_v1_help_sessions_open_rename_transcribe_formalize_export_map_speakers_set_speaker/06_TESTS.txt
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_184__2026-03-03__stuart_v1_dungeon_10_9_12_slash_commands_v1_help_sessions_open_rename_transcribe_formalize_export_map_speakers_set_speaker/04_OUTCOME.md
+- Quest ID + Title: QUEST_185 — Stuart_v1_Dungeon_10_10_12_Chat_Truth_Gates_Citation_Enforcement_Scope_Safety_Rails.txt
+  - Status at end of day: COMPLETED
+  - Preconditions referenced: quest in Accepted + validated bundle gate before move
+  - Actions performed: see /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_185__2026-03-03__stuart_v1_dungeon_10_10_12_chat_truth_gates_citation_enforcement_scope_safety_rails/02_EXECUTION.md
+  - Artifacts changed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_185__2026-03-03__stuart_v1_dungeon_10_10_12_chat_truth_gates_citation_enforcement_scope_safety_rails/06_CHANGED_FILES.txt
+  - Verification performed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_185__2026-03-03__stuart_v1_dungeon_10_10_12_chat_truth_gates_citation_enforcement_scope_safety_rails/03_VERIFY.md + /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_185__2026-03-03__stuart_v1_dungeon_10_10_12_chat_truth_gates_citation_enforcement_scope_safety_rails/06_TESTS.txt
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_185__2026-03-03__stuart_v1_dungeon_10_10_12_chat_truth_gates_citation_enforcement_scope_safety_rails/04_OUTCOME.md
+- Quest ID + Title: QUEST_186 — Stuart_v1_Dungeon_10_11_12_Chat_Hit_Match_Reasons_Reuse_MatchKind_UI_Badges.txt
+  - Status at end of day: COMPLETED
+  - Preconditions referenced: quest in Accepted + validated bundle gate before move
+  - Actions performed: see /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_186__2026-03-03__stuart_v1_dungeon_10_11_12_chat_hit_match_reasons_reuse_matchkind_ui_badges/02_EXECUTION.md
+  - Artifacts changed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_186__2026-03-03__stuart_v1_dungeon_10_11_12_chat_hit_match_reasons_reuse_matchkind_ui_badges/06_CHANGED_FILES.txt
+  - Verification performed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_186__2026-03-03__stuart_v1_dungeon_10_11_12_chat_hit_match_reasons_reuse_matchkind_ui_badges/03_VERIFY.md + /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_186__2026-03-03__stuart_v1_dungeon_10_11_12_chat_hit_match_reasons_reuse_matchkind_ui_badges/06_TESTS.txt
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_186__2026-03-03__stuart_v1_dungeon_10_11_12_chat_hit_match_reasons_reuse_matchkind_ui_badges/04_OUTCOME.md
+- Quest ID + Title: QUEST_187 — Stuart_v1_Dungeon_10_12_12_Chat_Integration_Test_Suite_Local_Smoke_Script.txt
+  - Status at end of day: COMPLETED
+  - Preconditions referenced: quest in Accepted + validated bundle gate before move
+  - Actions performed: see /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_187__2026-03-03__stuart_v1_dungeon_10_12_12_chat_integration_test_suite_local_smoke_script/02_EXECUTION.md
+  - Artifacts changed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_187__2026-03-03__stuart_v1_dungeon_10_12_12_chat_integration_test_suite_local_smoke_script/06_CHANGED_FILES.txt
+  - Verification performed: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_187__2026-03-03__stuart_v1_dungeon_10_12_12_chat_integration_test_suite_local_smoke_script/03_VERIFY.md + /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_187__2026-03-03__stuart_v1_dungeon_10_12_12_chat_integration_test_suite_local_smoke_script/06_TESTS.txt
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_187__2026-03-03__stuart_v1_dungeon_10_12_12_chat_integration_test_suite_local_smoke_script/04_OUTCOME.md
+
+C) Completed Work Summary (required when anything completed)
+- QUEST_177 — Stuart_v1_Dungeon_10_2_12_Chat_Evidence_Retrieval_FTS_Segments_Speaker_Map_Session_Resolver.txt
+  - Proof: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_177__2026-03-03__stuart_v1_dungeon_10_2_12_chat_evidence_retrieval_fts_segments_speaker_map_session_resolver
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_177__2026-03-03__stuart_v1_dungeon_10_2_12_chat_evidence_retrieval_fts_segments_speaker_map_session_resolver/04_OUTCOME.md
+- QUEST_178 — Stuart_v1_Dungeon_10_3_12_LLM_Gateway_Chat_Capability_Evidence_Grounded_Answerer.txt
+  - Proof: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_178__2026-03-03__stuart_v1_dungeon_10_3_12_llm_gateway_chat_capability_evidence_grounded_answerer
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_178__2026-03-03__stuart_v1_dungeon_10_3_12_llm_gateway_chat_capability_evidence_grounded_answerer/04_OUTCOME.md
+- QUEST_179 — Stuart_v1_Dungeon_10_4_12_api_chat_Session_Scope_Command_Router_Evidence_Grounded_Q_A.txt
+  - Proof: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_179__2026-03-03__stuart_v1_dungeon_10_4_12_api_chat_session_scope_command_router_evidence_grounded_q_a
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_179__2026-03-03__stuart_v1_dungeon_10_4_12_api_chat_session_scope_command_router_evidence_grounded_q_a/04_OUTCOME.md
+- QUEST_180 — Stuart_v1_Dungeon_10_5_12_api_chat_global_Global_Q_A_Soft_Focus_open_session_Actions.txt
+  - Proof: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_180__2026-03-03__stuart_v1_dungeon_10_5_12_api_chat_global_global_q_a_soft_focus_open_session_actions
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_180__2026-03-03__stuart_v1_dungeon_10_5_12_api_chat_global_global_q_a_soft_focus_open_session_actions/04_OUTCOME.md
+- QUEST_181 — Stuart_v1_Dungeon_10_6_12_Frontend_API_Plumbing_ChatRequestV1_ui_state_Injection.txt
+  - Proof: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_181__2026-03-03__stuart_v1_dungeon_10_6_12_frontend_api_plumbing_chatrequestv1_ui_state_injection
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_181__2026-03-03__stuart_v1_dungeon_10_6_12_frontend_api_plumbing_chatrequestv1_ui_state_injection/04_OUTCOME.md
+- QUEST_182 — Stuart_v1_Dungeon_10_7_12_Chat_UI_Persistent_Thread_Rich_Reply_Rendering_Citations_Hits_Actions.txt
+  - Proof: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_182__2026-03-03__stuart_v1_dungeon_10_7_12_chat_ui_persistent_thread_rich_reply_rendering_citations_hits_actions
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_182__2026-03-03__stuart_v1_dungeon_10_7_12_chat_ui_persistent_thread_rich_reply_rendering_citations_hits_actions/04_OUTCOME.md
+- QUEST_183 — Stuart_v1_Dungeon_10_8_12_Chat_Actions_open_session_jump_to_segment_Wiring_Transcript_Jump_UX.txt
+  - Proof: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_183__2026-03-03__stuart_v1_dungeon_10_8_12_chat_actions_open_session_jump_to_segment_wiring_transcript_jump_ux
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_183__2026-03-03__stuart_v1_dungeon_10_8_12_chat_actions_open_session_jump_to_segment_wiring_transcript_jump_ux/04_OUTCOME.md
+- QUEST_184 — Stuart_v1_Dungeon_10_9_12_Slash_Commands_v1_help_sessions_open_rename_transcribe_formalize_export_map_speakers_set_speaker.txt
+  - Proof: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_184__2026-03-03__stuart_v1_dungeon_10_9_12_slash_commands_v1_help_sessions_open_rename_transcribe_formalize_export_map_speakers_set_speaker
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_184__2026-03-03__stuart_v1_dungeon_10_9_12_slash_commands_v1_help_sessions_open_rename_transcribe_formalize_export_map_speakers_set_speaker/04_OUTCOME.md
+- QUEST_185 — Stuart_v1_Dungeon_10_10_12_Chat_Truth_Gates_Citation_Enforcement_Scope_Safety_Rails.txt
+  - Proof: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_185__2026-03-03__stuart_v1_dungeon_10_10_12_chat_truth_gates_citation_enforcement_scope_safety_rails
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_185__2026-03-03__stuart_v1_dungeon_10_10_12_chat_truth_gates_citation_enforcement_scope_safety_rails/04_OUTCOME.md
+- QUEST_186 — Stuart_v1_Dungeon_10_11_12_Chat_Hit_Match_Reasons_Reuse_MatchKind_UI_Badges.txt
+  - Proof: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_186__2026-03-03__stuart_v1_dungeon_10_11_12_chat_hit_match_reasons_reuse_matchkind_ui_badges
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_186__2026-03-03__stuart_v1_dungeon_10_11_12_chat_hit_match_reasons_reuse_matchkind_ui_badges/04_OUTCOME.md
+- QUEST_187 — Stuart_v1_Dungeon_10_12_12_Chat_Integration_Test_Suite_Local_Smoke_Script.txt
+  - Proof: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_187__2026-03-03__stuart_v1_dungeon_10_12_12_chat_integration_test_suite_local_smoke_script
+  - Outcome: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_187__2026-03-03__stuart_v1_dungeon_10_12_12_chat_integration_test_suite_local_smoke_script/04_OUTCOME.md
+
+D) Incomplete / Failed / Blocked Work (required when relevant)
+- (none)
+
+E) System Verification Performed (required when applicable)
+- QUEST_177
+  - Command receipts:
+    CMD: PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_chat_retrieval.py tests/test_meetings_search_filters.py
+    RC: 0
+  - Verify receipt: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_177__2026-03-03__stuart_v1_dungeon_10_2_12_chat_evidence_retrieval_fts_segments_speaker_map_session_resolver/03_VERIFY.md
+- QUEST_178
+  - Command receipts:
+    CMD: PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_llm_gateway_chat_api.py tests/test_llm_service_chat_http_gateway.py tests/test_meetings_chat_answerer_validates_citations.py tests/test_llm_gateway_api.py tests/test_llm_gateway_contract_minimum.py
+    RC: 0
+  - Verify receipt: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_178__2026-03-03__stuart_v1_dungeon_10_3_12_llm_gateway_chat_capability_evidence_grounded_answerer/03_VERIFY.md
+- QUEST_179
+  - Command receipts:
+    CMD: PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_chat_session_scope_lock.py tests/test_meetings_web_api_envelope_consistency.py
+    RC: 2
+    CMD: PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_chat_session_scope_lock.py tests/test_meetings_web_api_envelope_consistency.py
+    RC: 1
+    CMD: PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_chat_session_scope_lock.py tests/test_meetings_web_api_envelope_consistency.py
+    RC: 0
+  - Verify receipt: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_179__2026-03-03__stuart_v1_dungeon_10_4_12_api_chat_session_scope_command_router_evidence_grounded_q_a/03_VERIFY.md
+- QUEST_180
+  - Command receipts:
+    CMD: PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_chat_global_cold_start.py tests/test_meetings_chat_global_open_session_actions.py
+    RC: 0
+  - Verify receipt: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_180__2026-03-03__stuart_v1_dungeon_10_5_12_api_chat_global_global_q_a_soft_focus_open_session_actions/03_VERIFY.md
+- QUEST_181
+  - Command receipts:
+    CMD: cd /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app && npm run lint
+    RC: 1
+    CMD: cd /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app && npx eslint src/api/stuartClient.js src/pages/Stuart.jsx src/components/stuart/ChatInterface.jsx src/components/stuart/TranscriptViewer.jsx src/components/stuart/MatchKindBadge.jsx --quiet
+    RC: 0
+  - Verify receipt: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_181__2026-03-03__stuart_v1_dungeon_10_6_12_frontend_api_plumbing_chatrequestv1_ui_state_injection/03_VERIFY.md
+- QUEST_182
+  - Command receipts:
+    CMD: cd /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app && npx eslint src/components/stuart/ChatInterface.jsx src/pages/Stuart.jsx --quiet
+    RC: 0
+  - Verify receipt: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_182__2026-03-03__stuart_v1_dungeon_10_7_12_chat_ui_persistent_thread_rich_reply_rendering_citations_hits_actions/03_VERIFY.md
+- QUEST_183
+  - Command receipts:
+    CMD: cd /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app && npx eslint src/pages/Stuart.jsx src/components/stuart/TranscriptViewer.jsx src/components/stuart/ChatInterface.jsx --quiet
+    RC: 0
+  - Verify receipt: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_183__2026-03-03__stuart_v1_dungeon_10_8_12_chat_actions_open_session_jump_to_segment_wiring_transcript_jump_ux/03_VERIFY.md
+- QUEST_184
+  - Command receipts:
+    CMD: PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_chat_commands_parse.py tests/test_meetings_chat_commands_sessions_open.py
+    RC: 0
+  - Verify receipt: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_184__2026-03-03__stuart_v1_dungeon_10_9_12_slash_commands_v1_help_sessions_open_rename_transcribe_formalize_export_map_speakers_set_speaker/03_VERIFY.md
+- QUEST_185
+  - Command receipts:
+    CMD: PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_chat_truth_gate_citations_required.py tests/test_meetings_chat_truth_gate_invalid_citations_filtered.py tests/test_meetings_chat_truth_gate_session_scope_no_leak.py
+    RC: 0
+  - Verify receipt: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_185__2026-03-03__stuart_v1_dungeon_10_10_12_chat_truth_gates_citation_enforcement_scope_safety_rails/03_VERIFY.md
+- QUEST_186
+  - Command receipts:
+    CMD: PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_chat_retrieval.py
+    RC: 0
+    CMD: cd /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app && npx eslint src/components/stuart/ChatInterface.jsx src/components/stuart/MatchKindBadge.jsx src/components/stuart/SessionSearch.jsx --quiet
+    RC: 0
+  - Verify receipt: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_186__2026-03-03__stuart_v1_dungeon_10_11_12_chat_hit_match_reasons_reuse_matchkind_ui_badges/03_VERIFY.md
+- QUEST_187
+  - Command receipts:
+    CMD: PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_chat_integration_*.py
+    RC: 1
+    CMD: PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_chat_integration_*.py
+    RC: 0
+    CMD: python /home/notsolikely/Ashby_Engine/scripts/dev_chat_smoke.py --help
+    RC: 0
+  - Verify receipt: /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_187__2026-03-03__stuart_v1_dungeon_10_12_12_chat_integration_test_suite_local_smoke_script/03_VERIFY.md
+
+F) Bugs / Weirdness / Discoveries
+- No additional bugs discovered beyond quest-level logs; see execution bundles for details.
+
+G) Raid / Guild Orders status changes
+- (none)
+
+H) Talent Tree updates (mandatory when relevant)
+- (none)
+
+I) Resume Instructions (required)
+- Tomorrow's Control Sync must start by reviewing latest Control Sync + this EOD snapshot.
+- Known blockers: none recorded in completed wave; verify new Accepted queue before execution.
+- Next recommended Quests: accept next board stack per active Guild Orders.
+- Rehydration notes: use Latest Rehydration Pack continuity lock and this EOD for resume anchor.
+
+END OF SNAPSHOT

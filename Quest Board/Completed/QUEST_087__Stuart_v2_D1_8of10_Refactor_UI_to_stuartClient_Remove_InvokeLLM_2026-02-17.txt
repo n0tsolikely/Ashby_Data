@@ -1,0 +1,114 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_087
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v2 — D1 8of10: Refactor UI to use stuartClient; delete InvokeLLM simulations and Base44 call patterns
+
+Context: (Ashby / Stuart / System / Other)
+Stuart (Ashby) — Webapp Frontend
+
+Origin:
+Stuart Architecture Transcendence Protocol — Control Sync 2026-02-16 (Dungeon 1) + Codex truth rules (no hallucinated outputs)
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- Guild Orders: Ashby_Data/Guild Orders/PAUSED/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt — Dungeon 1
+- Codex: Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt (Sections 1.2, 1.4, 2.1, 2.2, 2.5)
+- Docs: Ashby_Data/Stuart/Docs/STUART_Base44_UI_Code_Audit__2026-02-16.txt
+- Docs: Ashby_Data/Stuart/Docs/STUART_Base44_UI_Surgery_Checklist__2026-02-16.txt
+- Input: Ashby_Data/Stuart/Docs/stuart_app.zip (Base44 UI source pack)
+- Engine anchor: Ashby_Engine/ashby/interfaces/web/ (current FastAPI web door + /static + /templates)
+
+Status: BOARD | ACTIVE | COMPLETED | ABANDONED
+COMPLETED
+
+Audit Bundle Path: Quest Board/Quest Diff Audit Files/QUEST_###__AUDIT.txt
+Ashby_Data/Audits/Execution/QUEST_087__2026-02-17__stuart_v2_d1_8of10_refactor_ui_to_use_stuartclient_delete_invokellm_simulations_and_base44_call_patterns
+
+Accepted On:
+2026-02-18
+
+Accepted By:
+Codex (GPT-5)
+
+Completed On:
+2026-02-18
+
+Completed By:
+Codex (GPT-5)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Replace all Base44 data-layer call patterns with the canonical stuartClient and remove any LLM-simulated transcript/formalization/chat behavior. UI must render with empty/real data and show explicit 'Not implemented' when backend endpoints are missing.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Find and replace all imports of '@/api/base44Client' (or equivalent) with '@/api/stuartClient'.
+- Remove Base44 integration simulation paths (e.g., base44.integrations.Core.InvokeLLM) used to fake transcription/formalization/chat.
+- Update UI components/pages to call stuartClient methods (sessions list/create, upload, run, transcripts, formalizations).
+- Ensure UI handles empty responses gracefully:
+  • session list renders empty state
+  • tabs render without crashing
+  • actions that hit missing endpoints show an explicit error banner/toast instead of fabricating output
+- Update CHANGELOG (02_CHANGELOG.md) with the list of files refactored.
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Implementing the backend endpoints themselves (Dungeon 2).
+- Building full end-to-end pipeline UI behavior (later dungeons).
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_086 (stuartClient exists).
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Codex rule enforcement: if a claim/output is not backed by real artifacts, the UI must show 'not available' / error — never mock transcripts/formalizations.
+- Keep refactors mechanical and traceable: one module at a time, commit-friendly.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] No imports of base44Client remain in the frontend workspace.
+- [x] No usage of InvokeLLM remains anywhere in the frontend workspace.
+- [x] UI compiles and renders the base layout without crashing even when backend returns empty.
+- [x] Explicit 'Not implemented' / error messaging exists for missing endpoints (no fake outputs).
+- [x] 02_CHANGELOG.md updated with affected files list.
+
+────────────────────────────────────────────────────────
+TALENT POINT
+────────────────────────────────────────────────────────
+# On completion:
+# - Talent Point Awarded: YES / NO
+# - Talent Spent On: (TALENT ID — Name in Talent Tree)
+Talent Point Awarded: NO
+Talent Spent On: N/A
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+# Optional closing notes once the quest is completed or abandoned.
+Refactored frontend call sites to canonical Stuart client:
+- /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app/src/pages/Stuart.jsx
+- /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app/src/pages/Sessions.jsx
+- /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app/src/components/stuart/AudioUploader.jsx
+
+Proof checks:
+- `rg -n \"base44Client\" .../stuart_app` => no matches
+- `rg -n \"InvokeLLM\" .../stuart_app` => no matches
+- `npm run build` => success
+- Dev server booted: `http://127.0.0.1:4173/`
+
+Error behavior:
+- Failed endpoint calls surface explicit error messages via toasts; no simulated transcript/formalization/chat output remains.

@@ -1,0 +1,110 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_082
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v2 — D1 3of10: Purge Base44 dependencies + Vite plugin; add canonical alias/proxy
+
+Context: (Ashby / Stuart / System / Other)
+Stuart (Ashby) — Webapp Frontend
+
+Origin:
+Stuart Architecture Transcendence Protocol — Control Sync 2026-02-16 (Dungeon 1)
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- Guild Orders: Ashby_Data/Guild Orders/PAUSED/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt — Dungeon 1
+- Codex: Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt (Sections 1.2, 1.4, 2.1, 2.2, 2.5)
+- Docs: Ashby_Data/Stuart/Docs/STUART_Base44_UI_Code_Audit__2026-02-16.txt
+- Docs: Ashby_Data/Stuart/Docs/STUART_Base44_UI_Surgery_Checklist__2026-02-16.txt
+- Input: Ashby_Data/Stuart/Docs/stuart_app.zip (Base44 UI source pack)
+- Engine anchor: Ashby_Engine/ashby/interfaces/web/ (current FastAPI web door + /static + /templates)
+
+Status: BOARD | ACTIVE | COMPLETED | ABANDONED
+COMPLETED
+
+Audit Bundle Path: Quest Board/Quest Diff Audit Files/QUEST_###__AUDIT.txt
+Ashby_Data/Audits/Execution/QUEST_082__2026-02-17__stuart_v2_d1_3of10_purge_base44_dependencies_vite_plugin_add_canonical_alias_proxy
+
+Accepted On:
+2026-02-18
+
+Accepted By:
+Codex (GPT-5)
+
+Completed On:
+2026-02-18
+
+Completed By:
+Codex (GPT-5)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Remove Base44 platform dependencies (@base44/sdk, @base44/vite-plugin) and make the frontend installable and buildable using standard Vite tooling. Add canonical alias/proxy wiring required for dev without CORS pain.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Edit package.json: remove all Base44 dependencies (e.g., @base44/sdk, @base44/vite-plugin, base44-*).
+- Edit vite config: remove Base44 plugin usage/imports entirely.
+- Add Vite resolve.alias for '@' -> 'src' IF the codebase uses '@/...' imports; otherwise document chosen import strategy (alias or relative).
+- Add Vite dev server proxy so frontend can call backend '/api/*' without CORS (proxy '/api' -> backend host/port).
+- Ensure package.json scripts include at minimum: dev, build, preview.
+- Run install (pnpm/npm) and capture output to prove no Base44 package is required to install dependencies.
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Fixing runtime/compile errors unrelated to Base44 deps (handled in later quests).
+- Refactoring UI data calls away from Base44 API surface (Quest 087).
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_081 (workspace extracted).
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Preferred: keep API calls relative ('/api') and use Vite proxy instead of hardcoding absolute URLs.
+- Do not introduce a 'base44Client' compatibility shim; we are doing canonical naming from the start.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] package.json contains no Base44 dependencies.
+- [x] vite.config.* contains no Base44 plugin usage.
+- [x] Vite alias strategy is implemented (alias '@' -> 'src') OR imports have been normalized and documented.
+- [x] Vite proxy for '/api' is configured (or an explicit documented alternative is provided).
+- [x] Install succeeds (pnpm/npm) without Base44 tooling; install log captured.
+
+────────────────────────────────────────────────────────
+TALENT POINT
+────────────────────────────────────────────────────────
+# On completion:
+# - Talent Point Awarded: YES / NO
+# - Talent Spent On: (TALENT ID — Name in Talent Tree)
+Talent Point Awarded: NO
+Talent Spent On: N/A
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+# Optional closing notes once the quest is completed or abandoned.
+Changes completed in:
+- /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app/package.json
+- /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app/vite.config.js
+
+Install proof:
+- Ran in workspace `/home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app`
+- Command: `npm install --no-audit --progress=false`
+- Output: `added 605 packages in 28s`
+
+Notes:
+- Base44 references still exist in source files under `src/` and are addressed in subsequent quests (API and naming migration).

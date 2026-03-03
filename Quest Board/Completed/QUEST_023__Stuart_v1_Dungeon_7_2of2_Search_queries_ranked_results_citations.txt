@@ -1,0 +1,75 @@
+QUEST ID: QUEST_023
+Title: Stuart v1 — Dungeon 7 (2 of 2): Search queries → ranked results + citations
+Context: Stuart
+Origin: Guild Orders: GUILD_ORDERS_STUART_V1_2026-01-16_REV3.txt (Dungeon 7)
+Priority: P0
+Links:
+- Guild Orders: Stuart v1 — Dungeon 7
+- Supersedes (decomposition of): QUEST_008
+- Related: QUEST_022 (index ingestion), QUEST_016 (intent/plan), QUEST_017 (clarify prompts)
+Status: COMPLETED
+Audit Bundle Path: Quest Board/QUEST DIFF AUDIT FILES/QUEST_023__AUDIT/
+Accepted On: 2026-01-25
+Completed On: 2026-01-25
+DESCRIPTION
+────────────────────────────────────────
+Implement the query path that turns a user search intent (e.g., “find kimchi entry”) into deterministic ranked results with snippets and citations pointing back to transcript segments.
+
+SCOPE / OBJECTIVE
+────────────────────────────────────────
+Implement:
+- Query execution against SQLite FTS.
+- Ranked result set with:
+  - session pointers
+  - snippets
+  - citations/pointers back to transcript segments (segment_id/timestamps)
+
+LLM usage rule (v1):
+- LLM may be used after retrieval for intent parsing or summarizing top-N results.
+- LLM must not brute-force scan filesystem for retrieval.
+Deliver results in a structure doors can render (web/telegram).
+
+OUT OF SCOPE
+────────────────────────────────────────
+Full export/download flows (handled in Dungeon 8).
+Vector retrieval / embeddings.
+Multi-user permissions.
+
+DEPENDENCIES
+────────────────────────────────────────
+- QUEST_022
+
+EXECUTION NOTES
+────────────────────────────────────────
+Search results must be citation-aware. If you can’t point back to transcript anchors, the result is not valid.
+Keep results deterministic-first; LLM is presentation, not retrieval.
+
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────
+- [x] A query like “kimchi” returns ranked results quickly via SQLite FTS.
+- [x] Results include snippets and at least one citation/pointer back to transcript anchors per result.
+- [x] Result structure is door-agnostic (suitable for webapp rendering and minimal telegram output).
+- [x] If no results, system returns a clear “no hits found” response without hallucinating sessions.
+- [x] A minimal integration test shows search can be invoked from the router as a plan step (execution can be immediate).
+
+TALENT POINT
+────────────────────────────────────────
+On completion:
+- Talent Point Awarded: YES
+- Talent Spent On: TALENT_STUART_SEARCH_RANKED_CITATIONS — Ranked Search Results + Citations
+
+FINAL NOTES
+────────────────────────────────────────
+Evidence:
+- Engine files:
+  - ashby/modules/meetings/index/sqlite_fts.py (search join + session filter + source_path)
+  - ashby/modules/meetings/pipeline/search.py (writes door-agnostic search_results.json artifact)
+  - ashby/modules/meetings/schemas/search.py (SearchResults + CitationAnchor schema)
+  - ashby/modules/meetings/pipeline/job_runner.py (executes search plan step)
+  - ashby/modules/meetings/cli_stuart.py (adds `stuart search`)
+- Test:
+  - tests/test_meetings_search_ranked_results_citations.py
+- Verification:
+  - python -m pytest -q tests  -> 32 passed
+- Audit bundle:
+  - Quest Board/QUEST DIFF AUDIT FILES/QUEST_023__AUDIT/

@@ -1,0 +1,127 @@
+# QUEST_ID: QUEST_169
+# TITLE: Stuart v1 — Dungeon 8 (1/7): Formalization Titles (Run Metadata + Rename API)
+# DATE: 2026-03-01
+# STATUS: ACCEPTED
+# PRIORITY: P0
+# OWNER: OpenAI Codex (CLI)
+# RISK_CLASS: R1
+
+## EXECUTIVE SUMMARY
+Formalizations currently surface only as `formalization_id == run_id`, with no user-visible title. Dungeon 8 requires: (A1) optional title at creation, auto-generated default title, and rename later — without ever replacing the stable formalization_id.
+
+This quest adds a **formalization title** field to run metadata, plus an API to set/update it, and updates the formalization list endpoint to return the computed title.
+
+## CANONICAL ANCHORS
+- Guild Orders REV14 — **DUNGEON 8 — EXPORT ZIP** (A1: formalization titles).  
+  Path: `Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-25_REV14.txt`
+- Stuart Canonical Vision (templates/retention/outputs are first-class artifacts).  
+  Path: `Ashby_Data/Stuart/Docs/Stuart - The Canonical Vision.txt`
+
+## REPO REALITY CHECK
+
+REPO INTEGRITY PRE-FLIGHT (P0 — do this before any D8 work)
+- Sanity check only: confirm the required Stuart launcher + frontend scaffold files exist in your *current working tree* before starting D8 UI/export work. If any are missing (deleted locally, partial checkout, bad merge), **restore them from git** before continuing.
+
+1) Confirm these files exist (paths relative to `Ashby_Engine/`):
+   - `requirements-stuart-v1.txt`
+   - `webapp/stuart_frontend/stuart_app/package.json`
+   - `webapp/stuart_frontend/stuart_app/index.html`
+   - `webapp/stuart_frontend/stuart_app/vite.config.js`
+   - `webapp/stuart_frontend/stuart_app/tailwind.config.js`
+   - `webapp/stuart_frontend/stuart_app/postcss.config.js`
+   - `webapp/stuart_frontend/stuart_app/eslint.config.js`
+   - `webapp/stuart_frontend/stuart_app/jsconfig.json`
+   - `webapp/stuart_frontend/stuart_app/components.json`
+
+2) If any are missing, restore them from git (preferred):
+   - `git checkout -- requirements-stuart-v1.txt \
+       webapp/stuart_frontend/stuart_app/package.json \
+       webapp/stuart_frontend/stuart_app/index.html \
+       webapp/stuart_frontend/stuart_app/vite.config.js \
+       webapp/stuart_frontend/stuart_app/tailwind.config.js \
+       webapp/stuart_frontend/stuart_app/postcss.config.js \
+       webapp/stuart_frontend/stuart_app/eslint.config.js \
+       webapp/stuart_frontend/stuart_app/jsconfig.json \
+       webapp/stuart_frontend/stuart_app/components.json`
+
+3) Sanity check build:
+   - `npm --prefix webapp/stuart_frontend/stuart_app run build`
+
+If you *cannot* restore from git, fallback is to copy these exact files from the previous Canon zip / snapshot where the frontend build was known-good.
+
+- Backend formalizations list endpoint: `Ashby_Engine/ashby/interfaces/web/app.py` → `GET /api/sessions/{session_id}/formalizations`
+  - Today: returns `{ formalization_id: run_id, output_* urls, mode, created_ts, status }` with **no title**.
+- Run manifest is created in: `Ashby_Engine/ashby/modules/meetings/store.py:create_run()` using `RunManifest` in `Ashby_Engine/ashby/modules/meetings/manifests.py`.
+
+## SCOPE
+### IN SCOPE
+1) Add a formalization title override field to run state (run.json), without breaking existing runs.
+2) Allow **optional** title to be set at run creation (`POST /api/run`) via the existing payload shape.
+3) Add an API endpoint to rename a run/formalization title after the fact.
+4) Update `GET /api/sessions/{id}/formalizations` to return a `title` field.
+
+### OUT OF SCOPE
+- Export zip changes (Dungeon 8 bundle work) — handled in later D8 quests.
+- Search/index changes for formalization titles (nice-to-have; not required to satisfy D8).
+
+## IMPLEMENTATION PLAN
+### A) Run manifest field
+- Extend `RunManifest` dataclass in `ashby/modules/meetings/manifests.py` with:
+  - `title_override: Optional[str] = None`
+- Update `create_run(session_id, plan, ...)` in `ashby/modules/meetings/store.py` to accept an optional title override and persist it into `run.json`.
+  - Preserve backwards compatibility by making the new arg keyword-only and optional.
+
+### B) Title normalization + default title
+- Add a small helper in a sensible location (prefer: `ashby/modules/meetings/store.py` (local helper) or create `ashby/modules/meetings/naming.py` (new, small, dedicated)) to:
+  - sanitize/trim title strings
+  - enforce a sane max length (e.g., 120 chars)
+  - compute a deterministic default title when missing.
+
+**Default title MUST be deterministic.** Use stable inputs only:
+- session title (if any) OR session short id
+- mode (meeting/journal)
+- run short id (first 8)
+- run.created_ts is stable but avoid embedding formatted current time-of-export.
+
+Example default title (illustrative; final exact format is your call as long as deterministic):
+- `"{session_title_or_short} — {mode} — {run_short}"`
+
+### C) API surface
+1) **Run creation** (`POST /api/run`):
+- Allow UI payload to include `formalization_title` (string) inside `ui`.
+- Extract it in `api_run()` and pass to `create_run(..., title_override=...)`.
+
+2) **Rename endpoint**:
+- Add `PATCH /api/runs/{run_id}` accepting JSON:
+  - `{ "formalization_title": "New Title" }`
+- Implementation:
+  - load run state
+  - set `title_override`
+  - save back with `save_manifest_atomic_overwrite`
+  - return updated run state
+
+3) **Formalizations list** (`GET /api/sessions/{id}/formalizations`):
+- Add `title` to each list item:
+  - `title = state.title_override or default_title(...)`
+
+## TESTING LEVEL
+TL2 (API + unit). No UI in this quest.
+
+## ACCEPTANCE CRITERIA
+- Creating a run with `ui.formalization_title` persists it into `runs/<run_id>/run.json`.
+- `PATCH /api/runs/{run_id}` updates `title_override` and survives reload.
+- `GET /api/sessions/{session_id}/formalizations` returns `title` for each formalization.
+- No existing runs break (missing title_override is tolerated).
+
+## VERIFICATION COMMANDS (CLI)
+- Start API, create a session, upload audio, run with title:
+  - `curl -s -X POST localhost:PORT/api/run -d '{"session_id":"...","ui":{"mode":"meeting","template":"default","retention":"HIGH","formalization_title":"Full Draft"}}'`
+- Fetch formalizations list:
+  - `curl -s localhost:PORT/api/sessions/<session_id>/formalizations | jq`
+- Patch rename:
+  - `curl -s -X PATCH localhost:PORT/api/runs/<run_id> -d '{"formalization_title":"Renamed"}' | jq`
+
+## RECEIPTS REQUIRED
+- Diff of touched files.
+- Example API responses (redacted okay): create-run response, formalizations list showing title, patch-run response.
+

@@ -1,0 +1,96 @@
+STUART — CONTROL SYNC SNAPSHOT — 2026-02-11
+
+Canonical:
+- Canon zip rehydrated at start of sync:
+  Ashby_CANON_2026-02-09_v25_EOD_2026-02-11__Q068-Q070.zip
+- Canon working trees:
+  - /mnt/data/Ashby_Data
+  - /mnt/data/Ashby_Engine
+
+────────────────────────────────────────
+RAID STATE
+────────────────────────────────────────
+- Stuart v1 — Dungeon 6
+  - Phase 1 (068–070): COMPLETED (already in Completed, not changed in this sync)
+  - Phase 2 (071–075): ACCEPTED during this sync (now ACTIVE)
+
+- Side Quests (post‑Phase2 cleanup)
+  - SIDE-QUEST_078: ACCEPTED (ACTIVE)
+  - SIDE-QUEST_079: ACCEPTED (ACTIVE)
+
+No code execution performed in this Control Sync.
+This sync was planning + quest creation + acceptance only.
+
+────────────────────────────────────────
+DECISIONS LOCKED
+────────────────────────────────────────
+1) We will finish D6 Phase 2 (071–075) before executing the two new side quests.
+   - Rationale: complete the planned V1/D6 scope first; side quests are usability + environment integrity.
+
+2) Two new side quests are now canonical work items (created + accepted) based on Hands field report:
+   - SIDE-QUEST_078 (Diarization Integrity): fix pyannote token/auth mismatch causing diarization failure and stub fallback.
+   - SIDE-QUEST_079 (Web UX Clarity): improve upload feedback, progress accuracy, output surfacing, and session list hygiene.
+
+────────────────────────────────────────
+NEW CONSTRAINTS / RULES
+────────────────────────────────────────
+- Canon law: we operate only from the rehydrated v25 working tree (this canon). No references to prior broken pairings unless re-proven here.
+- Quest board law: we do NOT move anything out of Completed during this cleanup.
+- Side quest law: these two side quests remain explicitly out-of-scope for Phase 2 quest execution unless a hard blocker forces a stop.
+
+────────────────────────────────────────
+NOTES / DISCUSSION
+────────────────────────────────────────
+Hands field report (captured for follow-on work):
+- Diarization is failing in the local environment with a pyannote Pipeline token/auth argument mismatch.
+  - Effect: Stuart falls back to stub diarization → speaker mapping/overlays become meaningless.
+- Webapp UX issues reported:
+  - upload flow provides weak/unclear feedback (no clear “selected / complete” state)
+  - progress UI jumps to ~90% quickly and does not represent real stage completion
+  - outputs (PDF/MD) are not surfaced reliably in UI; user forced to inspect filesystem
+  - session list is messy and labels feel like gibberish
+
+Response:
+- We will not derail Phase 2 (071–075) to solve these.
+- We created + accepted two explicit side quests to address them after Phase 2.
+
+────────────────────────────────────────
+OPEN QUESTIONS / RISKS
+────────────────────────────────────────
+- If Phase 2 execution requires diarization to succeed for correctness (not just UX), SIDE-QUEST_078 may need to be pulled earlier.
+- If webapp progress/UI prevents effective manual validation of Phase 2 behaviors, SIDE-QUEST_079 may need to be pulled earlier.
+
+────────────────────────────────────────
+DECIDED SCOPE (THIS CONTROL SYNC)
+────────────────────────────────────────
+- Rehydrate canon from the latest EOD zip.
+- Create SIDE-QUEST_078 + SIDE-QUEST_079.
+- Accept Phase 2 quests (071–075) + both side quests.
+- Close Control Sync with this snapshot.
+
+────────────────────────────────────────
+QUEST BOARD CHANGES (RECEIPT)
+────────────────────────────────────────
+Created (new):
+- /mnt/data/Ashby_Data/Quest Board/Accepted/SIDE-QUEST_078__Stuart_Diarization_Integrity_Pyannote_Token_Fix_2026-02-11.txt
+- /mnt/data/Ashby_Data/Quest Board/Accepted/SIDE-QUEST_079__Stuart_Webapp_UX_Status_Clarity_Progress_Output_Surfacing_2026-02-11.txt
+
+Accepted / moved to ACTIVE:
+- QUEST_071__Stuart_v1_D6_4of5_Webapp_Reformalize_Controls_Template_Retention_2026-02-04.txt
+- QUEST_072__Stuart_v1_D6_5of5_Telegram_Speaker_Map_and_Reformalize_Minimal_2026-02-04.txt
+- QUEST_073__Stuart_v1_TestHarness_Fixtures_and_Golden_Assertions_2026-02-04.txt
+- QUEST_074__Stuart_v1_Export_Bundle_v1_Session_Zip_ReadOnly_2026-02-04.txt
+- QUEST_075__Stuart_v1_Install_Pack_Docs_Dep_Pins_System_Dependencies_2026-02-04.txt
+
+Audit directories created on acceptance:
+- /mnt/data/Ashby_Data/Audits/Execution/QUEST_071__2026-02-11__stuart_v1_d6_4of5_webapp_reformalize_controls_template_retention
+- /mnt/data/Ashby_Data/Audits/Execution/QUEST_072__2026-02-11__stuart_v1_d6_5of5_telegram_speaker_map_and_reformalize_minimal
+- /mnt/data/Ashby_Data/Audits/Execution/QUEST_073__2026-02-11__stuart_v1_testharness_fixtures_and_golden_assertions
+- /mnt/data/Ashby_Data/Audits/Execution/QUEST_074__2026-02-11__stuart_v1_export_bundle_v1_session_zip_readonly
+- /mnt/data/Ashby_Data/Audits/Execution/QUEST_075__2026-02-11__stuart_v1_install_pack_docs_dep_pins_system_dependencies
+- /mnt/data/Ashby_Data/Audits/Execution/SIDE-QUEST_078__2026-02-11__stuart_diarization_integrity_pyannote_token_fix
+- /mnt/data/Ashby_Data/Audits/Execution/SIDE-QUEST_079__2026-02-11__stuart_webapp_ux_status_clarity_progress_output_surfacing
+
+────────────────────────────────────────
+END OF CONTROL SYNC SNAPSHOT
+────────────────────────────────────────

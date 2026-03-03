@@ -1,0 +1,58 @@
+QUEST ID: QUEST_011
+Title: Stuart v1 — Dungeon 2 (1 of 3): STUART_ROOT layout + config resolution
+Context: Stuart
+Origin: Guild Orders: GUILD_ORDERS_STUART_V1_2026-01-16_REV3.txt (Dungeon 2)
+Priority: P0
+Links:
+- Guild Orders: Stuart v1 — Dungeon 2
+- Control Sync Snapshot: CONTROL_SYNC_2026-01-16__STUART_V1.txt
+- Supersedes (decomposition of): QUEST_003
+Status: COMPLETED
+Accepted On: 2026-01-19
+Completed On: 2026-01-19
+
+DESCRIPTION
+────────────────────────────────────────
+Establish the canonical on-disk reality for Stuart by implementing STUART_ROOT configuration and the deterministic directory layout. This is the foundation that manifests, runs, and pipelines will rely on.
+
+SCOPE / OBJECTIVE
+────────────────────────────────────────
+Implement STUART_ROOT configuration (sane default under runtime/stuart/ with override via env/config) and create the deterministic directory layout for:
+- sessions/
+- contributions/
+- runs/
+- overlays/
+- exports/ (optional staging)
+
+This quest is specifically about pathing + directory structure + config resolution, not manifests.
+
+OUT OF SCOPE
+────────────────────────────────────────
+Manifest schema/versioning (session.json, contribution.json, run.json).
+Hashing, ULIDs, and immutability enforcement.
+Transcription/diarization/formalization logic.
+
+DEPENDENCIES
+────────────────────────────────────────
+- QUEST_002
+
+EXECUTION NOTES
+────────────────────────────────────────
+This quest intentionally separates filesystem/config reality from higher-level manifest rules.
+After completion, other quests can assume STUART_ROOT exists and paths are stable.
+
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────
+- [x] STUART_ROOT default path exists under runtime/stuart/ (or equivalent project runtime zone).
+- [x] STUART_ROOT can be overridden via env/config without code edits.
+- [x] Directory layout created under STUART_ROOT: sessions/, contributions/, runs/, overlays/, exports/ (exports optional).
+- [x] A minimal smoke test or CLI snippet proves paths resolve and directories can be created/read/written.
+- [x] No Stuart logic added to ashby/core/router.py while implementing this.
+
+TALENT POINT
+────────────────────────────────────────
+On completion:
+- Talent Point Awarded: YES
+- Talent Spent On: TALENT_STUART_STORAGE_ZONING — Deterministic Storage Zoning (Data Law)
+────────────────────────────────────────
+(optional)

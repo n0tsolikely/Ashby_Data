@@ -1,0 +1,144 @@
+QUEST TEMPLATE — SYNAPSE OS [v1.5]
+(duplicate this file for each new Quest)
+
+================================================================================
+QUEST ID: QUEST_154
+QUEST TITLE: Stuart v1 — Dungeon 6 (2/6): Session State v2 — Speaker Overlays scoped per Transcript Version
+QUEST SUBTITLE: Add transcript_version-scoped speaker overlay pointers + seed-forward behavior for new transcripts
+PRIORITY: P0
+OWNER: OpenAI Codex (CLI Execution)
+STATUS: ACCEPTED (Ready for execution)
+CREATED: 2026-03-01
+LAST UPDATED: 2026-03-01
+================================================================================
+
+SUBJECT: ASHBY / STUART (Meetings Module)
+ORIGIN: Guild Orders REV14 — Dungeon 6 + Control Sync decisions:
+- D6 locked rule: internal speaker ids stay 0-based (SPEAKER_00), UI displays 1-based (Speaker-01)
+- Speaker name mapping is an overlay, scoped to transcript_version_id, seed-forward within the same session
+
+LINKS:
+- /mnt/data/Ashby_Canon12_EXTRACTED/Ashby_Canon(12)/Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-25_REV14.txt  (sha256: d10c278cd45a543c32c27102a912ce6f1c0569401c5ec0e00f6dc1e5c5b9b094)
+- Dungeon 6 excerpt sha256: 6d0a02ce22d961dd4eb1fbb4bf0cab4be8d5f3f42bf4c577ceee5b4012af3816
+- /mnt/data/ANALYSIS__D6__MONSTER_ASHBY__2026-03-01.md  (sha256: a086f46d5bf54c4cf3267139f9d8d581f1ecb719dc4f6bceda80ff9a627ef5a9)
+
+================================================================================
+CODEX ANCHORS (read these before making changes)
+- Ashby_Data/Codex/Stuart/Stuart_Codex_6.1_Session_Model.txt  (session ↔ transcript_version ↔ run relationship)
+- Ashby_Data/Codex/Stuart/Stuart_Codex_6.2_Artifacts.txt  (artifact immutability and pointers)
+- Guild Orders REV14 — DUNGEON 6 (speaker map overlay rules)
+
+================================================================================
+CONSTRAINTS (hard rules)
+- Speaker maps are overlays. DO NOT rewrite existing transcript version artifacts to “apply names”.
+- Overlay scope is transcript_version_id (not global/session-only, not run-only).
+- Seed rule: when a new transcript_version is created within the same session, seed its speaker map pointer from the most recent ACTIVE mapping in that session by default.
+- Back-compat: existing code and tests may still call set_active_speaker_overlay(session_id, overlay_id).
+  - That call must remain valid and must update the overlay for the ACTIVE transcript_version for that session.
+
+================================================================================
+CHANGE CLASS: Modification (backend state schema + seeding logic)
+RISK CLASS: R2 (state schema evolution + behavior change)
+
+VISION DELTA
+- Current state model only supports ONE active_speaker_overlay_id at the session level.
+- This quest upgrades session_state to support multiple transcript versions safely and deterministically.
+
+================================================================================
+SYSTEM CONTEXT (repo truth)
+- Session state implementation:
+  - Ashby_Engine/ashby/modules/meetings/session_state.py
+  - Current fields: active_transcript_version_id, active_speaker_overlay_id, title_override, etc.
+- Transcript version creation (where seeding should hook):
+  - Ashby_Engine/ashby/modules/meetings/pipeline/job_runner.py  (_emit_transcript_version_for_run)
+- Speaker overlay storage functions:
+  - Ashby_Engine/ashby/modules/meetings/overlays.py
+
+================================================================================
+ANTI-DUPLICATION PLAN (do this first)
+- Find all references to active_speaker_overlay_id and set_active_speaker_overlay:
+  - rg -n "active_speaker_overlay_id" Ashby_Engine/ashby/modules/meetings
+  - rg -n "set_active_speaker_overlay" Ashby_Engine/ashby
+- Confirm where transcript versions become “active”:
+  - rg -n "set_active_transcript_version" Ashby_Engine/ashby/modules/meetings
+
+================================================================================
+PLACEMENT INTENT
+- Extend (don’t replace) the session_state module:
+  - Ashby_Engine/ashby/modules/meetings/session_state.py
+- If helper functions are needed, keep them inside session_state.py unless they are clearly reusable elsewhere.
+- Seeding logic belongs in:
+  - Ashby_Engine/ashby/modules/meetings/pipeline/job_runner.py (close to transcript_version creation)
+
+================================================================================
+ATOMICITY STATEMENT
+This quest is atomic when:
+- Session state can track speaker overlay pointers per transcript_version_id.
+- Existing callers that use set_active_speaker_overlay still behave correctly (now applied to the active transcript version).
+- New transcript versions inherit the previous active mapping pointer by default (seed-forward).
+- Tests updated/added prove correctness.
+
+================================================================================
+SCOPE
+1) Session state schema evolution:
+   - Add a v2-compatible structure to store overlay pointers per transcript version, e.g.:
+     - speaker_overlays_by_transcript: { "<transcript_version_id>": "<overlay_id or null>" }
+   - Keep legacy field active_speaker_overlay_id for compatibility, but define it as:
+     - active_speaker_overlay_id := speaker_overlays_by_transcript[active_transcript_version_id] (if present)
+2) Backward compatible API surface:
+   - set_active_speaker_overlay(session_id, overlay_id):
+     - MUST update the overlay pointer for the ACTIVE transcript_version_id of that session.
+     - MUST also keep legacy active_speaker_overlay_id consistent.
+   - Add explicit helpers:
+     - get_speaker_overlay_for_transcript(session_id, transcript_version_id)
+     - set_speaker_overlay_for_transcript(session_id, transcript_version_id, overlay_id_or_none)
+3) Seed-forward behavior:
+   - When a new transcript_version_id is created in a session, if that transcript has no overlay pointer:
+     - Copy/seed the most recent ACTIVE overlay pointer from the previous active transcript_version_id.
+     - “Seed” can be a pointer reference (overlay artifacts are immutable), not a file copy.
+4) Migration behavior (must be deterministic):
+   - When reading an old session_state file that has active_speaker_overlay_id but no map:
+     - Interpret it as mapping for active_transcript_version_id.
+     - When the state is next written, persist the v2 structure.
+
+OUT OF SCOPE
+- Any new web endpoints (QUEST_155).
+- UI changes (QUEST_153/155/157).
+- Any changes to diarization labeling format.
+
+================================================================================
+DEPENDENCIES
+- No hard dependency on QUEST_153, but QUEST_155 assumes this is done.
+
+================================================================================
+DOOR IMPACT
+- Backend (meetings module state + transcript pipeline).
+
+================================================================================
+TESTING LEVEL
+- TL3 (unit tests + update existing tests)
+
+================================================================================
+VERIFICATION PLAN
+1) Run backend test suite:
+   - pytest -q
+2) Add/adjust targeted tests to prove new behavior:
+   - A test that creates transcript_version A, sets overlay, then creates transcript_version B and confirms B is seeded.
+   - A test that ensures set_active_speaker_overlay updates the active transcript version only.
+
+================================================================================
+ACCEPTANCE CRITERIA
+- Session state supports overlay pointers per transcript_version_id.
+- New transcript_version is seeded from the previous active overlay pointer by default.
+- Existing calls to set_active_speaker_overlay(session_id, overlay_id) still work, but now apply to active transcript version.
+- All affected tests pass.
+
+================================================================================
+RECEIPTS REQUIRED
+- Diff (git patch) for modified backend files + any new tests.
+- pytest output showing PASS.
+- A short note in quest completion log describing the new session_state structure (so we don’t forget later).
+
+================================================================================
+NOTES
+- This is the “don’t build sideways” guardrail. If we keep session-level overlay only, we cannot support redacted vs named transcript variants cleanly.

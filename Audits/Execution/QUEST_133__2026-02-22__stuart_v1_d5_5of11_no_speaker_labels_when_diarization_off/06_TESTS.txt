@@ -1,0 +1,12 @@
+.............                                                            [100%]
+=============================== warnings summary ===============================
+tests/test_meetings_pipeline_transcribe_diarize.py::test_formalize_creates_transcript_and_diarization_artifacts
+  /home/notsolikely/Ashby_Engine/.venv/lib/python3.12/site-packages/pyannote/core/notebook.py:134: MatplotlibDeprecationWarning: The get_cmap function was deprecated in Matplotlib 3.7 and will be removed in 3.11. Use ``matplotlib.colormaps[name]`` or ``matplotlib.colormaps.get_cmap()`` or ``pyplot.get_cmap()`` instead.
+    cm = get_cmap("Set1")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+13 passed, 1 warning in 8.26s
+
+> stuart-frontend@0.0.0 build
+> vite build
+

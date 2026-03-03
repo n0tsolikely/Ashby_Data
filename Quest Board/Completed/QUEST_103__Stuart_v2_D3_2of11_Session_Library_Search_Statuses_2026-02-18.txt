@@ -1,0 +1,104 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+================================================
+
+QUEST ID:
+QUEST_103
+
+Created By:
+Codex (Brains)
+
+Title:
+Stuart v2 — D3 (2/11) — Session Library Parity (New Session + Search + Status Badges)
+
+Subject:
+Stuart
+
+Context: (Ashby / Stuart / System / Other)
+Ashby / Stuart
+
+Origin:
+Guild Orders ACTIVE REV4 -> Dungeon 3 Left Panel requirements.
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- Guild Orders Dungeon 3 left panel requirements
+- API: GET /api/sessions, POST /api/sessions
+
+Status: BOARD | ACTIVE | COMPLETED | ABANDONED
+COMPLETED
+
+Audit Bundle Folder Path:
+Ashby_Data/Audits/Execution/QUEST_103__2026-02-18__stuart_v2_d3_session_library_search_status
+
+Accepted On:
+2026-02-18
+
+Accepted By:
+Hands (Peter) via Codex (Brains)
+
+Completed On:
+2026-02-18
+
+Completed By:
+Codex (Brains)
+
+Change Class: (TRIVIAL / FEATURE / STRUCTURAL)
+FEATURE
+
+Vision Delta: (ALIGNED / VARIATION / SHIFT)
+ALIGNED
+
+System Context Statement:
+Session discoverability and selection are primary navigational surfaces required before transcript/formalization tasks.
+
+Anti-Duplication Plan:
+Use existing session list state and canonical /api/sessions responses; do not add duplicate client stores.
+
+Placement Intent:
+Session sidebar/list components in frontend src tree.
+
+Codex Anchors (DRAFT):
+- Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_6.1_Session_Model_Sessions_Contributions_Sources.txt
+- Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_7.1_Stage_0_Session_Initialization.txt
+- Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_10.1_V1_Minimum_Shippable_Product_Definition.txt
+
+Codex Constraint Summary:
+- Sessions are durable artifacts; status must reflect truth.
+- Session creation is explicit and auditable.
+- Session selection drives downstream tab context.
+
+Door Impact:
+Stuart web door (UI)
+
+Testing Level (TL):
+TL2
+
+Talent Point Awarded: (YES / NO)
+YES
+
+DESCRIPTION
+Implement left panel parity: New Session button, session search, and truthful status badges from backend state.
+
+SCOPE / OBJECTIVE
+- New Session action creates/selects session.
+- Search filters session list deterministically.
+- Status badges show real state labels.
+
+OUT OF SCOPE
+- Transcript rendering.
+- Formalization output rendering.
+
+DEPENDENCIES
+- QUEST_102
+- Dungeon 2 session endpoints
+
+EXECUTION NOTES
+Status mapping must be deterministic and backend-derived (no guessed UI states).
+
+COMPLETION CRITERIA (REQUIRED)
+- [ ] New Session creates a session through canonical API.
+- [ ] Search/filter works on session list.
+- [ ] Status badges render from real session/run state.
+- [ ] Selecting session updates active context for tabs.

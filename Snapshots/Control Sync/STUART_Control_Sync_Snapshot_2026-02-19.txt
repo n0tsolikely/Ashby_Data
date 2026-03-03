@@ -1,0 +1,52 @@
+STUART — CONTROL SYNC SNAPSHOT
+Date: 2026-02-19
+Status: CLOSED
+Snapshot Type: CONTROL_SYNC
+
+Source Draftshot:
+- File: DRAFTSHOT__STUART_CONTROL_SYNC__REV10.txt
+- Revision Used: REV10
+- State Transition: ACTIVE → CONSUMED
+
+Participants / Roles:
+- Hands: Peter
+- Brains: Ash (DATA-only governance + architecture)
+- Executor: OpenAI Codex (CLI)
+
+FINAL DECISIONS (BINDING)
+1) Draftshots doctrine (AI11):
+   - Draftshots are append-only living formalizations (meeting minutes), not transcripts.
+   - If Draftshot is ACTIVE when a Snapshot is required:
+     - finalize Draftshot delta
+     - Snapshot is a formalization of the entire Draftshot (distilled, decision-complete)
+     - Snapshot references Draftshot filename + REV
+     - Draftshot is marked CONSUMED (retained as evidence)
+
+2) Governance Canon Update:
+   - SynapseOS Governance AI11 accepted as canonical and merged into WSL Synapse_OS repo.
+   - Commit recorded: 4c9838c (main) including governance + runtime tooling alignment.
+
+3) Stuart Transcript Versioning:
+   - Option selected: C
+     - TranscriptVersion artifacts are immutable once written.
+     - Speaker naming is a mutable overlay and MUST NOT rewrite transcript text.
+   - UX requirement: transcript versions must be selectable via dropdown/selector (no endless transcript lists).
+
+4) Dungeon Dependency:
+   - Dungeon 5 depends on Dungeon 4 (Guild Orders explicitly require transcript_version artifacts).
+   - Execution order: complete Dungeon 4 spine first, then wire Dungeon 5 transcribe stage to emit transcript versions.
+
+OUTCOMES / STATE
+- Control Sync is now CLOSED.
+- Draftshot has been CONSUMED as the canonical meeting-minutes evidence base for this Snapshot.
+- Next work is ready to proceed with Dungeon 4 questing/execution.
+
+NEXT ACTIONS (NON-BINDING)
+- Produce board-worthy Dungeon 4 quest pack (repo-template format) with:
+  - Ashby Codex anchors
+  - Stuart Codex anchors (Ashby_Data/Stuart/Stuart Codex)
+  - acceptance proofs (pytest/curl/ui smoke) + audit receipts requirements
+- Hand quest pack to OpenAI Codex for execution in repo.
+
+EVIDENCE
+- Draftshot: DRAFTSHOT__STUART_CONTROL_SYNC__REV10.txt

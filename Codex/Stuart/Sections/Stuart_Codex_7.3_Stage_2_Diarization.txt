@@ -1,0 +1,146 @@
+STUART CODEX
+7.3 Stage 2: Diarization (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+Stage 2 identifies “who spoke when.” It produces speaker segments with labels (SPEAKER_00, SPEAKER_01, …) and confidence information.
+
+Diarization is a core requirement for meeting minutes and incident calls, but it is optional for many single-speaker journal/voice-note workflows.
+
+Diarization is probabilistic. Stuart must disclose uncertainty rather than pretending it is perfect.
+
+1) Inputs
+
+Stage 2 consumes:
+- audio_manifest.json + normalized_audio.wav from Stage 1
+- optional: speech_segments.json (VAD segments) if Stage 1 produced it
+- optional: user hint “single speaker” (can skip diarization)
+
+Stage 2 must also know:
+- active profile (LOCAL_ONLY / HYBRID / CLOUD)
+- selected mode/template (because diarization requirements vary)
+
+2) Outputs (minimum required)
+
+Stage 2 MUST produce:
+
+A) diarization.json
+A machine-readable diarization artifact containing:
+- speaker labels (SPEAKER_00, SPEAKER_01, …)
+- segments with start_time / end_time
+- speaker label per segment
+- confidence/probability metrics where available
+- overlap flags if overlap is detected (if supported by adapter)
+- diarization warnings (low confidence, too many speakers, heavy overlap)
+
+B) diarization_report.json (recommended)
+A summary report that includes:
+- estimated number of speakers
+- total overlap time (if known)
+- low-confidence intervals
+- recommended user actions (e.g., “map speakers” or “review overlap segments”)
+
+C) run record
+Stage 2 MUST create a run record:
+- run_type: diarize
+- profile_used
+- adapters_used (Diarization adapter)
+- inputs_used
+- outputs_created
+- config_snapshot (speaker count hints, overlap handling, thresholds)
+
+Important: diarization.json is not a “speaker naming” file. It contains labels only.
+
+3) When diarization is required vs optional (canonical behavior)
+
+Meeting Minutes mode:
+- diarization is required by default.
+- If diarization is unavailable (device limitations), Stuart must:
+  - warn clearly,
+  - allow proceeding with “Speaker Unknown” or “Single Speaker” assumptions only if the user confirms,
+  - and mark outputs as degraded (see 7.9 Failure Modes later).
+
+Incident Report mode:
+- diarization is strongly recommended; required by default for multi-speaker calls.
+- For a single-speaker incident voice note, diarization can be skipped.
+
+Journal/Diary mode:
+- diarization is optional and usually skipped (single speaker).
+- If multiple speakers are present, diarization may be run, but that is not required for v1 journaling success.
+
+Creator Notes mode:
+- diarization optional; required only if the user wants speaker attribution.
+
+Captions mode:
+- diarization optional; captions can be generated without speaker labeling.
+
+4) Speaker labels and mapping overlay (separation is locked)
+
+DIA1) Labels are generated, not names
+Diarization produces speaker labels only.
+
+DIA2) Mapping is an overlay, not a modification
+Mapping SPEAKER_00 → “Greg” is stored separately (speaker_map.json or session metadata overlay).
+The diarization output must not be rewritten to “Greg” internally.
+
+Reason:
+- diarization is uncertain,
+- mapping is user-authored metadata,
+- and we need auditability (“what did the model say?” vs “what did the user label?”).
+
+DIA3) Confidence-based naming rules
+If diarization is low confidence, Stuart must avoid strong claims like “Greg said…”
+Instead:
+- use speaker labels,
+- or mark attribution as uncertain.
+
+5) Overlap handling (overtalk)
+
+Overlap happens when people interject.
+Canonical requirements:
+- If overlap is detected, diarization should attempt to represent it.
+- If overlap is not supported by the diarizer, Stuart must at least flag overlap risk in diarization_report.json.
+
+Stuart must never “resolve” overlap by guessing who said what if the model is uncertain.
+
+6) Compute constraints and device tiers
+
+We have a canonical constraint:
+- CPU-only must work (slower is okay).
+- GPU path is preferred for fast, accurate diarization on capable machines.
+- Very low-power edge devices (e.g., Pi-class) may need diarization optional or deferred.
+
+Therefore, diarization must be adapter-swappable and optionally skippable.
+If skipped, the system must:
+- explicitly mark speaker attribution as unavailable,
+- and prevent “attendance as speakers” queries from pretending it knows identities.
+
+7) Profile behavior
+
+LOCAL_ONLY:
+- diarization runs locally using a local diarization adapter.
+- no network calls.
+
+HYBRID:
+- diarization may run locally or remotely depending on configuration, but any remote diarization must be explicitly disclosed and confirmed before execution.
+
+CLOUD:
+- remote diarization is allowed, but the run record must capture exactly what was sent and which adapter was used.
+
+8) Failure behavior
+
+If diarization fails:
+- transcript generation may still proceed (Stage 3) if user confirms proceeding without diarization.
+- outputs must be marked as degraded.
+- retrieval queries depending on speaker identity must be honest (“speaker identity unavailable”).
+
+Diarization failure must not silently fabricate speaker labels.
+
+9) Self-audit (7.3)
+
+- This section respects our trust rules: diarization is probabilistic and must disclose uncertainty; no hidden guesswork.
+- It locks separation between diarization labels and user speaker-name mapping overlays.
+- It encodes our practical constraints: CPU baseline works, GPU preferred, edge devices may skip diarization with explicit degraded-mode labeling.
+- It is compatible with meeting v1 requirements while still allowing journal/creator workflows to skip diarization.
+This section is complete.

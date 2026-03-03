@@ -1,0 +1,46 @@
+ASHBY — CONTROL SYNC SNAPSHOT
+DATE: 2025-12-24
+
+RAID STATE
+- Active Raid(s):
+  • Ashby Structural Realignment (Emergency)
+- Paused / Blocked Raid(s):
+  • Ashby Core Raid (2025-12-15) — blocked pending structural completion
+- Halted Raid(s):
+  • All non-critical raids (including Stuart feature work)
+
+DECISIONS LOCKED
+- Canonical venv will be relocated now (outside repo) to prevent future refactor risk.
+- Router refactor is approved and is a primary objective for this session.
+- Category-first / brand-second architecture is locked (capabilities vs adapters).
+- Sessions are confirmed as Brain components and will live under brain/sessions/.
+- Stuart and future agents will be implemented as capability sets on the Ashby engine, not separate platforms.
+
+NEW CONSTRAINTS / RULES
+- Zero behavior change during structural and router refactor work.
+- Router must remain thin; extracted logic must move to appropriate engine folders.
+- API credentials remain in secrets; API implementation remains in adapters.
+- Structural placeholders may be created, but no new functional systems are required today.
+
+DECIDED SCOPE (OPTIONAL)
+1) Move canonical venv to dedicated location and run sanity checks.
+2) Align Telegram gateway with canonical structure (imports only).
+3) Finish remaining ashpi → ashby naming cleanup (scripts + secrets).
+4) Refactor router into thin orchestrator with extracted helpers, keeping system working.
+5) Create minimal engine scaffolding and placeholders to accommodate Stuart and future platform growth (dirs + stubs only).
+
+NOTES / DISCUSSION
+- VisionTree was updated to reflect engine-first, capability-based architecture.
+- Brand-specific logic will live exclusively in adapters; capability logic in modules/capabilities.
+- Stuart will rely on the same core/brain/scope/tools infrastructure as Ashby Home.
+
+OPEN QUESTIONS / RISKS
+- Whether all scope placeholders are needed immediately or can remain empty until next raid.
+- Time risk: router refactor may need to be paused if sanity checks fail.
+
+NEXT CONTROL SYNC FOCUS
+- Confirm venv move stability.
+- Verify router refactor completion and CLI functionality.
+- Decide readiness to resume Ashby Core Raid or continue structural cleanup.
+
+END OF CONTROL SYNC SNAPSHOT

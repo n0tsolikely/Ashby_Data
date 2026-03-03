@@ -1,0 +1,36 @@
+STUART CONTROL SYNC SNAPSHOT — 2026-02-02
+Timestamp (local): 2026-02-02 21:55:55 EST (-0500)
+Timestamp (utc):   2026-02-03 02:55:55 UTC (+0000)
+Hands: Peter
+Operator: Ash
+
+CONTROL SYNC STATUS
+- CLOSED (session-ending snapshot captured on close).
+
+WHAT HAPPENED IN THIS CONTROL SYNC
+- Goal clarified: finish Stuart v1 plumbing verification and runner reliability BEFORE wiring real ASR/diarization/PDF.
+- “Post 30 plan” explicitly parked as the next phase AFTER runner fix + offline end-to-end smoke.
+
+ARTIFACTS CREATED / UPDATED (DATA CANON)
+- Stuart plan bookmark created:
+  - /Stuart/Docs/PLAN__Post_30_plan.txt
+
+CURRENT RAID / SCOPE STATE
+- Active focus: Stuart v1 (as an Ashby module: ashby/modules/meetings).
+- Immediate next work (requires explicit Execute order):
+  - Fix SIDE-QUEST_030/031 runner env reliability (stated issue: stuart_runner._env uses Path without import).
+  - Run offline end-to-end smoke (inject audio; validate pipeline artifacts; accept only transport-not-running failures).
+
+POST 30 PLAN (RESUME TRIGGER)
+- Resume phrase: “continue with the Post 30 plan”
+- Resume intent:
+  - Read Stuart pipeline contracts
+  - Draft Execution Pack(s)
+  - Convert into new Quests
+  - Wire real ASR + diarization + PDF via adapters
+
+GOVERNANCE NOTES
+- No Execute order was given during this Control Sync.
+- Therefore: no canonical engine mutations were performed.
+
+End of Control Sync snapshot.

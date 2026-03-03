@@ -1,0 +1,126 @@
+STUART — CONTINUITY LOCK
+Date: 2026-02-06
+
+PURPOSE
+- Freeze the authoritative state of the Stuart v1 raid so a new session cannot drift.
+- This file is binding resume law. If it conflicts with casual memory, this wins.
+
+CANONICAL ROOTS
+- Governance canon: /mnt/data/Synapse_OS_Governance
+- Subject data canon: /mnt/data/Ashby_Data
+- Subject engine canon: /mnt/data/Ashby_Engine
+
+OPTIONAL PACK RULE (BINDING)
+- Rehydration Packs + Execution Packs are ONLY present when there is a current active one.
+- If a pack folder exists but is empty, that is NOT an error — it means no active pack.
+- For THIS session, the pack IS present and is authoritative resume law.
+
+CODEX STATUS (FOG)
+- Codex Freeze Marker present:
+  - /mnt/data/Ashby_Data/Codex/CODEX_FREEZE.md
+- Execution is authorized under frozen codex references:
+  - /mnt/data/Ashby_Data/Codex/ASHBY CODEX FULL.txt
+  - /mnt/data/Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt
+
+ACTIVE GUILD ORDERS (AUTHORITATIVE SCOPE)
+- /mnt/data/Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS_STUART_V1_2026-02-04_REV7.txt
+
+QUEST BOARD TRUTH (COMMITMENT STATE)
+COMPLETED (implemented + verified via pytest receipts in audits):
+- QUEST_042 — Run Params: retention + template_id are first-class + validated
+- QUEST_043 — Default templates (meeting/journal) upgraded (citation format + “no invention”)
+- QUEST_044 — minutes.json schema v1 (machine contract)
+- QUEST_045 — journal.json schema v1 (machine contract)
+- QUEST_046 — formalize meeting → minutes.json (profile-gated; strict JSON/schema + loud failure receipts)
+- QUEST_047 — formalize journal → journal.json (profile-gated; strict JSON/schema + loud failure receipts)
+- QUEST_048 — render MD from minutes/journal JSON (deterministic)
+- QUEST_049 — output naming: minutes.md / journal.md (no more formalized.md for new runs)
+- QUEST_050 — output naming: exports/minutes.pdf / exports/journal.pdf (no more formalized.pdf for new runs)
+- QUEST_051 — diarization artifact naming: diarization.json (+ confidence)
+- QUEST_052 — run.json primary_outputs pointers (mode-aware) + resolver helper
+
+ACCEPTED:
+- None (no active commitment stack right now)
+
+UNACCEPTED (do not execute without Control Sync decision):
+- QUEST_053+ (Evidence Map v2, Retrieval upgrades, Doors unification, Speaker map, etc.)
+
+WHAT IS NOW TRUE (SYSTEM BEHAVIOR CONTRACT)
+1) Template non-hallucination is enforced
+- Template IDs are validated by registry:
+  - ashby/modules/meetings/template_registry.py
+- v1 allowed templates are STATIC:
+  - meeting: default
+  - journal: default
+- Adding a new template currently requires a code change (update _V1_TEMPLATES_BY_MODE) + adding a template file.
+
+2) Formalization (JSON-first)
+Meeting mode:
+- Writes (write-once):
+  - artifacts/minutes.json (schema v1; citations reference segment_id)
+- Profile behavior:
+  - LOCAL_ONLY: deterministic fallback (no invented decisions/actions; transcript-backed notes)
+  - HYBRID/CLOUD: remote LLM is only attempted when ASHBY_MEETINGS_LLM_ENABLED is set truthy.
+    - If remote unavailable: fallback deterministic (with warning)
+    - If remote returns non-JSON or schema-invalid: FAIL LOUD + write raw + failure receipt
+
+Journal mode:
+- Writes (write-once):
+  - artifacts/journal.json (schema v1; citations reference segment_id)
+- Same profile behavior as meeting.
+
+3) Rendering outputs (mode-specific)
+- Meeting:
+  - artifacts/minutes.md
+  - exports/minutes.pdf
+- Journal:
+  - artifacts/journal.md
+  - exports/journal.pdf
+
+4) Diarization + alignment contracts
+- Canonical diarization file:
+  - artifacts/diarization.json (includes confidence)
+- Alignment uses diarization.json; fallback:
+  - artifacts/diarization_segments.json (legacy)
+
+5) Run manifest pointers
+- run.json includes:
+  - primary_outputs (json/md/pdf/evidence_map pointers per mode)
+- Resolver helper:
+  - ashby/modules/meetings/primary_outputs.py
+
+RUNTIME ROOT (IMPORTANT)
+- Stuart runtime outputs live under STUART_ROOT (outside repo).
+- Default: ~/ashby_runtime/stuart
+- Override via env: STUART_ROOT
+
+EGRESS / REMOTE LLM GATING (DO NOT GUESS)
+- ASHBY_EXECUTION_PROFILE:
+  - LOCAL_ONLY / HYBRID / CLOUD
+- ASHBY_MEETINGS_LLM_ENABLED:
+  - must be explicitly truthy to allow remote minutes/journal JSON formalization
+- OPENAI_API_KEY:
+  - required for OpenAI remote formalizer when enabled
+- ASHBY_MEETINGS_FORMALIZER_MODEL:
+  - optional model override (default: gpt-4o-mini)
+
+KNOWN HAZARDS / NON-AUTHORITATIVE SOURCES
+- Historical module-level rehydration packs exist under:
+  /mnt/data/Ashby_Data/Stuart/Docs/Latest Rehydration Pack
+  These are NOT authoritative for session resume. Do not rehydrate from them.
+
+SNAPSHOT LAW (BINDING)
+- End-of-Day snapshot is created ONLY when:
+  - the accepted quest stack is complete, OR
+  - Hands explicitly ends the session.
+
+LATEST SNAPSHOT ANCHORS
+- Latest Control Sync:
+  - /mnt/data/Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-02-04__REV7_Quest_Refactor.txt
+- Latest End-of-Day:
+  - /mnt/data/Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2026-02-06__Q042-Q052.txt
+
+NEXT EXPECTED STEP
+- Start a Control Sync to decide and accept the next quest stack (Dungeon 3 / integration work).
+- Do NOT execute QUEST_053+ until accepted.
+

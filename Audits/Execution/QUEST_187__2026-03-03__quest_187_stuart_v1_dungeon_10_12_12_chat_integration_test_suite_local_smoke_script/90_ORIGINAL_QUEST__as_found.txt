@@ -1,0 +1,139 @@
+QUEST TEMPLATE — SYNAPSE OS [v1.5]
+
+========================================
+IDENTITY
+========================================
+QUEST ID: QUEST_187
+TITLE: Stuart v1 — Dungeon 10 (12/12) — Chat Integration Test Suite + Local Smoke Script
+GUILD / DUNGEON: STUART v1 / DUNGEON 10 (12 of 12)
+PRIORITY: P1
+OWNER: OpenAI Codex (CLI execution) under Synapse OS governance
+STATE: ACCEPTED (place this file into Ashby_Data/Quest Board/Accepted)
+CREATED: 2026-03-03
+LAST UPDATED: 2026-03-03
+SOURCE SEED: Guild Orders Rev14 — Dungeon 10
+RISK CLASS: R1
+TESTING LEVEL (TL0–TL4): TL4
+DOOR IMPACT: tests (FastAPI TestClient) + dev script
+PERMISSION: N/A (standard Stuart dev permissions)
+
+========================================
+CANON LOCKS
+========================================
+SOURCE OF TRUTH (LOCKS):
+- Guild Orders (ACTIVE): /home/notsolikely/Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-25_REV14.txt
+  - sha256: d10c278cd45a543c32c27102a912ce6f1c0569401c5ec0e00f6dc1e5c5b9b094
+  - Dungeon 10 block sha256: a1336566007c90e0ff8518545d0381e78dc8d237ed1a9d1cc0572b7d754a7656
+- Codex Anchors (Stuart):
+  - /home/notsolikely/Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_2.1_Chat_First_Interface.txt
+    - sha256: 465d0c0b31ac581d67f8307d9d932021e770e07708a653ac47951cde13bffb71
+  - /home/notsolikely/Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_2.2_Explicit_Execution_Gating_Submit_Confirm.txt
+    - sha256: 322b838cce234e1c17d36f6a9a4c35a612dba211000b3ee8878be4e5dec6b602
+  - /home/notsolikely/Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_5.3_Evidence_and_Citation_Requirements.txt
+    - sha256: 95d2237444f12df57b3a81d166b521e40e24032aca0fa5d13497d9b33870c799
+  - /home/notsolikely/Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_6.1_Session_Model_Sessions_Contributions_Sources.txt
+    - sha256: 55a95019ca3d7b56ba1acfbb248d2583e93c9a00f4baeb3dd2631ed1a4e9eef9
+  - /home/notsolikely/Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_6.2_Canonical_Artifacts_JSON_Markdown_PDF.txt
+    - sha256: aaf3db33935220866ed5f48dc0bf5d0e95a92ea6f690fa008ff47e01bee5bfc0
+  - /home/notsolikely/Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_6.5_Artifact_Indexing_for_Recall_and_Search.txt
+    - sha256: 7167ab663b883f0210edd02538df832b4ff076aeb47f3276683259be0a4b5e17
+  - /home/notsolikely/Ashby_Data/Codex/Stuart/Sections/Stuart_Codex_7.7_Stage_6_Indexing_and_Retrieval.txt
+    - sha256: 172cb662c787d6b65f9e9be4bfa18e4866cf9109188cf1d50d95664d052f863c
+- Monster (Canon 15 reference): MONSTER_ASHBY__THE_MONSTER_WORKSPACE__20260303_050600.zip
+  - routes index sha256: 5bd87ac821c3ef2a5479af94196d2ffa31855d56103e78f0da84361c0c73c47b
+
+========================================
+SYSTEM CONTEXT STATEMENT
+========================================
+Dungeon 10 is a cross-stack feature (backend + LLM gateway + frontend). If we don't lock it down with tests, it will rot into mutant shit fast.
+
+This quest adds a focused integration test suite that validates the D10 contract:
+- global cold start works
+- session scope lock works
+- citations/actions schema stable
+- /sessions and /open command flow produces open_session actions
+
+Also add a small local smoke script to manually exercise chat without clicking UI.
+
+========================================
+CONSTRAINT SUMMARY
+========================================
+- Tests must run offline. No external calls. No keys required.
+- Prefer deterministic fixtures over huge golden transcripts.
+
+========================================
+ANTI-DUP PLAN
+========================================
+Before writing new code, run a repo-wide scan to confirm what already exists and extend it instead of cloning it.
+Required scans:
+- rg -n "@app\.post\(\"/api/chat" ashby/interfaces/web/app.py
+- rg -n "chat" ashby/modules/meetings -S
+- rg -n "scope\s*===\s*'global'" webapp/stuart_frontend/stuart_app/src -S
+- rg -n "Global \(Not Implemented\)" webapp/stuart_frontend/stuart_app/src -S
+- rg -n "segments_fts|sqlite_fts\.search" ashby/modules/meetings -S
+
+========================================
+PLACEMENT INTENT
+========================================
+New code should be modular and placed close to the domain it serves:
+- Chat domain logic: ashby/modules/meetings/chat/ (new package)
+- Shared meeting schemas: ashby/modules/meetings/schemas/
+- Web door remains thin: ashby/interfaces/web/app.py calls into modules, not vice versa
+- Frontend wiring: webapp/stuart_frontend/stuart_app/src/components/stuart/ and src/pages/Stuart.jsx
+
+========================================
+ATOMICITY STATEMENT
+========================================
+This quest is complete when its acceptance criteria pass and it does not require uncommitted follow-up work to avoid breaking the build.
+
+========================================
+DEPENDENCIES
+========================================
+- All prior D10 quests must land first (endpoints + answerer + retrieval).
+
+========================================
+DELIVERABLES
+========================================
+- Integration tests using FastAPI TestClient to hit /api/chat and /api/chat/global with a temp Stuart root + temp index.
+- A dev smoke script under scripts/ (or tools/) to run a few chat calls against a running server.
+- Documentation notes in the script header: how to run, what PASS looks like.
+
+========================================
+TASK BREAKDOWN
+========================================
+- Add tests:
+  - tests/test_meetings_chat_integration_global_cold_start.py
+  - tests/test_meetings_chat_integration_session_lock.py
+  - tests/test_meetings_chat_integration_citations_actions_shape.py
+  - tests/test_meetings_chat_integration_commands_sessions_open.py
+Each test should create a minimal fake session/run/transcript artifact set and index it so chat retrieval has something real to search.
+- Ensure tests do NOT require external network:
+  - Use fake LLM service or monkeypatch the llm_service.chat call to deterministic output.
+  - Alternatively set profile=LOCAL_ONLY and assert retrieval-only responses (still must have citations/hits).
+- Add script: scripts/dev_chat_smoke.py (or tools/dev_chat_smoke.py):
+  - Accept base_url, scope, session_id, and a question.
+  - Print reply.text + citations + actions.
+  - This is not a product feature; it’s dev tooling.
+
+========================================
+ACCEPTANCE CRITERIA
+========================================
+- Integration tests pass locally and in CI (if present) without requiring secrets.
+- Smoke script runs and prints a structured response.
+- No flaky timing dependencies (avoid background jobs; use pre-indexed fixtures).
+
+========================================
+VERIFICATION PLAN
+========================================
+- pytest -q tests/test_meetings_chat_integration_*.py
+- python scripts/dev_chat_smoke.py --help
+
+========================================
+ROLLBACK PLAN
+========================================
+- git restore --staged --worktree tests/test_meetings_chat_integration_*.py scripts/dev_chat_smoke.py
+
+========================================
+AUDIT BUNDLE FOLDER PATH
+========================================
+/home/notsolikely/Ashby_Data/Audits/Execution/QUEST_187__<Codex fills on completion>/

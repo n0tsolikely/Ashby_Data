@@ -1,0 +1,41 @@
+STUART END-OF-DAY SNAPSHOT — 2026-01-26
+Timestamp: 2026-01-26 06:58:22 UTC
+Hands: Peter
+Operator: Ash
+
+WHAT CHANGED TODAY (HIGH LEVEL)
+- Telegram Door is operational for Peter (Ashby Telegram gateway online; Stuart is reachable as a module door).
+- Web Door exists with the “ChatGPT-style” layout spec (mode/template topbar, sidebar history, chat bubbles, attach/send).
+- Search UX + citations are present (SQLite FTS search endpoint wired for web; /search command supported in web UI).
+
+QUESTS COMPLETED (WITH AUDIT RECEIPTS)
+- QUEST_010 — Telegram door (dead simple buttons) + PDF return pipeline hook
+  - Audit: Quest Board/QUEST DIFF AUDIT FILES/QUEST_010__AUDIT/
+- QUEST_023 — Ranked search results + citations
+  - Audit: Quest Board/QUEST DIFF AUDIT FILES/QUEST_023__AUDIT/
+- QUEST_024 — Web door scaffold (layout + registry + plan preview shell)
+  - Audit: Quest Board/QUEST DIFF AUDIT FILES/QUEST_024__AUDIT/
+- QUEST_025 — Web door upload→run→downloads + state sync + search
+  - Audit: Quest Board/QUEST DIFF AUDIT FILES/QUEST_025__AUDIT/
+
+VERIFICATION EVIDENCE
+- Engine tests: python3 -m pytest -q
+  - Result: 38 passed (see quest audit bundles)
+
+RUN COMMANDS (LOCAL)
+- Telegram (WSL) — from repo root:
+  PYTHONPATH="$PWD" python3 io/telegram/ashby_telegram_control.py
+- Web Door (local) — from repo root:
+  python3 scripts/stuart_web.py
+  open: http://127.0.0.1:8844
+
+KNOWN ISSUES / TOMORROW FIX (INTENTIONAL)
+- python3 -m io.telegram.ashby_telegram_control fails (io is not a package + stdlib name collision).
+  - Fix planned as a new quest tomorrow (no refactor blast radius).
+
+RESUME ANCHOR (NEXT SESSION)
+- Start order: Governance → Data → Engine (Buff Up) → read latest snapshots → execute next quest.
+- Next action: create Telegram entrypoint hygiene quest + implement it.
+- After end-to-end demo validation, decide if new Guild Orders are needed (post-test governance step).
+
+End of End-of-Day snapshot.

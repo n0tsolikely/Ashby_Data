@@ -1,0 +1,198 @@
+STUART CODEX
+11.2 Live Meeting Capture (Teams / Zoom / RingCentral) (Canonical Appendix)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This appendix section specifies how Stuart can evolve from “upload recordings” (V1) into “live capture / meeting join” (vNext) without refactoring the core pipeline or breaking the trust contract.
+
+This is included because you explicitly want:
+- the ability to have Stuart “listen to” a Teams / Zoom / RingCentral meeting
+- and later even transcribe in real time.
+But you also require:
+- explicit execution gating
+- privacy clarity (LOCAL_ONLY viability)
+- and anti-stealth / consent-aware behavior.
+
+This section is future-facing; V1 does not ship “join meeting” by default.
+
+1) Goal of live capture (what we are solving)
+
+LCG-1) Remove friction
+Users should not have to manually record, export, and upload every meeting.
+
+LCG-2) Preserve the Stuart truth contract
+Live capture must still produce:
+- a stored audio artifact (or equivalent) with stable timestamps,
+- a durable transcript artifact,
+- durable formalizations (minutes/incidents/journals),
+- and evidence mapping.
+
+LCG-3) Avoid “provisional transcript becomes the record”
+Real-time transcripts are inherently lower quality. The canonical transcript remains the post-processed artifact.
+
+2) Non-goals and guardrails
+
+LCN-1) No stealth recording design
+Live capture features must not be designed to facilitate covert recording.
+Recording state must be obvious and consent-aware.
+
+LCN-2) No “magic speaker identity”
+Even if the meeting platform provides participant names, diarization identity mapping must remain conservative and user-confirmed.
+Stuart must not confidently attribute speech to a named person unless the user explicitly maps speakers (or the platform provides authoritative speaker identity per utterance, which is rare).
+
+LCN-3) Do not break LOCAL_ONLY invariants
+LOCAL_ONLY means Stuart does not make network calls for processing.
+It does NOT magically make a network meeting private, but Stuart must not leak the meeting content to third-party processors.
+
+3) Two live-capture architectures (both supported)
+
+There are two broad ways to implement “live capture.” Stuart should support both, because environments differ.
+
+ARCH-A) Local capture (record what the user hears)
+Stuart captures audio locally during a call the user is already in.
+Examples:
+- system audio capture (what comes through speakers/headphones)
+- microphone capture (what the user says)
+- combined mix (with appropriate echo cancellation concerns)
+
+Pros:
+- simpler (no platform bot permissions)
+- compatible with LOCAL_ONLY processing (processing stays local)
+- user retains direct control
+
+Cons:
+- may not capture remote participants cleanly
+- OS-level capture can be fragile and platform-specific
+- consent still required (the user is recording)
+
+ARCH-B) Meeting bot join (platform integration)
+Stuart joins a meeting as a participant/bot and records from inside the platform.
+
+Pros:
+- often captures all participants more cleanly
+- can access meeting metadata (title, participant list)
+- can support server-side capture quality
+
+Cons:
+- requires network and platform credentials
+- consent/compliance requirements can be stricter
+- “LOCAL_ONLY” in the strict sense is incompatible with bot participation inside Stuart unless the bot is hosted within the org’s own infrastructure.
+
+Stuart’s adapter model must allow either approach to yield the same contribution artifacts.
+
+4) Live audio as “stream contributions” (session model extension)
+
+In V1, a “contribution” is usually a static uploaded file.
+For live capture, a contribution may be streaming and then finalized.
+
+Canonical representation:
+- A live capture produces a contribution_id immediately.
+- Audio is written to:
+  contributions/<contribution_id>/source_recording.(wav|m4a|etc.)
+as it is captured, plus:
+  source_metadata.json
+  capture_timeline.json (optional drift/jitter info)
+
+A contribution becomes “final” when capture ends.
+Only then should normal pipeline runs (Stages 1–6) be executed by default.
+
+5) Explicit execution gating in live capture
+
+This is a key trust constraint: capturing is not the same as transcribing.
+
+Required behavior:
+- Starting capture: explicit user action (“Start Recording”)
+- Stopping capture: explicit user action (“Stop Recording”)
+- Processing: separate explicit user action (“Run transcription/minutes”)
+
+Optional vNext convenience:
+- “Auto-run after capture ends”
+If enabled, it must be:
+- an explicit user preference
+- shown clearly before capture starts
+- still respect profile boundaries and remote disclosures
+
+6) Real-time transcription (optional vNext) vs canonical transcript (always)
+
+If real-time transcription is implemented later:
+- it produces a provisional transcript view (NOT canonical)
+- it may have higher error rates
+- it may not be aligned with diarization yet
+
+Canonical rule:
+- The official transcript.json is produced after capture ends using the same pipeline stages and is the one used for evidence maps and printing.
+
+The UI must label:
+- “Live transcript (provisional)”
+- “Final transcript (canonical)”
+
+7) Speaker identity and meeting metadata
+
+Meeting platforms may provide:
+- meeting title
+- scheduled time
+- participant list
+Sometimes they also provide active speaker events, but those are not always reliable per-utterance.
+
+Canonical rule:
+- Meeting metadata can be stored as session metadata (session.json).
+- Participant list can be stored as “declared participants,” but is not proof of who spoke.
+- Stuart still uses diarization labels for speech.
+- The user can map speaker labels to participant names (overlay).
+- If platform provides a reliable “speaker name per utterance” (rare), that can be ingested as an overlay, but must still be auditable and confidence-scoped.
+
+8) Consent and disclosure requirements for live capture
+
+Live capture increases ethical and legal risk.
+
+Minimum posture:
+- Before starting capture, Stuart must show a consent notice:
+  “Recording may require consent. Ensure you have permission.”
+- Show an obvious recording indicator while capture is active.
+- Provide a “recording banner text” the user can paste into meeting chat (optional but helpful).
+- Log capture start/stop times in the session’s audit trail.
+
+If implementing meeting bots:
+- require explicit user affirmation of consent
+- record platform + meeting ID
+- record whether the bot announced itself (if supported)
+
+9) Profile implications
+
+LOCAL_ONLY:
+- processing stages must run locally.
+- platform bot join is usually incompatible because it requires network and credentials.
+However:
+- local capture while in a call is still compatible with LOCAL_ONLY processing, with the caveat that the call itself is networked (outside Stuart’s control).
+
+HYBRID/CLOUD:
+- both local capture and bot join are possible.
+- remote processing still requires the usual disclosure + confirmation, unless the user has explicitly configured a cloud-first posture (future).
+
+10) Failure modes in live capture
+
+Live capture introduces unique failures:
+
+- Audio dropouts
+- Permission denied for system audio capture
+- Bot disconnected from meeting
+- Drift/jitter causing timestamp skew
+- Partial recordings due to user stopping capture
+
+Canonical handling:
+- store whatever was captured
+- mark capture quality issues in capture_report.json
+- allow pipeline runs on partial captures
+- evidence references remain timestamp-based and honest about missing intervals
+
+11) Self-audit (11.2)
+
+Chat-canon alignment checklist:
+- Live capture is vNext, not V1, but designed as an AudioSource adapter extension so pipeline doesn’t refactor. (Maintained.)
+- Explicit execution gating: capture, processing, and remote use remain separate explicit steps. (Maintained.)
+- Consent-aware posture: no stealth design; recording state is obvious. (Maintained.)
+- Truth contract preserved: canonical transcript is post-processed artifact; live transcript is labeled provisional. (Maintained.)
+- Speaker identity remains conservative: mapping is overlay/user-confirmed; uncertainty and overlap honesty remain. (Maintained.)
+
+This section is complete.

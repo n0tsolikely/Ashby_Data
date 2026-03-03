@@ -1,0 +1,52 @@
+QUEST ID: QUEST_010
+Title: Stuart v1 — Dungeon 9: Telegram door (dead simple buttons)
+Context: Stuart
+Origin: Guild Orders: GUILD_ORDERS_STUART_V1_2026-01-16_REV3.txt
+Priority: P2
+Links:
+- Guild Orders: Stuart v1 — Dungeon 9
+- Control Sync Snapshot: Telegram is a door only; default template only
+Status: COMPLETED
+Accepted On: 2026-01-25
+Completed On: 2026-01-25
+DESCRIPTION
+────────────────────────────────────────
+Add a thin Telegram door for remote demo use: send file -> choose mode -> choose speakers -> receive PDF.
+No template selection via Telegram; always default.
+SCOPE / OBJECTIVE
+────────────────────────────────────────
+Implement inline buttons for mode and speakers, then run default pipeline and return PDF as attachment.
+OUT OF SCOPE
+────────────────────────────────────────
+Full Telegram command language.
+Template selection / advanced options in Telegram.
+DEPENDENCIES
+────────────────────────────────────────
+- QUEST_005
+- QUEST_006
+- QUEST_008
+EXECUTION NOTES
+────────────────────────────────────────
+Engine should emit door-agnostic “clarify prompt” structures; Telegram renders them as buttons.
+Design should make adding Discord later easier (same engine prompts, different rendering).
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────
+- [x] Bot receives audio/video file
+- [x] Bot asks Mode via buttons (Journal/Diary vs Meeting)
+- [x] Bot asks Speakers via buttons (Auto/1/2/3+)
+- [x] Default template pipeline runs and returns PDF attachment
+- [ ] Minimal search query works (optional in v1; acceptable to defer if webapp covers it)
+TALENT POINT
+────────────────────────────────────────
+On completion:
+- Talent Point Awarded: YES
+- Talent Spent On: TBD
+
+FINAL NOTES
+────────────────────────────────────────
+(optional)
+
+
+FINAL NOTES
+────────────────────────────────────────
+Optional search via Telegram is deferred (quest allows defer if webapp covers it). Telegram door is intentionally minimal and door-agnostic.

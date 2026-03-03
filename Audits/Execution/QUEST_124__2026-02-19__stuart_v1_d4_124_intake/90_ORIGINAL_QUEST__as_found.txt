@@ -1,0 +1,113 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_124
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 4 (11/15): Frontend — transcript dropdown uses metadata list + fetches selected version on demand
+
+Context: (Ashby / Stuart / System / Other)
+Stuart frontend — professional transcript version UX
+
+Origin:
+Guild Orders — Dungeon 4 task #4 (selector dropdown) + performance requirements
+
+Priority: (P0 / P1 / P2)
+P1
+
+Links:
+- Guild Orders: Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt (Dungeon 4 + Dungeon 5 dependencies)
+- Stuart Codex (full): Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_7.4_Stage_3_Transcription.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_7.3_Stage_2_Diarization.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_6.2_Canonical_Artifacts_JSON_Markdown_PDF.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_8.1_Evidence_Anchors_and_Citations.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_3.2_Meeting_Minutes_Mode.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 30.1.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 28.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 8A.4.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 26.txt
+- Frontend anchors:
+  - Ashby_Engine/webapp/stuart_frontend/stuart_app/src/pages/Stuart.jsx
+  - Ashby_Engine/webapp/stuart_frontend/stuart_app/src/api/stuartClient.js
+  - Ashby_Engine/webapp/stuart_frontend/stuart_app/src/components/stuart/TranscriptViewer.jsx
+- Backend anchors (API contract):
+  - Ashby_Engine/ashby/interfaces/web/app.py (/api/sessions/{session_id}/transcripts, /api/transcripts/{id})
+
+Status: ACTIVE
+
+Audit Bundle Path:
+  /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_124__2026-02-19__stuart_v1_d4_124_intake
+
+Accepted On:
+2026-02-19
+Accepted By:
+Hands (Peter) via Codex (Brains)
+Completed On:
+
+Completed By:
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+The UI already has a transcript version dropdown, but it currently relies on the list endpoint returning full transcript JSON blobs. That’s not production-grade.
+
+Switch the UI to use a metadata-only list and fetch the selected transcript version on demand.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+Update Stuart.jsx (and stuartClient if needed):
+
+- transcripts.list(sessionId) returns metadata only (per QUEST_119)
+- Add a new query to fetch the selected transcript version:
+  - stuartClient.transcripts.get(versionId)
+- When selectedTranscriptVersionId changes:
+  - fetch transcript segments + metadata
+  - feed TranscriptViewer with segments
+- Display helpful metadata in the dropdown options:
+  - created time (short), diarization_enabled badge, segments_count
+- Ensure UX does NOT create a giant scrolling transcript page:
+  - keep TranscriptViewer expand/collapse + ScrollArea behavior
+
+Style constraints:
+- Use existing shadcn/ui components already present in repo (Select, Badge, Card, ScrollArea, etc.)
+- No random styling / no new component library additions.
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Advanced compare/diff between transcript versions (future).
+- Editing transcript text (forbidden).
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+QUEST_119, QUEST_120
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────
+The dropdown is a selector; transcript content stays in TranscriptViewer’s scroll area. Keep it clean and Google-grade.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] UI loads transcript version list as metadata only
+- [ ] Selecting a version fetches full segments via /api/transcripts/{id}
+- [ ] UI shows diarization_enabled/asr_engine metadata somewhere reasonable
+- [ ] Frontend build succeeds
+
+────────────────────────────────────────────────────────
+TALENT POINT
+────────────────────────────────────────────────────────
+# On completion:
+# - Talent Point Awarded: YES / NO
+# - Talent Spent On: (TALENT ID — Name in Talent Tree)
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+# Optional closing notes once the quest is completed or abandoned.

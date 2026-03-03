@@ -1,0 +1,87 @@
+# QUEST_ID: QUEST_171
+# TITLE: Stuart v1 — Dungeon 8 (3/7): Export API v2 (dev_bundle + format selection)
+# DATE: 2026-03-01
+# STATUS: ACCEPTED
+# PRIORITY: P0
+# OWNER: OpenAI Codex (CLI)
+# RISK_CLASS: R1
+
+## EXECUTIVE SUMMARY
+The export endpoint exists but does not match Dungeon 8’s contract (USER_EXPORT vs DEV_EXPORT, format selection, new zip structure).
+
+This quest upgrades `GET /api/sessions/{session_id}/export` to support:
+- `export_type=dev_bundle`
+- format selection parameters (USER_EXPORT)
+- returning a zip with a deterministic filename that includes `session_id` and sanitized `session_title`
+
+The actual zip contents/structure is implemented in QUEST_172.
+
+## CANONICAL ANCHORS
+- Guild Orders REV14 — DUNGEON 8: export endpoints/types + format selection + deterministic naming.
+  - `Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-25_REV14.txt`
+
+## REPO REALITY CHECK
+- Endpoint today:
+  - `Ashby_Engine/ashby/interfaces/web/app.py` → `GET /api/sessions/{session_id}/export`
+  - Calls `ashby.modules.meetings.export.bundle.export_session_bundle(...)`
+  - Supports `export_type in {full_bundle, transcript_only, formalization_only}`
+  - `format=zip` returns file; otherwise returns JSON with `download_url`
+
+## SCOPE
+### IN SCOPE
+1) Extend export_type to include `dev_bundle`.
+2) Add query params for USER_EXPORT format selection:
+   - `transcript_formats` (comma list): `txt,md,pdf`
+   - `formalization_formats` (comma list): `md,pdf`
+3) Validate parameters and return 400 for invalid values.
+4) Provide deterministic, traceable zip filename:
+   - MUST include `session_id`
+   - SHOULD include sanitized session title if present
+
+### OUT OF SCOPE
+- Building the new zip contents/structure (QUEST_172).
+- UI changes (QUEST_173/174).
+
+## API CONTRACT (PROPOSED)
+`GET /api/sessions/{session_id}/export?format=zip&export_type=full_bundle&transcript_formats=txt,pdf&formalization_formats=pdf,md`
+
+Rules:
+- `export_type=dev_bundle` ignores format selection and always exports DEV_EXPORT.
+- `export_type` in `{full_bundle, transcript_only, formalization_only}` exports USER_EXPORT.
+- Defaults (if params missing):
+  - transcript_formats = `txt`
+  - formalization_formats = `pdf`
+
+## IMPLEMENTATION PLAN
+1) Update `api_session_export()` in `app.py`:
+   - accept `export_type == dev_bundle`
+   - parse/validate `transcript_formats` and `formalization_formats`
+   - pass these into the new export builder function introduced in QUEST_172
+
+2) Zip filename rules:
+   - Use `Content-Disposition` filename like:
+     - `<session_id>__<sanitized_title>__export_<export_type>__<YYYYMMDD_HHMMSS>.zip`
+   - Determinism note:
+     - Timestamp component must be derived from stable source for deterministic runs OR be omitted for deterministic mode.
+     - If you include a timestamp, it will break hash determinism. (Dungeon 8 wants determinism.)
+
+**Recommended deterministic filename**:
+- `<session_id>__<sanitized_title>__export_<export_type>.zip`
+- If title missing: omit.
+
+3) Keep `format!=zip` response behavior:
+   - return JSON with `download_url`.
+
+## TESTING LEVEL
+TL2 (API)
+
+## ACCEPTANCE CRITERIA
+- Endpoint accepts `export_type=dev_bundle`.
+- Endpoint accepts the new format selection params and rejects invalid ones.
+- Response zip filename includes session_id and title (if available).
+
+## RECEIPTS REQUIRED
+- Example request URLs used.
+- Example `Content-Disposition` filename observed.
+- Diff of backend files touched.
+

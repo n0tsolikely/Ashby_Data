@@ -1,0 +1,80 @@
+STUART — CONTINUITY LOCK
+Date: 2026-02-07
+
+PURPOSE
+- Freeze the authoritative state of the Stuart v1 raid so a new session cannot drift.
+- This file is binding resume law. If it conflicts with casual memory, this wins.
+
+CANONICAL ROOTS
+- Governance canon: /mnt/data/Synapse_OS_Governance
+- Subject data canon: /mnt/data/Ashby_Data
+- Subject engine canon: /mnt/data/Ashby_Engine
+
+CODEX STATUS (FOG)
+- Codex Freeze Marker present:
+  - /mnt/data/Ashby_Data/Codex/CODEX_FREEZE.md
+- Execution is authorized under frozen codex references:
+  - /mnt/data/Ashby_Data/Codex/ASHBY CODEX FULL.txt
+  - /mnt/data/Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt
+
+ACTIVE GUILD ORDERS (AUTHORITATIVE SCOPE)
+- /mnt/data/Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS_STUART_V1_2026-02-04_REV7.txt
+
+AUTHORITATIVE DECISION ANCHORS (BINDING)
+- Control Sync Snapshot (2026-02-07):
+  /mnt/data/Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-02-07__PHASE_D3_D4_PLUS_PLATFORM_SPINE_WIRING.txt
+- Binding Buff (platform truth/profile/routing lock):
+  /mnt/data/Ashby_Data/Buffs/ASHBY_PLATFORM_TRUTH_AND_PROFILE_LOCK.txt
+- Vision addendum (clarifies profile vs personality + platform truth wiring):
+  /mnt/data/Ashby_Data/Docs/ASHBY_VISION_ADDENDUM__2026-02-07__TRUTH_PROFILE_ROUTING_CLARITY.txt
+
+QUEST BOARD TRUTH (COMMITMENT STATE)
+COMPLETED (implemented + verified via prior EOD receipts):
+- QUEST_042 → QUEST_052 (REV7 phase stack)
+
+ACCEPTED (ACTIVE COMMITMENT STACK)
+- QUEST_053 → QUEST_060 (Dungeon 3 + Dungeon 4)
+- SIDE-QUEST_076 (Platform: unify execution profile substrate)
+- SIDE-QUEST_077 (Meetings: integrate platform TruthGateJudge via MeetingsTruthPolicy)
+
+EXECUTION ORDER (BINDING INTENT)
+- Execute QUEST_053 → QUEST_055 first (D3 foundations).
+- Execute SIDE-QUEST_076 between QUEST_055 and QUEST_056.
+- Execute QUEST_056 → QUEST_060 (D4 retrieval/index).
+- Execute SIDE-QUEST_077 after QUEST_060.
+
+UNACCEPTED (DO NOT EXECUTE WITHOUT NEW CONTROL SYNC)
+- QUEST_061+ (Doors unification, overlays, release support)
+
+RUNTIME ROOT (IMPORTANT)
+- Stuart runtime outputs live under STUART_ROOT (outside repo).
+- Default: ~/ashby_runtime/stuart
+- Override via env: STUART_ROOT
+
+EGRESS / REMOTE LLM GATING (DO NOT GUESS)
+- ASHBY_EXECUTION_PROFILE:
+  - LOCAL_ONLY / HYBRID / CLOUD
+- ASHBY_MEETINGS_LLM_ENABLED:
+  - must be explicitly truthy to allow remote minutes/journal JSON formalization
+- OPENAI_API_KEY:
+  - required for OpenAI remote formalizer when enabled
+
+SNAPSHOT LAW (BINDING)
+- Control Sync snapshots are created ONLY when Control Sync ends.
+- End-of-Day snapshot is created ONLY when:
+  - the accepted quest stack is complete, OR
+  - Hands explicitly ends the session.
+
+CANON EXPORT LAW (BINDING)
+- Every change to Ashby_Data or Ashby_Engine must ship as a new combined zip.
+- The most recently delivered zip is treated as the canonical base for further work.
+
+LATEST SNAPSHOT ANCHORS
+- Latest Control Sync:
+  - /mnt/data/Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-02-07__PHASE_D3_D4_PLUS_PLATFORM_SPINE_WIRING.txt
+- Latest End-of-Day:
+  - /mnt/data/Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2026-02-06__Q042-Q052.txt
+
+NEXT EXPECTED STEP
+- Begin governed execution on QUEST_053 (start with audit bundle Pre-Flight + baseline pytest).
+

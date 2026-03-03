@@ -1,0 +1,123 @@
+================================================================================
+IDENTITY (REQUIRED)
+================================================================================
+Quest ID:
+SIDE-QUEST_085
+
+Title:
+Stuart v1 — Side Quest: Cancel run (backend endpoint + UI button) to stop long processing
+
+Subject:
+Ashby / Stuart
+
+Origin:
+STUART_TO_DO_2026-02-20__REV1.txt (#5): no way to cancel a run; delete session does not stop spinner.
+
+Priority: (P0 / P1 / P2)
+P1
+
+Links:
+- To-Do doc: STUART_TO_DO_2026-02-20__REV1.txt
+- Backend runs: Ashby_Engine/ashby/interfaces/web/app.py
+- Executor: Ashby_Engine/ashby/modules/meetings/pipeline/job_runner.py
+
+================================================================================
+CODEX ANCHORS + CONSTRAINT SUMMARY (DRAFT)
+================================================================================
+Codex Anchors (DRAFT):
+- Stuart_Codex_Full.txt (Failure modes; long audio handling; resumability)
+
+Codex Constraint Summary:
+- Users must be able to abort an in-progress job without killing the whole server.
+
+================================================================================
+QUEST BOARD FOLDER STATE
+================================================================================
+Quest Board Folder State: BOARD
+
+================================================================================
+DESCRIPTION
+================================================================================
+Long runs need a cancel mechanism. Today the UI spins and there is no stop.
+
+================================================================================
+SCOPE / OBJECTIVE
+================================================================================
+Backend:
+- Add POST /api/runs/{run_id}/cancel
+- Implementation pattern:
+  - Write a write-once cancel flag in runs/<run_id>/inputs/cancel.json (or similar)
+  - job_runner checks for cancel flag between major stages and terminates early:
+    - mark run status = cancelled
+    - write a cancellation artifact/receipt
+
+Frontend:
+- Add a Cancel button while isProcessing && activeRunId exists.
+- Clicking Cancel calls the endpoint and stops the spinner.
+
+================================================================================
+OUT OF SCOPE
+================================================================================
+- Kill in-flight external processes at the OS level.
+
+================================================================================
+DEPENDENCIES
+================================================================================
+None.
+
+================================================================================
+RISK
+================================================================================
+Risk: R1
+
+================================================================================
+DOOR IMPACT
+================================================================================
+Door Impact:
+- WEB
+
+================================================================================
+TESTING LEVEL
+================================================================================
+Testing Level: TL2
+
+================================================================================
+VERIFICATION PLAN (DRAFT)
+================================================================================
+- Manual:
+  - Start a run
+  - Press Cancel
+  - Run transitions to cancelled
+  - UI stops polling and shows cancelled state
+
+================================================================================
+CHANGE CLASS + VISION DELTA
+================================================================================
+Change Class: STRUCTURAL
+Vision Delta: ALIGNED
+
+================================================================================
+SYSTEM CONTEXT STATEMENT
+================================================================================
+Cancellation is a safety and usability requirement. The system must exit deterministically and preserve auditability.
+
+================================================================================
+ANTI-DUPLICATION PLAN
+================================================================================
+- rg -n "cancel" job_runner.py app.py
+- Confirm there is no existing cancel endpoint.
+
+================================================================================
+PLACEMENT INTENT
+================================================================================
+- app.py endpoint + job_runner stage checks
+
+================================================================================
+TALENT POINT
+================================================================================
+Talent Point Awarded: NO
+
+================================================================================
+EXECUTION AUDIT BUNDLE
+================================================================================
+Audit Bundle Folder Path: (set when moving to ACCEPTED)

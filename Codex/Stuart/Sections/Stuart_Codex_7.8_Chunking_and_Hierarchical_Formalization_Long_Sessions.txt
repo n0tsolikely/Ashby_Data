@@ -1,0 +1,215 @@
+STUART CODEX
+7.8 Chunking and Hierarchical Formalization (Long Sessions) (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines how Stuart handles long recordings (e.g., 60–180+ minutes) without truncation, without relying on a single giant model context, and without sacrificing evidence traceability.
+
+This is not an “optimization.” It is a correctness requirement driven by chat-canon:
+- Users explicitly asked: “How do we avoid being limited to 10k/15k characters or model output limits?”
+- The answer is: Stuart’s deliverables are stored artifacts (JSON/MD/PDF) produced via chunked processing, not a single chat response.
+- Retention (especially HIGH and NEAR-VERBATIM) must remain feasible for long meetings.
+- Evidence/citations must survive chunking and merging. No citation loss.
+
+1) Goals (what chunking must guarantee)
+
+CHG-1) Completeness
+Long sessions must produce complete transcripts and complete formalizations.
+
+CHG-2) Auditability
+Every claim in a formalization must remain traceable to transcript segment IDs and timestamps, even after chunk merging.
+
+CHG-3) Determinism
+Given the same inputs and the same chunking config, results should be structurally consistent and reproducible.
+
+CHG-4) Resumability
+If the machine crashes or the run is canceled, the system can resume from the last completed chunk without restarting the entire session.
+
+CHG-5) Profile safety
+LOCAL_ONLY chunking must remain fully local; HYBRID/CLOUD chunking must disclose what text leaves the machine, and redaction must be possible.
+
+2) Where chunking happens in the pipeline
+
+Chunking exists at multiple stages:
+
+- Stage 1 (Normalization): may generate chunk_plan.json (time boundaries) and/or speech_segments.json (VAD boundaries).
+- Stage 3 (Transcription): performs chunked ASR, producing transcript parts merged into transcript.json.
+- Stage 2 (Diarization): may run whole-file or chunked; output must still be a coherent diarization.json timeline.
+- Stage 4 (Alignment): merges diarization + transcript; can operate with chunked inputs but must output a single aligned_transcript.json timeline.
+- Stage 5 (Formalization): performs chunked/hierarchical extraction and deterministic merging to produce output.json/md/pdf plus evidence_map.
+
+This section focuses on how chunking is planned and how merge steps preserve truth.
+
+3) Chunk plan artifact (required for long sessions)
+
+When chunking is used, the run MUST create a chunk plan artifact, e.g.:
+- chunk_plan.json
+
+chunk_plan.json must include:
+- chunk_id (stable)
+- start_time, end_time (global time)
+- source contribution_id references
+- optional: speech density estimates
+- optional: overlap risk estimates
+- hash of the normalization/audio manifest used
+
+Important: chunk boundaries must preserve timeline mapping. No trimming that changes time anchors.
+
+4) Chunking strategy choices
+
+Stuart should support multiple chunking strategies:
+
+CHS-1) Time-based chunking (default, deterministic)
+Example: 5–10 minute chunks.
+Pros:
+- deterministic
+- easy resume
+- stable memory footprint
+Cons:
+- can split mid-topic or mid-sentence (acceptable; alignment handles it)
+
+CHS-2) VAD-based chunking (speech segments)
+Use voice activity detection to chunk around speech.
+Pros:
+- fewer silent spans
+- often improves ASR efficiency
+Cons:
+- VAD is itself probabilistic
+- must preserve mapping to global time
+
+CHS-3) Hybrid chunking (recommended)
+Time chunks with optional sub-segmentation by VAD inside each chunk.
+
+V1 should default to time-based chunking (simpler, deterministic), with VAD as an optional enhancement.
+
+5) Chunked transcription (Stage 3) requirements
+
+CHT-1) Process each chunk independently
+Run ASR on each chunk. Store intermediate chunk transcript artifacts:
+- transcript_chunk_<chunk_id>.json
+- transcript_chunk_<chunk_id>.txt (optional)
+
+CHT-2) Merge into a single transcript.json
+Merge must:
+- preserve global timestamps (start/end anchored to original audio)
+- preserve ordering
+- ensure stable segment IDs
+
+CHT-3) Segment ID stability
+Segment IDs may be generated as:
+- segment_<global_counter>
+or
+- segment_<chunk_id>_<local_counter>
+Either is acceptable as long as:
+- they are stable within the transcript artifact,
+- and citations can reference them consistently.
+
+CHT-4) Partial progress is written to disk
+After each chunk completes, the run record must be updated so a resume can continue.
+
+6) Chunked diarization (Stage 2) requirements
+
+Diarization can be run:
+- over the whole audio (preferred when feasible), or
+- chunked (when constraints require it).
+
+If diarization is chunked:
+- diarization_chunk_<chunk_id>.json must be stored
+- merge must produce a coherent diarization.json timeline.
+
+Diarization merge must preserve:
+- speaker label consistency (best effort)
+- overlap markers (if available)
+- confidence information
+If speaker label identity drifts between chunks, the system must:
+- warn clearly
+- and prefer conservative UNKNOWN attribution rather than pretending to know identities.
+
+7) Chunk-aware alignment (Stage 4) requirements
+
+Alignment must be able to consume chunked transcript and diarization outputs and still produce:
+- a single aligned_transcript.json
+
+Alignment rules remain locked:
+- do not rewrite transcript words due to diarization
+- preserve timestamps
+- conservative attribution with uncertainty
+
+Alignment may re-segment for attribution purposes, but must preserve parent traceability.
+
+8) Hierarchical formalization (Stage 5) requirements
+
+Formalization is where chunking is most important for “no truncation.”
+
+Stage 5 must use a hierarchical approach:
+
+HF-1) Chunk extraction pass
+For each chunk, extract candidate items and notes according to mode/template:
+- meeting: candidate topics, decisions, actions, open questions
+- incident: candidate timeline events, impact statements, actions, unknowns
+- journal: paragraph groupings and narrative coherence (still transcript-derived)
+- creator: key phrases, hooks, clusters, steps
+
+Store chunk outputs:
+- formalization_chunk_<chunk_id>.json
+- evidence_map_chunk_<chunk_id>.json
+
+HF-2) Deterministic merge pass
+Merge chunk outputs into global output.json and evidence_map.json.
+
+The merge must:
+- preserve citations (never drop them)
+- de-duplicate identical or near-identical items
+- preserve chronology when relevant
+- preserve superseded/current relationships across chunks
+- surface uncertainty when attribution confidence is low
+
+HF-3) Final rendering pass
+Render merged output.json into output.md and output.pdf.
+
+This “extract → merge → render” pipeline is the core “no truncation” design.
+
+9) De-duplication rules (avoid double-counting)
+
+Chunking can produce repeats (people repeat decisions or action items).
+De-duplication must be deterministic and conservative:
+
+DED-1) Merge only when confident
+If two items are similar but not clearly identical, keep both and mark as “possibly duplicate” rather than deleting.
+
+DED-2) Preserve evidence
+When merging two items, preserve citations from both sources or pick the strongest citation set, but never lose traceability.
+
+DED-3) Superseded detection is separate
+Don’t treat “override” as a duplicate; treat it as superseded/current logic per Section 5.4.
+
+10) User controls (advanced, not required for casual users)
+
+Most users should never see chunk knobs.
+However, advanced settings may exist:
+- chunk duration
+- VAD on/off
+- max parallel chunks (performance)
+- “safe mode” (more conservative merging)
+
+Defaults must be sane and stable.
+
+11) Resumption and partial outputs
+
+If a chunk fails:
+- the run is partial, not “success”
+- completed chunks remain stored
+- user can retry failed chunks
+- final output is not produced until required chunks complete (unless user explicitly requests partial deliverable, which must be labeled “partial”)
+
+12) Self-audit (7.8)
+
+Chat-canon alignment checklist:
+- Long meeting support: chunked transcription + hierarchical formalization produces complete outputs without chat/output limits. (Maintained.)
+- Evidence integrity: citations and evidence maps survive chunking/merging; timestamps remain stable. (Maintained.)
+- Retention feasibility: HIGH/NEAR-VERBATIM remains possible via chunking instead of relying on one huge model context. (Maintained.)
+- Explicit execution gating: chunked processing runs only after submit/confirm and produces durable artifacts, not ephemeral chat text. (Maintained.)
+- Profile safety: LOCAL_ONLY stays local; HYBRID/CLOUD requires disclosure/confirmation and supports redaction. (Maintained.)
+
+This section is complete.

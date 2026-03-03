@@ -1,0 +1,423 @@
+diff --git a/mnt/data/Ashby_Data/Quest Board/QUEST DIFF AUDIT FILES/QUEST_023__AUDIT/baseline/ashby/modules/meetings/index/sqlite_fts.py b/ashby/modules/meetings/index/sqlite_fts.py
+index 21e18a5..e66a9f7 100644
+--- a/mnt/data/Ashby_Data/Quest Board/QUEST DIFF AUDIT FILES/QUEST_023__AUDIT/baseline/ashby/modules/meetings/index/sqlite_fts.py	
++++ b/ashby/modules/meetings/index/sqlite_fts.py
+@@ -137,9 +137,12 @@ class SearchHit:
+     snippet: str
+     title: Optional[str]
+     mode: Optional[str]
++    t_start: Optional[float] = None
++    t_end: Optional[float] = None
++    source_path: Optional[str] = None
+ 
+ 
+-def search(conn: sqlite3.Connection, query: str, *, limit: int = 10) -> List[SearchHit]:
++def search(conn: sqlite3.Connection, query: str, *, limit: int = 10, session_id: Optional[str] = None) -> List[SearchHit]:
+     """Keyword search against the FTS index.
+ 
+     Note: FTS5 bm25() returns a lower-is-better score.
+@@ -151,20 +154,28 @@ def search(conn: sqlite3.Connection, query: str, *, limit: int = 10) -> List[Sea
+     rows = conn.execute(
+         """
+         SELECT
+-          session_id,
+-          run_id,
+-          segment_id,
+-          speaker_label,
+-          title,
+-          mode,
++          segments_fts.session_id AS session_id,
++          segments_fts.run_id AS run_id,
++          segments_fts.segment_id AS segment_id,
++          segments_fts.speaker_label AS speaker_label,
++          segments_fts.title AS title,
++          segments_fts.mode AS mode,
++          segments_fts.t_start AS t_start,
++          segments_fts.t_end AS t_end,
++          segments.source_path AS source_path,
+           snippet(segments_fts, 0, '[', ']', '…', 10) AS snippet,
+           bm25(segments_fts) AS score
+         FROM segments_fts
++        LEFT JOIN segments
++          ON segments.session_id = segments_fts.session_id
++         AND segments.run_id = segments_fts.run_id
++         AND segments.segment_id = segments_fts.segment_id
+         WHERE segments_fts MATCH ?
++          AND (? IS NULL OR segments_fts.session_id = ?)
+         ORDER BY score ASC
+         LIMIT ?;
+         """,
+-        (q, int(limit)),
++        (q, session_id, session_id, int(limit)),
+     ).fetchall()
+ 
+     out: List[SearchHit] = []
+@@ -179,6 +190,9 @@ def search(conn: sqlite3.Connection, query: str, *, limit: int = 10) -> List[Sea
+                 snippet=str(r["snippet"]),
+                 title=(str(r["title"]) if r["title"] is not None else None),
+                 mode=(str(r["mode"]) if r["mode"] is not None else None),
++                t_start=(float(r["t_start"]) if r["t_start"] is not None else None),
++                t_end=(float(r["t_end"]) if r["t_end"] is not None else None),
++                source_path=(str(r["source_path"]) if r["source_path"] is not None else None),
+             )
+         )
+ 
+diff --git a/mnt/data/Ashby_Data/Quest Board/QUEST DIFF AUDIT FILES/QUEST_023__AUDIT/baseline/ashby/modules/meetings/pipeline/transcribe.py b/ashby/modules/meetings/pipeline/transcribe.py
+index 79d5078..3f0f2df 100644
+--- a/mnt/data/Ashby_Data/Quest Board/QUEST DIFF AUDIT FILES/QUEST_023__AUDIT/baseline/ashby/modules/meetings/pipeline/transcribe.py	
++++ b/ashby/modules/meetings/pipeline/transcribe.py
+@@ -23,6 +23,7 @@ def transcribe_stub(run_dir: Path) -> Dict[str, Any]:
+             "This is a placeholder transcript artifact.\n\n"
+             "SPEAKER_00: Hello, this is a sample speaker line.\n"
+             "SPEAKER_01: And this is another speaker line.\n"
++            "SPEAKER_01: I made kimchi yesterday and it was spicy.\n"
+             "SPEAKER_00: Second line from speaker 00 for extraction tests.\n",
+             encoding="utf-8",
+         )
+diff --git a/mnt/data/Ashby_Data/Quest Board/QUEST DIFF AUDIT FILES/QUEST_023__AUDIT/baseline/ashby/modules/meetings/pipeline/job_runner.py b/ashby/modules/meetings/pipeline/job_runner.py
+index fc8d382..15b6e87 100644
+--- a/mnt/data/Ashby_Data/Quest Board/QUEST DIFF AUDIT FILES/QUEST_023__AUDIT/baseline/ashby/modules/meetings/pipeline/job_runner.py	
++++ b/ashby/modules/meetings/pipeline/job_runner.py
+@@ -9,6 +9,7 @@ from ashby.modules.meetings.init_root import init_stuart_root
+ from ashby.modules.meetings.store import get_run_state, update_run_state
+ from ashby.modules.meetings.pipeline.transcribe import transcribe_stub
+ from ashby.modules.meetings.pipeline.diarize import diarize_stub
++from ashby.modules.meetings.pipeline.search import search_and_write_results
+ from ashby.modules.meetings.render.formalize_md import render_formalized_md
+ from ashby.modules.meetings.render.evidence_map import build_evidence_map
+ from ashby.modules.meetings.render.export_pdf import export_pdf_stub
+@@ -96,6 +97,10 @@ def run_job(run_id: str) -> RunResult:
+ 
+                 params = step.get("params") if isinstance(step, dict) else {}
+ 
++                if kind == "validate":
++                    # no-op: plan validation happens before run creation (kept for plan determinism)
++                    pass
++
+                 if kind == "speaker_map_overlay":
+                     overlay = (params or {}).get("overlay")
+                     if not isinstance(overlay, dict) or not overlay:
+@@ -135,6 +140,25 @@ def run_job(run_id: str) -> RunResult:
+                     a5 = export_pdf_stub(run_dir, md_path=run_dir / "artifacts" / "formalized.md")
+                     update_run_state(run_id, artifact=a5)
+ 
++                elif kind == "search":
++                    q = (params or {}).get("query")
++                    if not isinstance(q, str):
++                        q = str(q) if q is not None else ""
++                    sess_filter = (params or {}).get("session_id")
++                    if sess_filter is None:
++                        sess_filter = session_id
++                    if isinstance(sess_filter, str) and sess_filter.strip() == "":
++                        sess_filter = None
++                    if sess_filter is not None and not isinstance(sess_filter, str):
++                        sess_filter = str(sess_filter)
++                    lim = (params or {}).get("limit", 10)
++                    try:
++                        lim_i = int(lim)
++                    except Exception:
++                        lim_i = 10
++                    a_search = search_and_write_results(run_dir, query=q, session_id=sess_filter, limit=lim_i)
++                    update_run_state(run_id, artifact=a_search)
++
+                 elif kind == "extract_only":
+                     who = (params or {}).get("query")
+                     if not isinstance(who, str) or not who.strip():
+diff --git a/mnt/data/Ashby_Data/Quest Board/QUEST DIFF AUDIT FILES/QUEST_023__AUDIT/baseline/ashby/modules/meetings/cli_stuart.py b/ashby/modules/meetings/cli_stuart.py
+index 9197474..4e3c0c5 100644
+--- a/mnt/data/Ashby_Data/Quest Board/QUEST DIFF AUDIT FILES/QUEST_023__AUDIT/baseline/ashby/modules/meetings/cli_stuart.py	
++++ b/ashby/modules/meetings/cli_stuart.py
+@@ -94,6 +94,11 @@ def cmd_extract(args: argparse.Namespace) -> Dict[str, Any]:
+     return _make_run(args.session_id, plan, auto_go=True)
+ 
+ 
++def cmd_search(args: argparse.Namespace) -> Dict[str, Any]:
++    plan = {"steps": [{"kind": "search", "params": {"query": args.query, "session_id": args.session_id, "limit": args.limit}}]}
++    return _make_run(args.session_id, plan, auto_go=True)
++
++
+ def build_parser() -> argparse.ArgumentParser:
+     p = argparse.ArgumentParser(prog="stuart", description="Stuart v1 (meetings module) CLI")
+     sub = p.add_subparsers(dest="cmd", required=True)
+@@ -143,6 +148,13 @@ def build_parser() -> argparse.ArgumentParser:
+     ex.add_argument("who", help="Speaker name (must match active overlay mapping)")
+     ex.set_defaults(_handler=cmd_extract)
+ 
++    sr = sub.add_parser("search", help="Search transcripts via SQLite FTS (returns citation-aware results).")
++    sr.add_argument("session_id", help="Session id (ses_...)")
++    sr.add_argument("query", help="Search query text")
++    sr.add_argument("--limit", type=int, default=10)
++    sr.set_defaults(_handler=cmd_search)
++
++
+     return p
+ 
+ 
+diff --git a/ashby/modules/meetings/schemas/search.py b/ashby/modules/meetings/schemas/search.py
+new file mode 100644
+index 0000000..baee4ba
+--- /dev/null
++++ b/ashby/modules/meetings/schemas/search.py
+@@ -0,0 +1,77 @@
++from __future__ import annotations
++
++from dataclasses import dataclass, field
++from typing import Any, Dict, List, Optional
++
++
++@dataclass(frozen=True)
++class CitationAnchor:
++    """Pointer back to a ground-truth transcript segment.
++
++    V1 anchor discipline (QUEST_022/023): transcript.txt line numbers.
++    Future: replace/augment with aligned timestamps.
++    """
++
++    session_id: str
++    run_id: str
++    segment_id: int  # v1: transcript line number
++
++    speaker_label: Optional[str] = None
++    t_start: Optional[float] = None
++    t_end: Optional[float] = None
++    source_path: Optional[str] = None
++
++    kind: str = "transcript_line"
++
++    def to_dict(self) -> Dict[str, Any]:
++        return {
++            "kind": self.kind,
++            "session_id": self.session_id,
++            "run_id": self.run_id,
++            "segment_id": int(self.segment_id),
++            "speaker_label": self.speaker_label,
++            "t_start": self.t_start,
++            "t_end": self.t_end,
++            "source_path": self.source_path,
++        }
++
++
++@dataclass(frozen=True)
++class SearchResultItem:
++    rank: int
++    score: float
++    snippet: str
++    title: Optional[str]
++    mode: Optional[str]
++    citation: CitationAnchor
++
++    def to_dict(self) -> Dict[str, Any]:
++        return {
++            "rank": int(self.rank),
++            "score": float(self.score),
++            "snippet": self.snippet,
++            "title": self.title,
++            "mode": self.mode,
++            "citation": self.citation.to_dict(),
++        }
++
++
++@dataclass(frozen=True)
++class SearchResults:
++    """Door-agnostic search response (web/telegram/cli)."""
++
++    query: str
++    limit: int
++    total_hits: int
++    results: List[SearchResultItem] = field(default_factory=list)
++
++    message: Optional[str] = None
++
++    def to_dict(self) -> Dict[str, Any]:
++        return {
++            "query": self.query,
++            "limit": int(self.limit),
++            "total_hits": int(self.total_hits),
++            "results": [r.to_dict() for r in self.results],
++            "message": self.message,
++        }
+diff --git a/ashby/modules/meetings/pipeline/search.py b/ashby/modules/meetings/pipeline/search.py
+new file mode 100644
+index 0000000..b019a4e
+--- /dev/null
++++ b/ashby/modules/meetings/pipeline/search.py
+@@ -0,0 +1,88 @@
++from __future__ import annotations
++
++import json
++import time
++from pathlib import Path
++from typing import Any, Dict, Optional
++
++from ashby.modules.meetings.hashing import sha256_file
++from ashby.modules.meetings.init_root import init_stuart_root
++from ashby.modules.meetings.index.sqlite_fts import connect, ensure_schema, get_db_path, search
++from ashby.modules.meetings.schemas.search import CitationAnchor, SearchResultItem, SearchResults
++
++
++def search_and_write_results(
++    run_dir: Path,
++    *,
++    query: str,
++    session_id: Optional[str] = None,
++    limit: int = 10,
++) -> Dict[str, Any]:
++    """Execute deterministic keyword search and write door-agnostic results artifact.
++
++    Artifact: <run_dir>/artifacts/search_results.json
++    """
++    q = (query or "").strip()
++    artifacts_dir = run_dir / "artifacts"
++    artifacts_dir.mkdir(parents=True, exist_ok=True)
++
++    out_path = artifacts_dir / "search_results.json"
++
++    lay = init_stuart_root()
++    db_path = get_db_path(stuart_root=lay.root)
++
++    conn = connect(db_path)
++    try:
++        ensure_schema(conn)
++        hits = search(conn, q, limit=int(limit), session_id=session_id)
++    finally:
++        conn.close()
++
++    items = []
++    for i, h in enumerate(hits, start=1):
++        cite = CitationAnchor(
++            session_id=h.session_id,
++            run_id=h.run_id,
++            segment_id=int(h.segment_id),
++            speaker_label=h.speaker_label,
++            t_start=h.t_start,
++            t_end=h.t_end,
++            source_path=h.source_path,
++        )
++        items.append(
++            SearchResultItem(
++                rank=i,
++                score=float(h.score),
++                snippet=h.snippet,
++                title=h.title,
++                mode=h.mode,
++                citation=cite,
++            )
++        )
++
++    msg = None
++    if not q:
++        msg = "Empty query."
++    elif len(items) == 0:
++        msg = "No hits found."
++
++    payload = SearchResults(
++        query=q,
++        limit=int(limit),
++        total_hits=len(items),
++        results=items,
++        message=msg,
++    )
++
++    out_path.write_text(json.dumps(payload.to_dict(), indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
++
++    h = sha256_file(out_path)
++    return {
++        "kind": "search_results",
++        "path": str(out_path),
++        "sha256": h,
++        "mime": "application/json",
++        "created_ts": time.time(),
++        "query": q,
++        "total_hits": len(items),
++    }
+diff --git a/tests/test_meetings_search_ranked_results_citations.py b/tests/test_meetings_search_ranked_results_citations.py
+new file mode 100644
+index 0000000..185492e
+--- /dev/null
++++ b/tests/test_meetings_search_ranked_results_citations.py
+@@ -0,0 +1,85 @@
++import json
++
++from ashby.modules.meetings.router.router import build_intent_and_plan
++from ashby.modules.meetings.schemas.plan import UIState, SessionContext
++from ashby.modules.meetings.store import create_session, create_run, get_run_state
++from ashby.modules.meetings.init_root import init_stuart_root
++from ashby.modules.meetings.pipeline.transcribe import transcribe_stub
++from ashby.modules.meetings.index import ingest_run
++from ashby.modules.meetings.pipeline.job_runner import run_job
++
++
++def test_search_plan_step_executes_and_returns_citations(tmp_path, monkeypatch):
++    root = tmp_path / "stuart_runtime"
++    monkeypatch.setenv("STUART_ROOT", str(root))
++
++    # Seed: a session with an indexed transcript.
++    ses = create_session(mode="meeting", title="A")
++    run_seed = create_run(session_id=ses, plan={"steps": []})
++    lay = init_stuart_root()
++    transcribe_stub(lay.runs / run_seed)
++    ingest_run(run_seed)
++
++    # Build search plan from the router.
++    out = build_intent_and_plan(
++        text="search kimchi",
++        ui=UIState(mode="meeting"),
++        session=SessionContext(active_session_id=ses),
++    )
++
++    # Execute the plan as a run (validate step is allowed as no-op).
++    steps = [{"kind": s.kind.value, "params": dict(s.params)} for s in out.plan.steps]
++    run_search = create_run(session_id=ses, plan={"steps": steps})
++
++    res = run_job(run_search)
++    assert res.ok is True
++
++    st = get_run_state(run_search)
++    arts = st.get("artifacts") or []
++    sr = next((a for a in arts if a.get("kind") == "search_results"), None)
++    assert sr is not None, "Expected search_results artifact"
++
++    payload = json.loads(open(sr["path"], "r", encoding="utf-8").read())
++    assert payload["query"] == "kimchi"
++    assert payload["total_hits"] >= 1
++
++    top = payload["results"][0]
++    assert "snippet" in top
++    assert "citation" in top
++
++    cite = top["citation"]
++    assert cite["session_id"] == ses
++    assert isinstance(cite["run_id"], str) and cite["run_id"].startswith("run_")
++    assert isinstance(cite["segment_id"], int)
++
++
++def test_search_no_hits_returns_clear_message(tmp_path, monkeypatch):
++    root = tmp_path / "stuart_runtime"
++    monkeypatch.setenv("STUART_ROOT", str(root))
++
++    ses = create_session(mode="meeting", title="A")
++    run_seed = create_run(session_id=ses, plan={"steps": []})
++    lay = init_stuart_root()
++    transcribe_stub(lay.runs / run_seed)
++    ingest_run(run_seed)
++
++    out = build_intent_and_plan(
++        text="search definitelynotaword_zzz",
++        ui=UIState(mode="meeting"),
++        session=SessionContext(active_session_id=ses),
++    )
++
++    steps = [{"kind": s.kind.value, "params": dict(s.params)} for s in out.plan.steps]
++    run_search = create_run(session_id=ses, plan={"steps": steps})
++
++    res = run_job(run_search)
++    assert res.ok is True
++
++    st = get_run_state(run_search)
++    arts = st.get("artifacts") or []
++    sr = next((a for a in arts if a.get("kind") == "search_results"), None)
++    assert sr is not None
++
++    payload = json.loads(open(sr["path"], "r", encoding="utf-8").read())
++    assert payload["total_hits"] == 0
++    assert payload.get("message") and "No hits" in payload["message"]

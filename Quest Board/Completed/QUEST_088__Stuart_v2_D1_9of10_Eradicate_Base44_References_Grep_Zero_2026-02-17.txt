@@ -1,0 +1,106 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_088
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v2 — D1 9of10: Eradicate Base44 naming and references from frontend workspace (zero grep hits)
+
+Context: (Ashby / Stuart / System / Other)
+Stuart (Ashby) — Webapp Frontend
+
+Origin:
+Stuart Architecture Transcendence Protocol — Control Sync 2026-02-16 (Dungeon 1) + Hands decision: no Base44 naming contamination
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- Guild Orders: Ashby_Data/Guild Orders/PAUSED/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt — Dungeon 1
+- Codex: Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt (Sections 1.2, 1.4, 2.1, 2.2, 2.5)
+- Docs: Ashby_Data/Stuart/Docs/STUART_Base44_UI_Code_Audit__2026-02-16.txt
+- Docs: Ashby_Data/Stuart/Docs/STUART_Base44_UI_Surgery_Checklist__2026-02-16.txt
+- Input: Ashby_Data/Stuart/Docs/stuart_app.zip (Base44 UI source pack)
+- Engine anchor: Ashby_Engine/ashby/interfaces/web/ (current FastAPI web door + /static + /templates)
+
+Status: BOARD | ACTIVE | COMPLETED | ABANDONED
+COMPLETED
+
+Audit Bundle Path: Quest Board/Quest Diff Audit Files/QUEST_###__AUDIT.txt
+Ashby_Data/Audits/Execution/QUEST_088__2026-02-17__stuart_v2_d1_9of10_eradicate_base44_naming_and_references_from_frontend_workspace_zero_grep_hits
+
+Accepted On:
+2026-02-18
+
+Accepted By:
+Codex (GPT-5)
+
+Completed On:
+2026-02-18
+
+Completed By:
+Codex (GPT-5)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Ensure the ported frontend workspace contains zero Base44 naming or references (code, config, comments, file names). This prevents long-term contamination and future refactor debt.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Search the frontend workspace for 'base44' and remove/rename all occurrences.
+- Search for 'InvokeLLM' and remove all occurrences.
+- Rename any files/modules containing 'base44' in their names.
+- Confirm package.json and lockfile contain no Base44 dependencies.
+- Capture grep receipts (commands + outputs) for base44 and InvokeLLM searches.
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Changing backend naming (Dungeon 2+).
+- UI polish / feature expansion beyond compilation safety.
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_087 (refactor complete) so remaining hits are true leftovers, not still-in-use code.
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- This is a governance purity pass. Do not skip it. If grep hits remain, future AI will drift back toward Base44 semantics.
+- Keep receipts; they are required proof artifacts.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] grep -R "base44" <frontend_root> returns zero hits (or only in a controlled provenance doc if allowed by Hands).
+- [x] grep -R "InvokeLLM" <frontend_root> returns zero hits.
+- [x] No file names contain 'base44'.
+- [x] Dependencies contain no Base44 packages.
+- [x] Grep receipts captured in audit bundle when executed.
+
+────────────────────────────────────────────────────────
+TALENT POINT
+────────────────────────────────────────────────────────
+# On completion:
+# - Talent Point Awarded: YES / NO
+# - Talent Spent On: (TALENT ID — Name in Talent Tree)
+Talent Point Awarded: NO
+Talent Spent On: N/A
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+# Optional closing notes once the quest is completed or abandoned.
+Purity pass completed across frontend root:
+- /home/notsolikely/Ashby_Engine/webapp/stuart_frontend
+
+Final cleanup:
+- Rewrote `/home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app/README.md` to remove legacy Base44 references.
+
+Receipts:
+- /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_088__2026-02-17__stuart_v2_d1_9of10_eradicate_base44_naming_and_references_from_frontend_workspace_zero_grep_hits/RECEIPTS.txt

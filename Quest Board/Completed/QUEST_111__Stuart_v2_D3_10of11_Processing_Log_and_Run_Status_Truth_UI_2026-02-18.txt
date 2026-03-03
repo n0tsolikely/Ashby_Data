@@ -1,0 +1,103 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+================================================
+
+QUEST ID:
+QUEST_111
+
+Created By:
+Codex (Brains)
+
+Title:
+Stuart v2 — D3 (10/11) — Processing Log + Run Polling Truth UI
+
+Subject:
+Stuart
+
+Context: (Ashby / Stuart / System / Other)
+Ashby / Stuart
+
+Origin:
+Guild Orders ACTIVE REV4 -> Dungeon 3 processing log real stage progress requirement.
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- API: GET /api/runs/{run_id}
+- Session and outputs status surfaces
+
+Status: BOARD | ACTIVE | COMPLETED | ABANDONED
+COMPLETED
+
+Audit Bundle Folder Path:
+Ashby_Data/Audits/Execution/QUEST_111__2026-02-18__stuart_v2_d3_processing_log_run_polling_truth
+
+Accepted On:
+2026-02-18
+
+Accepted By:
+Hands (Peter) via Codex (Brains)
+
+Completed On:
+2026-02-18
+
+Completed By:
+Codex (Brains)
+
+Change Class: (TRIVIAL / FEATURE / STRUCTURAL)
+FEATURE
+
+Vision Delta: (ALIGNED / VARIATION / SHIFT)
+ALIGNED
+
+System Context Statement:
+UI must never report completion before pipeline stages are actually complete; status is backend truth.
+
+Anti-Duplication Plan:
+Single run status polling service feeding session/chat/outputs indicators.
+
+Placement Intent:
+Run polling hook/service and processing log component.
+
+Codex Anchors (DRAFT):
+- Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_1.4_Trust_Auditability_Anti_Hallucination_Rules.txt
+- Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_7.9_Failure_Modes_and_Graceful_Degradation.txt
+- Ashby_Data/Stuart/Stuart Codex/Codex Sections Complete/Stuart_Codex_6.1_Session_Model_Sessions_Contributions_Sources.txt
+
+Codex Constraint Summary:
+- No false success states.
+- Failures and in-progress states must be explicit and recoverable.
+- Session state should reflect run lifecycle truth.
+
+Door Impact:
+Stuart web door (UI)
+
+Testing Level (TL):
+TL3
+
+Talent Point Awarded: (YES / NO)
+YES
+
+DESCRIPTION
+Implement real-time/polling-backed run progress and processing log surfaces that remain truthful to backend state.
+
+SCOPE / OBJECTIVE
+- Poll run status for active run(s).
+- Render stage timeline/log entries.
+- Prevent UI from marking run complete prematurely.
+
+OUT OF SCOPE
+- Event stream/websocket migration.
+- Scheduler redesign.
+
+DEPENDENCIES
+- QUEST_107
+- Dungeon 2 run endpoints
+
+EXECUTION NOTES
+If polling fails, show disclosed degraded status state rather than stale green completion.
+
+COMPLETION CRITERIA (REQUIRED)
+- [ ] Processing log shows real stages from run status.
+- [ ] Completion status appears only after backend complete state.
+- [ ] Failures surface actionable errors in UI.

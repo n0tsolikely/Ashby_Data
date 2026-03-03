@@ -1,0 +1,328 @@
+STUART_Control_Sync_Snapshot_2026-02-15__BATTLEGROUNDS__CLOSED__CORRECTED__2201.txt
+===============================================================================
+TYPE: CONTROL_SYNC_SNAPSHOT
+STATUS: CLOSED
+DATE (America/Toronto): 2026-02-15
+CLOSED_AT (America/Toronto): 2026-02-15 22:01:40 EST
+
+SOURCE
+- Consumed Draftshot base:
+  STUART_Control_Sync_Snapshot_DRAFT_2026-02-15__BATTLEGROUNDS__REV5_REBUILT.txt
+
+SCOPE
+- Battlegrounds + Stuart-focused governance/process hardening
+- Draftshots governance protocol & snapshot bridge
+- Base44 UI reconnaissance + code acquisition + port strategy
+- Stuart UI code bundle ingestion (initial audit)
+
+===============================================================================
+CANONICAL BODY (DRAFTSHOT CONTENT — BASE)
+===============================================================================
+STUART_Control_Sync_Snapshot_DRAFT_2026-02-15__BATTLEGROUNDS__REV1.txt
+===============================================================================
+STATUS: OPEN (Control Sync remains open until Hands explicitly closes it)
+DATE (America/Toronto): 2026-02-15 14:56:18 EST
+
+CANON BASELINE (Reference Only)
+- Ashby/Stuart Canon Zip provided by Hands (treated as canon on Hands side)
+- Governance Pack provided by Hands: Synapse_OS_Governance(AI).zip
+- Today is Stuart-focused (Web UI + pipeline behavior)
+
+PURPOSE (Why this draft exists)
+- Prevent loss of detail during long Control Sync / Battlegrounds sessions
+- Avoid token-limit truncation and chat summarization drift
+- Enable incremental, non-ephemeral receipts (each REV is a full replacement)
+
+OPERATING MODE: BATTLEGROUNDS (Temporary Overlay)
+- Definition: Live-fire testing of Stuart in real time while capturing friction/bugs/ideas.
+- Governance mapping: Treated as an OPEN Control Sync + Side-Quest capture pipeline.
+- All findings become SIDE-QUEST_CAPTURE items (NOT ACCEPTED until explicitly promoted).
+- No canonical Data/Engine edits implied by this draft.
+
+DUNGEONS (Today’s Focus)
+1) Dungeon: Stuart Web UI — Pre-Run Behavior & UX Integrity
+
+CAPTURE INDEX (Stable IDs)
+- SIDE-QUEST_CAPTURE_001 — pre_run_retention_and_speakers_controls
+
+------------------------------------------------------------------------------
+SIDE-QUEST_CAPTURE_001
+Slug: pre_run_retention_and_speakers_controls
+Scope: Stuart / Web UI
+Observed Problem:
+- Retention + speakers are not configurable pre-run; UI silently uses defaults.
+
+Expected Behavior:
+- UI exposes retention selection prior to first run (enum values from backend registry).
+- UI exposes speaker-count selection prior to first run (bounded integer or dropdown).
+- Preview reflects selected values (plan preview shows retention + speakers explicitly).
+- Run request uses selected values on first execution.
+- Run manifest records selected values for auditability.
+
+Acceptance Tests (Manual / Battlegrounds):
+1) Open web UI.
+2) Choose Mode=meeting; choose Template=minutes.
+3) Set Retention=HIGH (or equivalent).
+4) Set Speakers=4 (or equivalent).
+5) Trigger Preview (the call that hits /api/message).
+   - Assert preview payload/summary shows retention=HIGH and speakers=4.
+6) Trigger Confirm & Run (POST /api/run).
+   - Assert request payload includes retention and speakers.
+   - Assert run metadata/manifest records retention and speakers.
+7) Verify resulting outputs match the intended configuration without requiring rerun.
+
+Likely Impacted Files (Initial Hypothesis):
+- Frontend:
+  - ashby/interfaces/web/templates/index.html
+  - ashby/interfaces/web/static/app.js
+  - ashby/interfaces/web/static/app.css (if new controls need layout)
+- Backend:
+  - ashby/interfaces/web/app.py (request parsing/validation and plan/run wiring)
+  - ashby/modules/meetings/plan_builder.py (if plan schema needs these fields)
+  - ashby/modules/meetings/pipeline/job_runner.py (if metadata propagation is incomplete)
+
+Status: CAPTURED (NOT ACCEPTED)
+
+------------------------------------------------------------------------------
+RUNNING LOG (Append-Only; add entries with timestamps)
+[2026-02-15 14:56:18 EST] REV1 created. Control Sync OPEN. Battlegrounds overlay established.
+
+
+===============================================================================
+REV2 UPDATE — DRAFTSHOTS FORMALIZED INTO GOVERNANCE
+Timestamp (America/Toronto): 2026-02-15 16:54:09 EST
+===============================================================================
+
+DECISIONS (Binding)
+- Draftshots are now formalized as a governance-level process under:
+  Processes/SYNAPSE_GUILD__DRAFTSHOTS.txt
+- Draftshots are NOT part of Continuity.
+- Draftshots are NOT canonical state artifacts.
+- Draftshots exist as a volatile session memory layer between chat and Snapshots.
+- Snapshots law updated to include Draftshot consumption bridge rule.
+- If a Draftshot is ACTIVE at closure:
+  - Use Draftshot as base.
+  - Append delta since last Draftshot update.
+  - Mint correct Snapshot type.
+  - Regenerate canonical ZIP automatically.
+  - Provide durable archive in same response.
+
+FINDINGS / OBSERVATIONS
+- Long incubation sessions previously relied on end-of-session reconstruction.
+- This caused memory compression risk and structural loss.
+- Draftshots now function as incremental external memory anchors.
+- Draftshots solve token-limit collapse and summarization drift.
+- Draftshots sit between ephemeral chat and canonical Snapshots.
+
+TODO / FOLLOW-UPS
+- Future: Integrate Discovery logging model with Draftshots (not implemented yet).
+- Future: Consider adding zip-regeneration enforcement directly inside Snapshot law (currently enforced via Draftshot consumption logic).
+
+RISKS / BLOCKERS
+- None identified at this stage.
+- Governance integration complete for Draftshots layer.
+
+OPEN QUESTIONS
+- None active regarding Draftshots architecture.
+
+RUNNING LOG APPEND
+[2026-02-15 16:54:09 EST] REV2 generated. Draftshots governance integration captured. Control Sync remains OPEN.
+
+
+===============================================================================
+REV3 UPDATE — FIELD TEST FINDINGS (GOVERNANCE vs NO GOVERNANCE) + INCUBATION HARDENING NOTES
+Timestamp (America/Toronto): 2026-02-15 17:20:02 EST
+===============================================================================
+
+FINDINGS / OBSERVATIONS (High Signal)
+- Controlled comparison (same task: "YouTube → MP4 web app") showed a stark behavior change:
+  - WITHOUT governance: model immediately started building, did not ask clarifying questions, hallucinated defaults, and entered repeated error/patch loops.
+  - WITH governance: model initiated structured exploration, asked iterative clarifying questions in small batches ("need 3 things", then "need 2 more"), explained unknown terms, and only proceeded once requirements were explicit enough to generate a TOC and codex. Outcome: working app with minimal/no patch churn.
+- Governance forced "clarify-first" behavior via incubation → TOC → codex pipeline. This prevented gap-filling hallucinations and reduced error loops.
+- Real-user simulation: Hands intentionally avoided "coaching" the AI on governance mechanics (no "only execute one quest at a time", no "remember to snapshot") to test whether Synapse works for a brand-new user.
+- In that test, the AI:
+  - Built TOC, codex subsections, guild orders, and quests correctly.
+  - Executed quests successfully (but batch-executed multiple in one output). For small apps this still worked; for larger apps it becomes a scaling boundary requiring explicit chunking/throttling rules.
+
+DECISIONS / HARDENING TARGETS (Binding for tomorrow’s work)
+1) Incubation phase must preserve Discoveries during long sessions WITHOUT requiring Hands to prompt "save discoveries".
+   - The Draftshot mechanism is the selected continuity anchor to solve long-session capture.
+2) TOC + Codex self-check gates must be strengthened:
+   - After TOC generation: AI must self-assess whether TOC covers "every base" as if the product already exists fully.
+   - During codex writing (each subsection): AI must self-check for ambiguity and missing requirements.
+   - After full codex: AI must self-check "written as if the idea already exists" (zero unanswered questions; no guessing needed by a fresh AI in a new chat).
+   - If gaps are found: AI must add missing sections/clarifications BEFORE freezing/codex-finalization.
+
+FINDINGS / OBSERVATIONS (Meta)
+- Hands used minimal interventions (two notable ones):
+  - Requested discovery saving after noticing closure didn’t preserve them (builder instinct). This is now to be eliminated via governed protocol.
+  - Requested an honest "is this enough / any gaps" check after codex completion; AI reported "close but gaps" and appended missing items. This check should become a standard gate, not an ad-hoc prompt.
+
+TODO / FOLLOW-UPS
+- Implement/define governed Incubation improvements (tomorrow):
+  - Draftshot-compatible Discovery preservation during long incubation/control sync sessions.
+  - Codex/TOC sufficiency self-check gates (pre-freeze and post-freeze behaviors).
+- Define scaling rule for quest execution output chunking (not today; capture only).
+
+RUNNING LOG APPEND
+[2026-02-15 17:20:02 EST] REV3 generated. Added field-test findings and incubation hardening targets. Control Sync remains OPEN.
+
+
+===============================================================================
+REV4 UPDATE — INCUBATION/DISCOVERIES: HANDS-FREE AUTO-CAPTURE POLICY (DESIGN NOTE)
+Timestamp (America/Toronto): 2026-02-15 17:27:06 EST
+===============================================================================
+
+FINDINGS / OBSERVATIONS
+- Draftshot manual update triggers ("Update Draftshot") are fine for power users, but a brand-new user should not need to learn or repeatedly invoke update commands during incubation/discovery-heavy sessions.
+- Desired behavior for incubation/discoveries: the AI should auto-capture high-signal clarified requirements/decisions as they become explicit, without requiring Hands to prompt "update" every time.
+
+DESIGN NOTE (Target Behavior for Tomorrow: Incubation/Discoveries)
+- Keep Draftshots manual by default (explicit triggers remain the primary mechanism).
+- Add a governed auto-capture policy ONLY for Incubation/Discoveries mode:
+  - AI asks clarifying questions normally.
+  - When ambiguity collapses into a committed statement (a "Discovery Event"), AI auto-queues a capture entry.
+  - Examples of Discovery Events:
+    - explicit requirement: "web app, not Telegram"
+    - constraint: "must support local + cloud"
+    - decision: "FastAPI backend"
+    - UX lock: "loading bar + quality selector"
+    - rejection: "no accounts/auth"
+  - Auto-capture should be bounded:
+    - batch updates (e.g., every N discoveries or on a timer) rather than regenerating the artifact every line
+    - keep stable IDs; do not rewrite earlier sections
+  - Safety: if Draftshot is not active, AI should propose starting one once (advisory), not nag.
+
+TODO / FOLLOW-UPS
+- Tomorrow: formalize Incubation/Discoveries protocol + discovery-event definition + batching policy, and integrate with Draftshots cleanly (governance + templates).
+
+RUNNING LOG APPEND
+[2026-02-15 17:27:06 EST] REV4 generated. Added hands-free discovery auto-capture design note. Control Sync remains OPEN.
+
+
+===============================================================================
+REV5 UPDATE (REBUILT) — CROSS-CHAT MERGE: BASE44 UI PROTOTYPE RECON + STUART UI PORT STRATEGY
+Timestamp (America/Toronto): 2026-02-15 22:01:40 EST
+===============================================================================
+
+SOURCE (External Continuity Paste-In)
+- Hands provided an external continuity snapshot from another chat describing a Base44 field test and the resulting Stuart UI prototype/code capture.
+- This section merges that external continuity into THIS OPEN Control Sync record.
+
+FINDINGS / OBSERVATIONS (Base44 Field Test)
+- Base44 (and similar “think an app into existence” platforms) are primarily:
+  - UI + CRUD + scaffolding generators with fast preview loops (speed-optimized).
+  - Not truth-gated governance executors and not audit-first pipelines.
+- When tested against a detailed Stuart prompt (transcribe/diarize/formalize/sessions/templates/retrieval/evidence maps):
+  - Base44 did NOT actually perform audio transcription/diarization with built-in capability in the tested setup.
+  - It simulated transcript content via “InvokeLLM”-style generation / placeholders.
+- Conclusion: Base44 is useful as a UI prototyping engine (“Figma++”), NOT as a real Stuart engine.
+
+DECISIONS (Binding)
+- We will NOT adopt Base44 as a platform dependency / paid runtime for Stuart.
+- We will use Base44 purely for:
+  - UI prototyping + code reconnaissance (component layout/UX flows).
+- “Real Stuart” remains our own backend engine per Stuart Codex (artifact-first, truth-gated).
+- Base44 output is treated as UI reference/starter components only; backend/pipeline glue is not trusted.
+
+STUART UI BLUEPRINT (Captured from Base44 Prototype)
+- Desktop 3-column layout:
+  - Left: Sessions navigator (New Session, search, filters: All/Mentioned/Spoke, session cards).
+  - Center: Main workspace tabs (Session / Chat / Outputs).
+    - Session: transcript viewer w/ timestamps + search + speaker mapping panel.
+    - Outputs: sub-tabs (Formatted / JSON / Evidence Map).
+  - Right: Run configuration + processing log.
+    - Mode dropdown (Meeting Minutes / Journal Entry / Incident Report / General Query).
+    - Template dropdown (Standard Meeting / Daily Standup / Retro / 1:1).
+    - Retention dropdown (Low / Medium / High / Near Verbatim).
+    - Processing profile dropdown (Local Only / Hybrid / Cloud).
+    - Diarization toggle.
+    - Explicit Run button (execution-gated).
+    - Processing log/status cards.
+- Separate “Start New Session” screen:
+  - drag-and-drop upload empty state w/ supported formats.
+
+CAPTURE INDEX (Additions)
+- SIDE-QUEST_CAPTURE_002 — base44_ui_code_ingest_and_sanitize
+- SIDE-QUEST_CAPTURE_003 — stuart_ui_api_contract_and_wiring
+- SIDE-QUEST_CAPTURE_004 — port_base44_ui_into_our_frontend_stack
+
+------------------------------------------------------------------------------
+SIDE-QUEST_CAPTURE_002
+Slug: base44_ui_code_ingest_and_sanitize
+Scope: Stuart / UI
+Problem:
+- Base44 prototype code contains platform glue (SDK calls, invokeLLM placeholders) that must be identified and stripped.
+Expected Behavior:
+- We can ingest the Base44 UI bundle into our repo as a standalone frontend project or module.
+- Platform glue is removed; data layer becomes a clean API client to our Stuart backend.
+Acceptance Tests:
+- UI compiles/runs locally without Base44 services.
+- No “invokeLLM” / Base44 SDK calls remain in runtime paths.
+Likely Work:
+- Inspect tree, identify contaminated files, isolate safe components, replace state/data wiring.
+
+------------------------------------------------------------------------------
+SIDE-QUEST_CAPTURE_003
+Slug: stuart_ui_api_contract_and_wiring
+Scope: Stuart / UI+Backend interface
+Problem:
+- UI needs an explicit API contract to interact with the real Stuart engine.
+Expected Behavior:
+- Define and implement endpoints/contracts for:
+  - sessions list/create
+  - contribution upload
+  - run creation (execution-gated) + status polling
+  - transcript segments retrieval
+  - speaker map overlay apply
+  - outputs retrieval (formatted/json/evidence map)
+  - export endpoint(s) for artifacts/zip
+- Ensure semantics for mentioned vs spoke/attended are honest and enforced.
+Non-Goals:
+- No fake pipeline simulation; backend must drive truth.
+Acceptance Tests:
+- UI controls map 1:1 to backend options (mode/template/retention/profile/diarization/speakers).
+- “Upload != Run” remains enforced.
+
+------------------------------------------------------------------------------
+SIDE-QUEST_CAPTURE_004
+Slug: port_base44_ui_into_our_frontend_stack
+Scope: Stuart / Frontend rebuild
+Problem:
+- Need to port Base44 UI layout/components into our maintained frontend stack (React/Next or equivalent) with clean boundaries.
+Expected Behavior:
+- Preserve UX flows/layout and modular component structure.
+- Keep components modular; no god files.
+- Replace platform glue with API client wiring.
+Acceptance Tests:
+- Feature parity with prototype flows (sessions nav, transcript viewer, outputs tabs, run config panel, processing log).
+- Run gating behavior is explicit.
+
+RUNNING LOG APPEND
+[2026-02-15 22:01:40 EST] REV5 (rebuilt) generated from REV4 + external continuity merge content. Control Sync remained OPEN until closure.
+
+
+
+===============================================================================
+DELTA SINCE LAST DRAFTSHOT UPDATE (REV5_REBUILT) — INCLUDED ON CONSUMPTION
+Timestamp (America/Toronto): 2026-02-15 22:01:40 EST
+===============================================================================
+
+NEW INPUTS / ARTIFACTS RECEIVED (Post-REV5 content)
+- Hands uploaded Base44-copied Stuart UI code bundle: stuart_app.zip (api folder intentionally empty; Base44 API client excluded).
+- Additional UI screenshots reviewed (Stuart app UI only; Base44 chrome ignored).
+- Reference artifact produced: STUART_Base44_UI_Code_Audit__2026-02-16.txt
+  - Recommended placement inside Ashby_Data: Ashby_Data/Stuart/Docs (reference/recon), NOT Stuart/To Do.
+
+SIDE-QUEST CAPTURE (Added)
+- SIDE-QUEST_CAPTURE_005 — sanitize_and_port_base44_ui_bundle
+  - Goal: remove platform glue, fix boot issues, establish clean API client wiring, preserve UI/UX and component boundaries.
+  - Output: runnable sanitized frontend + documented API contract requirements.
+
+===============================================================================
+CONTROL SYNC CLOSURE
+===============================================================================
+Control Sync Status: CLOSED
+Closed At (America/Toronto): 2026-02-15 22:01:40 EST
+Note: This Snapshot was generated by consuming REV5_REBUILT + this delta block.
+

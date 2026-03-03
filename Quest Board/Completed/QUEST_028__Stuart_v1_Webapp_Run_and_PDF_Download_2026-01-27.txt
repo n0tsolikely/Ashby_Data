@@ -1,0 +1,64 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+
+QUEST ID:
+PRE-QUEST_028
+
+Title:
+Stuart v1 — Webapp Run + PDF Download
+
+Context: Stuart (in Ashby)
+
+Origin:
+Side-Control Sync: STUART_Control_Sync-2026-01-27
+
+Priority: P1
+
+Links:
+- (see audit bundle + code paths)
+
+Status: COMPLETED
+
+Audit Bundle Path: Quest Board/QUEST DIFF AUDIT FILES/PRE-QUEST_028__AUDIT.txt
+
+Accepted On:
+2026-01-27
+
+Completed On:
+2026-01-27
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+
+Wire web door so upload triggers Stuart run and returns a downloadable PDF link.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- /upload saves file into STUART_ROOT/inbox/webapp and calls run_default_pipeline.
+- return pdf_url and add /download endpoint (root validated).
+- JS shows Download PDF link.
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+No job queue, no auth, no history persistence.
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+PRE-QUEST_026, PRE-QUEST_027.
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+Keep truth gated; only offer download when file exists.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] New run created on upload
+- [ ] Download PDF works
+- [ ] Audit bundle captured
+
+Completed: webapp wired upload→run→download; audit bundle PRE-QUEST_028__AUDIT captured.

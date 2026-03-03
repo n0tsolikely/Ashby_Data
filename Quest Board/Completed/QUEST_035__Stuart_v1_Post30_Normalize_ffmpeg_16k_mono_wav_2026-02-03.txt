@@ -1,0 +1,92 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+
+QUEST ID:
+QUEST_035
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Post-30: Stage 0 Normalize (ffmpeg extract + 16kHz mono wav canonicalization)
+
+Context: Stuart pipeline
+
+Origin:
+Control Sync — 2026-02-03 (Post-30 plan)
+
+Priority: P0
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-03_REV4.txt (Dungeon 5 normalize stage)
+- Engine: ashby/modules/meetings/pipeline/job_runner.py (formalize step)
+
+Status: COMPLETED
+
+Audit Bundle Path:
+Audits/Execution/QUEST_035__2026-02-03__stuart_v1_post30_normalize_ffmpeg_16k_mono_wav_2026-02-03
+
+Accepted On:
+2026-02-03
+
+Accepted By:
+Hands (Peter)
+
+Completed On:
+2026-02-03
+
+Completed By:
+Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Implement the canonical normalize stage: for any input audio/video, produce a canonical WAV for downstream models
+(16kHz, mono). Store it immutably and record it as a run artifact.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Add a normalize adapter that:
+-   - takes source media path + kind
+-   - outputs canonical wav at <run_dir>/artifacts/audio_canonical.wav (or similar)
+-   - uses ffmpeg to extract audio from video and resample to 16k mono
+- Record artifact metadata (sha256, mime, created_ts) in run.json artifacts list.
+- Ensure reruns do not overwrite prior runs (immutability).
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Chunking/segmentation for long audio (can be v1.1).
+- Noise reduction / enhancement.
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_031 (input binding)
+- QUEST_032 (adapter selection)
+- QUEST_034 (preflight: ffmpeg presence)
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Keep deterministic command line invocation; record the command used in artifact metadata if helpful.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] normalize adapter implemented (ffmpeg).
+- [ ] canonical wav artifact written + hashed + recorded.
+- [ ] Works for audio and video inputs.
+- [ ] `python3 -m pytest -q` PASS + add at least one normalize smoke test fixture.
+
+────────────────────────────────────────────────────────
+TALENT POINT
+────────────────────────────────────────────────────────
+On completion:
+- Talent Point Awarded: YES
+- Talent Spent On: TBD — Normalize Stage (ffmpeg canonical audio)
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+(optional)

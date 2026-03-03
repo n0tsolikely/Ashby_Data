@@ -1,0 +1,47 @@
+STUART CONTROL SYNC SNAPSHOT — 2026-02-02 — SIDE-QUEST_030 EXECUTION
+Timestamp (local): 2026-02-02 22:13:09 EST (-0500)
+Timestamp (utc):   2026-02-03 03:13:09 UTC (+0000)
+Hands: Peter
+Operator: Ash
+
+A) HEADER
+- Subject: Stuart v1 (Ashby module: meetings)
+- World State: Fog Lifted (execution permitted)
+- Codex Freeze marker:
+  - /mnt/data/Ashby_Data/Codex/CODEX_FREEZE.md (exists)
+
+B) SNAPSHOT REVIEW (RESUME)
+Reviewed:
+- Latest Control Sync Snapshot:
+  - STUART_Control_Sync_Snapshot_2026-02-02.txt
+- Latest Stuart End-of-Day Snapshot:
+  - STUART_End_of_Day_Snapshot_2026-01-27.txt
+- Latest Continuity Lock (reference):
+  - /mnt/data/Ashby_Data/Latest Rehydration Pack/CONTINUITY_LOCK_2026-01-26.txt
+
+C) CURRENT REALITY (STATE SURFACE)
+- Active Guild Orders / Raid:
+  - GUILD_ORDERS_STUART_V1_2026-01-16_REV3.txt (ACTIVE)
+- Quest Board notes:
+  - SIDE-QUEST_030 is currently located under Completed/ but engine reality shows it is NOT actually correct (Path import missing in stuart_runner._env).
+  - Decision: reopen SIDE-QUEST_030 for execution + verification under canonical Execution Audit bundle.
+- Known blocker class:
+  - Subprocess import parity (repo-root PYTHONPATH injection) prevents door→runner→pipeline from working when entrypoint is launched outside repo root.
+
+D) DECISIONS MADE (BINDING)
+- Hands ordered execution of SIDE-QUEST_030 with tests + proofs.
+- Codex Freeze gate is now closed (CODEX_FREEZE.md written) so execution is permitted.
+- We will follow Dailies: Accept → PreQuest audit → Implement → Verify(PASS) → Move quest → EOD snapshot → zip exports.
+
+E) SESSION SCOPE (COMMITMENT)
+Execute today/session:
+- SIDE-QUEST_030 — Stuart Runner Subprocess PYTHONPATH Import Fix
+Out of scope:
+- “Post 30 plan” (real ASR/diarization/PDF wiring) remains parked until runner fix + offline E2E smoke is PASS.
+
+F) NOTES
+- Data root drift was corrected (flattened nested /mnt/data/Ashby_Data/Ashby_Data/ into /mnt/data/Ashby_Data/).
+- Engine root drift was corrected (flattened nested /mnt/data/Ashby_Engine/Ashby_Engine/ into /mnt/data/Ashby_Engine/).
+
+G) CONTROL SYNC END
+- Hands directive “execute 30 with tests and proofs” is treated as closing Control Sync and authorizing execution.

@@ -1,0 +1,71 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_065
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 5 (5/7): Telegram door v1 (file → mode/speakers → run → return PDF)
+
+Context: Stuart Telegram
+
+Origin:
+Control Sync — 2026-02-04 (Stuart v1 finish-line: REV5)
+
+Priority: P1
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV5.txt (Dungeon 5)
+- Engine: ashby/interfaces/telegram/stuart_door_core.py + io/telegram/ashby_telegram_control.py
+
+Status: COMPLETE
+
+Audit Bundle Path:
+  /mnt/data/Ashby_Data/Audits/Execution/QUEST_065__2026-02-09__telegram_file_mode_speakers_run_return_pdf
+
+Accepted On:
+2026-02-09
+Accepted By:
+Hands (Peter)
+Completed On:
+2026-02-09
+
+Completed By:
+Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Ensure Telegram intake supports audio/video/voice-note, asks for mode and speaker count, runs with the unified RunRequest, and returns the correct primary PDF.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Wire mode + speakers selections into RunRequest
+- Trigger run only after explicit confirm
+- Return minutes.pdf/journal.pdf using run primary_outputs pointers
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Telegram library/search UI
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_061
+- QUEST_045
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- If Telegram UX already exists, this quest is about contract correctness and correct artifact return.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] Telegram meeting run returns minutes.pdf
+- [ ] Telegram journal run returns journal.pdf
+- [ ] No auto-processing on upload
+

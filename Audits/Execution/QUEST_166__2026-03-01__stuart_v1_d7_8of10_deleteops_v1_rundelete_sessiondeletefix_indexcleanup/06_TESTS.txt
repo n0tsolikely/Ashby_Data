@@ -1,0 +1,15 @@
+## Command Receipt Log
+WRAPPER: synapse_quest_run.sh
+ENGINE_ROOT: /home/notsolikely/Ashby_Engine
+DATA_ROOT: /home/notsolikely/Ashby_Data
+---
+CMD: source /home/notsolikely/venvs/ashby-env/bin/activate && cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_delete_run_removes_fs_and_index.py tests/test_delete_session_removes_runs_and_index.py
+..                                                                       [100%]
+2 passed in 0.21s
+RC: 0
+CMD: source /home/notsolikely/venvs/ashby-env/bin/activate && cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_delete_run_removes_fs_and_index.py tests/test_delete_session_removes_runs_and_index.py tests/test_web_delete_run_and_session_endpoints.py
+...                                                                      [100%]
+3 passed in 0.77s
+RC: 0
+PASS: governance validation OK for QUEST_166 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_166__2026-03-01__stuart_v1_d7_8of10_deleteops_v1_rundelete_sessiondeletefix_indexcleanup
+OK: finalize complete (validation PASS recorded).

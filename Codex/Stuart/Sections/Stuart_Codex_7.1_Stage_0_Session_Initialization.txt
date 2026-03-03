@@ -1,0 +1,110 @@
+STUART CODEX
+7.1 Stage 0: Session Initialization (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section begins the pipeline definition. Stage 0 is session initialization. It exists to ensure that:
+- nothing processes automatically on file drop,
+- inputs are stored deterministically,
+- and all later stages have a stable execution context and audit trail.
+
+Stage 0 happens before diarization and transcription. It must not extract speech content.
+
+1) Inputs to Stage 0
+
+Stage 0 is triggered when a user:
+- starts a new session, and/or
+- adds a contribution (audio/video) to a session.
+
+Inputs include:
+- one or more source files (audio/video),
+- optional user-provided metadata (title, tags, date),
+- current profile (LOCAL_ONLY / HYBRID / CLOUD),
+- optional selected mode/template (but not required).
+
+2) Outputs of Stage 0
+
+Stage 0 produces:
+- a new session_id (if session is new),
+- a session folder created under STUART_ROOT (see 6.3),
+- stored contributions (original source copied or referenced),
+- source metadata captured,
+- session.json manifest created/updated,
+- and a “draft” session status (inputs exist, no transcript yet).
+
+No transcript is generated. No diarization is generated. No indexing of speech content is performed.
+
+3) Deterministic storage and integrity
+
+INIT1) Create session folder
+Create session folder with deterministic structure.
+
+INIT2) Store contribution(s)
+For each contribution:
+- store the original file in contributions/<contribution_id>/,
+- store source_metadata.json (duration, codec, etc.),
+- compute content_hash (recommended) for integrity.
+
+INIT3) Validate basic readability
+Stage 0 should verify:
+- the file is readable,
+- basic metadata can be extracted (duration),
+- and the file is not obviously corrupt.
+
+This is allowed because it does not require speech-to-text.
+
+4) Metadata capture and user prompts
+
+Stage 0 should capture:
+- title (if user provides; otherwise optional)
+- tags (optional)
+- date/time context (if known)
+
+If metadata is missing, Stuart may ask in chat:
+- “What should I title this session?”
+- “Is this a meeting, journal, incident, or creator note?”
+But it must not infer and run automatically.
+
+5) Execution plan proposal (without execution)
+
+After Stage 0, Stuart should propose next steps:
+- “Do you want to transcribe?”
+- “Do you want meeting minutes?”
+- “Do you want a journal entry?”
+- “Do you want captions?”
+
+If the user has already selected a mode/template, Stuart may propose:
+- “I’m ready to run transcription + Meeting Minutes (Template X). Proceed?”
+
+But execution still requires explicit confirmation/submit.
+
+6) Multi-contribution support
+
+Stage 0 must support adding additional contributions later:
+- add new contribution folder,
+- update session manifest,
+- maintain previous artifacts unchanged.
+
+This is how creator collaboration and iterative recordings are supported.
+
+7) Profile enforcement at initialization
+
+Stage 0 records the current profile context in session.json.
+If a later run uses a different profile, that is recorded at run-time, not by rewriting session creation history.
+
+Stage 0 must not initiate network calls in LOCAL_ONLY.
+
+8) Failure handling
+
+If file ingestion fails:
+- Stage 0 must report failure,
+- must not create half-broken session state without marking it clearly,
+- and must allow the user to retry or delete the failed session.
+
+9) Self-audit (7.1)
+
+- This section aligns with our explicit execution gating: Stage 0 stores and prepares; it does not process speech.
+- It aligns with the deterministic storage layout (6.3) and session model (6.1).
+- It preserves multi-contribution evolution and ensures auditability via session manifest and content hashes.
+This section is complete.

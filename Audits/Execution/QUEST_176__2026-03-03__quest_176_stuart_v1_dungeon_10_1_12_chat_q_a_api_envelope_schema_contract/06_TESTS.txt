@@ -1,0 +1,17 @@
+## Command Receipt Log
+CMD: cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_chat_schema_contract.py tests/test_meetings_web_api_envelope_consistency.py
+........                                                                 [100%]
+8 passed in 0.61s
+RC: 0
+CMD: cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_chat_schema_contract.py tests/test_meetings_web_api_envelope_consistency.py
+........                                                                 [100%]
+8 passed in 0.46s
+RC: 0
+FAIL: governance validation errors:
+- 03_VERIFY.md is placeholder-only; it must contain real verification content
+- 04_OUTCOME.md is placeholder-only; it must state what is now true + artifacts/paths
+BLOCKED: governance validate failed
+FAIL: governance validation errors:
+- 03_VERIFY.md must reference 06_TESTS.txt (raw receipts)
+BLOCKED: governance validate failed
+PASS: governance validation OK for QUEST_176 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_176__2026-03-03__quest_176_stuart_v1_dungeon_10_1_12_chat_q_a_api_envelope_schema_contract

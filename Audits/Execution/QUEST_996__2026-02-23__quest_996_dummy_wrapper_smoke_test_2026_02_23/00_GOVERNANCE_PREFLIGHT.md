@@ -1,0 +1,7 @@
+# Governance Preflight
+
+- QUEST_ID: QUEST_996
+- ACCEPTED_SOURCE: /home/notsolikely/Ashby_Data/Quest Board/Accepted/QUEST_996__DUMMY_WRAPPER_SMOKE_TEST__2026-02-23.txt
+- AUTHORITY_REVIEWED: YES
+- BOARD_STATE_VERIFIED: YES
+- PRE-FLIGHT: PASS

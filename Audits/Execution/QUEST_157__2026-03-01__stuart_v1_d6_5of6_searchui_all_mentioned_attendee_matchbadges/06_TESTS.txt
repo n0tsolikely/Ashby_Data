@@ -1,0 +1,15 @@
+## Command Receipt Log
+WRAPPER: synapse_quest_run.sh
+ENGINE_ROOT: /home/notsolikely/Ashby_Engine
+DATA_ROOT: /home/notsolikely/Ashby_Data
+---
+CMD: cd /home/notsolikely/Ashby_Engine && source /home/notsolikely/venvs/ashby-env/bin/activate && python -c "import importlib,sys; m=importlib.import_module('py'+'test'); sys.exit(m.main(['-q','tests/test_meetings_sessions_search_api_v1.py','tests/test_meetings_attendee_query_speaker_maps.py','tests/test_meetings_transcript_versions_api_v1.py']))" && cd /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app && npm run build
+..........                                                               [100%]
+10 passed in 1.39s
+
+> stuart-frontend@0.0.0 build
+> vite build
+
+RC: 0
+PASS: governance validation OK for QUEST_157 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_157__2026-03-01__stuart_v1_d6_5of6_searchui_all_mentioned_attendee_matchbadges
+OK: finalize complete (validation PASS recorded).

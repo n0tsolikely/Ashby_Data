@@ -1,0 +1,76 @@
+STUART CODEX
+3.6 Subtitles / Captions Mode (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines Subtitles/Captions Mode. This mode exists for media workflows (YouTube, streaming, video publishing). Its core is transcription plus formatting into standard caption files, optionally with translations.
+
+Subtitles/Captions Mode produces:
+- a verbatim transcript (always generated internally), and
+- caption artifacts (SRT/VTT), plus optional cleaned caption tracks.
+
+1) Inputs
+
+Typical input:
+- Video file (audio extracted) or audio file intended for publishing.
+
+2) Required artifacts (minimum)
+
+Upon execution, Stuart must produce at minimum:
+- transcript.json
+- transcript.txt
+- captions.srt (or equivalent named output)
+- captions.vtt (optional but recommended)
+- captions.pdf (optional; printability is less central here, but a readable PDF transcript/caption view may be useful)
+
+3) Caption formatting requirements
+
+CAP1) Time alignment
+Captions must be time-aligned accurately enough to sync with playback.
+
+CAP2) Segment sizing
+Captions must be segmented into readable chunks (not entire paragraphs).
+
+CAP3) Speaker labels (optional)
+If diarization exists and user wants it, captions may include speaker labels, but this is optional.
+
+CAP4) Non-speech events
+ASR may detect non-speech (door closing, birds). Captions should:
+- include non-speech tags only if user enables that option,
+- because many creators want clean captions without noise labels.
+
+4) Clean captions vs verbatim
+
+Captions often need readability:
+- remove excessive filler
+- normalize casing/punctuation
+
+However:
+- the verbatim transcript remains the ground truth
+- “clean captions” are a derived view
+
+Stuart should allow:
+- Verbose captions (verbatim-ish)
+- Clean captions (readability)
+
+This can be template-like options inside the captions mode.
+
+5) Integration with Translation (post-step)
+
+Captions can be translated after transcript exists:
+- captions.es.srt
+- captions.fr.vtt
+etc.
+
+Translation must be explicitly requested and must not replace original-language captions.
+
+6) Self-audit (3.6)
+
+This section reflects our chat decisions:
+- captions are a mode that derives from transcript,
+- it supports creator workflows without turning into a generic summarizer,
+- verbatim truth is preserved while offering clean derived views,
+- and translation is a post-step.
+
+This section is complete.

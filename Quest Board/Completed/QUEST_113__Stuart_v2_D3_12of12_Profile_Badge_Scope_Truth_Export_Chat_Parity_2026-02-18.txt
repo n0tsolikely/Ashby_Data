@@ -1,0 +1,127 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+================================================
+
+QUEST ID:
+QUEST_113
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v2 — D3 (12/12) — Profile Badge + Scope Truth Wiring (No Lying UI)
+
+Context:
+Dungeon 3 requires the UI to be product-grade and truthful:
+- Profile badge must reflect real execution profile state (Local/Hybrid/Cloud) and must not lie.
+- Chat is default tab on launch and must support session/global scope (even if global is stubbed initially).
+- Export surface must align with export_type variants and appear in both header and chat commands.
+
+This quest isolates "truth wiring" so it cannot be half-done or lost inside other UI work.
+
+Origin:
+Guild Orders → Dungeon 3 (UI Product Surface Parity) + Codex alignment (chat-first + profile truth).
+
+Priority:
+P0 — Prevents drift and “fake product” behavior.
+
+Links:
+- GUILD ORDERS: Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt (Dungeon 3)
+- CODEX: Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt (chat-first + profile gating + disclosure)
+- API CONTRACT: Dungeon 2 endpoints (sessions, export, chat)
+
+Status:
+COMPLETED
+
+Audit Bundle Path:
+Ashby_Data/Audits/Execution/QUEST_113__2026-02-18__Stuart_v2_D3_Profile_Scope_Truth
+
+Accepted On:
+2026-02-18
+(blank)
+
+Owner:
+(blank)
+
+Executor:
+(blank)
+
+------------------------------------------------
+DESCRIPTION
+------------------------------------------------
+Make the UI truthful and deterministic:
+- Profile badge reflects backend profile state (not hardcoded)
+- Scope toggle routes to correct endpoint
+- Export header button and chat export commands resolve to the same export endpoint
+- No "Cloud" option shown unless actually supported; never imply cloud storage exists if it doesn’t.
+
+------------------------------------------------
+SCOPE / OBJECTIVE
+------------------------------------------------
+A) Profile badge truth wiring
+- Badge must derive from current session's processing_profile or backend-provided profile state.
+- If profile changes, badge must update accordingly.
+- If Cloud is not implemented, either:
+  - hide it, OR
+  - show it disabled with "coming later" (no deception).
+
+B) Scope toggle truth wiring
+- Chat must expose scope control: SESSION | GLOBAL.
+- SESSION routes to POST /api/chat
+- GLOBAL routes to POST /api/chat/global
+- If /api/chat/global returns NOT_IMPLEMENTED, UI must render it explicitly as "not implemented yet" without pretending.
+
+C) Export parity (header + chat)
+- Header "Export ZIP" must call GET /api/sessions/{id}/export with export_type=full_bundle by default.
+- Chat export commands must call the same endpoint with:
+  - export_type=full_bundle
+  - export_type=transcript_only
+  - export_type=formalization_only
+- The resulting download link must be surfaced consistently in UI (toast/link card).
+
+D) Disclosure/policy UI
+- If LOCAL_ONLY and a user action would require remote services, UI must block with a clear policy message.
+- No silent fallback to remote.
+
+------------------------------------------------
+OUT OF SCOPE
+------------------------------------------------
+- Implementing real cloud tenancy/storage.
+- Implementing real global chat intelligence (retrieval/LLM); only wiring and truthful UI.
+- Changing backend profile logic (unless needed to expose true profile state).
+
+------------------------------------------------
+DEPENDENCIES
+------------------------------------------------
+- Dungeon 2 export endpoint and export_type variants exist (or are stubbed with truthful NOT_IMPLEMENTED).
+- Dungeon 2 chat endpoints exist (or stubbed with truthful NOT_IMPLEMENTED for global).
+- Session object includes a profile field (or is derivable from backend).
+
+------------------------------------------------
+EXECUTION NOTES
+------------------------------------------------
+- Prefer a single UI state source for profile/scope (avoid duplicated logic in multiple components).
+- Prefer pulling profile state from session detail endpoint so UI stays in sync with backend.
+- Never hardcode "Hybrid" just to look pretty.
+
+------------------------------------------------
+COMPLETION CRITERIA (DONE = PROOF)
+------------------------------------------------
+DONE when:
+1) Profile badge shows correct state for a session and updates when session changes.
+2) Chat scope toggle exists and routes to correct endpoints; global shows NOT_IMPLEMENTED clearly if stubbed.
+3) Header export and chat export commands both work and return downloadable link with correct export_type.
+4) UI never shows “Cloud” as enabled unless actually supported.
+5) Proof includes:
+   - diffs
+   - endpoint call traces (network log or printed debug)
+   - screenshots (optional) showing badge/scope/export working
+
+------------------------------------------------
+TALENT POINT (WHY THIS MATTERS)
+------------------------------------------------
+This prevents “fake product” drift. Truthful UI + correct wiring is the difference between demo-grade and production-grade.
+
+------------------------------------------------
+FINAL NOTES / HANDS DECISIONS
+------------------------------------------------
+If Cloud is not implemented, disable it or hide it. No lying. No vibes.

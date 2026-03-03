@@ -1,0 +1,147 @@
+STUART CODEX
+6.5 Artifact Indexing for Recall and Search (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines how Stuart enables recall: the ability to search and retrieve past sessions and jump to the exact evidence. This is essential because one of the primary motivations is eliminating manual log-hunting.
+
+Core requirement from this chat:
+Users must be able to ask, in chat:
+- “Bring up all meetings where Greg attended.”
+- “Bring up all incidents with Greg.”
+- “Find all sessions mentioning time off.”
+- “Show every timestamp where donuts were mentioned.”
+and get actionable results (open/print/jump), not vague answers.
+
+1) Two kinds of retrieval
+
+Stuart must support two distinct retrieval types:
+
+R1) Metadata retrieval (session-level)
+Search sessions by:
+- date range,
+- title,
+- tags,
+- mode/template used,
+- participants (if provided/mapped),
+- status (transcribed or not),
+- and other session-level fields.
+
+R2) Content retrieval (within transcripts/formalizations)
+Search inside:
+- transcript text,
+- formalization text,
+- and extracted structured items (decisions, actions, timeline entries).
+
+Both are required to satisfy real queries.
+
+2) Canonical search targets (what is indexed)
+
+At minimum, Stuart must index:
+
+IDX1) Session metadata
+- session_id
+- date/time
+- title/slug
+- tags
+- profile used for runs (optional for filtering)
+- available artifacts (transcript exists? minutes exists?)
+
+IDX2) Transcript segments (ground truth)
+Index should include:
+- segment_id
+- session_id
+- contribution_id (if multi-contribution)
+- start_time/end_time
+- speaker_label
+- text
+
+IDX3) Formalization structured items (derived)
+Index should include:
+- decisions (text + citations)
+- action items (text, assignee if explicit, due date if explicit, citations)
+- incident timeline items (text + citations)
+- headings/sections
+
+IDX4) Speaker mappings (overlay)
+If the user maps Speaker 1 -> Greg, that mapping must be indexable so queries like:
+- “show everything Greg said”
+can resolve to speaker labels + segments.
+Mapping is not ground truth; it is overlay metadata.
+
+3) Query semantics (what “Greg attended” means)
+
+We must distinguish two user intents:
+
+Q1) “Greg attended” (speaker identity)
+This means Greg is one of the speakers in the meeting.
+This requires:
+- diarization labels,
+- plus a speaker mapping overlay that maps a label to Greg,
+OR explicit participant metadata set by the user.
+
+If no mapping exists, Stuart should respond:
+- “I can search for mentions of ‘Greg’ in text, but I cannot confirm attendance as a speaker without speaker mapping.”
+
+Q2) “Greg mentioned” (text mention)
+This means the word “Greg” appears in the transcript/formalization text.
+This is pure text search and should always work if transcripts are indexed.
+
+Stuart must be honest about which interpretation it used and allow the user to clarify.
+
+4) Output requirements for retrieval results
+
+Retrieval results must be actionable.
+
+For session-level results:
+- list sessions with date/title
+- show which artifacts exist (minutes, journal, incident)
+- provide actions: Open, Print, Export, Show transcript, Jump to matches
+
+For within-session matches:
+- show timestamps and short excerpts
+- provide “jump to timestamp” actions
+- provide “open transcript around here” actions
+
+In V1, these actions can be chat commands and file links; no complex UI is required.
+
+5) Index implementation constraints (profile-aware)
+
+LOCAL_ONLY:
+- Index must be local. No remote indexing.
+- A local full-text index (e.g., SQLite FTS) is sufficient for v1.
+- Embeddings are optional; if used, they must be local.
+
+HYBRID:
+- Index may be local with optional remote enhancements, but remote indexing must be explicitly disclosed and confirmed.
+
+CLOUD:
+- Remote indexing is allowed, but the same retrieval semantics must remain.
+- The session’s local manifest still anchors which artifacts exist and where.
+
+6) Index freshness and updates
+
+Index must be incremental:
+- when a session is transcribed, transcript segments are added to the index.
+- when a formalization is created, structured items are added.
+- when a speaker mapping is updated, the mapping index updates.
+
+Stuart should provide:
+- “rebuild index” command for recovery,
+- and “index status” query for transparency.
+
+7) Recall without hallucination
+
+Search results must not be fabricated.
+If nothing matches, Stuart must say:
+- “No matches found.”
+If indexing is incomplete, Stuart must say:
+- “This session isn’t transcribed yet; I can transcribe it if you want.”
+
+8) Self-audit (6.5)
+
+- This section implements your recall vision: chat-driven retrieval across saved meeting minutes, incidents, and journals, with jump-to-evidence.
+- It explicitly distinguishes “attendance” vs “mention,” preventing the system from hallucinating participants.
+- It respects profile locality: LOCAL_ONLY means local index only, no silent cloud search.
+This section is complete.

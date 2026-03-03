@@ -1,0 +1,171 @@
+STUART CODEX
+11.3 Template Ecosystem and Marketplace (Canonical Appendix)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This appendix section specifies how Stuart can evolve from:
+- a small set of built-in templates (V1)
+into:
+- a large ecosystem of templates (community, org-specific, marketplace),
+without collapsing trust, without leaking private data, and without refactoring the core mode/template system.
+
+Chat-canon drivers:
+- You want many templates so users don’t have to think.
+- You want the ability to import templates from documents/images.
+- You floated a marketplace idea where community templates get uploaded “in the background.”
+- You also correctly fear PII leakage and hallucinated templates/modes.
+This section codifies a safe, buildable path.
+
+1) V1 baseline (what exists first)
+
+V1 template system includes:
+- a small set of default templates per core mode (Meeting, Journal; Incident optional)
+- local template creation (chat-guided)
+- local template import (document/image-based)
+- template versioning and compatibility rules
+- template selection in UI (scoped by mode)
+
+V1 explicitly does NOT ship a marketplace or background uploads.
+That is future/gated by design.
+
+2) What a template “package” is (for ecosystem scale)
+
+A template is not just a prompt. It is a structured contract.
+
+Canonical template package contains:
+- template_id (stable)
+- template_version (semantic version)
+- mode_id binding (which mode it belongs to)
+- schema_version (template schema version)
+- render hints (how to print, what to include)
+- retention defaults and allowed retention range
+- required vs optional sections
+- evidence strictness policies
+- extraction rules (what items become decisions/actions/timeline, etc.)
+- safety tags (e.g., “high-stakes”)
+- metadata:
+  - author label (optional)
+  - provenance (built-in / local / marketplace)
+  - changelog
+
+This is what enables templates to scale without turning into chaos.
+
+3) Marketplace goals (what we want long-term)
+
+MPG-1) Discoverability
+Users can browse templates by mode and use case.
+
+MPG-2) Trust and safety
+Marketplace templates must not leak PII and must not smuggle unsafe behaviors.
+
+MPG-3) Compatibility
+Templates must be versioned and validated against the current Stuart template schema.
+
+MPG-4) Local control
+Users can import templates locally and use them without being forced into cloud sharing.
+
+4) Marketplace submission pipeline (gated and explicit)
+
+The “background upload to us” idea is risky. Marketplace submission must be explicit and previewable.
+
+Canonical submission pipeline (future):
+- user chooses “Share template”
+- Stuart runs a scrubber/sanitizer (redaction adapter) on the template content
+- Stuart presents a preview of the share payload
+- user confirms submission
+- template is uploaded to a review/quarantine queue (not instantly public)
+- after review, it becomes publishable
+
+Optional: allow private org template registries (company-internal marketplace) so templates never leave the org.
+
+5) PII and sensitive content scrubbing (mandatory)
+
+Templates can embed:
+- names
+- internal project identifiers
+- incident details
+- phone numbers/emails
+
+Therefore:
+- sanitization is mandatory before marketplace submission.
+- a redaction report must be generated.
+- user must preview the sanitized version.
+
+Stuart must never promise “we removed all PII perfectly,” but it must provide best-effort detection plus explicit user review.
+
+6) Template trust signals
+
+Marketplace templates need trust metadata:
+- verified / reviewed badge
+- template author identity (optional)
+- ratings (subjective)
+- “used by X people” (future)
+- compatibility version range
+
+But trust signals must never override the core invariants:
+- evidence rules
+- retention behavior
+- explicit execution gating
+Templates don’t get to break the system.
+
+7) Preventing template and mode hallucination
+
+Marketplace increases the risk that the assistant “imagines” a template exists.
+
+Canonical anti-hallucination rules:
+- the UI and the registry are the source of truth
+- in chat, if user asks for a template name that doesn’t exist:
+  - Stuart refuses and lists closest matches
+- “template recommendation” can exist, but must recommend only from the registry
+
+No “auto-create a new template named whatever the user said” unless the user explicitly enters template creation flow.
+
+8) Template recommendation (careful and optional)
+
+A safe recommendation feature looks like:
+- user asks: “Which template fits this?”
+- Stuart replies with:
+  - a short list of existing templates that match the content/mode
+  - a confidence estimate or explanation
+  - a “Run with recommended template” button (explicit)
+Stuart must not silently choose templates and run.
+
+If recommendation is wrong:
+- the user can re-run formalization with a different template without re-uploading audio, because transcript artifacts persist.
+
+9) Template versioning at ecosystem scale
+
+Marketplace templates will evolve. Therefore:
+- templates are immutable per version
+- updates create new versions
+- a compatibility layer can migrate old templates or warn when incompatible
+- sessions record template_id + version used, permanently
+
+This is critical for reproducibility: you must be able to regenerate outputs later knowing the exact template version.
+
+10) Local vs cloud template sources
+
+Templates can come from:
+- built-in pack
+- local user templates
+- marketplace templates
+- org-private registries
+
+LOCAL_ONLY systems should be able to:
+- use built-in and local templates
+- optionally import templates via offline files
+But should not be forced to “connect to marketplace.”
+
+Marketplace connectivity is a profile/policy choice.
+
+11) Self-audit (11.3)
+
+Chat-canon alignment checklist:
+- Template ecosystem is future/gated; V1 remains simple and local-first. (Maintained.)
+- Marketplace submission is explicit + previewable; no background uploads by default. (Maintained.)
+- PII risk is addressed with mandatory scrubbing and user review. (Maintained.)
+- Anti-hallucination is preserved: templates/modes are registry enumerated; recommendations are from registry only. (Maintained.)
+- Versioning preserves reproducibility and avoids refactors. (Maintained.)
+
+This section is complete.

@@ -1,0 +1,266 @@
+## Command Receipt Log
+WRAPPER: synapse_quest_run.sh
+ENGINE_ROOT: /home/notsolikely/Ashby_Engine
+DATA_ROOT: /home/notsolikely/Ashby_Data
+---
+CMD: bash /tmp/quest158_proof.sh
+SETUP_OK
+npm ERR! code EAI_AGAIN
+npm ERR! syscall getaddrinfo
+npm ERR! errno EAI_AGAIN
+npm ERR! request to https://registry.npmjs.org/playwright failed, reason: getaddrinfo EAI_AGAIN registry.npmjs.org
+
+npm ERR! A complete log of this run can be found in:
+npm ERR!     /home/notsolikely/.npm/_logs/2026-03-02T05_17_26_076Z-debug-0.log
+RC: 1
+BLOCKED: command failed (see RC above): bash /tmp/quest158_proof.sh
+CMD: cd /home/notsolikely/Ashby_Engine && source /home/notsolikely/venvs/ashby-env/bin/activate && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q && cd /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app && npm run build
+........................................................................ [ 46%]
+........................................................................ [ 92%]
+............                                                             [100%]
+=============================== warnings summary ===============================
+tests/test_meetings_auto_fts_ingest_on_formalize.py::test_formalize_triggers_fts_ingest
+  /home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/pyannote/core/notebook.py:134: MatplotlibDeprecationWarning: The get_cmap function was deprecated in Matplotlib 3.7 and will be removed in 3.11. Use ``matplotlib.colormaps[name]`` or ``matplotlib.colormaps.get_cmap()`` or ``pyplot.get_cmap()`` instead.
+    cm = get_cmap("Set1")
+
+tests/test_meetings_web_door_scaffold.py::test_index_has_mode_placeholder_and_no_default_selected
+tests/test_meetings_web_door_scaffold.py::test_index_has_library_and_search_controls
+  /home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/starlette/templating.py:162: DeprecationWarning: The `name` is not the first parameter anymore. The first parameter should be the `Request` instance.
+  Replace `TemplateResponse(name, {"request": request})` by `TemplateResponse(request, name)`.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+156 passed, 3 warnings in 24.31s
+
+> stuart-frontend@0.0.0 build
+> vite build
+
+RC: 0
+PASS: governance validation OK for QUEST_158 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_158__2026-03-01__stuart_v1_d6_6of6_tl4_proof_d6_speakermap_attendeesearch_truth
+OK: finalize complete (validation PASS recorded).
+CMD: bash /tmp/quest158_proof.sh
+SETUP_OK
+npm ERR! code EAI_AGAIN
+npm ERR! syscall getaddrinfo
+npm ERR! errno EAI_AGAIN
+npm ERR! request to https://registry.npmjs.org/playwright failed, reason: getaddrinfo EAI_AGAIN registry.npmjs.org
+
+npm ERR! A complete log of this run can be found in:
+npm ERR!     /home/notsolikely/.npm/_logs/2026-03-02T05_22_47_610Z-debug-0.log
+RC: 1
+BLOCKED: command failed (see RC above): bash /tmp/quest158_proof.sh
+CMD: bash /tmp/quest158_proof.sh
+SETUP_OK
+npm ERR! code EAI_AGAIN
+npm ERR! syscall getaddrinfo
+npm ERR! errno EAI_AGAIN
+npm ERR! request to https://registry.npmjs.org/playwright failed, reason: getaddrinfo EAI_AGAIN registry.npmjs.org
+
+npm ERR! A complete log of this run can be found in:
+npm ERR!     /home/notsolikely/.npm/_logs/2026-03-02T05_27_51_119Z-debug-0.log
+RC: 1
+BLOCKED: command failed (see RC above): bash /tmp/quest158_proof.sh
+CMD: bash /tmp/quest158_proof.sh
+SETUP_OK
+npm ERR! code EAI_AGAIN
+npm ERR! syscall getaddrinfo
+npm ERR! errno EAI_AGAIN
+npm ERR! request to https://registry.npmjs.org/playwright failed, reason: getaddrinfo EAI_AGAIN registry.npmjs.org
+
+npm ERR! A complete log of this run can be found in:
+npm ERR!     /home/notsolikely/.npm/_logs/2026-03-02T05_30_14_546Z-debug-0.log
+RC: 1
+BLOCKED: command failed (see RC above): bash /tmp/quest158_proof.sh
+CMD: bash /tmp/quest158_proof.sh
+SETUP_OK
+npm ERR! code EPERM
+npm ERR! syscall connect
+npm ERR! errno EPERM
+npm ERR! FetchError: request to https://registry.npmjs.org/playwright failed, reason: connect EPERM 104.16.0.34:443 - Local (undefined:undefined)
+npm ERR!     at ClientRequest.<anonymous> (/usr/share/nodejs/minipass-fetch/lib/index.js:130:14)
+npm ERR!     at ClientRequest.emit (node:events:517:28)
+npm ERR!     at TLSSocket.socketErrorListener (node:_http_client:501:9)
+npm ERR!     at TLSSocket.emit (node:events:529:35)
+npm ERR!     at emitErrorNT (node:internal/streams/destroy:151:8)
+npm ERR!     at emitErrorCloseNT (node:internal/streams/destroy:116:3)
+npm ERR!     at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+npm ERR!  FetchError: request to https://registry.npmjs.org/playwright failed, reason: connect EPERM 104.16.0.34:443 - Local (undefined:undefined)
+npm ERR!     at ClientRequest.<anonymous> (/usr/share/nodejs/minipass-fetch/lib/index.js:130:14)
+npm ERR!     at ClientRequest.emit (node:events:517:28)
+npm ERR!     at TLSSocket.socketErrorListener (node:_http_client:501:9)
+npm ERR!     at TLSSocket.emit (node:events:529:35)
+npm ERR!     at emitErrorNT (node:internal/streams/destroy:151:8)
+npm ERR!     at emitErrorCloseNT (node:internal/streams/destroy:116:3)
+npm ERR!     at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+npm ERR!   code: 'EPERM',
+npm ERR!   errno: 'EPERM',
+npm ERR!   syscall: 'connect',
+npm ERR!   address: '104.16.0.34',
+npm ERR!   port: 443,
+npm ERR!   type: 'system'
+npm ERR! }
+npm ERR! 
+npm ERR! The operation was rejected by your operating system.
+npm ERR! It is likely you do not have the permissions to access this file as the current user
+npm ERR! 
+npm ERR! If you believe this might be a permissions issue, please double-check the
+npm ERR! permissions of the file and its containing directories, or try running
+npm ERR! the command again as root/Administrator.
+
+npm ERR! A complete log of this run can be found in:
+npm ERR!     /home/notsolikely/.npm/_logs/2026-03-02T05_32_04_044Z-debug-0.log
+RC: 1
+BLOCKED: command failed (see RC above): bash /tmp/quest158_proof.sh
+CMD: bash /tmp/quest158_proof.sh
+SETUP_OK
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║ WARNING: It looks like you are running 'npx playwright install' without first ║
+║ installing your project's dependencies.                                       ║
+║                                                                               ║
+║ To avoid unexpected behavior, please install your dependencies first, and     ║
+║ then run Playwright's install command:                                        ║
+║                                                                               ║
+║     npm install                                                               ║
+║     npx playwright install                                                    ║
+║                                                                               ║
+║ If your project does not yet depend on Playwright, first install the          ║
+║ applicable npm package (most commonly @playwright/test), and                  ║
+║ then run Playwright's install command to download the browsers:               ║
+║                                                                               ║
+║     npm install @playwright/test                                              ║
+║     npx playwright install                                                    ║
+║                                                                               ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+Downloading Chromium 136.0.7103.25 (playwright build v1169)[2m from https://cdn.playwright.dev/dbazure/download/playwright/builds/chromium/1169/chromium-linux.zip[22m
+|                                                                                |   0% of 167.7 MiB
+|■■■■■■■■                                                                        |  10% of 167.7 MiB
+|■■■■■■■■■■■■■■■■                                                                |  20% of 167.7 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 167.7 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 167.7 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 167.7 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 167.7 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 167.7 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 167.7 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 167.7 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 167.7 MiB
+Chromium 136.0.7103.25 (playwright build v1169) downloaded to /home/notsolikely/.cache/ms-playwright/chromium-1169
+Downloading FFMPEG playwright build v1011[2m from https://cdn.playwright.dev/dbazure/download/playwright/builds/ffmpeg/1011/ffmpeg-linux.zip[22m
+|                                                                                |   0% of 2.3 MiB
+|■■■■■■■■                                                                        |  10% of 2.3 MiB
+|■■■■■■■■■■■■■■■■                                                                |  20% of 2.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 2.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 2.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 2.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 2.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 2.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 2.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 2.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 2.3 MiB
+FFMPEG playwright build v1011 downloaded to /home/notsolikely/.cache/ms-playwright/ffmpeg-1011
+Downloading Chromium Headless Shell 136.0.7103.25 (playwright build v1169)[2m from https://cdn.playwright.dev/dbazure/download/playwright/builds/chromium/1169/chromium-headless-shell-linux.zip[22m
+|                                                                                |   0% of 101.4 MiB
+|■■■■■■■■                                                                        |  10% of 101.4 MiB
+|■■■■■■■■■■■■■■■■                                                                |  20% of 101.4 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 101.4 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 101.4 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 101.4 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 101.4 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 101.4 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 101.4 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 101.4 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 101.4 MiB
+Chromium Headless Shell 136.0.7103.25 (playwright build v1169) downloaded to /home/notsolikely/.cache/ms-playwright/chromium_headless_shell-1169
+Playwright Host validation warning: 
+╔══════════════════════════════════════════════════════╗
+║ Host system is missing dependencies to run browsers. ║
+║ Please install them with the following command:      ║
+║                                                      ║
+║     sudo npx playwright install-deps                 ║
+║                                                      ║
+║ Alternatively, use apt:                              ║
+║     sudo apt-get install libnss3\                    ║
+║         libnspr4                                     ║
+║                                                      ║
+║ <3 Playwright Team                                   ║
+╚══════════════════════════════════════════════════════╝
+    at validateDependenciesLinux (/home/notsolikely/.npm/_npx/c61c9351a0dbcfa7/node_modules/playwright-core/lib/server/registry/dependencies.js:269:9)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Registry._validateHostRequirements (/home/notsolikely/.npm/_npx/c61c9351a0dbcfa7/node_modules/playwright-core/lib/server/registry/index.js:927:14)
+    at async Registry._validateHostRequirementsForExecutableIfNeeded (/home/notsolikely/.npm/_npx/c61c9351a0dbcfa7/node_modules/playwright-core/lib/server/registry/index.js:1047:7)
+    at async Registry.validateHostRequirementsForExecutablesIfNeeded (/home/notsolikely/.npm/_npx/c61c9351a0dbcfa7/node_modules/playwright-core/lib/server/registry/index.js:1036:7)
+    at async t.<anonymous> (/home/notsolikely/.npm/_npx/c61c9351a0dbcfa7/node_modules/playwright-core/lib/cli/program.js:160:7)
+node:internal/errors:496
+    ErrorCaptureStackTrace(err);
+    ^
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'playwright' imported from /tmp/d6_proof_capture.mjs
+    at new NodeError (node:internal/errors:405:5)
+    at packageResolve (node:internal/modules/esm/resolve:916:9)
+    at moduleResolve (node:internal/modules/esm/resolve:973:20)
+    at defaultResolve (node:internal/modules/esm/resolve:1193:11)
+    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:403:12)
+    at ModuleLoader.resolve (node:internal/modules/esm/loader:372:25)
+    at ModuleLoader.getModuleJob (node:internal/modules/esm/loader:249:38)
+    at ModuleWrap.<anonymous> (node:internal/modules/esm/module_job:76:39)
+    at link (node:internal/modules/esm/module_job:75:36) {
+  code: 'ERR_MODULE_NOT_FOUND'
+}
+
+Node.js v18.19.1
+RC: 1
+BLOCKED: command failed (see RC above): bash /tmp/quest158_proof.sh
+CMD: bash /tmp/quest158_proof.sh
+SETUP_OK
+[sudo] password for notsolikely: dpkg-preconfigure: unable to re-open stdin: No such file or directory
+node:internal/modules/cjs/loader:1137
+  throw err;
+  ^
+
+Error: Cannot find module 'playwright'
+Require stack:
+- /tmp/d6_proof_capture.cjs
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1134:15)
+    at Module._load (node:internal/modules/cjs/loader:975:27)
+    at Module.require (node:internal/modules/cjs/loader:1225:19)
+    at require (node:internal/modules/helpers:177:18)
+    at Object.<anonymous> (/tmp/d6_proof_capture.cjs:1:22)
+    at Module._compile (node:internal/modules/cjs/loader:1356:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
+    at Module.load (node:internal/modules/cjs/loader:1197:32)
+    at Module._load (node:internal/modules/cjs/loader:1013:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [ '/tmp/d6_proof_capture.cjs' ]
+}
+
+Node.js v18.19.1
+RC: 1
+BLOCKED: command failed (see RC above): bash /tmp/quest158_proof.sh
+CMD: bash /tmp/quest158_proof.sh
+SETUP_OK
+[sudo] password for notsolikely: node:internal/process/promises:288
+            triggerUncaughtException(err, true /* fromPromise */);
+            ^
+
+locator.click: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('button', { name: /^Search$/ }).nth(1)[22m
+
+    at /tmp/pwcap/capture.cjs:22:63 {
+  name: 'TimeoutError'
+}
+
+Node.js v18.19.1
+RC: 1
+BLOCKED: command failed (see RC above): bash /tmp/quest158_proof.sh
+CMD: bash /tmp/quest158_proof.sh
+SETUP_OK
+[sudo] password for notsolikely: ............                                                             [100%]
+12 passed in 1.42s
+
+> stuart-frontend@0.0.0 build
+> vite build
+
+RC: 0
+PASS: governance validation OK for QUEST_158 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_158__2026-03-01__stuart_v1_d6_6of6_tl4_proof_d6_speakermap_attendeesearch_truth
+OK: finalize complete (validation PASS recorded).

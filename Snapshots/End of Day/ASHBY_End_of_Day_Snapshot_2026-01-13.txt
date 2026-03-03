@@ -1,0 +1,255 @@
+ASHBY — DETAILED SNAPSHOT (FOR RELOADING CONTEXT IN A NEW CHAT)
+Date: 2026-01-13 (local)
+Scope: “Batch 0” Engine Expansion (minimum engine primitives to support Stuart v1 tonight)
+
+0) GOAL / INTENT (WHY THIS WAS DONE)
+- Build missing engine-level primitives (NOT Stuart-specific hacks) so Stuart (meetings assistant) can sit on top cleanly.
+- Keep everything future-proof and Codex-aligned:
+  - Truth before claims
+  - Results before narration
+  - Consent before cloud
+  - Storage before memory hacks
+  - Modules before hard-wiring
+
+IMPORTANT: These primitives are implemented but NOT yet wired into Ashby’s live runtime/router response path. They exist as infrastructure ready for deliberate integration.
+
+1) STARTING STATE (WHAT WAS ALREADY ON DISK)
+Repo location (WSL/Ubuntu):
+- /home/notsolikely/ashby  (git repo present at repo root; clean status at start)
+Repo tree at root:
+- archive/, ashby/, configs/, docs/, io/, memory/, runtime/, scripts/, secrets/, tests/
+
+Python package root:
+- /home/notsolikely/ashby/ashby/   (this is the import package “ashby”)
+  - brain/, capabilities/, control/, core/, devices/, etc.
+
+Key clarification that mattered:
+- There is NO “ashby/ashby/ashby” nesting.
+- All engine code additions were placed under the existing package root: repo_root/ashby/...
+
+Tooling / environment notes discovered during work:
+- “python” command not available in WSL; use python3.
+- pytest not installed globally; it exists inside venv.
+- Repo has no pyproject.toml / setup.py / setup.cfg → not pip-installable without adding packaging later.
+- To run tests, we used PYTHONPATH="$PWD" so pytest can import the local “ashby” package.
+
+2) INPUT ARTIFACTS PROVIDED TO THE ASSISTANT (UPLOADED IN CHAT)
+These were uploaded to the assistant and used as contracts/specs; they were NOT required to be unzipped onto your WSL filesystem to proceed:
+- Ashby Engine.zip
+- Ashby Data.zip
+- ASHBY_BATCH_0_ENGINE_EXPANSION_RUNBOOK_2026-01-13.txt
+- ASHBY_MODULE_REGISTRY_CONTRACT_2026-01-13.txt
+- ASHBY_PROFILE_AND_CONSENT_CONTRACT_2026-01-13.txt
+- ASHBY_RESULT_OBJECTS_CONTRACT_2026-01-13.txt
+- ASHBY_SESSION_MODEL_CONTRACT_2026-01-13.txt
+- ASHBY_STORAGE_ADAPTER_CONTRACT_2026-01-13.txt
+- ASHBY_TRUTH_GATE_SPINE_CONTRACT_2026-01-13.txt
+- ASHBY_CANONICAL_TECHNICAL_BLUEPRINT_2026-01-13.txt
+- (optional) ASHBY_THE_CANONICAL_VISION_2026-01-13.txt
+
+3) WHAT WE ACTUALLY DID (END STATE ON DISK)
+We created engine primitives + smoke tests. We did NOT refactor existing engine files and did NOT wire the primitives into runtime yet.
+
+3A) DIRECTORIES CREATED (if missing)
+- repo_root/ashby/interfaces/
+- repo_root/ashby/storage/
+- repo_root/ashby/core/truth/
+
+3B) NEW FILES CREATED (ENGINE)
+Storage (Batch 0B):
+- ashby/interfaces/__init__.py
+- ashby/interfaces/storage.py
+- ashby/storage/__init__.py
+- ashby/storage/paths.py
+- ashby/storage/local_fs.py
+
+Results (Batch 0C):
+- ashby/core/results.py
+
+Profile + Consent (Batch 0D):
+- ashby/core/profile.py
+
+Truth Gate spine (Batch 0E):
+- ashby/core/truth/__init__.py
+- ashby/core/truth/evidence.py
+- ashby/core/truth/policy.py
+- ashby/core/truth/judge.py
+
+Module Registry (Batch 0F):
+- ashby/core/module_registry.py
+
+3C) NEW FILES CREATED (TESTS)
+- tests/test_storage_adapter_smoke.py
+- tests/test_results_smoke.py
+- tests/test_profile_gate_smoke.py
+- tests/test_truth_gate_spine_smoke.py
+- tests/test_module_registry_smoke.py
+
+3D) FILES MODIFIED
+- ashby/storage/paths.py was first created minimal, then updated to include sanitize_slug() + safe_relpath() (Codex-aligned convenience + safe path joining)
+No existing legacy core/router files were modified.
+
+3E) NOT IMPLEMENTED / DEFERRED (IMPORTANT HONESTY)
+Originally discussed “Batch 0G Meetings session placeholder” (meetings session module under brain/sessions) and modification to brain/sessions/__init__.py.
+This was NOT implemented in this chat.
+Nothing in:
+- ashby/brain/sessions/...
+was added/changed during this run.
+If Stuart needs a meetings session stub, that is a next-step item.
+
+4) WHAT EACH NEW ENGINE PRIMITIVE DOES (REAL FUNCTIONALITY, NOT HYPE)
+
+4A) StorageAdapter interface (ashby/interfaces/storage.py)
+- validate_rel_path(rel_path): normalizes and rejects unsafe paths:
+  - rejects absolute paths (leading “/”)
+  - rejects “..” traversal
+  - converts backslashes to forward slashes for safety/determinism
+- StorageAdapter Protocol defines required methods:
+  - root(), exists(), mkdir(), list(), read_bytes(), write_bytes()
+- StorageAdapterMixin provides convenience:
+  - read_text/write_text, read_json/write_json
+- write_bytes contract:
+  - overwrite=False must refuse overwrite (FileExistsError)
+  - atomic=True must write temp file + fsync + os.replace
+
+4B) Storage paths helpers (ashby/storage/paths.py)
+- ensure_dir(Path) helper
+- storage_root(base_dir), plus:
+  - profiles_dir(root)
+  - sessions_dir(root)
+  - results_dir(root)
+- sanitize_slug(name, max_len=48): deterministic safe filenames/ids
+- safe_relpath(*parts): safe join + normalize using validate_rel_path
+
+4C) Local filesystem storage implementation (ashby/storage/local_fs.py)
+- LocalFSStorageAdapter implements StorageAdapter on disk.
+- Guarantees:
+  - rooted namespace
+  - path traversal blocked
+  - atomic writes by default (mkstemp in same dir + fsync + os.replace)
+  - refuses overwrite unless overwrite=True
+- Includes best-effort directory fsync for durability.
+
+4D) Results (ashby/core/results.py)
+- Canonical results objects:
+  - ActionResult (world-touching actions like lights.set)
+  - ArtifactResult (durable artifacts like transcripts)
+  - ErrorResult (structured failures)
+- Shared base fields:
+  - ok, kind, started_at, ended_at, correlation_id, errors
+- ErrorInfo includes structured (code, message, detail).
+- Helpers:
+  - ok_action(...)
+  - ok_artifact(...)
+  - err(...)
+- Round-trip support:
+  - to_dict() and from_dict()
+
+4E) Profile + Consent gate (ashby/core/profile.py)
+- ExecutionProfile enum:
+  - LOCAL_ONLY, HYBRID, CLOUD
+- EgressPlan describes intended network egress:
+  - provider, endpoint, data_categories, purpose, retention
+- ConsentRecord models explicit user consent
+- evaluate_profile(profile, egress, consent) returns ProfileGateDecision:
+  - LOCAL_ONLY: denies any egress
+  - HYBRID: requires consent matching provider + categories superset
+  - CLOUD: allows egress
+  - No egress planned: always allowed
+
+4F) Truth Gate spine (ashby/core/truth/*)
+- evidence.py
+  - Citation (points into durable artifacts)
+  - EvidenceBundle aggregates:
+    - action_results, artifact_results, errors, citations, notes
+  - TruthViolation structured policy violations
+- policy.py
+  - TruthPolicy Protocol
+  - ForbiddenPhrasesPolicy bridges to legacy ashby.core.truth_gate phrase list/reject behavior (does NOT refactor legacy file)
+- judge.py
+  - TruthGateJudge:
+    - evaluate(draft, evidence, policy) returns TruthGateDecision
+    - apply(draft, evidence, policy) returns rewritten, original, or fallback
+- Key note:
+  - Current spine policy implemented is the compatibility policy (forbidden phrases).
+  - Additional policies like “action-claim must be backed by evidence” are NOT implemented yet; those come when we wire the gate into runtime and define those rules.
+
+4G) Module Registry (ashby/core/module_registry.py)
+- ModuleSpec: metadata + factory
+- ModuleRegistry: in-memory registry:
+  - register(), get(), list_ids(), create()
+- Intended use: Stuart registers here cleanly; future modules (lighting, inventory, etc.) also register here.
+
+5) TESTING: WHAT “SMOKE TESTS” MEAN + HOW WE USED THEM
+Definition used here:
+- “Smoke test” = minimal check that the new component imports, runs the basic contract, and doesn’t immediately break. Not exhaustive.
+
+We used pytest tests for each primitive. They are NOT runtime behavior. They are developer confidence checks.
+
+Why examples like “unicorn” / “lights.set” / “stuart.transcript” appear:
+- These are only test payloads to verify generic structures.
+- They do NOT hard-code engine behavior to Stuart or lights.
+- Example strings are chosen because they are recognizable and deterministic.
+
+6) HOW TO RUN THE TESTS (EXACT COMMANDS)
+Activate your venv (you used this path):
+- source /home/notsolikely/venvs/ashby-env/bin/activate
+
+From repo root:
+- cd ~/ashby
+
+Because the repo is not packaged, pytest must be run with PYTHONPATH:
+- PYTHONPATH="$PWD" pytest -q tests/test_storage_adapter_smoke.py
+- PYTHONPATH="$PWD" pytest -q tests/test_results_smoke.py
+- PYTHONPATH="$PWD" pytest -q tests/test_profile_gate_smoke.py
+- PYTHONPATH="$PWD" pytest -q tests/test_truth_gate_spine_smoke.py
+- PYTHONPATH="$PWD" pytest -q tests/test_module_registry_smoke.py
+
+(You can also run them all at once:)
+- PYTHONPATH="$PWD" pytest -q
+
+7) GIT STATE AT END
+- All additions are currently untracked (git status showed “??” for new dirs/files).
+- No accidental modifications to existing engine code were made.
+
+Final git status (end of chat):
+?? ashby/core/module_registry.py
+?? ashby/core/profile.py
+?? ashby/core/results.py
+?? ashby/core/truth/
+?? ashby/interfaces/
+?? ashby/storage/
+?? tests/
+
+8) OPERATIONAL REALITY CHECK (WHAT IS / IS NOT “ACTIVE” RIGHT NOW)
+- These components EXIST and are tested.
+- They are NOT wired into Ashby’s runtime/router response pipeline yet.
+  - Router doesn’t automatically build EvidenceBundle
+  - Router doesn’t call TruthGateJudge before responding
+  - Lighting isn’t yet emitting ActionResult into an evidence bundle by default
+- Wiring is a deliberate next step, not automatic.
+
+9) NEXT STEPS (WHAT TO DO NEXT WITHOUT RE-UPLOADING CONTRACTS)
+Primary goal: “Get Stuart v1 up tonight” using the engine primitives.
+
+Minimal Stuart integration plan:
+- Create a Stuart module (in a new location we decide in the next chat)
+- Register Stuart via ModuleRegistry
+- Use LocalFSStorageAdapter for transcript/session artifacts
+- Emit ArtifactResult for transcripts and meeting outputs
+- Use ExecutionProfile + Consent gate for any LLM/cloud calls
+- Use TruthGateJudge (with initially simple policies) to constrain response claims
+
+Open TODO from earlier planning:
+- (Optional) Meetings session placeholder module under ashby/brain/sessions/meetings.py
+  - This was NOT implemented here; decide in next chat if Stuart needs it immediately.
+
+10) KNOWN TERMINAL/PASTE QUIRK OBSERVED
+- Your terminal/WSL echo often visually mangled heredoc pastes (e.g., “PY” appearing inline).
+- The actual file contents on disk were consistently correct (verified via:
+  - python3 -m py_compile ...
+  - pytest
+  - sed/cat inspections).
+- Practical rule used: trust compile/tests over terminal scrollback.
+
+END OF SNAPSHOT

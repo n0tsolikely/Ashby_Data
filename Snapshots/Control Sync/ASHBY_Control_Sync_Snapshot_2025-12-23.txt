@@ -1,0 +1,59 @@
+ASHBY — CONTROL SYNC SNAPSHOT
+DATE: 2025-12-23
+
+Control Sync held — no updates required.
+
+────────────────────────────────────────
+RAID STATE
+────────────────────────────────────────
+- Active Raid(s):
+  • Ashby Structural Realignment (Emergency Raid)
+
+- Paused / Blocked Raid(s):
+  • Ashby Core Raid (Guild Orders 2025-12-15) — BLOCKED pending structural refactor
+
+- Halted Raid(s):
+  • All non-critical raids (including Stuart work)
+
+────────────────────────────────────────
+DECISIONS LOCKED
+────────────────────────────────────────
+- Ashby Core Raid is formally PAUSED due to structural issues.
+- Emergency Structural Realignment Raid is now the sole active raid.
+- Canonical platform root will be a single top-level ~/ashby directory.
+- Stuart is confirmed to be a module inside Ashby, not a separate platform or repo.
+- A previously created ~/ashby/agents/stuart stub was identified as invalid and marked for deletion.
+
+────────────────────────────────────────
+NEW CONSTRAINTS / RULES
+────────────────────────────────────────
+- Zero behavior change is enforced during the Structural Realignment Raid.
+- All “ashpi” naming will be mechanically renamed to “ashby” during refactor.
+- Only one Python virtual environment may be considered canonical.
+- Router refactor is allowed ONLY after structure, naming, and root cleanup are stable.
+
+────────────────────────────────────────
+NOTES / DISCUSSION
+────────────────────────────────────────
+- Extensive preservation work completed:
+  • Core architecture & meaning spec created.
+  • 10 Preservation Packs authored covering configs, data models, truth gate,
+    acceptance tests, migration playbook, security, observability, interfaces,
+    HouseState staleness, and Stuart integration.
+- Control Sync snapshots are now established as a daily artifact.
+- Canonical “no-update” Control Sync line was chosen:
+  → “Control Sync held — no updates required.”
+
+────────────────────────────────────────
+OPEN QUESTIONS / RISKS
+────────────────────────────────────────
+- Which existing Python environment is truly canonical (ashpi-env vs ashenv).
+- Whether to keep the canonical venv outside the repo or relocate it under ~/ashby.
+
+────────────────────────────────────────
+NEXT CONTROL SYNC FOCUS
+────────────────────────────────────────
+- Begin Phase 0 of Structural Realignment:
+  • Create rollback snapshot.
+  • Identify and confirm canonical Python environment.
+  • Purge invalid stub directories.

@@ -1,0 +1,102 @@
+================================================================================
+END OF DAY SNAPSHOT
+================================================================================
+A) Header (required)
+- Subject: STUART
+- Date: 2026-02-19
+- Topic: Stuart D4 transcript-version quest completion and verification closeout
+- Snapshot Type: End_of_Day
+- World State: Fog Lifted
+- Codex Freeze status: PRESENT (/home/notsolikely/Ashby_Data/Codex/CODEX_FREEZE.md)
+
+B) Work Performed (Quest-by-Quest) (required)
+- Completed execution lifecycle for Stuart D4 quest range focused on transcript-version architecture and operational integration.
+- Executed QUEST_115 first, then executed and closed QUEST_116 through QUEST_128.
+- Implemented and verified backend changes across meetings pipeline, API, export, session state pointering, transcript-version store/backfill behavior, provenance propagation, and primary output resolution.
+- Implemented frontend transcript version selector behavior to use metadata list + on-demand transcript fetch.
+- Added transcript-version documentation in Stuart docs.
+- Produced/updated quest audit bundles for QUEST_115..128 with summary, execution, verification, outcome, changed-files and test receipts.
+- Moved QUEST_116..128 cards from Accepted to Completed after evidence + validation.
+
+C) Completed Work Summary (required when anything completed)
+- QUEST_115 completed: transcript_version_id plumbing across UIState/RunRequest/plan/validation.
+- QUEST_116 completed: session state now carries active_transcript_version_id pointer with helper methods.
+- QUEST_117 completed: pipeline emits transcript version artifacts and updates active pointer for produced transcript versions.
+- QUEST_118 completed: formalize can consume selected transcript_version_id or active pointer without re-deriving heavy transcript stages.
+- QUEST_119 completed: transcript versions list API returns metadata-oriented view.
+- QUEST_120 completed: transcript version detail fetch API implemented.
+- QUEST_121 completed: active transcript pointer API endpoint implemented.
+- QUEST_122 completed: formalization outputs/primary outputs include consumed transcript version lineage.
+- QUEST_123 completed: export bundle coverage includes transcript version index/artifacts lineage.
+- QUEST_124 completed: frontend transcript dropdown wired to metadata list + on-demand fetch.
+- QUEST_125 completed: chat command support for transcript listing/switching integrated.
+- QUEST_126 completed: legacy transcript virtualization/backfill pathway implemented.
+- QUEST_127 completed: test coverage added/updated for store/API/consumption path.
+- QUEST_128 completed: transcript versioning model documentation added.
+
+D) Incomplete / Failed / Blocked Work (required when relevant)
+- No remaining unexecuted quests in the requested D4 range (QUEST_116..128) on the board; all are in Completed.
+- Optional governance-refresh action (rewriting 05_GOVERNANCE_VALIDATE.txt across 116..128 after final receipt append) was initiated but user rejected the escalation request, so that mass-refresh step did not execute.
+
+E) System Verification Performed (required when applicable)
+- Targeted transcript-version/API/export suite executed and passed:
+  python -m pytest -q -p no:cacheprovider \
+  tests/test_meetings_router_plan.py \
+  tests/test_meetings_run_params_validation.py \
+  tests/test_meetings_web_api_contract_minimum_v1.py \
+  tests/test_meetings_export_bundle_export_type_filters.py \
+  tests/test_meetings_transcript_versions_store.py \
+  tests/test_meetings_transcript_versions_api_v1.py
+  Result: 19 passed.
+- Full meetings suite executed:
+  timeout 600 python -m pytest -q -p no:cacheprovider tests/test_meetings_*
+  Result: exit_code=0; output stream contained only dot progress, no failures emitted.
+  Log receipt: /tmp/meetings_fullsuite_2026-02-19.txt
+- Governance validations captured for quest bundles; PASS receipts exist in bundle validation files.
+
+F) Bugs / Weirdness / Discoveries
+- Encountered two regressions during verification and fixed both before closure:
+  1) Export filter mismatch in formalization-only mode due to path-match assumptions with leading slashes.
+     Fix: normalized checks to root-relative path predicates (e.g., rel.startswith("sessions/"), rel.startswith("overlays/")).
+  2) active_transcript_version_id not being set when formalize consumed explicit transcript_version_id.
+     Fix: set_active_transcript_version(session_id, selected_trv) in transcript-version consumption branch.
+- Operational issue: overlapping full-suite pytest runs were accidentally launched while polling; resolved by killing duplicates and rerunning a single controlled invocation with log capture.
+
+G) Raid / Guild Orders status changes
+- Active Raid/Dungeon Context: Stuart v1 Dungeon 4 transcript-version sequence.
+- Current status: requested quest range executed to completion with tests and audit receipts.
+- Control Sync status at check time: inactive (last closed control snapshot predates this EOD write).
+
+H) Talent Tree updates (mandatory when relevant)
+- Talent/accounting updates were not explicitly recorded in this execution pass.
+- Quest completion evidence is present in board state and execution audit bundles.
+
+I) Resume Instructions (required)
+- Resume anchor:
+  1) If required by governance cadence, rerun bundle validation refresh for QUEST_116..128 and overwrite each 05_GOVERNANCE_VALIDATE.txt with current post-EOD receipts.
+  2) Open next accepted quest queue outside D4 transcript-version block.
+  3) Keep transcript-version provenance assertions in regression suite whenever touching meetings formalize/export/API surfaces.
+
+END OF SNAPSHOT
+
+--------------------------------------------------------------------------------
+ADDENDUM — SIDE-QUEST_080 CLOSEOUT (2026-02-19)
+--------------------------------------------------------------------------------
+- Side quest completed: launcher default env rail restoration for real ASR path.
+- What changed:
+  - Updated `/home/notsolikely/Ashby_Engine/Stuart` to default these when unset:
+    `ASHBY_ASR_ENABLE=1`, `ASHBY_ASR_MODEL=small`, `ASHBY_ASR_DEVICE=cpu`,
+    `ASHBY_ASR_COMPUTE_TYPE=int8`, `ASHBY_EXECUTION_PROFILE=LOCAL_ONLY`,
+    `ASHBY_MEETINGS_LLM_ENABLED=0`.
+- Why:
+  - Runtime evidence showed stub transcription despite healthy dependencies because
+    ASR opt-in gate was unset in standard launcher flow.
+- Verification receipts:
+  - `bash -n /home/notsolikely/Ashby_Engine/Stuart` => OK.
+  - strict preflight with writable STUART_ROOT => PASS.
+  - prior failing behavior traced to run artifact engine=`stub` in
+    `/home/notsolikely/ashby_runtime/stuart/runs/run_01KHV81C8P5JBVC7S62KTXV57F/run.json`.
+- Governance receipts:
+  - Side-quest bundle validated PASS at:
+    `/home/notsolikely/Ashby_Data/Audits/Execution/SIDE-QUEST_080__2026-02-19__stuart_launcher_asr_default_enable_2026-02-19/05_GOVERNANCE_VALIDATE.txt`.
+--------------------------------------------------------------------------------

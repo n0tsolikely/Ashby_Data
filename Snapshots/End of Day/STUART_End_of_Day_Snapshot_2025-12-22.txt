@@ -1,0 +1,169 @@
+STUART_End_of_Day_Snapshot_2025-12-22
+
+========================================
+STUART – END OF DAY SNAPSHOT
+Date: 2025-12-22
+========================================
+
+SUMMARY
+-------
+This snapshot records the successful stabilization and separation of runtime environments
+for the Ashby platform and the Stuart agent, following a late-night WSL session focused on
+environment hygiene, architectural continuity, and future-proofing.
+
+No functional pipeline code was written today by design.
+The objective was to establish a clean, non-destructive foundation so that tomorrow’s work
+can begin with Guild Orders instead of environment repair.
+
+This snapshot mirrors the structure, tone, and intent of previous STUART snapshots.
+
+
+CANONICAL REPOSITORY STRUCTURE
+------------------------------
+Canonical platform root (LOCKED):
+~/ashby/
+
+This directory is now treated as the single authoritative Ashby platform root.
+
+Current structure:
+~/ashby/
+├── agents/
+│   └── stuart/              # Stuart agent (empty scaffold, no logic yet)
+├── .venv                    # Ashby platform virtual environment (Python 3.12)
+├── .venv_py310              # Stuart runtime virtual environment (Python 3.10.19)
+└── (no other runtime artifacts created today)
+
+
+VIRTUAL ENVIRONMENTS (CRITICAL STATE)
+-------------------------------------
+Two virtual environments now exist intentionally and must NOT be merged or renamed casually.
+
+1) Ashby Platform Environment
+   Path: ~/ashby/.venv
+   Python Version: 3.12.x
+   Purpose:
+   - Existing Ashby platform work
+   - Legacy and current Ashby experimentation
+   - NOT modified during this session
+
+2) Stuart Runtime Environment
+   Path: ~/ashby/.venv_py310
+   Python Version: 3.10.19
+   Purpose:
+   - Stuart agent development
+   - Chosen for CUDA / Torch / Whisper compatibility
+   - Clean, verified, and isolated
+   - Confirmed working via python3 version and PATH resolution
+
+Activation command for Stuart:
+source ~/ashby/.venv_py310/bin/activate
+
+Verification (confirmed at end of session):
+- python3 resolves to .venv_py310/bin/python3
+- Python version reports 3.10.19
+- VIRTUAL_ENV correctly points to .venv_py310
+
+
+WSL CONTEXT
+-----------
+Operating environment:
+- WSL2 (Linux, microsoft-standard-WSL2)
+- Ubuntu-based userspace
+- Fresh WSL shell restart was required to clear stale virtualenv state
+- After restart, environment behaved correctly
+
+Key lesson locked:
+When virtualenv state becomes inconsistent, EXITING and REOPENING WSL is the cleanest reset.
+
+
+LEGACY CODE STATUS (IMPORTANT)
+------------------------------
+Existing AshPi / older Ashby codebase remains untouched and intentionally isolated.
+
+Legacy location:
+~/home/notsolikely/ashpi/
+
+This includes:
+- brain/
+- control/
+- devices/
+- router.py
+- lighting_sessions.py
+- comfort_sessions.py
+- Tuya/Nest integrations
+
+NO files were moved, deleted, or refactored today.
+
+A dedicated future session is required for:
+- Ashby platform migration
+- Folder normalization
+- God-file decomposition
+- Module extraction
+
+This was explicitly NOT attempted today.
+
+
+WHAT WAS ACCOMPLISHED
+---------------------
+✔ Confirmed canonical Ashby platform root
+✔ Preserved existing Ashby environment without breakage
+✔ Created clean, isolated Stuart runtime environment (Python 3.10.19)
+✔ Eliminated ghost virtualenv state
+✔ Verified environment activation and interpreter resolution
+✔ Established clear mental and filesystem boundaries
+✔ Prevented late-night refactor damage
+
+
+WHAT WAS INTENTIONALLY NOT DONE
+-------------------------------
+✘ No Guild Orders written (deferred to tomorrow)
+✘ No pipeline code implemented
+✘ No Torch / Whisper / FFmpeg installs in Stuart venv yet
+✘ No Ashby file migration
+✘ No architectural refactor
+
+
+IMMEDIATE NEXT SESSION PLAN
+---------------------------
+Next session must begin with:
+
+1) STUART GUILD ORDERS
+   - Define demo scope
+   - Define non-goals
+   - Define pipeline stages
+   - Define integration boundaries with Ashby platform
+
+2) Stuart "Doctor" Script
+   - Single command to report:
+     - Python version
+     - Virtualenv path
+     - ffmpeg availability
+     - torch + cuda status
+     - faster-whisper import status
+
+3) Session + Ingest Pipeline (v0)
+   - Session folder creation
+   - Audio ingest
+   - Normalize
+   - Transcribe
+   - Timestamp-grounded querying
+
+
+NON-NEGOTIABLE ARCHITECTURAL RULES (RE-AFFIRMED)
+-----------------------------------------------
+- No god files
+- No router.py-style monoliths
+- Thin orchestrators only
+- Each pipeline stage in its own module
+- Stuart is an agent ON the Ashby platform, not a fork
+- Zoom-out thinking is mandatory when stuck
+- Environment resets are valid tools, not failures
+
+
+END STATE
+---------
+System is stable.
+No damage done.
+Clear launchpad for tomorrow.
+
+END OF SNAPSHOT

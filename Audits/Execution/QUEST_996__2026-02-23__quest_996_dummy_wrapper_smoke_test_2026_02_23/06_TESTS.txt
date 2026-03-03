@@ -1,0 +1,5 @@
+## Command Receipt Log
+CMD: echo hello
+hello
+RC: 0
+PASS: governance validation OK for QUEST_996 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_996__2026-02-23__quest_996_dummy_wrapper_smoke_test_2026_02_23

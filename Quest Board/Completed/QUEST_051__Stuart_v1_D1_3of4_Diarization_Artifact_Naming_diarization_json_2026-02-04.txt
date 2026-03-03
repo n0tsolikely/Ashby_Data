@@ -1,0 +1,69 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_051
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 1 (3/4): diarization artifact naming alignment (diarization.json + confidence)
+
+Context: Stuart diarization contract
+
+Origin:
+Control Sync — 2026-02-04 (Stuart v1 finish-line: REV7)
+
+Priority: P0
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV7.txt (Dungeon 1)
+- Stuart Codex 3.2: diarization.json required (if diarization enabled)
+- Engine: ashby/modules/meetings/adapters/diarize_pyannote.py + pipeline/job_runner.py
+
+Status: COMPLETED
+Audit Bundle Path:
+Audits/Execution/QUEST_051__2026-02-04__stuart_v1_dungeon_1_3_4_diarization_artifact_naming_alignment_diarization_json_c_2026-02-04
+Accepted On:
+2026-02-04
+
+Accepted By:
+Hands (Peter)
+
+Completed On:
+2026-02-06
+Completed By:
+Ash (Brains)
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Ensure diarization output follows the Codex contract: `artifacts/diarization.json` exists (meeting mode), includes confidence, and is the canonical file name for downstream stages (align, evidence, etc.).
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- If diarization adapter writes a differently named file, write an alias/copy as `artifacts/diarization.json`
+- Ensure diarization.json includes at minimum: segments, speaker labels, start/end times, confidence (or per-segment confidence)
+- Update any downstream readers to use diarization.json as canonical
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Improving diarization model quality
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- (none)
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Meeting mode runs diarization by default; journal mode may skip diarization unless explicitly enabled.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] Meeting run produces `artifacts/diarization.json`
+- [ ] Downstream align step reads diarization.json (no implicit filename assumptions)
+- [ ] No overwrite of existing diarization.json
+- [ ] `python3 -m pytest -q` passes
+

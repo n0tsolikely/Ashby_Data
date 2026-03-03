@@ -1,0 +1,191 @@
+ASHBY CODEX — 16.2
+SAFETY BLOCKS AND HIGH-RISK ACTIONS
+
+Safety blocks are policy-enforced prohibitions against executing actions
+that exceed configured safety boundaries.
+
+They exist because:
+- some actions can cause harm
+- some actions have outsized consequences
+- some actions are unacceptable even if the user asks clearly
+- some actions require confirmation or narrowing before proceeding
+
+Safety blocks are not “soft warnings.”
+They are hard platform constraints.
+
+A system that can always do what it is told is not safe.
+
+──────────────────────────────────────────────────────────────────────────────
+WHAT MAKES AN ACTION HIGH-RISK
+──────────────────────────────────────────────────────────────────────────────
+
+An action is high-risk when it has one or more of:
+
+- LARGE BLAST RADIUS
+Affects many targets, or affects targets across critical areas.
+
+- SAFETY-SENSITIVE DOMAIN
+Examples (representative):
+- temperature extremes
+- access control
+- security systems
+- cameras/microphones
+- irrigation duration
+
+- IRREVERSIBILITY OR HIGH COST TO UNDO
+Examples:
+- deleting recordings
+- disabling alarms
+- shutting down critical infrastructure
+
+- AMBIGUOUS CONSEQUENCE
+The user phrase is clear but the consequence is not bounded or may surprise:
+- “turn everything off”
+- “reset everything”
+- “open it”
+
+- REPEATED FAILURE PATTERNS
+A target has been timing out/unreachable and repeated retries could create instability.
+
+High risk is defined by consequence, not by intent clarity.
+
+──────────────────────────────────────────────────────────────────────────────
+SAFETY BLOCK OUTCOMES
+──────────────────────────────────────────────────────────────────────────────
+
+When a high-risk action is requested, policy may yield one of:
+
+- REFUSE (HARD BLOCK)
+Action is forbidden in this scope/configuration.
+
+- CONFIRM (CONSENT GATE)
+Action is permitted only with explicit confirmation.
+
+- CLARIFY (BOUNDING OR NARROWING)
+Action can be made safe by narrowing targets or parameters.
+
+- ACT (PERMITTED)
+Action is within safety boundaries.
+
+Safety blocks do not always mean “no.”
+They mean “not like that, not without boundaries.”
+
+──────────────────────────────────────────────────────────────────────────────
+SAFETY BLOCKS ARE CONFIGURED, NOT IMPROVISED
+──────────────────────────────────────────────────────────────────────────────
+
+Safety boundaries must be policy-defined and configuration-driven.
+
+Examples of policy constraints (representative):
+- max_targets per action type
+- max_duration for time-bound domains
+- min/max setpoints for comfort control
+- forbidden categories in certain scopes
+- required confirmation thresholds
+- incident-mode lockouts
+
+Safety boundaries must not be invented by the model at runtime.
+
+If the platform needs a new safety boundary, it must be added deliberately.
+
+──────────────────────────────────────────────────────────────────────────────
+CANONICAL SAFETY BLOCK REASONS (REPRESENTATIVE)
+──────────────────────────────────────────────────────────────────────────────
+
+Safety blocks should carry stable internal reason labels such as:
+
+- blast_radius_exceeded
+- duration_exceeded
+- setpoint_out_of_bounds
+- forbidden_domain_in_scope
+- policy_lockdown
+- requires_confirmation
+- unsafe_ambiguity
+
+These are internal enforcement labels used to generate honest responses.
+They are not vendor error messages.
+
+──────────────────────────────────────────────────────────────────────────────
+WHAT A SAFETY-BLOCK RESPONSE MUST DO
+──────────────────────────────────────────────────────────────────────────────
+
+A safety-block response must:
+
+1) STATE THE BLOCK CLEARLY
+- “I can’t do that.”
+- “That’s blocked here.”
+- “That would be unsafe.”
+
+2) NAME THE BOUNDARY IN SAFE TERMS
+- scope boundary
+- safety limit
+- policy rule
+Do not leak sensitive security posture.
+
+3) OFFER A SAFE ALTERNATIVE WHEN POSSIBLE
+Examples (representative):
+- “I can do it for just the bedroom.”
+- “I can set it to 24°C instead.”
+- “I can run irrigation for up to 15 minutes.”
+- “If you want, confirm and I’ll proceed.”
+
+If there is no safe alternative, refusal is complete and final.
+
+Safety responses should be brief and non-performative.
+
+──────────────────────────────────────────────────────────────────────────────
+SAFETY BLOCKS MUST BE AUDITABLE
+──────────────────────────────────────────────────────────────────────────────
+
+Safety enforcement must be traceable.
+
+Rules:
+- log the policy reason label
+- log the proposed action summary (targets/parameters) without secrets
+- log whether the outcome was REFUSE/CONFIRM/CLARIFY
+
+Auditability is required to prove:
+- the system enforced boundaries
+- boundaries were applied consistently
+- changes to policy produced expected changes in behavior
+
+A safety system that cannot be audited cannot be trusted.
+
+──────────────────────────────────────────────────────────────────────────────
+SAFETY BLOCKS MUST NOT BE BYPASSED
+──────────────────────────────────────────────────────────────────────────────
+
+No mechanism may bypass safety blocks:
+- sessions
+- defaults
+- transport hacks
+- module exceptions
+- “try anyway” fallbacks
+
+If policy says blocked, execution is forbidden.
+
+If a module can bypass policy, the platform is drifting.
+
+Safety enforcement is governance.
+
+──────────────────────────────────────────────────────────────────────────────
+ABSOLUTE CONSTRAINTS
+──────────────────────────────────────────────────────────────────────────────
+
+Safety blocks and high-risk action handling must:
+- be policy-defined and deterministic
+- remain scope-bound
+- be auditable
+- offer safe alternatives or confirmations when possible
+- never leak sensitive security posture details
+
+Safety blocks and high-risk action handling must never:
+- be improvised by model tone
+- be bypassed by sessions/defaults
+- be softened into implied permission
+- vary by transport as “UX tuning”
+- claim execution occurred when blocked
+
+Safety is a boundary, not a suggestion.
+
+END OF 16.2

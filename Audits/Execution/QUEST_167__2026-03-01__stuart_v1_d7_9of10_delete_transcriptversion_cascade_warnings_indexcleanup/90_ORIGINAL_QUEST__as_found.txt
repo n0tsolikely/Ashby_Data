@@ -1,0 +1,125 @@
+QUEST_ID: QUEST_167
+TITLE: Stuart v1 — D7 9/10 — Delete Transcript Version (cascade formalizations + warnings + index cleanup)
+DATE: 2026-03-01
+STATUS: ACCEPTED (Ready for Codex execution)
+RISK_CLASS: R4 (Destructive + cascading; correctness required)
+OWNER: OpenAI Codex (local CLI)
+
+CONTEXT / WHY
+Dungeon 7 deletion rules require:
+- User can delete a transcript version.
+- If that transcript has dependent formalizations, deletion must warn and (on confirm) cascade delete those formalizations too.
+- Must not leave zombie artifacts or zombie sqlite index rows.
+
+We treat “Transcript Version” as the canonical transcript artifact:
+- sessions/<session_id>/transcripts/versions/<transcript_version_id>.json
+
+Formalizations reference a transcript_version_id (consumed).
+Deleting a transcript version invalidates any run that depends on it.
+
+CANON ANCHORS
+- Guild Orders D7: Deleting transcript warns + cascades to delete dependent formalizations.
+- D6 lock already decided: overlays are tied to transcript versions; do not leave dangling mappings (handle best-effort).
+
+REPO REALITY
+- Transcript versions store: Ashby_Engine/ashby/modules/meetings/transcript_versions.py
+- Formalization list endpoints: Ashby_Engine/ashby/interfaces/web/app.py → /api/sessions/{session_id}/formalizations
+- Runs store: STUART_ROOT/runs/<run_id>
+- sqlite index: Ashby_Engine/ashby/modules/meetings/index/sqlite_fts.py (segments include transcript_version_id)
+
+SCOPE LOCK
+IN SCOPE
+1) Dependency detection:
+   - Determine which runs depend on a transcript_version_id
+   - At minimum: runs where consumed_transcript_version_id == transcript_version_id
+   - Recommended: also include runs where produced_transcript_version_id == transcript_version_id (to avoid orphan runs)
+2) API endpoint for deleting transcript versions:
+   - DELETE /api/transcripts/{transcript_version_id}
+     - Query param: cascade=true|false (default false)
+   - If cascade=false and dependencies exist → 409 with list of dependent run_ids/titles
+   - If cascade=true → delete dependent runs (using delete_run from prior quest), then delete transcript version file
+3) UI:
+   - Add delete control for transcript versions list
+   - Confirmation modal that clearly states:
+     - “Deleting this transcript will also delete formalizations: …”
+     - Include run IDs and/or titles for dependents
+4) Index cleanup:
+   - Remove sqlite segments rows with transcript_version_id
+   - Remove any speaker_map rows tied to dependent runs (already via run deletion)
+5) Update transcript_versions listing/resolution to ignore deleted transcript files.
+
+OUT OF SCOPE
+- Session delete improvements (optional)
+- Multi-user auth/permissions
+
+IMPLEMENTATION (deterministic)
+Backend
+1) Implement dependency scan helper
+- Recommended in delete_ops.py (from prior quest) or a dedicated module:
+  - list_run_dependencies_for_transcript(session_id, transcript_version_id) -> {consumers:[...], producers:[...]}
+  - Use existing run.json fields:
+    - run.primary_outputs.consumed_transcript_version_id (preferred)
+    - fallback: run.plan.steps[].params.transcript_version_id or formalize_params
+  - If run.json missing: skip safely.
+
+2) Transcript deletion primitive
+- In transcript_versions.py add:
+  - delete_transcript_version(session_id, transcript_version_id) -> None
+    - removes versions/<id>.json
+    - (do NOT try to rewrite index.jsonl; instead, rely on existence checks)
+  - Update list_transcript_versions to filter out versions whose file does not exist.
+  - Update resolve_transcript_version to skip rows whose file does not exist (so deleted transcript IDs don’t resolve).
+
+3) sqlite index cleanup for transcript version
+- Add to sqlite_fts.py:
+  - delete_transcript_version_rows(conn, transcript_version_id)
+    - delete from segments/segments_fts where transcript_version_id matches
+    - delete from any transcript_version table if present
+- Call this after deleting transcript file and/or before (transactional).
+
+4) Web API endpoint
+- File: Ashby_Engine/ashby/interfaces/web/app.py
+  - Add @app.delete("/api/transcripts/{transcript_version_id}")
+  - Behavior:
+    - Resolve transcript_version_id -> session_id (use resolve_transcript_version)
+    - Compute deps (consumers/producers)
+    - If deps exist and cascade not enabled:
+        - return 409 JSON: {"ok":false, "error":"TRANSCRIPT_HAS_DEPENDENTS", "dependents": {...}}
+    - If cascade enabled:
+        - delete all dependent consumer runs (and producers if you decide)
+        - delete transcript version file
+        - cleanup sqlite rows
+        - return {"ok":true, "session_id":..., "deleted_transcript_version_id":..., "deleted_runs":[...]}
+  - NOTE: “dependents” list shown to user should prioritize formalization runs (consumers).
+
+Frontend
+- Add delete UI in transcript versions list component (where transcript versions are displayed)
+  - UI location: transcript version selection currently lives in Ashby_Engine/webapp/stuart_frontend/stuart_app/src/pages/Stuart.jsx (there is a `<Select>` bound to transcript versions). Add the delete UX there (or refactor into a dedicated component if it’s getting too dense).
+  - On click:
+    - call delete endpoint with cascade=false first
+    - if 409 returned, show modal listing dependent formalizations and offer “Delete All” confirm (cascade=true)
+    - on confirm call cascade=true
+  - After deletion refresh transcripts + outputs
+
+Tests
+- Add backend tests:
+  - deleting transcript without cascade returns 409 when dependent runs exist
+  - deleting transcript with cascade deletes runs + transcript file
+  - list_transcript_versions no longer returns deleted transcript id
+  - sqlite rows removed (segments) for transcript_version_id
+
+ACCEPTANCE CRITERIA
+- User cannot accidentally delete transcript version without seeing a warning if dependents exist.
+- cascade deletion removes dependent formalization runs and their artifacts.
+- transcript version file removed; transcript list no longer shows it.
+- sqlite search/index does not reference deleted transcript segments.
+- pytest passes.
+
+RECEIPTS REQUIRED
+- Diff/patch
+- pytest output
+
+FAIL CONDITIONS
+- Transcript deletion leaves dependent formalizations intact (orphan outputs)
+- Transcript deletion leaves sqlite rows behind (search returns ghosts)
+- UI deletes transcript without warning modal listing dependents

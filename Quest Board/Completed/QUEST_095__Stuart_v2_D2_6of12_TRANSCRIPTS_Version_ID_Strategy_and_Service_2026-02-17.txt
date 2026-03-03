@@ -1,0 +1,182 @@
+    QUEST TEMPLATE — SYNAPSE GUILD
+    ================================================
+
+    QUEST ID:
+    QUEST_095
+
+    Created By:
+    Ash (Brains)
+
+    Title:
+    Stuart v2 — D2 (6/12) — TRANSCRIPTS: transcript_version_id Strategy + Derivation Service (from Runs)
+
+    Context:
+    Dungeon 2 requires transcript endpoints, and Dungeon 4 defines transcript versioning.
+Right now, the system produces transcript artifacts inside run directories:
+  - transcript.json
+  - aligned_transcript.json (when diarized/aligned)
+  - maybe transcript.txt, etc.
+
+We need a stable concept: TRANSCRIPT_VERSION, even before full D4 pipeline emission exists.
+v1 strategy:
+  - Derive transcript versions from runs that produced transcript artifacts.
+  - transcript_version_id must map deterministically to the run and the exact artifact.
+
+This quest locks the ID strategy and implements the internal service layer that enumerates
+transcript versions for a session by scanning run artifacts (bounded, deterministic).
+
+    Origin:
+    Guild Orders → Dungeon 2 + Dungeon 4 (Transcript versions).
+
+    Priority:
+    P0 — Blocks transcript selector + transcript viewer.
+
+    Links:
+    - GUILD ORDERS: Ashby_Data/Guild Orders/PAUSED/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt (Dungeon 2 TRANSCRIPTS contract + Dungeon 4 definition)
+- CODEX: Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt (3.1 Truth-locked + 3.6 Conservative speaker attribution)
+- ENGINE ANCHOR: Ashby_Engine/ashby/interfaces/web/app.py (/api/runs/{run_id}/speakers uses transcript artifacts)
+- ENGINE ANCHOR: Ashby_Engine/ashby/modules/meetings/layout.py (runtime paths)
+
+    Status:
+    COMPLETED
+    Audit Bundle Path:
+    Ashby_Data/Audits/Execution/QUEST_095__2026-02-17__Stuart_v2_D2_Transcript_Version_Service
+
+    Accepted On:
+    2026-02-18
+    Owner:
+    Hands (Peter)
+    Executor:
+    Codex (Brains)
+
+    Completed On:
+    2026-02-18
+
+    Completed By:
+    Codex (Brains)
+    ------------------------------------------------
+    DESCRIPTION
+    ------------------------------------------------
+    Define transcript_version_id strategy and implement a service that can:
+- list transcript versions for a session
+- load a transcript version into a canonical JSON payload with segments
+
+This is the substrate for:
+- /api/sessions/{id}/transcripts
+- /api/transcripts/{transcript_version_id}
+
+We do NOT fabricate segments. Ever. We only read transcript artifacts produced by the pipeline.
+
+
+    ------------------------------------------------
+    SCOPE / OBJECTIVE
+    ------------------------------------------------
+    A) Decide transcript_version_id strategy (must be consistent with Quest 090 contract doc)
+
+   Recommended v1:
+     transcript_version_id = run_id   (simple, stable, already unique)
+   OR
+     transcript_version_id = "tv__" + run_id
+
+   Hard rule:
+     - Must be reversible: tv_id -> run_id without database lookups.
+     - Must not collide with other IDs (run_id vs transcript_id).
+
+B) Implement transcript version derivation service (new module)
+
+   Create one canonical module, e.g.:
+     - ashby/modules/meetings/transcripts/versions.py
+     OR
+     - ashby/modules/meetings/transcript_versions.py
+
+   Service functions (suggested):
+     - list_transcript_versions(session_id: str, limit:int, offset:int) -> list[TranscriptVersionSummary]
+     - get_transcript_version(transcript_version_id: str) -> TranscriptVersion (full)
+     - helpers:
+         - _run_has_transcript(run_dir) -> bool
+         - _select_best_transcript_artifact(run_dir) -> Path
+           Preference order:
+             1) aligned_transcript.json (best; includes speakers if diarized)
+             2) transcript.json (fallback)
+         - diarization_enabled inferred:
+             - True if aligned_transcript.json exists OR any segment includes speaker labels
+             - False otherwise
+
+   TranscriptVersionSummaryV1 fields (minimum):
+     - transcript_version_id
+     - session_id
+     - run_id
+     - created_ts (from run.json)
+     - diarization_enabled (bool)
+     - asr_engine ("default" for now)
+     - segment_count
+     - duration_ms (optional if available)
+
+   TranscriptVersionV1 fields (minimum):
+     - transcript_version_id
+     - session_id
+     - run_id
+     - diarization_enabled
+     - segments: [{segment_id, start_ms, end_ms, speaker_label?, text, confidence?}]
+     - source_artifact: {kind, filename, sha256?}
+     - evidence anchors:
+         - segment_id must be stable per version
+         - include timestamps
+
+C) Tests
+   - Add unit tests using fixtures:
+       - tests/fixtures/stub_transcript_segments.json
+     or by creating a fake run dir under tmp STUART_ROOT with transcript.json and run.json.
+   - Assert:
+       - aligned_transcript preferred
+       - diarization_enabled inference correct
+       - deterministic list ordering
+
+D) Docs update
+   - Update contract doc to declare transcript_version_id strategy.
+
+
+    ------------------------------------------------
+    OUT OF SCOPE
+    ------------------------------------------------
+    - Emitting transcript_version artifacts during pipeline execution (Dungeon 4/5).
+- Speaker mapping overlay application (Dungeon 6).
+
+
+    ------------------------------------------------
+    DEPENDENCIES
+    ------------------------------------------------
+    - Runs listing exists (Quest 094) OR you can scan runs directly in this service.
+- Envelope/models exist (Quest 091).
+
+
+    ------------------------------------------------
+    EXECUTION NOTES
+    ------------------------------------------------
+    - Do NOT invent speaker names. Keep SPEAKER_00 style labels only.
+- Do NOT reformat transcript into fake structure; keep segments grounded.
+- Keep scanning bounded. Don’t scan every run on disk for every request; filter by session_id and limit/offset.
+
+
+    ------------------------------------------------
+    COMPLETION CRITERIA (DONE = PROOF)
+    ------------------------------------------------
+    DONE when:
+- transcript_version_id strategy is locked (documented) and implemented.
+- Service exists and can list/get transcript versions based on real run artifacts.
+- Tests prove aligned_transcript preferred and diarization_enabled inference works.
+
+Proof:
+- pytest green
+- Example JSON output in docs or audit bundle
+
+
+    ------------------------------------------------
+    TALENT POINT (WHY THIS MATTERS)
+    ------------------------------------------------
+    This is the backbone of ‘truth-backed chat’. Segment IDs + timestamps are how Stuart avoids hallucinating.
+
+    ------------------------------------------------
+    FINAL NOTES / HANDS DECISIONS
+    ------------------------------------------------
+    If later we store transcript versions in their own directory, keep the ID strategy stable or implement backward-compatible resolution.

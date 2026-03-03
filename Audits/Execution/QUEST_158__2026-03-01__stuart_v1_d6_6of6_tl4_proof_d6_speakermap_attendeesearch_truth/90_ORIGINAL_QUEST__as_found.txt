@@ -1,0 +1,141 @@
+QUEST TEMPLATE — SYNAPSE OS [v1.5]
+(duplicate this file for each new Quest)
+
+================================================================================
+QUEST ID: QUEST_158
+QUEST TITLE: Stuart v1 — Dungeon 6 (6/6): TL3 Proof Pack — Speaker Map Overlay + Attendee Search Truth
+QUEST SUBTITLE: End-to-end validation that D6 is DONE (speaker mapping persists, transcript UI updates, attendee search is truthful)
+PRIORITY: P0
+OWNER: OpenAI Codex (CLI Execution)
+STATUS: ACCEPTED (Ready for execution)
+CREATED: 2026-03-01
+LAST UPDATED: 2026-03-01
+================================================================================
+
+SUBJECT: ASHBY / STUART (D6 system proof)
+ORIGIN: Guild Orders REV14 — Dungeon 6 + Control Sync decisions (locked)
+LINKS:
+- /mnt/data/Ashby_Canon12_EXTRACTED/Ashby_Canon(12)/Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-25_REV14.txt  (sha256: d10c278cd45a543c32c27102a912ce6f1c0569401c5ec0e00f6dc1e5c5b9b094)
+- Dungeon 6 excerpt sha256: 6d0a02ce22d961dd4eb1fbb4bf0cab4be8d5f3f42bf4c577ceee5b4012af3816
+- /mnt/data/ANALYSIS__D6__MONSTER_ASHBY__2026-03-01.md  (sha256: a086f46d5bf54c4cf3267139f9d8d581f1ecb719dc4f6bceda80ff9a627ef5a9)
+
+================================================================================
+CODEX ANCHORS
+- Guild Orders REV14 — DUNGEON 6 acceptance tests
+- Ashby_Data/Codex/Stuart/Stuart_Codex_5.2_Artifact_Truth_and_Evidence.txt
+- Ashby_Data/Codex/Stuart/Stuart_Codex_6.1_Session_Model.txt
+
+================================================================================
+CONSTRAINTS (hard rules)
+- Proof must include receipts: diffs + test output + UI evidence.
+- No claiming “done” without the receipts below.
+- Proof must verify truth gates:
+  - attendee != transcript mention
+  - overlay scoped to transcript_version
+  - UI speaker labels are 1-based display, 0-based internal IDs
+
+================================================================================
+CHANGE CLASS: Proof-only (no feature creep)
+RISK CLASS: R1
+
+VISION DELTA
+- This quest doesn’t add new product features.
+- It hardens Dungeon 6 by proving it works and doesn’t regress.
+
+================================================================================
+SYSTEM CONTEXT
+Dungeon 6 spans:
+- UI labeling (QUEST_153)
+- session_state v2 overlay pointers (QUEST_154)
+- transcript-scoped speaker map API + UI persistence + index refresh (QUEST_155)
+- attendee filter API (QUEST_156)
+- sessions search UI rewiring (QUEST_157)
+
+================================================================================
+ANTI-DUPLICATION PLAN
+- Do not rewrite implementation. This quest is about verification only.
+- Only add tests or proof artifacts that are missing.
+
+================================================================================
+PLACEMENT INTENT
+- Tests live in: Ashby_Engine/tests/
+- Proof artifacts (screenshots, logs) should be stored in Ashby_Data/Proofs/D6/ (create if missing)
+
+================================================================================
+ATOMICITY STATEMENT
+This quest is atomic when:
+- D6 end-to-end scenarios are proven with tests + UI evidence, and no new scope is added.
+
+================================================================================
+SCOPE
+A) Automated tests (backend)
+1) Add or update tests to cover the end-to-end flow:
+   - Create a session
+   - Create transcript_version with diarization speaker labels (SPEAKER_00..)
+   - Save speaker_map via transcript endpoint
+   - Confirm:
+     - GET /api/transcripts/{id} returns speaker_map
+     - sqlite speaker_maps updated
+     - /api/sessions?attendee=Name returns the session
+   - Negative control:
+     - Another session where transcript mentions Name but no speaker_map:
+       - /api/sessions?attendee=Name MUST NOT return it
+2) Run:
+   - pytest -q
+
+B) Manual UI proof (frontend)
+3) Capture UI evidence:
+   - Transcript viewer shows Speaker-01.. for unmapped labels.
+   - After mapping SPEAKER_00 → “Greg” and saving:
+     - Speaker map editor retains “Greg” after Save.
+     - Transcript preview updates to show “Greg”.
+   - Search panel:
+     - Mentioned vs Attendee behave correctly (Greg mentioned but not attendee does not show under Attendee).
+4) Store screenshots/gif and a short run log:
+   - Ashby_Data/Proofs/D6/
+     - d6_transcript_labels.png
+     - d6_speaker_map_persist.png
+     - d6_search_badges.png
+     - (optional) d6_demo.gif
+
+OUT OF SCOPE
+- Any feature changes or refactors not required for proof.
+- Dungeon 7+ work.
+
+================================================================================
+DEPENDENCIES
+- Must be executed after QUEST_153–QUEST_157 are completed.
+
+================================================================================
+DOOR IMPACT
+- Proof only.
+
+================================================================================
+TESTING LEVEL
+- TL4 (end-to-end proof + receipts)
+
+================================================================================
+VERIFICATION PLAN (what “PASS” looks like)
+PASS requires:
+- pytest -q passes.
+- Proof artifacts exist under Ashby_Data/Proofs/D6/ and demonstrate:
+  - UI speaker labels (Speaker-01) and mapped name display
+  - Mapping persists after save + reload
+  - Attendee search truth (no transcript-mention false positives)
+  - All/Mentioned/Attendee badges behave as required
+
+================================================================================
+ACCEPTANCE CRITERIA
+- Dungeon 6 acceptance criteria are demonstrably satisfied with receipts.
+- No unverified “trust me bro” claims remain.
+
+================================================================================
+RECEIPTS REQUIRED
+- Full git diff (or patch files) for any final test/proof changes.
+- pytest output.
+- Proof artifacts saved under Ashby_Data/Proofs/D6/.
+- A short completion note listing exactly which D6 scenarios were tested and the results.
+
+================================================================================
+NOTES
+- This is the “put up or shut up” quest. If D6 isn’t proven here, it’s not done. Period.

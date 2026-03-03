@@ -1,0 +1,187 @@
+STUART — Base44 UI Code Audit (copied ZIP)
+Date: 2026-02-16
+
+Scope
+- ONLY the Stuart UI/front-end prototype copied out of Base44.
+- Goal: confirm we can reuse the UI + interaction model, while ripping out Base44 platform glue.
+
+Canonical source
+- Extracted directory: /mnt/data/stuart_app
+- Uploaded ZIP: /mnt/data/stuart_app.zip (treated as inert after extraction)
+
+------------------------------------------------------------
+1) UI Blueprint (as implemented in code + screenshots)
+------------------------------------------------------------
+High-level layout
+- Header: Stuart logo + name + profile badge (Local/Hybrid/Cloud)
+- Body: 12-col grid
+  - Left: Session Navigator (Recent/Search tabs + list)
+  - Main: either New Session upload screen OR Session view w/ 3 major tabs
+
+Left column — Session Navigator
+- “New Session” gold WoW-style button (resets selection, shows upload)
+- Tabs: Recent | Search
+- Recent: session cards in scroll list
+- Search: SessionSearch with filters: All / Mentioned / Spoke
+
+Main content — Session view
+- Session header: title + filename + Transcribe (if status uploaded) + Export ZIP
+- Tabs:
+  - Session
+  - Chat
+  - Outputs (count)
+
+Session tab (2-column inside)
+- Left (Transcript & Speakers)
+  - TranscriptViewer: segment list, timestamp display, highlights
+  - SpeakerMapper: map SPEAKER_XX -> name (optional)
+- Right (Controls & Output)
+  - RunControls: Mode / Template / Retention / Processing Profile / Diarization toggle / Run
+  - ProcessingLog: step-by-step status cards
+  - FormalizationOutput: sub-tabs Formatted | JSON | Evidence Map
+
+Chat tab
+- ChatInterface: asks questions about transcript, expects citations in answer
+
+Outputs tab
+- List of prior formalizations (each rendered via FormalizationOutput)
+
+------------------------------------------------------------
+2) What’s reusable vs contaminated
+------------------------------------------------------------
+Reusable (mostly “pure UI”)
+- src/components/stuart/*
+  - TranscriptViewer.jsx
+  - SpeakerMapper.jsx
+  - RunControls.jsx
+  - ProcessingLog.jsx
+  - FormalizationOutput.jsx
+  - ChatInterface.jsx
+  - SessionCard.jsx
+  - SessionSearch.jsx
+  - ModeTemplateConfig.jsx
+  - (AudioUploader.jsx is UI, but needs upload plumbing replaced)
+- src/components/ui/* (shadcn/radix wrappers)
+- Styling: Tailwind + classNames
+
+Contaminated (Base44 platform glue)
+- Vite plugin: @base44/vite-plugin (vite.config.js)
+- SDK dependency: @base44/sdk
+- Auth + navigation tracking
+  - src/lib/AuthContext.jsx
+  - src/lib/NavigationTracker.jsx
+  - src/lib/app-params.js
+- Data layer imports (currently missing)
+  - imports to '@/api/base44Client' appear across multiple files but src/api is empty
+
+Simulated “fake backend” logic
+- src/pages/Stuart.jsx
+  - uses base44.integrations.Core.InvokeLLM to SIMULATE:
+    - transcription
+    - formalization output
+    - chat answers
+
+------------------------------------------------------------
+3) Immediate breakpoints (stuff that will not run as-is)
+------------------------------------------------------------
+A) Missing entry component
+- src/main.jsx imports "@/App.jsx"
+- but repo contains src/Apps.jsx (typo/name mismatch)
+
+B) Missing API client
+- multiple files import "@/api/base44Client"
+- but src/api/ is empty
+
+C) Alias resolution
+- code uses "@/..." imports
+- without Base44 tooling, Vite needs explicit resolve.alias for '@'
+
+------------------------------------------------------------
+4) Minimal surgery to run locally (frontend-only)
+------------------------------------------------------------
+Minimum set of changes:
+1) Rename src/Apps.jsx -> src/App.jsx (or update src/main.jsx import)
+2) Create src/api/base44Client.js (compat shim) OR refactor imports to src/api/stuartClient
+3) Remove @base44/vite-plugin from vite.config.js and add alias config
+4) Remove Base44 auth wrappers (AuthProvider / NavigationTracker) OR stub them
+
+------------------------------------------------------------
+5) Recommended approach (fastest path)
+------------------------------------------------------------
+Phase 0 (Fast): Compatibility shim
+- Implement src/api/base44Client.js that exposes ONLY what this UI uses:
+  - entities.Session: list/create/update
+  - entities.Formalization: filter/create
+  - integrations.Core.InvokeLLM: replaced by real HTTP calls to Stuart backend
+
+This lets us keep almost all UI code unchanged now.
+Later, we can rename base44 -> stuart across the codebase.
+
+Phase 1 (Real): Wire to Stuart engine
+- Replace InvokeLLM calls with endpoints:
+  - POST /api/sessions/{id}/transcribe
+  - POST /api/sessions/{id}/formalize
+  - POST /api/sessions/{id}/chat
+- Implement Export ZIP:
+  - GET /api/sessions/{id}/export.zip
+
+------------------------------------------------------------
+6) Backend API contract (suggested)
+------------------------------------------------------------
+Session object (what UI expects)
+- id: string
+- title: string
+- audio_filename: string
+- audio_file_url: string
+- audio_duration_sec: number
+- profile: 'LOCAL_ONLY' | 'HYBRID' | 'CLOUD'
+- status: 'uploaded' | 'transcribed' | 'formalized' | 'failed'
+- created_date: ISO string
+- transcript_json_str: string (JSON array of segments)
+- transcript_text: string
+- speaker_map_str: string (JSON object map)
+
+Transcript segment
+- segment_id: 'seg_001'
+- start_time: number
+- end_time: number
+- text: string
+- speaker: 'SPEAKER_00'
+- confidence: number
+
+Formalization object (what UI expects)
+- id: string
+- session_id: string
+- run_id: string
+- mode: string
+- template: string
+- retention_level: 'LOW'|'MED'|'HIGH'|'NEAR_VERBATIM'
+- status: 'pending'|'processing'|'completed'|'failed'|'partial'
+- output_json_str: string
+- output_markdown: string
+- evidence_map_str: string
+- processing_log_str: string
+- data_left_machine: boolean
+- adapters_used: string[]
+
+Endpoints
+- GET   /api/sessions
+- POST  /api/sessions
+- PATCH /api/sessions/{id}
+- POST  /api/uploads/audio
+- POST  /api/sessions/{id}/transcribe
+- POST  /api/sessions/{id}/formalize
+- GET   /api/formalizations?session_id={id}
+- POST  /api/formalizations
+- POST  /api/sessions/{id}/chat
+- GET   /api/sessions/{id}/export.zip
+
+------------------------------------------------------------
+7) Next steps (if Peter says “patch it”)
+------------------------------------------------------------
+- Produce a sanitized frontend ZIP that:
+  - runs locally via Vite
+  - no Base44 plugin/sdk
+  - uses a stub/real Stuart API client
+  - preserves the exact UI/UX behavior from screenshots
+

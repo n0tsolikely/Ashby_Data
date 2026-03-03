@@ -1,0 +1,1 @@
+PASS: governance validation OK for QUEST_116 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_116__2026-02-19__stuart_v1_d4_116_intake

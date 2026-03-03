@@ -1,0 +1,104 @@
+STUART CODEX
+2.4 Template Selection (Scoped by Mode) (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines template selection and how templates are scoped to modes. Templates are a core mechanism for personalization without making Stuart “generic.” They also prevent users from having to invent instructions from scratch every time.
+
+1) What a template is (and is not)
+
+A template is a structure definition inside a mode. It specifies:
+- headings/sections,
+- required vs optional fields,
+- default retention level,
+- formatting conventions,
+- and any mode-specific constraints (e.g., “decisions must have citations”).
+
+A template is NOT:
+- a mode,
+- a model selector,
+- or an arbitrary freeform prompt.
+Templates are enumerated, reusable structure contracts.
+
+2) Templates are always scoped by mode
+
+A template must belong to exactly one mode.
+
+Examples:
+- Meeting Minutes mode may have templates: “Detailed,” “Quick,” “Control Sync.”
+- Journal mode may have templates: “Diary,” “Professional Reflection.”
+- Incident mode may have templates: “SEV Report,” “Postmortem Lite.”
+- Creator mode may have templates: “Idea Clusters,” “Production Plan.”
+
+A template from one mode cannot be applied under another mode without an explicit conversion step (future).
+This prevents mismatched structures and reduces user confusion.
+
+3) Enumerated templates (no hallucinated templates)
+
+Templates MUST be enumerated per mode.
+- If a user requests a template that does not exist, Stuart MUST refuse and list available templates for that mode.
+- Stuart MUST not invent “Template Shining” unless it actually exists in the registry.
+
+4) How template selection happens
+
+A) UI selection
+Stuart may provide a secondary template dropdown that is filtered by the currently selected mode.
+Templates should not clutter the UI before a mode is chosen.
+
+B) Chat selection
+Users may select templates via chat:
+- “Use the Detailed template.”
+- “Use Meeting Minutes with template ‘Control Sync.’”
+- “Set template to ‘Diary.’”
+
+As with modes:
+- selecting a template does not trigger execution,
+- execution requires explicit submit/confirm.
+
+5) Default templates and user uncertainty
+
+Users may not know which template to choose. Stuart must support:
+
+T1) A default template per mode
+Each mode must have a default template that produces a reasonable output.
+
+T2) Template recommendation (advice only)
+Stuart may recommend a template based on the content or user intent, but it must not auto-execute.
+
+Example:
+User: “I don’t know which template to use.”
+Stuart: “For a multi-speaker meeting, I recommend ‘Detailed.’ For faster output, use ‘Quick.’”
+
+6) Re-running templates without re-transcribing
+
+After transcription exists, templates must be re-runnable:
+- switch template,
+- re-run formalization,
+- generate a new artifact,
+without re-uploading or re-transcribing.
+
+This enables experimentation (try 3 templates) and avoids waste.
+
+7) Templates as a pathway to a future ecosystem
+
+This Codex does not ship a marketplace in V1, but templates are designed to support:
+- local creation,
+- versioning,
+- future sharing (explicit, gated, privacy-aware).
+
+This must be implemented as:
+- templates are data (config), not code,
+- templates have versions,
+- and templates declare compatibility.
+
+8) Self-audit (2.4)
+
+This section reflects decisions made in chat:
+- templates are scoped under modes,
+- users can browse many templates without complexity,
+- unknown templates are refused (no hallucination),
+- Stuart may recommend but never auto-run,
+- and users can re-run different templates on the same transcript.
+
+This section is complete.

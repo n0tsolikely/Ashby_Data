@@ -1,0 +1,20 @@
+## Command Receipt Log
+WRAPPER: synapse_quest_run.sh
+ENGINE_ROOT: /home/notsolikely/Ashby_Engine
+DATA_ROOT: /home/notsolikely/Ashby_Data
+---
+CMD: cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_template_store_filesystem_versioning.py
+ERROR: file or directory not found: tests/test_template_store_filesystem_versioning.py
+
+
+no tests ran in 0.00s
+RC: 4
+BLOCKED: command failed (see RC above): cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_template_store_filesystem_versioning.py
+CMD: cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_template_store_filesystem_versioning.py
+....                                                                     [100%]
+4 passed in 0.05s
+RC: 0
+PASS: governance validation OK for QUEST_189 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_189__2026-03-03__stuart_v1_dungeon_11_2_10_template_store_metadata_template_md_versioning_primitives
+OK: finalize complete (validation PASS recorded).
+PASS: governance validation OK for QUEST_189 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_189__2026-03-03__stuart_v1_dungeon_11_2_10_template_store_metadata_template_md_versioning_primitives
+OK: finalize complete (validation PASS recorded).

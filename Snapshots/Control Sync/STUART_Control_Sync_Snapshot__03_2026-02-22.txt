@@ -1,0 +1,63 @@
+================================================================================
+CONTROL SYNC SNAPSHOT
+================================================================================
+A) Header (required)
+- Subject: STUART
+- Date: 2026-02-22
+- Topic: Quest acceptance and ordered execution lock
+- Snapshot Type: Control_Sync
+- World State: Fog Lifted
+- Codex Freeze status: PRESENT (/home/notsolikely/Ashby_Data/Codex/CODEX_FREEZE.md)
+
+B) Rehydration Review (required when resuming)
+- Latest Control Sync Snapshot reviewed: (fill)
+- Latest End-of-Day Snapshot reviewed: (fill)
+- Relevant General Snapshots reviewed: (fill)
+
+C) Current Reality (State Surface)
+- Active Guild Orders / Raids: (fill)
+- Paused Guild Orders / Raids: (fill)
+- Quest Board summary: (fill)
+- Blockers: (fill)
+- Known risks / unknowns: (fill)
+
+D) Binding Decisions (required when binding decisions exist)
+1) Working scope for this session is STUART within subject ASHBY.
+2) Latest Control Sync snapshots for 2026-02-22 were reviewed and treated as governing context.
+3) All quests on Quest Board root were ACCEPTED by filesystem move to Quest Board/Accepted.
+4) Execution order is binding: SIDE-QUEST_081 through SIDE-QUEST_087 first (ascending), then QUEST_129 through QUEST_139 (ascending).
+5) Execution must follow governance audit discipline per active Guild Orders and subject BUFF.
+
+Deferred / Not decided:
+1) Quest execution has not begun yet in this Control Sync closeout.
+2) Audit bundle initialization and implementation for SIDE-QUEST_081 is next.
+
+Decision changes (if any):
+- prior decision → new decision (with reference)
+
+E) Scope Commitment (required)
+- Quests to accept now (by ID): (fill)
+- Deferred work (and why): (fill)
+- Expected side-work (bugs/refactors): (fill)
+
+F) Artifacts Touched / Created (required)
+- Codex/TOC updates: (paths)
+- Guild Orders/Raids updates: (paths)
+- Dungeon/Quest artifacts: (paths)
+- Other data artifacts: (paths)
+
+G) NOTES
+- (none)
+
+H) Exit Condition + Closure Statement (required)
+- Closure statement: This Control Sync is CLOSED only when this Snapshot exists as a file.
+- Started At: 2026-02-22T19:45:49.132053-05:00
+- Closed At: 2026-02-22T19:55:29.732196-05:00
+- Participants: Hands,Codex
+- Reason: User requested open control sync
+- Next immediate action: Initialize audit bundle and execute SIDE-QUEST_081
+
+- If execution will begin: state the first Quest to accept/execute.
+- If no execution committed: state why.
+
+END OF SNAPSHOT

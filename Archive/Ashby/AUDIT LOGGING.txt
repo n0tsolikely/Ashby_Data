@@ -1,0 +1,183 @@
+ASHBY CODEX — 16.5
+AUDIT LOGGING REQUIREMENTS
+
+Audit logging is the mechanism that makes Ashby reconstructable.
+
+The Codex is not complete unless behavior can be rebuilt from artifacts.
+
+Audit logs exist to answer, later, with certainty:
+- what happened
+- why it happened
+- what was believed at the time
+- what evidence existed
+- what policy decisions were applied
+
+A system without audit logs is not resurrectable.
+A system without audit logs cannot be trusted.
+
+Audit logging is not “developer convenience.”
+Audit logging is platform law.
+
+──────────────────────────────────────────────────────────────────────────────
+WHAT MUST BE AUDITABLE
+──────────────────────────────────────────────────────────────────────────────
+
+At minimum, the platform must be able to reconstruct:
+
+1) SCOPE CONTEXT
+- scope_id
+- actor identity/context (as permitted by privacy law)
+- transport channel (for debugging only; does not change law)
+
+2) USER INPUT (SAFE FORM)
+- raw user text may be stored if privacy policy allows
+- otherwise store a normalized representation sufficient for reconstruction
+- never store secrets
+
+3) RESOLUTION DECISIONS
+- resolved target_set (device_keys)
+- resolution source trace (explicit, session, pending answer, default, signal)
+- ambiguity handling (clarify/confirm decisions)
+
+4) POLICY OUTCOME
+- ACT / CLARIFY / CONFIRM / REFUSE / CHAT
+- policy reason labels that drove the decision
+
+5) ACTION ARTIFACTS
+When ACT:
+- ActionRequest (planned)
+- ActionResult (evidence outcome)
+- verification and failure taxonomy fields
+- correlation identifiers
+
+6) STATE EFFECTS
+- which HouseState attributes were updated
+- prior values (optional, policy-defined)
+- resulting confidence levels
+- timestamps and evidence references
+
+7) SESSION EFFECTS
+- session creation, update, expiry, invalidation
+- pending clarification gate creation and resolution
+- confirmation gate creation and resolution
+
+Audit logs exist to rebuild the decision graph.
+
+──────────────────────────────────────────────────────────────────────────────
+CORRELATION IDS ARE REQUIRED
+──────────────────────────────────────────────────────────────────────────────
+
+Every control transaction must have correlation identifiers.
+
+Rules:
+- each user turn has a turn_id
+- each planned action has an action_id
+- each execution attempt has an execution_id
+- each ActionResult references its ActionRequest correlation id
+- gates (confirmation/clarification) carry gate_id linked to the originating turn
+
+Correlation is how you rebuild causality.
+
+A system that cannot correlate events is not auditable.
+
+──────────────────────────────────────────────────────────────────────────────
+LOG STRUCTURE MUST BE STABLE
+──────────────────────────────────────────────────────────────────────────────
+
+Logs must be structured, not freeform text.
+
+Rules:
+- log entries are JSON-like structured records
+- fields are stable labels (no vendor-specific schema drift)
+- reason labels and stages use canonical vocabulary
+- timestamps use canonical format
+
+Freeform logs may exist for human reading,
+but structured logs are the authoritative audit artifact.
+
+The resurrection depends on stable structure.
+
+──────────────────────────────────────────────────────────────────────────────
+LOGGING MUST RESPECT SECRETS AND PRIVACY LAW
+──────────────────────────────────────────────────────────────────────────────
+
+Audit logging must never compromise security.
+
+Rules:
+- never log secrets
+- never log raw vendor payloads that may contain secrets
+- redact sensitive fields before persistence
+- store only what is permitted by scope and actor permissions
+
+Audit logs must support redaction markers so operators know data was intentionally removed.
+
+Security posture applies to logs as well as responses.
+
+──────────────────────────────────────────────────────────────────────────────
+FAILURE LOGGING REQUIREMENTS
+──────────────────────────────────────────────────────────────────────────────
+
+Failures must be loggable and analyzable.
+
+Rules:
+- failures include stage + reason
+- failures are recorded per target
+- unknown_error must be rare and tracked
+- repeated failure patterns must be observable through aggregation fields
+
+A system that cannot name failure cannot be debugged.
+A system that cannot be debugged cannot be resurrected.
+
+──────────────────────────────────────────────────────────────────────────────
+NO-OP LOGGING REQUIREMENTS
+──────────────────────────────────────────────────────────────────────────────
+
+NO-OP decisions are claims.
+They must be logged.
+
+Rules:
+- log the belief used to justify NO-OP (value + confidence + timestamps)
+- log the freshness evaluation outcome
+- log the policy thresholds that permitted NO-OP
+- never log NO-OP as execution
+
+NO-OP is where silent lies often hide.
+Audit logging prevents that.
+
+──────────────────────────────────────────────────────────────────────────────
+GATE LOGGING REQUIREMENTS
+──────────────────────────────────────────────────────────────────────────────
+
+Clarification and confirmation gates must be logged.
+
+Rules:
+- log gate creation with proposed action summary
+- log gate expiry, cancellation, and restart invalidation
+- log user response interpretation
+- log resulting policy re-evaluation
+
+Consent and ambiguity are part of the control graph.
+The graph must be reconstructable.
+
+──────────────────────────────────────────────────────────────────────────────
+ABSOLUTE CONSTRAINTS
+──────────────────────────────────────────────────────────────────────────────
+
+Audit logging must:
+- be structured and stable
+- include correlation identifiers
+- record policy outcomes and resolution traces
+- preserve ActionRequest/ActionResult evidence artifacts
+- record state and session effects
+- obey secrets and privacy law
+
+Audit logging must never:
+- rely solely on freeform text
+- omit correlation for control flows
+- store secrets or raw vendor payloads as logs
+- allow execution without an audit trail
+- vary log semantics by transport
+
+Audit logs are the black box recorder of Ashby.
+
+END OF 16.5

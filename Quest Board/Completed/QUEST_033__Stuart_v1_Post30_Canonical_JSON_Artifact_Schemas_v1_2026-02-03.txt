@@ -1,0 +1,92 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+
+QUEST ID:
+QUEST_033
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Post-30: Canonical JSON Artifact Schemas v1 (transcript/diarization/alignment/evidence)
+
+Context: Stuart (Ashby module: meetings)
+
+Origin:
+Control Sync — 2026-02-03 (Post-30 plan)
+
+Priority: P0
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-03_REV4.txt (Dungeon 5 outputs)
+- Engine: ashby/modules/meetings/schemas/ (existing plan/search schemas)
+
+Status: COMPLETED
+
+Audit Bundle Path:
+Audits/Execution/QUEST_033__2026-02-03__stuart_v1_post30_canonical_json_artifact_schemas_v1_2026-02-03
+
+Accepted On:
+2026-02-03
+
+Accepted By:
+Hands (Peter)
+
+Completed On:
+2026-02-03
+
+Completed By:
+Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Lock the on-disk JSON contracts for the real pipeline so every stage and door can interoperate deterministically.
+Schemas must be versioned and stable across reruns.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Define v1 schema(s) for:
+-   - diarization_segments.json (speaker turns with start/end seconds + labels)
+-   - transcript.json (segments with timestamps; speaker optional)
+-   - aligned_transcript.json (segments with speaker labels applied)
+-   - evidence_map.json (anchors pointing to transcript segments + time spans)
+- Ensure transcript.txt remains available as a human-readable mirror (index compatibility).
+- Add schema validators / dataclasses and keep them in meetings/schemas/.
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Model accuracy tuning.
+- WhisperX word-level alignment (optional later).
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_032 (adapter selection) recommended for consistent producer/consumer boundaries.
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Prefer explicit fields: version, created_ts, session_id/run_id, segments[].
+- All paths stored in artifacts should be absolute or run-relative consistently (pick one and enforce).
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] Schema docs/objects added (versioned).
+- [ ] Loader/validator functions exist and are used by pipeline stages.
+- [ ] Golden sample JSON fixtures added to tests.
+- [ ] `python3 -m pytest -q` PASS.
+
+────────────────────────────────────────────────────────
+TALENT POINT
+────────────────────────────────────────────────────────
+On completion:
+- Talent Point Awarded: YES
+- Talent Spent On: TBD — Canonical Transcript/Diarization Schemas
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+(optional)

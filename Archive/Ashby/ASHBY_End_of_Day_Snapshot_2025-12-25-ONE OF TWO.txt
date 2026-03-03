@@ -1,0 +1,351 @@
+Got you. Here’s the **End-of-Day Snapshot** you can paste into a file and/or drop into the next chat to resume **without missing a beat**.
+
+---
+
+# ASHBY END OF DAY SNAPSHOT — 2025-12-25
+
+Raid: **Ashby Structural Realignment (Emergency)** — ACTIVE
+Core Raid (Guild Orders 2025-12-15): **PAUSED / BLOCKED** until structural completes
+Operator: **notsolikely**
+Env: WSL Ubuntu (RTX4070 laptop)
+
+====================================================================
+0) STATUS (WHAT TODAY WAS)
+==========================
+
+Today was a *high-risk structural refactor day* done correctly:
+
+* We relocated and rebuilt the canonical Python venv cleanly under ~/venvs.
+* We verified CLI + Telegram gateways still work after every major structural cut.
+* We performed a major router decompression:
+
+  * Moved router logic to ashby/core/router.py
+  * Left ashby/brain/router.py as a compatibility shim
+  * Extracted sessions into brain/sessions/
+  * Extracted NLU into brain/nlu/
+  * Extracted memory into brain/memory/
+  * Extracted Truth Gate into core/truth_gate.py
+  * Extracted Context Snapshot into core/context_snapshot.py
+  * Extracted safe_chat into core/safe_chat.py
+    All while keeping lights + comfort + chat working.
+
+This is “engine surgery” and it’s largely complete.
+
+====================================================================
+
+1. CANONICALS (LOCKED SOURCES OF TRUTH)
+   ====================================================================
+
+✅ Canonical repo root:
+~/ashby
+
+✅ Canonical python package:
+~/ashby/ashby
+
+✅ Canonical venv (rebuilt at new location):
+/home/notsolikely/venvs/ashby-env
+
+Activate:
+source /home/notsolikely/venvs/ashby-env/bin/activate
+
+Run CLI harness (from repo root):
+cd ~/ashby
+PYTHONPATH=. python3 io/cli/ashby_interactive.py
+
+Run Telegram gateway (from repo root):
+cd ~/ashby
+PYTHONPATH=. python3 io/telegram/ashby_telegram_control.py
+
+====================================================================
+2) VENV MOVE RESULTS (COMPLETED)
+================================
+
+✅ Original venv was moved from legacy nested home path:
+/home/notsolikely/home/notsolikely/ashby-env
+→ to:
+/home/notsolikely/venvs/ashby-env
+
+✅ Because venv paths were hardcoded, we rebuilt it cleanly:
+
+* Renamed moved venv to backup:
+  /home/notsolikely/venvs/ashby-env_moved_backup
+* Created fresh venv:
+  python3 -m venv /home/notsolikely/venvs/ashby-env
+* Reinstalled packages by freezing from backup venv site-packages:
+  pip freeze --path ... | pip install -r /dev/stdin
+
+✅ Verified:
+
+* CLI lights control works
+* Telegram gateway starts
+
+NOTE:
+
+* Keep /home/notsolikely/venvs/ashby-env_moved_backup for now (safety), delete later when stable.
+
+====================================================================
+3) TELEGRAM FIX + LOGGING
+=========================
+
+✅ Telegram bot was fixed to import secrets/env and ashby modules correctly.
+✅ Telegram starts and polls.
+
+IMPORTANT WARNING:
+
+* Telegram run output showed the bot token in HTTP logs.
+* We silenced logs by injecting WARNING level for httpx/telegram loggers.
+* Do NOT paste Telegram output again (token exposure risk). Rotate token later.
+
+====================================================================
+4) STRUCTURAL REFACTOR (WHAT CHANGED IN CODE)
+=============================================
+
+We refactored without breaking imports using the “compat wrapper” pattern.
+
+---
+
+## 4.1 Router relocation + shim
+
+✅ Real router implementation now lives at:
+ashby/core/router.py
+
+✅ Compatibility shim (re-export) remains at:
+ashby/brain/router.py
+so imports like:
+from ashby.brain.router import handle_text
+still work for CLI/Telegram.
+
+During move, imports in core/router.py were updated to point to:
+
+* ashby.brain.ash_core
+* ashby.brain.sessions.*
+* ashby.brain.nlu.*
+* ashby.brain.memory.*
+* ashby.control.device_control
+
+---
+
+## 4.2 Sessions extraction
+
+✅ New package:
+ashby/brain/sessions/
+
+✅ Real session modules moved:
+ashby/brain/sessions/lighting.py  (was ashby/brain/lighting_sessions.py)
+ashby/brain/sessions/comfort.py   (was ashby/brain/comfort_sessions.py)
+
+✅ Compatibility wrappers remain:
+ashby/brain/lighting_sessions.py  (imports * from sessions/lighting.py)
+ashby/brain/comfort_sessions.py   (imports * from sessions/comfort.py)
+
+✅ core/router.py updated to import:
+from ashby.brain.sessions import lighting, comfort
+and references updated:
+lighting_sessions.* → lighting.*
+comfort_sessions.*  → comfort.*
+
+---
+
+## 4.3 NLU extraction
+
+✅ New package:
+ashby/brain/nlu/
+ashby/brain/nlu/examples/
+
+✅ Real NLU modules moved:
+ashby/brain/nlu/nlu_manager.py    (was ashby/brain/nlu_manager.py)
+ashby/brain/nlu/local_nlu.py      (was ashby/brain/local_nlu.py)
+ashby/brain/nlu/gpt_nlu.py        (was ashby/brain/gpt_nlu.py)
+ashby/brain/nlu/intent_schema.py  (was ashby/brain/intent_schema.py)
+
+✅ Example file moved:
+ashby/brain/nlu/examples/nlu_lights_comfort_eg.txt
+and local_nlu.py was patched to use:
+"examples/nlu_lights_comfort_eg.txt"
+
+✅ Compatibility wrappers remain at old paths:
+ashby/brain/nlu_manager.py
+ashby/brain/local_nlu.py
+ashby/brain/gpt_nlu.py
+ashby/brain/intent_schema.py
+
+✅ core/router.py updated to import:
+from ashby.brain.nlu.nlu_manager import extract_intent
+
+---
+
+## 4.4 Memory extraction
+
+✅ New package:
+ashby/brain/memory/
+
+✅ Real memory module moved:
+ashby/brain/memory/memory.py (was ashby/brain/memory.py)
+
+✅ Compatibility wrapper remains:
+ashby/brain/memory.py  (imports * from brain/memory/memory.py)
+
+✅ Package-level re-export was required for existing imports:
+ashby/brain/memory/**init**.py now re-exports:
+from .memory import *
+This prevents:
+AttributeError: module 'ashby.brain.memory' has no attribute 'get'
+
+✅ core/router.py import updated to:
+from ashby.brain.memory import memory
+
+---
+
+## 4.5 Truth Gate extraction
+
+✅ New module:
+ashby/core/truth_gate.py
+
+✅ Router now imports it:
+from ashby.core import truth_gate
+
+✅ safe_chat no longer contains forbidden_phrases list inline.
+Router/safe_chat uses:
+reply = truth_gate.apply(reply)
+
+---
+
+## 4.6 Context Snapshot extraction
+
+✅ New module:
+ashby/core/context_snapshot.py
+
+✅ Router now imports it:
+from ashby.core import context_snapshot
+
+✅ The inline ctx_lines build inside safe_chat was replaced with:
+injected = context_snapshot.build_snapshot(...)
+
+---
+
+## 4.7 safe_chat extraction
+
+✅ New module:
+ashby/core/safe_chat.py
+
+✅ safe_chat() was removed from core/router.py and moved to core/safe_chat.py.
+✅ Router imports:
+from ashby.core.safe_chat import safe_chat
+
+safe_chat.py responsibilities:
+
+* pulls lighting session state from lighting.get_session(user_id)
+* pulls memory prefs: preferred_temp, last_known_temp, last_action
+* builds injected snapshot via context_snapshot.build_snapshot(...)
+* calls brain.chat(injected)
+* applies truth_gate.apply(reply)
+* returns reply
+
+====================================================================
+5) WHAT IS VERIFIED WORKING (SANITY RESULTS)
+============================================
+
+✅ CLI:
+
+* turn on/off thor works
+* adjust works
+* comfort “im cold” triggers session flow
+* NLU still calls GPT fallback when unknown (expected)
+
+✅ Telegram:
+
+* gateway starts and polls
+* still triggers actions (but DO NOT show logs on stream; token exposed)
+
+====================================================================
+6) KNOWN BEHAVIOR BUGS (LOG ONLY — DO NOT FIX IN STRUCTURAL RAID)
+=================================================================
+
+Observed oddities (likely pre-existing logic behaviors):
+
+* Some phrases route to GPT fallback (e.g. “on”, “down”, “actually turn it back on”)
+* Some “down” / intensity phrasing produced unexpected level changes (old logic complexity)
+* Occasional weird assistant reply prefix glitches (“tuAshPi”, “heAshPi”, “daAshPi”) — harmless
+
+These are NOT caused by the refactor; they are behavior-layer polish.
+Fix later in a behavior raid (Core Raid), after structural raid is complete.
+
+====================================================================
+7) WHAT IS LEFT (REMAINING WORK)
+================================
+
+A) FINAL ROUTER THINNING (IMPORTANT)
+Router is now much thinner, but still contains a few stateless helper functions that should be extracted so the router never becomes a god file again when adding fans/color lights/etc.
+
+Remaining helper functions still likely living in ashby/core/router.py (need confirmation):
+
+* _clamp_level
+* _normalize_brightness_to_0_1000
+* _normalize_group_from_free_text
+* _intensity_multiplier
+* _is_direct_light_command
+* _reply_style_for_lights
+  (These should move into something like ashby/core/normalize.py or ashby/brain/nlu/normalize.py)
+
+Goal:
+
+* router becomes orchestration only (intent → dispatch → reply)
+* all normalization/helpers live outside router
+
+B) SECRETS RENAME COMPLETION (ASHPI → ASHBY)
+We renamed many things, but secrets naming may still be incomplete.
+
+Specifically:
+
+* secrets/env.py is canonical and stays env.py
+* secrets/ashpi_nest.env should be renamed to secrets/ashby_nest.env (if not already)
+* Any code reading “ashpi_nest.env” must be updated to “ashby_nest.env”
+  Check with:
+  grep -R "ashpi_nest.env" -n .
+
+C) OPTIONAL: Rename scripts ashpi_* → ashby_* (if not fully done)
+scripts currently may still be named:
+
+* scripts/ashpi_cast.py
+* scripts/ashpi_nest_set.py
+* scripts/ashpi_tuya_test.py
+  Optional polish:
+* rename to ashby_*
+* update any references if used
+
+D) ENGINE PLACEHOLDERS (Scope #5)
+We planned to add minimal “engine rails” folders/stubs to accommodate Stuart:
+
+* core/tool runtime placeholders
+* modules/stuart placeholders (or later rename modules → capabilities)
+  Not yet implemented tonight.
+
+====================================================================
+8) EXACT RESUME STEPS (NEXT CHAT / TOMORROW)
+============================================
+
+1. Activate venv:
+   source /home/notsolikely/venvs/ashby-env/bin/activate
+
+2. Confirm CLI works:
+   cd ~/ashby
+   PYTHONPATH=. python3 io/cli/ashby_interactive.py
+   Test: turn on thor / turn off thor / im cold
+
+3. Confirm Telegram starts (DO NOT paste logs):
+   PYTHONPATH=. python3 io/telegram/ashby_telegram_control.py
+
+4. Finish remaining structural tasks:
+   a) Extract remaining router helper functions into normalize module
+   b) Finish secrets rename: ashpi_nest.env → ashby_nest.env and update references
+   c) Optional: scripts rename ashpi_* → ashby_*
+   d) Optional: create engine placeholder dirs + Stuart stubs
+
+====================================================================
+9) STOP
+=======
+
+System is stable, runnable, and significantly more modular than start-of-day.
+Ready to resume without guesswork.
+
+END OF DAY SNAPSHOT — 2025-12-25

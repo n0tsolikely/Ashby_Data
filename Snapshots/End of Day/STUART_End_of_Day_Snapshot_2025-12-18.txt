@@ -1,0 +1,77 @@
+ASHBY / STUART — END OF DAY SNAPSHOT
+Date: 2025-12-18
+
+==============================
+SUMMARY
+==============================
+Today was a foundational infrastructure and design-alignment day for the Stuart system.
+
+No Guild Orders were formally issued. This was intentional.
+The focus was environment readiness, toolchain validation, and conceptual contract definition.
+
+==============================
+WHAT WAS ACCOMPLISHED
+==============================
+
+1) STUART PIPELINE CONTRACT CREATED
+- A formal Pipeline Contract (spec / contract) was authored for Stuart.
+- This defines what Stuart *is*, what it *will not be*, and how truth, diarization, transcription, and querying are handled.
+- This document is authoritative for v0 and precedes genome/personality encoding.
+- Status: COMPLETE (v0)
+
+2) LOCAL ENVIRONMENT FULLY READY (WINDOWS)
+- Python locked to 3.10.11
+- Virtual environment created at:
+  C:\stuart\.venv
+- pip, setuptools, wheel upgraded inside venv
+- Execution policy adjusted to allow venv activation
+
+3) GPU ACCELERATION VERIFIED
+- PyTorch installed: 2.5.1+cu121
+- CUDA verified operational
+- GPU detected and confirmed:
+  NVIDIA GeForce RTX 4070 Laptop GPU
+
+4) AUDIO / ML TOOLCHAIN INSTALLED AND VERIFIED
+- FFmpeg installed system-wide and added to PATH
+- faster-whisper installed and successfully loaded on CUDA
+- pyannote.audio 3.1.1 installed successfully with dependencies
+- Whisper model successfully loaded on GPU
+
+5) ARCHITECTURAL DECISIONS LOCKED
+- Stuart is a local-first system (no paid APIs for v0)
+- Models are swappable by contract, not hard-coded (LLM / diarization / ASR are modular)
+- This session represents Stuart’s *conceptual birth*, but not yet a formal Birth Certificate
+- Birth Certificate and Genome will be created later, retroactively, once scope is finalized
+
+==============================
+WHAT WAS INTENTIONALLY NOT DONE
+==============================
+- No application code written yet
+- No Guild Orders defined yet
+- No genome/personality compression written yet
+- No demos built yet
+
+This was a clean stop point by design.
+
+==============================
+CURRENT STATE AT STOP
+==============================
+- Environment: READY
+- GPU: VERIFIED
+- Toolchain: VERIFIED
+- Contract: DEFINED
+- Next action: Begin Guild Orders + first code neuron
+
+==============================
+NOTES / PHILOSOPHY
+==============================
+- Snapshots are not just for code; they are continuity artifacts.
+- Systems are treated as living entities:
+  Birth Certificate → Genome → Personality
+- Synapse Guild is structured as a body; roles evolve from parts to cells over time.
+- Truth, verification, and state-awareness are core principles.
+
+==============================
+END OF SNAPSHOT
+==============================

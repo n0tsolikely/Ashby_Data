@@ -1,0 +1,28 @@
+UTC: 2026-01-26T03:46:54Z
+LOCAL: 2026-01-26 03:46:54 +0000
+PWD: /mnt/data/Ashby_Engine
+
+GIT_HEAD: 34ce7446dfc6a648bdaf4ce827a1b3c1edf5fea2
+
+git status --porcelain:
+ M ASHBY_REPO_TREE.txt
+ D "secrets/ashby_nest -REDACTED.env"
+ D "secrets/env - REDACTED.py"
+?? ashby/modules/
+?? tests/test_meetings_clarify_preview.py
+?? tests/test_meetings_cli_stuart.py
+?? tests/test_meetings_execution_gating.py
+?? tests/test_meetings_job_runner.py
+?? tests/test_meetings_mode_registry.py
+?? tests/test_meetings_pipeline_transcribe_diarize.py
+?? tests/test_meetings_render_md_pdf_evidence.py
+?? tests/test_meetings_router_plan.py
+?? tests/test_meetings_run_init.py
+?? tests/test_meetings_sqlite_fts_index_ingestion.py
+?? tests/test_meetings_template_registry.py
+
+git diff --stat (tracked only):
+ ASHBY_REPO_TREE.txt              | 599 ++++++++++++++++++++++-----------------
+ secrets/ashby_nest -REDACTED.env |   7 -
+ secrets/env - REDACTED.py        |  10 -
+ 3 files changed, 335 insertions(+), 281 deletions(-)

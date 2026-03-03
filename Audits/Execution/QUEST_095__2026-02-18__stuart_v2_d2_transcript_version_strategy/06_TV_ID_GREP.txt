@@ -1,0 +1,11 @@
+/home/notsolikely/Ashby_Engine/ashby/interfaces/web/transcripts.py:9:def transcript_version_id_for_run(run_id: str) -> str:
+/home/notsolikely/Ashby_Engine/ashby/interfaces/web/transcripts.py:10:    return f"tv__{run_id}"
+/home/notsolikely/Ashby_Engine/ashby/interfaces/web/transcripts.py:13:def run_id_from_transcript_version_id(transcript_version_id: str) -> Optional[str]:
+/home/notsolikely/Ashby_Engine/ashby/interfaces/web/transcripts.py:15:    if not v.startswith("tv__"):
+/home/notsolikely/Ashby_Engine/ashby/interfaces/web/app.py:25:    run_id_from_transcript_version_id,
+/home/notsolikely/Ashby_Engine/ashby/interfaces/web/app.py:26:    transcript_version_id_for_run,
+/home/notsolikely/Ashby_Engine/ashby/interfaces/web/app.py:257:                    "id": transcript_version_id_for_run(run_id),
+/home/notsolikely/Ashby_Engine/ashby/interfaces/web/app.py:258:                    "transcript_version_id": transcript_version_id_for_run(run_id),
+/home/notsolikely/Ashby_Engine/ashby/interfaces/web/app.py:283:        run_id = run_id_from_transcript_version_id(transcript_version_id)
+/home/notsolikely/Ashby_Engine/ashby/interfaces/web/app.py:317:                    "transcript_version_id": transcript_version_id_for_run(run_id),
+/home/notsolikely/Ashby_Engine/ashby/interfaces/web/app.py:386:                    "transcript_version_id": transcript_version_id_for_run(run_id),

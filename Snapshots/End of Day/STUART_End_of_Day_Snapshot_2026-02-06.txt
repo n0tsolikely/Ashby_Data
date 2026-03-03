@@ -1,0 +1,100 @@
+STUART END-OF-DAY SNAPSHOT — 2026-02-06 — QUEST_042→052 (REV7 STACK) + REHYDRATION REFRESH
+Timestamp (local): 2026-02-06 13:56:29 EST (-0500)
+Timestamp (utc):   2026-02-06 18:56:29 UTC (+0000)
+Hands: Peter
+Operator: Ash
+
+A) HEADER
+- Subject: Stuart v1 (Ashby module: meetings)
+- World State: Fog Lifted (execution permitted under frozen codex)
+- Codex Freeze marker:
+  - /mnt/data/Ashby_Data/Codex/CODEX_FREEZE.md
+
+B) WHAT HAPPENED TODAY
+- Completed the REV7 accepted implementation stack: QUEST_042 → QUEST_052.
+- Stuart now has JSON-first formalization contracts (minutes.json + journal.json) with truth rails (citations anchored to real segment_id).
+- Mode-specific artifact/export naming is now canonical:
+  - minutes.md / journal.md
+  - exports/minutes.pdf / exports/journal.pdf
+  - diarization.json (confidence included)
+- Added run manifest "primary_outputs" pointers (mode-aware) so downstream UI/Doors code doesn’t hardcode filenames.
+- Updated the canonical Buffs to codify the “Optional Pack Rule”:
+  - Rehydration Packs + Execution Packs exist ONLY when currently active.
+  - Empty/missing packs are not an error unless Hands expects one.
+- Refreshed the Stuart rehydration pack (for starting a new chat later today):
+  - New Bootstrap Prompt + Continuity Lock + Execution Pack dated 2026-02-06
+  - Archived the Feb 05 pack under Archive(IGNORE)
+
+C) COMPLETED WORK (WITH PROOF POINTERS)
+1) Quests (REV7 stack)
+- QUEST_042 — Run params: retention + template_id validated (first-class run params)
+  - Audit bundle: /mnt/data/Ashby_Data/Audits/Execution/QUEST_042__2026-02-04__stuart_v1_dungeon_2_1_7_retention_template_become_first_class_run_params_validat_2026-02-04
+
+- QUEST_043 — Default templates upgraded (meeting/journal) + “no invention” rule supported by registry validation
+  - Audit bundle: /mnt/data/Ashby_Data/Audits/Execution/QUEST_043__2026-02-04__stuart_v1_dungeon_2_2_7_default_templates_v1_system_prompts_for_meeting_journal_2026-02-04
+
+- QUEST_044 — minutes.json schema v1
+  - Audit bundle: /mnt/data/Ashby_Data/Audits/Execution/QUEST_044__2026-02-04__stuart_v1_dungeon_2_3_7_minutes_json_schema_v1_machine_contract_2026-02-04
+
+- QUEST_045 — journal.json schema v1
+  - Audit bundle: /mnt/data/Ashby_Data/Audits/Execution/QUEST_045__2026-02-04__stuart_v1_dungeon_2_4_7_journal_json_schema_v1_machine_contract_2026-02-04
+
+- QUEST_046 — Formalize meeting → minutes.json (profile-gated; strict validation; loud failure receipts)
+  - Audit bundle: /mnt/data/Ashby_Data/Audits/Execution/QUEST_046__2026-02-04__stuart_v1_dungeon_2_5_7_llm_formalizer_v1_meeting_minutes_json_with_citations_2026-02-04
+
+- QUEST_047 — Formalize journal → journal.json (profile-gated; strict validation; loud failure receipts)
+  - Audit bundle: /mnt/data/Ashby_Data/Audits/Execution/QUEST_047__2026-02-04__stuart_v1_dungeon_2_6_7_llm_formalizer_v1_journal_journal_json_with_truth_discip_2026-02-04
+
+- QUEST_048 — Deterministic MD rendering from minutes/journal JSON (+ citation anchors) + write-once enforcement
+  - Audit bundle: /mnt/data/Ashby_Data/Audits/Execution/QUEST_048__2026-02-04__stuart_v1_dungeon_2_7_7_render_md_from_minutes_and_journal_json_deterministic_2026-02-04
+
+- QUEST_049 — Canonical MD naming: minutes.md / journal.md (no more formalized.md for new runs)
+  - Audit bundle: /mnt/data/Ashby_Data/Audits/Execution/QUEST_049__2026-02-04__stuart_v1_dungeon_1_1_4_mode_specific_artifact_naming_for_md_minutes_md_journal__2026-02-04
+
+- QUEST_050 — Canonical PDF naming: exports/minutes.pdf / exports/journal.pdf (no more formalized.pdf for new runs)
+  - Audit bundle: /mnt/data/Ashby_Data/Audits/Execution/QUEST_050__2026-02-04__stuart_v1_dungeon_1_2_4_mode_specific_export_naming_for_pdf_minutes_pdf_journal__2026-02-04
+
+- QUEST_051 — Canonical diarization naming: diarization.json (+ confidence) + alignment reads canonical
+  - Audit bundle: /mnt/data/Ashby_Data/Audits/Execution/QUEST_051__2026-02-04__stuart_v1_dungeon_1_3_4_diarization_artifact_naming_alignment_diarization_json_c_2026-02-04
+
+- QUEST_052 — run.json primary_outputs pointers (mode-aware) + resolver helper
+  - Audit bundle: /mnt/data/Ashby_Data/Audits/Execution/QUEST_052__2026-02-04__stuart_v1_dungeon_1_4_4_run_manifest_primary_output_pointers_mode_aware_2026-02-04
+
+2) Buffs + Rehydration Refresh (post-stack wrap)
+- Updated Buffs to reflect Optional Pack Rule + pytest truth semantics.
+- Archived old rehydration artifacts (Feb 05) and generated new ones (Feb 06).
+  - Audit bundle: /mnt/data/Ashby_Data/Audits/Execution/REHYDRATION_REFRESH__2026-02-06__post_q052
+
+D) INCOMPLETE / FAILED WORK
+- None.
+
+E) BUGS / WEIRDNESS / DISCOVERIES
+- Pytest emits environment warnings (ddtrace/psutil and starlette deprecation). Tests still PASS.
+
+F) VERIFICATION PERFORMED
+- `cd /mnt/data/Ashby_Engine && PYTHONPATH=/mnt/data/Ashby_Engine python3 -m pytest -q`
+  - Result: [33m[32m74 passed[0m, [33m[1m2 warnings[0m[33m in 41.44s[0m[0m
+
+G) TALENT TREE UPDATES
+- None recorded in this wrap. (If Hands wants, we can award a Stuart talent for JSON-first formalization + profile-gated LLM formalizers.)
+
+H) RAID / GUILD ORDERS STATUS CHANGES
+- Guild Orders remain ACTIVE:
+  - /mnt/data/Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS_STUART_V1_2026-02-04_REV7.txt
+- Quest Board:
+  - Accepted/ is empty (no active commitment stack)
+  - Completed/ contains QUEST_042 → QUEST_052
+
+I) CONTINUITY + RESUME INSTRUCTIONS (NEW CHAT READY)
+- Use the updated rehydration pack dated 2026-02-06:
+  - Bootstrap Prompt:
+    /mnt/data/Ashby_Data/Latest Rehydration Pack/BOOTSTRAP_PROMPT_2026-02-06.txt
+  - Continuity Lock:
+    /mnt/data/Ashby_Data/Latest Rehydration Pack/CONTINUITY_LOCK_2026-02-06.txt
+  - Execution Pack:
+    /mnt/data/Ashby_Data/Latest Rehydration Pack/execution pack/STUART_EXECUTION_PACK__REV7__POST_Q052__2026-02-06.txt
+
+- Next step is a Control Sync to decide and accept the next quest stack (Dungeon 3 / integration / retrieval).
+- Do NOT execute QUEST_053+ until accepted.
+
+End of snapshot.

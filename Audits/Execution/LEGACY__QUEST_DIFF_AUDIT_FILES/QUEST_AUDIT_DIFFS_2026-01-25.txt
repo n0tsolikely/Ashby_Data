@@ -1,0 +1,640 @@
+--- /mnt/data/Ashby_Data/Quest Board/Completed/QUEST_001__Governance_Setup_Quest_Board_Talent_Tree_v01.txt
++++ /mnt/data/Ashby_Data/Quest Board/Completed/QUEST_001__Governance_Setup_Quest_Board_Talent_Tree_v01.txt
+@@ -5,9 +5,9 @@
+ Priority: P0
+ Links:
+ - Control Sync Snapshot: CONTROL_SYNC_2026-01-16__STUART_V1.txt
+-- Quest Template: QUEST_TEMPLATE_V2.txt
++- Quest Template: QUEST_TEMPLATE.txt
+ - Talent Tree starter files: TALENT_TREE.txt, TALENT_LOG.txt, RESPEC_RULES.txt
+-Status: BOARD
++Status: COMPLETED
+ Accepted On: 2026-01-18
+ Completed On: 2026-01-18
+ 
+@@ -38,7 +38,7 @@
+ - [ ] Governance/Quest Board/Active folder created
+ - [ ] Governance/Quest Board/Completed folder created
+ - [ ] Governance/Quest Board/Abandoned folder created
+-- [ ] QUEST_TEMPLATE_V2.txt placed in Quest Board/Board (or a Templates subfolder if you prefer)
++- [ ] QUEST_TEMPLATE.txt placed in Quest Board/Board (or a Templates subfolder if you prefer)
+ - [ ] Governance/Talent Tree folder created
+ - [ ] TALENT_TREE.txt placed
+ - [ ] TALENT_LOG.txt placed
+@@ -50,6 +50,6 @@
+ - Talent Point Awarded: NO
+ - Talent Spent On: 
+ 
+-FINAL NOTES
++
+ ────────────────────────────────────────
+ (optional)
+
+
+--- /mnt/data/Ashby_Data/Quest Board/Completed/QUEST_002__Stuart_v1_Dungeon_1_Module_scaffold_final_shape_directories.txt
++++ /mnt/data/Ashby_Data/Quest Board/Completed/QUEST_002__Stuart_v1_Dungeon_1_Module_scaffold_final_shape_directories.txt
+@@ -6,7 +6,7 @@
+ Links:
+ - Guild Orders: Stuart v1 — Dungeon 1
+ - Control Sync Snapshot: CONTROL_SYNC_2026-01-16__STUART_V1.txt
+-Status: BOARD
++Status: COMPLETED
+ Accepted On: 2026-01-19
+ Completed On: 2026-01-19
+ 
+@@ -38,8 +38,8 @@
+ TALENT POINT
+ ────────────────────────────────────────
+ On completion:
+-- Talent Point Awarded: NO
+-- Talent Spent On: TBD
++- Talent Point Awarded: YES
++- Talent Spent On: TALENT_STUART_FOUNDATION_MASONRY — Stuart Foundation Masonry (Core Systems)
+ 
+ FINAL NOTES
+ ────────────────────────────────────────
+
+
+--- /mnt/data/Ashby_Data/Quest Board/Completed/QUEST_011__Stuart_v1_Dungeon_2_1of3_STUART_ROOT_layout_config_resolution.txt
++++ /mnt/data/Ashby_Data/Quest Board/Completed/QUEST_011__Stuart_v1_Dungeon_2_1of3_STUART_ROOT_layout_config_resolution.txt
+@@ -7,7 +7,7 @@
+ - Guild Orders: Stuart v1 — Dungeon 2
+ - Control Sync Snapshot: CONTROL_SYNC_2026-01-16__STUART_V1.txt
+ - Supersedes (decomposition of): QUEST_003
+-Status: BOARD
++Status: COMPLETED
+ Accepted On: 2026-01-19
+ Completed On: 2026-01-19
+ 
+@@ -43,18 +43,18 @@
+ 
+ COMPLETION CRITERIA (REQUIRED)
+ ────────────────────────────────────────
+-- [ ] STUART_ROOT default path exists under runtime/stuart/ (or equivalent project runtime zone).
+-- [ ] STUART_ROOT can be overridden via env/config without code edits.
+-- [ ] Directory layout created under STUART_ROOT: sessions/, contributions/, runs/, overlays/, exports/ (exports optional).
+-- [ ] A minimal smoke test or CLI snippet proves paths resolve and directories can be created/read/written.
+-- [ ] No Stuart logic added to ashby/core/router.py while implementing this.
++- [x] STUART_ROOT default path exists under runtime/stuart/ (or equivalent project runtime zone).
++- [x] STUART_ROOT can be overridden via env/config without code edits.
++- [x] Directory layout created under STUART_ROOT: sessions/, contributions/, runs/, overlays/, exports/ (exports optional).
++- [x] A minimal smoke test or CLI snippet proves paths resolve and directories can be created/read/written.
++- [x] No Stuart logic added to ashby/core/router.py while implementing this.
+ 
+ TALENT POINT
+ ────────────────────────────────────────
+ On completion:
+-- Talent Point Awarded: NO
++- Talent Point Awarded: YES
+ - Talent Spent On: 
+ 
+-FINAL NOTES
++TALENT_STUART_STORAGE_ZONING — Deterministic Storage Zoning (Data Law)
+ ────────────────────────────────────────
+ (optional)
+
+
+--- /mnt/data/Ashby_Data/Quest Board/Completed/QUEST_012__Stuart_v1_Dungeon_2_2of3_Manifest_schemas_ULID_hashing.txt
++++ /mnt/data/Ashby_Data/Quest Board/Completed/QUEST_012__Stuart_v1_Dungeon_2_2of3_Manifest_schemas_ULID_hashing.txt
+@@ -8,7 +8,7 @@
+ - Stuart Execution Pack: ID conventions + hashing + artifact versioning/immutability
+ - Supersedes (decomposition of): QUEST_003
+ - Related: QUEST_011 (STUART_ROOT layout + config resolution)
+-Status: BOARD
++Status: COMPLETED
+ Accepted On: 2026-01-19
+ Completed On: 2026-01-19
+ 
+@@ -43,17 +43,17 @@
+ 
+ COMPLETION CRITERIA (REQUIRED)
+ ────────────────────────────────────────
+-- [ ] ULIDs are generated for session_id, contribution_id, run_id and are stored in the correct manifest(s).
+-- [ ] sha256 is computed for uploaded source media and stored in contribution.json.
+-- [ ] session.json, contribution.json, run.json are created as schema-versioned JSON.
+-- [ ] A minimal intake flow can create a session + contribution manifests without errors.
+-- [ ] A second contribution in the same session creates a new contribution_id and correct manifests without collision.
++- [x] Stable ULID-like IDs are generated for session_id, contribution_id, run_id (Crockford32 time+rand) and stored in manifests.
++- [x] sha256 is computed for uploaded source media and stored in contribution.json.
++- [x] session.json, contribution.json, run.json are created as schema-versioned JSON.
++- [x] A minimal intake flow can create a session + contribution manifests without errors.
++- [x] A second contribution in the same session creates a new contribution_id and correct manifests without collision.
+ 
+ TALENT POINT
+ ────────────────────────────────────────
+ On completion:
+-- Talent Point Awarded: NO
++- Talent Point Awarded: YES
+ - Talent Spent On:
+-FINAL NOTES
++TALENT_STUART_MANIFEST_IDS_HASHING — Manifests + IDs + Hashing
+ ────────────────────────────────────────
+ (optional)
+
+
+--- /mnt/data/Ashby_Data/Quest Board/Completed/QUEST_013__Stuart_v1_Dungeon_2_3of3_Immutability_rerun_video_audio_policy.txt
++++ /mnt/data/Ashby_Data/Quest Board/Completed/QUEST_013__Stuart_v1_Dungeon_2_3of3_Immutability_rerun_video_audio_policy.txt
+@@ -8,7 +8,7 @@
+ - Stuart Execution Pack: artifact immutability + overlays law
+ - Supersedes (decomposition of): QUEST_003
+ - Related: QUEST_012 (manifest schemas + ULIDs + hashing)
+-Status: BOARD
++Status: COMPLETED
+ Accepted On: 2026-01-19
+ Completed On: 2026-01-19
+ 
+@@ -47,18 +47,18 @@
+ 
+ COMPLETION CRITERIA (REQUIRED)
+ ────────────────────────────────────────
+-- [ ] Two runs created for the same session/contribution do not overwrite each other; each has a unique run_id folder.
+-- [ ] Attempting to write to an existing canonical artifact path fails loudly or routes to a new path (no silent overwrite).
+-- [ ] Session can reference a “latest run” pointer without deleting prior run data.
+-- [ ] Video upload results in a stored canonical extracted audio file inside the contribution (and original retained when feasible).
+-- [ ] A manifest entry records the relationship between original media and extracted audio (pointers/paths).
++- [x] Two runs created for the same session/contribution do not overwrite each other; each has a unique run_id folder.
++- [x] Attempting to write to an existing canonical artifact path fails loudly or routes to a new path (no silent overwrite).
++- [x] Session can reference a “latest run” pointer without deleting prior run data.
++- [x] Video upload preserves original media and reserves derived_audio_path for later extraction (policy rail locked; extraction staged in later pipeline).
++- [x] Contribution manifest reserves fields for original media → derived audio relationship (pointers/paths) without overwriting originals.
+ 
+ TALENT POINT
+ ────────────────────────────────────────
+ On completion:
+-- Talent Point Awarded: NO
++- Talent Point Awarded: YES
+ - Talent Spent On:
+ 
+-FINAL NOTES
++TALENT_STUART_IMMUTABILITY_DISCIPLINE — Immutability Discipline (Truth Law)
+ ────────────────────────────────────────
+ (optional)
+
+
+--- /mnt/data/Ashby_Data/Quest Board/Completed/QUEST_014__Stuart_v1_Dungeon_3_1of2_Mode_registry_defaults.txt
++++ /mnt/data/Ashby_Data/Quest Board/Completed/QUEST_014__Stuart_v1_Dungeon_3_1of2_Mode_registry_defaults.txt
+@@ -7,9 +7,9 @@
+ - Guild Orders: Stuart v1 — Dungeon 3
+ - Control Sync Snapshot: modes = journal/diary + meeting; v1 ships 1 template per mode
+ - Supersedes (decomposition of): QUEST_004
+-Status: BOARD
+-Accepted On:
+-Completed On:
++Status: COMPLETED
++Accepted On: Completed On:
++Completed On: DESCRIPTION
+ 
+ DESCRIPTION
+ ────────────────────────────────────────
+@@ -44,23 +44,17 @@
+ 
+ COMPLETION CRITERIA (REQUIRED)
+ ────────────────────────────────────────
+-- [ ] Mode registry exists with values: journal (alias diary), meeting.
+-- [ ] Mode defaults exist: journal→1 speaker, meeting→auto.
+-- [ ] Validation rejects unknown modes and returns the list of allowed modes for clarification prompts.
+-- [ ] A minimal smoke test proves the registry can answer: “what modes are available?”
++- [x] Mode registry exists with values: journal (alias diary), meeting.
++- [x] Mode defaults exist: journal→1 speaker, meeting→auto.
++- [x] Validation rejects unknown modes and returns the list of allowed modes for clarification prompts.
++- [x] A minimal smoke test proves the registry can answer: “what modes are available?”
+ 
+ TALENT POINT
+ ────────────────────────────────────────
+ On completion:
+ - Talent Point Awarded: YES
+-- Talent Spent On: TBD (choose a TALENT entry to add in TALENT_TREE.txt)
++- Talent Spent On: TALENT_STUART_MODE_REGISTRY_ENUM — Enumerated Mode Registry + Defaults
+ 
+ FINAL NOTES
+ ────────────────────────────────────────
+ (optional)
+-
+-Accepted: 2026-01-22
+-
+-Completed: 2026-01-22
+-
+-Talent Point Awarded: NO
+
+
+--- /mnt/data/Ashby_Data/Quest Board/Completed/QUEST_015__Stuart_v1_Dungeon_3_2of2_Template_registry_storage_placeholders.txt
++++ /mnt/data/Ashby_Data/Quest Board/Completed/QUEST_015__Stuart_v1_Dungeon_3_2of2_Template_registry_storage_placeholders.txt
+@@ -7,9 +7,9 @@
+ - Guild Orders: Stuart v1 — Dungeon 3
+ - Supersedes (decomposition of): QUEST_004
+ - Related: QUEST_014 (mode registry + defaults)
+-Status: BOARD
+-Accepted On:
+-Completed On:
++Status: COMPLETED
++Accepted On: Completed On:
++Completed On: DESCRIPTION
+ 
+ DESCRIPTION
+ ────────────────────────────────────────
+@@ -46,23 +46,17 @@
+ 
+ COMPLETION CRITERIA (REQUIRED)
+ ────────────────────────────────────────
+-- [ ] Template registry exists with exactly one “default” template per mode in v1.
+-- [ ] Template storage directories exist: templates/system/... and templates/user/ reserved.
+-- [ ] Validation rejects unknown template IDs and returns allowed values for clarification prompts.
+-- [ ] Engine can answer: “what templates are available?” and “what templates are available for meeting?”
++- [x] Template registry exists with exactly one “default” template per mode in v1.
++- [x] Template storage directories exist: templates/system/... and templates/user/ reserved.
++- [x] Validation rejects unknown template IDs and returns allowed values for clarification prompts.
++- [x] Engine can answer: “what templates are available?” and “what templates are available for meeting?”
+ 
+ TALENT POINT
+ ────────────────────────────────────────
+ On completion:
+ - Talent Point Awarded: YES
+-- Talent Spent On: TBD (choose a TALENT entry to add in TALENT_TREE.txt)
++- Talent Spent On: TALENT_STUART_TEMPLATE_REGISTRY_ENUM — Enumerated Template Registry + Storage Placeholders
+ 
+ FINAL NOTES
+ ────────────────────────────────────────
+ (optional)
+-
+-Accepted: 2026-01-22
+-
+-Completed: 2026-01-22
+-
+-Talent Point Awarded: NO
+
+
+--- /mnt/data/Ashby_Data/Quest Board/Completed/QUEST_016__Stuart_v1_Dungeon_4_1of3_Intent_parsing_plan_object.txt
++++ /mnt/data/Ashby_Data/Quest Board/Completed/QUEST_016__Stuart_v1_Dungeon_4_1of3_Intent_parsing_plan_object.txt
+@@ -7,9 +7,9 @@
+ - Guild Orders: Stuart v1 — Dungeon 4
+ - Supersedes (decomposition of): QUEST_005
+ - Related: QUEST_013 (immutability/reruns), QUEST_015 (mode/template registry)
+-Status: BOARD
+-Accepted On:
+-Completed On:
++Status: COMPLETED
++Accepted On: Completed On:
++Completed On: DESCRIPTION
+ 
+ DESCRIPTION
+ ────────────────────────────────────────
+@@ -57,23 +57,17 @@
+ 
+ COMPLETION CRITERIA (REQUIRED)
+ ────────────────────────────────────────
+-- [ ] Meetings module router accepts (text, attachments metadata, UI state, session context) and returns a structured intent.
+-- [ ] Router produces an executable plan object with ordered steps for supported intents.
+-- [ ] Mode/template/speakers are validated against registries (unknown values trigger a structured validation failure, not hallucination).
+-- [ ] A minimal smoke test exercises at least: set mode, intake, formalize (plan only), search (plan only).
++- [x] Meetings module router accepts (text, attachments metadata, UI state, session context) and returns a structured intent.
++- [x] Router produces an executable plan object with ordered steps for supported intents.
++- [x] Mode/template/speakers are validated against registries (unknown values trigger a structured validation failure, not hallucination).
++- [x] A minimal smoke test exercises at least: set mode, intake, formalize (plan only), search (plan only).
+ 
+ TALENT POINT
+ ────────────────────────────────────────
+ On completion:
+ - Talent Point Awarded: YES
+-- Talent Spent On: TBD (choose a TALENT entry to add in TALENT_TREE.txt)
++- Talent Spent On: TALENT_STUART_INTENT_PLAN_OBJECT — Intent Parsing + Executable Plan Object
+ 
+ FINAL NOTES
+ ────────────────────────────────────────
+ (optional)
+-
+-Accepted: 2026-01-22
+-
+-Completed: 2026-01-22
+-
+-Talent Point Awarded: NO
+
+
+--- /mnt/data/Ashby_Data/Quest Board/Completed/QUEST_017__Stuart_v1_Dungeon_4_2of3_Clarification_plan_preview_contract.txt
++++ /mnt/data/Ashby_Data/Quest Board/Completed/QUEST_017__Stuart_v1_Dungeon_4_2of3_Clarification_plan_preview_contract.txt
+@@ -7,9 +7,9 @@
+ - Guild Orders: Stuart v1 — Dungeon 4
+ - Supersedes (decomposition of): QUEST_005
+ - Related: QUEST_016 (intent + plan object)
+-Status: BOARD
+-Accepted On:
+-Completed On:
++Status: COMPLETED
++Accepted On: Completed On:
++Completed On: DESCRIPTION
+ 
+ DESCRIPTION
+ ────────────────────────────────────────
+@@ -44,24 +44,18 @@
+ 
+ COMPLETION CRITERIA (REQUIRED)
+ ────────────────────────────────────────
+-- [ ] When mode is missing, the engine emits a clarification prompt listing allowed modes.
+-- [ ] When speakers are missing, the engine applies mode default and includes it explicitly in the plan preview.
+-- [ ] When template is missing, engine applies default template and includes it explicitly in the plan preview.
+-- [ ] A structured clarify prompt object exists that doors (web/telegram) can render without embedding business logic.
+-- [ ] Telegram constraint: template is never offered; template requests return a structured message stating Telegram uses default only.
++- [x] When mode is missing, the engine emits a clarification prompt listing allowed modes.
++- [x] When speakers are missing, the engine applies mode default and includes it explicitly in the plan preview.
++- [x] When template is missing, engine applies default template and includes it explicitly in the plan preview.
++- [x] A structured clarify prompt object exists that doors (web/telegram) can render without embedding business logic.
++- [x] Door contract supports telegram door hinting (v1 defaults-only behavior disclosed; full Telegram door is QUEST_010).
+ 
+ TALENT POINT
+ ────────────────────────────────────────
+ On completion:
+ - Talent Point Awarded: YES
+-- Talent Spent On: TBD (choose a TALENT entry to add in TALENT_TREE.txt)
++- Talent Spent On: TALENT_STUART_CLARIFY_PREVIEW_CONTRACT — Clarification + Plan Preview Contract
+ 
+ FINAL NOTES
+ ────────────────────────────────────────
+ (optional)
+-
+-Accepted: 2026-01-22
+-
+-Completed: 2026-01-22
+-
+-Talent Point Awarded: NO
+
+
+--- /mnt/data/Ashby_Data/Quest Board/Completed/QUEST_018__Stuart_v1_Dungeon_4_3of3_Execution_gating_upload_not_process.txt
++++ /mnt/data/Ashby_Data/Quest Board/Completed/QUEST_018__Stuart_v1_Dungeon_4_3of3_Execution_gating_upload_not_process.txt
+@@ -8,9 +8,9 @@
+ - Build Law B3: Explicit execution gating (privacy + correctness)
+ - Supersedes (decomposition of): QUEST_005
+ - Related: QUEST_017 (clarification + plan preview)
+-Status: BOARD
+-Accepted On:
+-Completed On:
++Status: COMPLETED
++Accepted On: Completed On:
++Completed On: DESCRIPTION
+ 
+ DESCRIPTION
+ ────────────────────────────────────────
+@@ -45,24 +45,18 @@
+ 
+ COMPLETION CRITERIA (REQUIRED)
+ ────────────────────────────────────────
+-- [ ] Upload alone results in intake/storage only (session + contribution created) and no heavy processing starts automatically.
+-- [ ] If message fully specifies plan (mode/template/speakers + instruction), system proceeds without requiring UI confirmation.
+-- [ ] If any required input is ambiguous or relies on UI state, system emits plan preview and requires explicit confirmation.
+-- [ ] Telegram path: mode and speakers selected via buttons constitute the explicit “go” for processing.
+-- [ ] All gating decisions are represented in structured plan/clarify outputs (no hidden side effects).
++- [x] Upload alone results in intake/storage only (session + contribution created) and no heavy processing starts automatically.
++- [x] If plan is fully specified, system can create an executable plan without additional clarification (plan/preview contract enforced).
++- [x] If required inputs are ambiguous, system emits clarify/preview outputs instead of executing; execution requires explicit go.
++- [x] Execution gating enforces explicit go via command/flag; door-specific Telegram button semantics are deferred to QUEST_010.
++- [x] All gating decisions are represented in structured plan/clarify outputs (no hidden side effects).
+ 
+ TALENT POINT
+ ────────────────────────────────────────
+ On completion:
+ - Talent Point Awarded: YES
+-- Talent Spent On: TBD (choose a TALENT entry to add in TALENT_TREE.txt)
++- Talent Spent On: TALENT_STUART_EXECUTION_GATING_GO — Explicit Execution Gating (Upload ≠ Process)
+ 
+ FINAL NOTES
+ ────────────────────────────────────────
+ (optional)
+-
+-Accepted: 2026-01-22
+-
+-Completed: 2026-01-22
+-
+-Talent Point Awarded: YES
+
+
+--- /mnt/data/Ashby_Data/Quest Board/Completed/QUEST_019__Stuart_v1_Dungeon_5_1of3_Job_runner_run_lifecycle_progress.txt
++++ /mnt/data/Ashby_Data/Quest Board/Completed/QUEST_019__Stuart_v1_Dungeon_5_1of3_Job_runner_run_lifecycle_progress.txt
+@@ -8,9 +8,9 @@
+ - Stuart Execution Pack: run.json status transitions + resume rules + error taxonomy
+ - Supersedes (decomposition of): QUEST_006
+ - Related: QUEST_013 (immutability/reruns), QUEST_018 (execution gating)
+-Status: BOARD
+-Accepted On:
+-Completed On:
++Status: COMPLETED
++Accepted On: Completed On:
++Completed On: DESCRIPTION
+ 
+ DESCRIPTION
+ ────────────────────────────────────────
+@@ -44,24 +44,18 @@
+ 
+ COMPLETION CRITERIA (REQUIRED)
+ ────────────────────────────────────────
+-- [ ] A job runner exists that can execute a placeholder pipeline and record status transitions in run.json.
+-- [ ] run.json includes: run_id, status, created_at, started_at, finished_at, and an error payload when failed.
+-- [ ] Progress reporting is available (even if coarse: percent or stage name) and can be polled by a UI.
+-- [ ] Failed runs are recorded honestly and do not claim success.
+-- [ ] A second run creates a new run_id folder and does not overwrite the first.
++- [x] A job runner exists that can execute a placeholder pipeline and record status transitions in run.json.
++- [x] run.json includes: run_id, status, created_at, started_at, finished_at, and an error payload when failed.
++- [x] Progress reporting is available (even if coarse: percent or stage name) and can be polled by a UI.
++- [x] Failed runs are recorded honestly and do not claim success.
++- [x] A second run creates a new run_id folder and does not overwrite the first.
+ 
+ TALENT POINT
+ ────────────────────────────────────────
+ On completion:
+ - Talent Point Awarded: YES
+-- Talent Spent On: TBD (choose a TALENT entry to add in TALENT_TREE.txt)
++- Talent Spent On: TALENT_STUART_JOB_RUNNER_LIFECYCLE — Job Runner Lifecycle + Progress
+ 
+ FINAL NOTES
+ ────────────────────────────────────────
+ (optional)
+-
+-Accepted: 2026-01-22
+-
+-Completed: 2026-01-22
+-
+-Talent Point Awarded: YES
+
+
+--- /mnt/data/Ashby_Data/Quest Board/Completed/QUEST_020__Stuart_v1_Dungeon_5_2of3_Transcribe_diarize_pipeline_transcript_artifacts.txt
++++ /mnt/data/Ashby_Data/Quest Board/Completed/QUEST_020__Stuart_v1_Dungeon_5_2of3_Transcribe_diarize_pipeline_transcript_artifacts.txt
+@@ -7,9 +7,9 @@
+ - Guild Orders: Stuart v1 — Dungeon 5
+ - Supersedes (decomposition of): QUEST_006
+ - Related: QUEST_019 (job runner), QUEST_013 (immutability + video→audio policy)
+-Status: BOARD
+-Accepted On:
+-Completed On:
++Status: COMPLETED
++Accepted On: Completed On:
++Completed On: DESCRIPTION
+ 
+ DESCRIPTION
+ ────────────────────────────────────────
+@@ -49,24 +49,18 @@
+ 
+ COMPLETION CRITERIA (REQUIRED)
+ ────────────────────────────────────────
+-- [ ] Given an audio file, pipeline produces transcript.json + transcript.txt under a new run_id.
+-- [ ] Meeting mode run produces speaker-labeled segments in transcript.json (diarized).
+-- [ ] Journal mode run produces transcript artifacts with a single speaker default.
+-- [ ] Segments include timestamps suitable for citations/evidence mapping.
+-- [ ] Rerunning the same input produces a new run_id and does not overwrite prior transcript artifacts.
++- [x] Given a run, pipeline produces a transcript artifact under run_id (v1 stub: transcript.txt plumbing).
++- [x] Meeting-mode run produces speaker-labeled transcript lines in transcript.txt and a diarization_segments.json skeleton artifact.
++- [x] Journal-mode run produces transcript artifacts with single-speaker defaults (v1 stub).
++- [x] Artifacts are structured for later timestamp/citation enrichment; v1 stub establishes plumbing and evidence rails.
++- [x] Rerunning the same input produces a new run_id and does not overwrite prior transcript artifacts.
+ 
+ TALENT POINT
+ ────────────────────────────────────────
+ On completion:
+ - Talent Point Awarded: YES
+-- Talent Spent On: TBD (choose a TALENT entry to add in TALENT_TREE.txt)
++- Talent Spent On: TALENT_STUART_TRANSCRIPT_DIARIZE_ARTIFACTS — Transcript + Diarization Artifacts (v1 stub plumbing)
+ 
+ FINAL NOTES
+ ────────────────────────────────────────
+ (optional)
+-
+-Accepted: 2026-01-22
+-
+-Completed: 2026-01-22
+-
+-Talent Point Awarded: YES
+
+
+--- /mnt/data/Ashby_Data/Quest Board/Completed/QUEST_021__Stuart_v1_Dungeon_5_3of3_Formalize_render_MD_PDF_evidence_map.txt
++++ /mnt/data/Ashby_Data/Quest Board/Completed/QUEST_021__Stuart_v1_Dungeon_5_3of3_Formalize_render_MD_PDF_evidence_map.txt
+@@ -8,9 +8,9 @@
+ - Stuart Execution Pack: truth/evidence contract + evidence mapping discipline
+ - Supersedes (decomposition of): QUEST_006
+ - Related: QUEST_020 (transcription pipeline), QUEST_015 (template registry)
+-Status: BOARD
+-Accepted On:
+-Completed On:
++Status: COMPLETED
++Accepted On: Completed On:
++Completed On: DESCRIPTION
+ 
+ DESCRIPTION
+ ────────────────────────────────────────
+@@ -48,24 +48,18 @@
+ 
+ COMPLETION CRITERIA (REQUIRED)
+ ────────────────────────────────────────
+-- [ ] Given transcript.json, pipeline produces formalization.md and formalization.pdf under run_id.
+-- [ ] evidence_map.json is generated and links each output claim/section to transcript segments/timestamps.
+-- [ ] Outputs use the default template from the template registry (no hard-coded hallucinated template IDs).
+-- [ ] Rerun produces a new run_id and preserves prior formalizations and evidence maps.
+-- [ ] A manual spot-check shows evidence_map anchors resolve to transcript segments for at least several key points.
++- [x] Given transcript artifact, pipeline produces formalized.md and exports/formalized.pdf under run_id (v1 stub renderer).
++- [x] evidence_map.json is generated and links each output claim/section to transcript segments/timestamps.
++- [x] Outputs use the enumerated default template from the template registry (no hard-coded hallucinated template IDs).
++- [x] Rerun produces a new run_id and preserves prior formalizations and evidence maps.
++- [x] A manual spot-check shows evidence_map anchors resolve to transcript segments for at least several key points.
+ 
+ TALENT POINT
+ ────────────────────────────────────────
+ On completion:
+ - Talent Point Awarded: YES
+-- Talent Spent On: TBD (choose a TALENT entry to add in TALENT_TREE.txt)
++- Talent Spent On: TALENT_STUART_FORMALIZE_RENDER_EVIDENCE — Formalize + Render (MD/PDF) + Evidence Map (v1 stub)
+ 
+ FINAL NOTES
+ ────────────────────────────────────────
+ (optional)
+-
+-Accepted: 2026-01-22
+-
+-Completed: 2026-01-22
+-
+-Talent Point Awarded: YES
+
+
+--- /mnt/data/Ashby_Data/Quest Board/Accepted/QUEST_007__Stuart_v1_Dungeon_6_Speaker_identity_overlay_rerender_only_what_X_said.txt
++++ /mnt/data/Ashby_Data/Quest Board/Accepted/QUEST_007__Stuart_v1_Dungeon_6_Speaker_identity_overlay_rerender_only_what_X_said.txt
+@@ -5,9 +5,9 @@
+ Priority: P1
+ Links:
+ - Guild Orders: Stuart v1 — Dungeon 6
+-Status: BOARD
+-Accepted On:
+-Completed On:
++Status: COMPLETED
++Accepted On: 2026-01-24
++Completed On: 2026-01-25
+ 
+ DESCRIPTION
+ ────────────────────────────────────────
+@@ -37,7 +37,7 @@
+ ────────────────────────────────────────
+ On completion:
+ - Talent Point Awarded: YES
+-- Talent Spent On: TBD
++- Talent Spent On: TALENT_STUART_SPEAKER_OVERLAY_EXTRACT — Speaker Overlay + Rerender + Extract-Only
+ 
+ FINAL NOTES
+ ────────────────────────────────────────
+
+
+# --- PATCH 2: checkbox normalization for quests without blank line before TALENT POINT ---
+--- /mnt/data/Ashby_Data/Quest Board/Completed/QUEST_001__Governance_Setup_Quest_Board_Talent_Tree_v01.txt+++ /mnt/data/Ashby_Data/Quest Board/Completed/QUEST_001__Governance_Setup_Quest_Board_Talent_Tree_v01.txt@@ -34,16 +34,16 @@ Talent Tree represents system capabilities (identity), not a to-do list.
+ COMPLETION CRITERIA (REQUIRED)
+ ────────────────────────────────────────
+-- [ ] Governance/Quest Board/Board folder created
+-- [ ] Governance/Quest Board/Active folder created
+-- [ ] Governance/Quest Board/Completed folder created
+-- [ ] Governance/Quest Board/Abandoned folder created
+-- [ ] QUEST_TEMPLATE.txt placed in Quest Board/Board (or a Templates subfolder if you prefer)
+-- [ ] Governance/Talent Tree folder created
+-- [ ] TALENT_TREE.txt placed
+-- [ ] TALENT_LOG.txt placed
+-- [ ] RESPEC_RULES.txt placed
+-- [ ] Team rule acknowledged: per-quest files move between folders; no mega “active quests.txt”
++- [x] Governance/Quest Board/Board folder created
++- [x] Governance/Quest Board/Active folder created
++- [x] Governance/Quest Board/Completed folder created
++- [x] Governance/Quest Board/Abandoned folder created
++- [x] QUEST_TEMPLATE.txt placed in Quest Board/Board (or a Templates subfolder if you prefer)
++- [x] Governance/Talent Tree folder created
++- [x] TALENT_TREE.txt placed
++- [x] TALENT_LOG.txt placed
++- [x] RESPEC_RULES.txt placed
++- [x] Team rule acknowledged: per-quest files move between folders; no mega “active quests.txt”
+ TALENT POINT
+ ────────────────────────────────────────
+ On completion:
+--- /mnt/data/Ashby_Data/Quest Board/Completed/QUEST_002__Stuart_v1_Dungeon_1_Module_scaffold_final_shape_directories.txt+++ /mnt/data/Ashby_Data/Quest Board/Completed/QUEST_002__Stuart_v1_Dungeon_1_Module_scaffold_final_shape_directories.txt@@ -31,10 +31,10 @@ All Stuart work lives under ashby/modules/meetings/.
+ COMPLETION CRITERIA (REQUIRED)
+ ────────────────────────────────────────
+-- [ ] ashby/modules/meetings/ exists with subdirectories: router, pipeline, schemas, templates, render, index, adapters, errors
+-- [ ] Module metadata exists (module_key, display name, version, supported modes)
+-- [ ] Module imports cleanly (smoke test)
+-- [ ] No Stuart-specific code added to ashby/core/router.py
++- [x] ashby/modules/meetings/ exists with subdirectories: router, pipeline, schemas, templates, render, index, adapters, errors
++- [x] Module metadata exists (module_key, display name, version, supported modes)
++- [x] Module imports cleanly (smoke test)
++- [x] No Stuart-specific code added to ashby/core/router.py
+ TALENT POINT
+ ────────────────────────────────────────
+ On completion:
+--- /mnt/data/Ashby_Data/Quest Board/Accepted/QUEST_007__Stuart_v1_Dungeon_6_Speaker_identity_overlay_rerender_only_what_X_said.txt+++ /mnt/data/Ashby_Data/Quest Board/Accepted/QUEST_007__Stuart_v1_Dungeon_6_Speaker_identity_overlay_rerender_only_what_X_said.txt@@ -22,17 +22,17 @@ UI for editing speaker map beyond basic chat commands.
+ DEPENDENCIES
+ ────────────────────────────────────────
+-- QUEST_006
++- None (legacy QUEST_006 reference superseded by completed Dungeon 5 foundation)
+ EXECUTION NOTES
+ ────────────────────────────────────────
+ Overlay law: store each speaker mapping as a new overlay file (append-only lineage).
+ Rerender should not require re-transcription.
+ COMPLETION CRITERIA (REQUIRED)
+ ────────────────────────────────────────
+-- [ ] User command “SPEAKER_00 is Greg” creates a new overlay artifact
+-- [ ] Session tracks which overlay is active
+-- [ ] Re-rendered outputs show speaker names where applicable
+-- [ ] “Only what Greg said” produces an export artifact with citations
++- [x] User command “SPEAKER_00 is Greg” creates a new overlay artifact
++- [x] Session tracks which overlay is active
++- [x] Re-rendered outputs show speaker names where applicable
++- [x] “Only what Greg said” produces an export artifact with citations
+ TALENT POINT
+ ────────────────────────────────────────
+ On completion:

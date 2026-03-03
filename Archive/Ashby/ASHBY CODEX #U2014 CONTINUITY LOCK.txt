@@ -1,0 +1,552 @@
+ASHBY CODEX — CONTINUITY LOCK
+AUTHORSHIP, TONE, AND EXECUTION CONSTRAINTS
+
+This document exists to preserve continuity across chats, sessions, and rebuilds
+while writing the Ashby Codex.
+
+It is binding.
+
+Any continuation of the Codex must comply with the rules below.
+Violation of these rules invalidates the Codex as a coherent work.
+
+──────────────────────────────────────────────────────────────────────────────
+1) AUTHORIAL VOICE & INTENT
+──────────────────────────────────────────────────────────────────────────────
+
+The Ashby Codex is written as:
+- a single, unified voice
+- authoritative, not conversational
+- confident, not speculative
+- explicit, not implied
+- disciplined, not verbose
+- human-readable, not casual
+
+The tone must be:
+- calm
+- deliberate
+- serious
+- principled
+- precise
+
+The Codex must never:
+- sound like a chat transcript
+- reference “earlier messages”
+- reference “this conversation”
+- explain why something was written
+- hedge its authority
+
+Each section must read as if written
+by the same author in the same sitting,
+even when produced across multiple sessions.
+
+──────────────────────────────────────────────────────────────────────────────
+2) NUMBERING & STRUCTURE (NON-NEGOTIABLE)
+──────────────────────────────────────────────────────────────────────────────
+
+The Table of Contents is canonical.
+
+Before writing ANY subsection:
+- verify the exact section number
+- verify the exact section title
+- verify the correct part
+
+No section may be:
+- skipped
+- renumbered
+- renamed
+- merged
+- split without explicit numbering (e.g., 11.1 — 1/2)
+
+Numbering must remain consistent across the entire Codex.
+
+──────────────────────────────────────────────────────────────────────────────
+3) ONE SUBSECTION = ONE DELIVERABLE
+──────────────────────────────────────────────────────────────────────────────
+
+Each subsection (e.g., 4.2, 11.1, 17.3) must be delivered as its own text document.
+
+Rules:
+- Even short subsections are standalone
+- No cramming multiple subsections into one document
+- No combining “related” subsections
+- No collapsing content for brevity
+
+If a subsection is long:
+- split into X/Y parts (e.g., 14.3 — 1/3)
+- clearly label each part
+- complete all parts before moving on
+
+──────────────────────────────────────────────────────────────────────────────
+4) ZERO TRUNCATION POLICY
+──────────────────────────────────────────────────────────────────────────────
+
+Truncation is forbidden.
+
+After writing each subsection, the author must perform a self-audit:
+- confirm no ideas were compressed unnaturally
+- confirm no concepts were implied instead of stated
+- confirm no sentences were cut short
+- confirm the section feels complete on its own
+
+If truncation is detected:
+- the section must be rewritten
+- split into multiple parts if necessary
+- previous output must be discarded
+
+──────────────────────────────────────────────────────────────────────────────
+5) EXAMPLES VS INVARIANTS
+──────────────────────────────────────────────────────────────────────────────
+
+The Codex distinguishes strictly between:
+- invariants (law)
+- examples (illustrative only)
+
+Examples must always be framed as:
+- non-exhaustive
+- representative
+- replaceable
+
+The Codex must never imply that:
+- listed modules are complete
+- listed agents are fixed
+- listed vendors are authoritative
+
+The platform shape is invariant.
+Instances are not.
+
+──────────────────────────────────────────────────────────────────────────────
+6) EXPANSION SAFETY
+──────────────────────────────────────────────────────────────────────────────
+
+Adding a new module, agent, or integration must NOT:
+- invalidate the Codex
+- require renumbering
+- require rewriting existing sections
+
+The Codex defines patterns, not inventories.
+
+If a future addition requires changing the Codex:
+- that change is foundational
+- a Control Sync is required
+- the Codex must be revised deliberately
+
+──────────────────────────────────────────────────────────────────────────────
+7) RESPONSE DISCIPLINE DURING HANDOFF
+──────────────────────────────────────────────────────────────────────────────
+
+When documents are uploaded for continuity handoff:
+- no responses are to be generated
+- no commentary is to be offered
+- no questions are to be asked
+- analysis only
+
+Responses resume ONLY when the user issues
+a clear instruction to proceed.
+
+──────────────────────────────────────────────────────────────────────────────
+8) RESUME PROTOCOL
+──────────────────────────────────────────────────────────────────────────────
+
+Before resuming writing after a handoff:
+- review all uploaded Codex sections
+- review the Table of Contents
+- confirm last completed subsection
+- confirm next subsection to write
+- reaffirm adherence to this Continuity Lock
+
+Only then may writing resume.
+
+──────────────────────────────────────────────────────────────────────────────
+9) PURPOSE OF THIS LOCK
+──────────────────────────────────────────────────────────────────────────────
+
+This Continuity Lock exists so that:
+- the Ashby Codex reads as a single work
+- no tonal drift occurs
+- no structural drift occurs
+- no authority is weakened
+- no accidental reinterpretation occurs
+
+This document protects the integrity of the Codex
+across time, tools, and sessions.
+
+
+
+
+====================================
+
+BELOW WAS AN ADDITION TO CONTINUITY LOCK AND ASSURANCE TO PROTOCOL
+===========================================
+
+
+
+
+
+
+ASHBY CODEX — CONTINUITY LOCK
+CROSS-CHAT AUTHORSHIP, STRUCTURE, AND ZERO-TRUNCATION GUARANTEE
+
+This document supersedes any prior continuity or handoff instructions.
+It is binding for all future Ashby Codex writing across chats.
+
+Any continuation that violates this lock is invalid.
+
+──────────────────────────────────────────────────────────────────────────────
+1) CANONICAL TABLE OF CONTENTS AUTHORITY
+──────────────────────────────────────────────────────────────────────────────
+
+The Table of Contents (TOC) is the single source of truth for:
+- section numbering
+- section titles
+- section order
+- part boundaries
+
+Before writing ANY subsection, the author MUST:
+
+1) Re-open and read the TOC
+2) Confirm:
+   - exact section number
+   - exact section title
+   - correct parent part
+3) Write ONLY the next subsection in sequence
+
+No section may be:
+- invented
+- skipped
+- renamed
+- reordered
+- merged
+- pre-written out of order
+
+The TOC governs the Codex, not the writing session.
+
+──────────────────────────────────────────────────────────────────────────────
+2) AUTHORIAL VOICE & UNIFIED INTENT
+──────────────────────────────────────────────────────────────────────────────
+
+The Ashby Codex is written as a single, unified authorial voice.
+
+The tone must be:
+- authoritative
+- calm
+- deliberate
+- precise
+- non-conversational
+- non-reactive
+- non-explanatory of process
+
+The Codex must NEVER:
+- reference chats or sessions
+- explain “why this was written now”
+- sound like multiple authors
+- hedge authority
+- narrate internal reasoning
+
+Each subsection must read as if written
+by the same person, in the same mindset,
+as part of one continuous work.
+
+──────────────────────────────────────────────────────────────────────────────
+3) ONE SUBSECTION = ONE DELIVERABLE (DEFAULT RULE)
+──────────────────────────────────────────────────────────────────────────────
+
+Each subsection defined in the TOC (e.g., 6.2, 11.4, 17.3) is its own document.
+
+Rules:
+- Even very short subsections are standalone
+- No combining multiple subsections into one output
+- No cramming related subsections together
+- No collapsing content for brevity
+
+The ONLY exception is when a subsection is too long
+to be safely delivered in a single response.
+
+──────────────────────────────────────────────────────────────────────────────
+4) ZERO TRUNCATION POLICY (ABSOLUTE)
+──────────────────────────────────────────────────────────────────────────────
+
+Truncation is forbidden.
+
+After writing EACH subsection, the author MUST perform a self-audit:
+
+- Was any concept compressed unnaturally?
+- Was any idea implied instead of stated?
+- Was any sentence shortened for length?
+- Does the subsection feel complete on its own?
+
+If the answer to ANY is “yes”:
+
+- The subsection MUST be split into parts
+- Use explicit numbering:
+  - X.Y — 1/2
+  - X.Y — 2/2
+  (or 1/3, 2/3, 3/3 as required)
+
+The author MUST state explicitly:
+“THIS SUBSECTION IS SPLIT DUE TO LENGTH.
+DO NOT DOWNLOAD PREVIOUS OUTPUT.”
+
+Only the corrected, complete parts are valid.
+
+──────────────────────────────────────────────────────────────────────────────
+5) SELF-AUDIT REQUIREMENT (MANDATORY)
+──────────────────────────────────────────────────────────────────────────────
+
+Every subsection MUST end with a self-audit declaration stating:
+
+- No truncation detected
+OR
+- Truncation detected and corrected via split
+
+This is not optional.
+This is part of the Codex production process.
+
+──────────────────────────────────────────────────────────────────────────────
+6) INVARIANTS VS EXAMPLES (STRICT DISTINCTION)
+──────────────────────────────────────────────────────────────────────────────
+
+The Codex distinguishes between:
+- invariants (law)
+- examples (illustrative only)
+
+Examples must always be framed as:
+- non-exhaustive
+- representative
+- replaceable
+
+The Codex must NEVER imply:
+- a fixed set of modules
+- a fixed set of agents
+- a fixed set of vendors
+- a fixed set of integrations
+
+The shape is invariant.
+The instances are not.
+
+──────────────────────────────────────────────────────────────────────────────
+7) EXPANSION SAFETY GUARANTEE
+──────────────────────────────────────────────────────────────────────────────
+
+Adding new modules, agents, or integrations must NOT:
+- invalidate existing Codex sections
+- require renumbering
+- require rewriting earlier content
+
+If a future change requires modifying the Codex:
+- it is foundational
+- a Control Sync is required
+- the Codex must be revised deliberately
+
+──────────────────────────────────────────────────────────────────────────────
+8) HANDOFF & SILENT INGEST PROTOCOL
+──────────────────────────────────────────────────────────────────────────────
+
+When documents are uploaded for continuity handoff:
+
+- No responses may be generated
+- No commentary may be offered
+- No questions may be asked
+- Analysis only
+
+Writing resumes ONLY after the user issues
+a clear instruction to proceed.
+
+──────────────────────────────────────────────────────────────────────────────
+9) RESUME CONFIRMATION REQUIREMENT
+──────────────────────────────────────────────────────────────────────────────
+
+Before resuming writing in a new chat, the author MUST:
+
+- Re-ingest the TOC
+- Re-ingest all Codex sections written so far
+- Confirm last completed subsection
+- Confirm next subsection to write
+- Reaffirm adherence to this Continuity Lock
+
+Only then may writing continue.
+
+──────────────────────────────────────────────────────────────────────────────
+10) PURPOSE OF THIS LOCK
+──────────────────────────────────────────────────────────────────────────────
+
+This Continuity Lock exists to guarantee that:
+
+- the Ashby Codex reads as one work
+- tone never drifts
+- structure never drifts
+- authority is never weakened
+- no accidental reinterpretation occurs
+- the Codex remains printable, permanent, and rebuild-safe
+
+This lock is part of the Ashby Codex itself.
+
+
+
+=====================
+
+BELOW IS THE FINAL ADDITION TO CONTINUITY LOCK FOR ASHBY CODEX AUTHORSHIP
+
+=====================================
+
+ASHBY CODEX — CONTINUITY LOCK ADDENDUM
+SUBSECTION SPLITTING, LENGTH AWARENESS, AND RETROACTIVE CORRECTION RULES
+
+This addendum supplements and strengthens the existing Continuity Lock.
+It is binding for all future Ashby Codex writing.
+
+──────────────────────────────────────────────────────────────────────────────
+1) LENGTH AWARENESS AS A FIRST-CLASS CONSTRAINT
+──────────────────────────────────────────────────────────────────────────────
+
+Every subsection in the Table of Contents must be treated as potentially large.
+
+The author must assume by default that:
+- any subsection may require multiple parts
+- especially architectural, engine, world-model, or tree-instantiation sections
+- especially sections that enumerate structures, directories, rules, or examples
+
+The goal is completeness, not compression.
+
+No subsection may be shortened, summarized, or thinned
+to fit within a single response.
+
+──────────────────────────────────────────────────────────────────────────────
+2) MANDATORY POST-WRITE SELF-AUDIT (RETROACTIVE ALLOWED)
+──────────────────────────────────────────────────────────────────────────────
+
+After writing any subsection, the author MUST perform a self-audit and ask:
+
+- Did I reduce detail to fit length?
+- Did I avoid elaboration because of response size?
+- Did I omit examples, structure, or rules that belong here?
+- Does this subsection feel artificially constrained?
+
+If the answer to ANY is “yes”:
+
+- The subsection is considered TRUNCATED
+- The output is INVALID
+- The subsection must be rewritten and split into parts
+
+This audit may occur:
+- immediately after writing
+- OR retroactively, even if the subsection has already been output
+
+Retroactive correction is REQUIRED if truncation is detected.
+
+──────────────────────────────────────────────────────────────────────────────
+3) SUBSECTION PART SPLITTING RULE (CANONICAL FORMAT)
+──────────────────────────────────────────────────────────────────────────────
+
+When a subsection must be split, the numbering MUST follow this exact pattern:
+
+- X.Y — 1/2
+- X.Y — 2/2
+
+or, if necessary:
+
+- X.Y — 1/3
+- X.Y — 2/3
+- X.Y — 3/3
+
+Rules:
+- The subsection number (X.Y) DOES NOT change
+- Parts are ordered and explicit
+- All parts must be completed before moving to the next subsection
+- Earlier truncated outputs must be explicitly discarded
+
+Example (illustrative only):
+- 6.2 — 1/3
+- 6.2 — 2/3
+- 6.2 — 3/3
+
+The author must clearly indicate that the subsection is split
+and that all parts together form the complete subsection.
+
+──────────────────────────────────────────────────────────────────────────────
+4) PREFERENCE FOR OVER-SPLITTING
+──────────────────────────────────────────────────────────────────────────────
+
+When in doubt, the author MUST prefer:
+- splitting too much
+- rather than splitting too little
+
+It is acceptable for:
+- a subsection to occupy an entire response
+- a subsection to be split even if it could technically fit
+- short subsections to remain standalone
+
+It is NOT acceptable for:
+- a subsection to feel rushed
+- a subsection to lack depth
+- a subsection to imply content instead of stating it
+
+The user will manually recombine parts later.
+Clean separation is preferred over compactness.
+
+──────────────────────────────────────────────────────────────────────────────
+5) SPECIAL EMPHASIS: ARCHITECTURE TREE (SECTION 8A)
+──────────────────────────────────────────────────────────────────────────────
+
+Section 8A (Architecture Tree — Full Directory Layout) is expected
+to be large and multi-part.
+
+Each of the following MUST be treated as its own atomic subsection:
+- 8A.1 engine/
+- 8A.2 scopes/
+- 8A.3 domain/
+- 8A.4 modules/
+- 8A.5 adapters/
+- 8A.6 bridges/
+- 8A.7 native_vendor/
+- 8A.8 connectors/
+- 8A.9 plugins/
+- 8A.10 setup/
+- 8A.11 io/
+- 8A.12 storage/
+- 8A.13 packaging/
+- 8A.14 support/
+- 8A.15 tests/
+
+Each of these MAY require:
+- multiple parts (1/2, 2/2, etc.)
+- full directory trees
+- placeholder files
+- example implementations
+- explicit boundary rules
+
+Summarizing or compressing the Architecture Tree is forbidden.
+
+──────────────────────────────────────────────────────────────────────────────
+6) ZERO PENALTY FOR CORRECTION
+──────────────────────────────────────────────────────────────────────────────
+
+Detecting truncation and correcting it is not a failure.
+It is a requirement.
+
+The author must:
+- flag truncation explicitly
+- instruct the user to discard prior output
+- reissue the subsection correctly split
+
+This behavior is expected and correct.
+
+──────────────────────────────────────────────────────────────────────────────
+7) PURPOSE OF THIS ADDENDUM
+──────────────────────────────────────────────────────────────────────────────
+
+This addendum exists to guarantee that:
+
+- no section of the Ashby Codex is incomplete
+- no architectural detail is lost to response limits
+- the Codex remains suitable for permanent print
+- the Codex can fully recreate Ashby from text alone
+- depth is never sacrificed for convenience
+
+This addendum reinforces the principle that
+Ashby Codex writing must always optimize for
+completeness, precision, and rebuildability.
+
+END OF CONTINUITY LOCK ADDENDUM
+
+
+

@@ -1,0 +1,72 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_070
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 6 (3/5): formalize-only rerun (reuse transcript.json; new run_id)
+
+Context: Stuart pipeline reruns
+
+Origin:
+Control Sync — 2026-02-04 (Stuart v1 finish-line: REV5)
+
+Priority: P0
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV5.txt (Dungeon 6)
+- Stuart Codex 3.2/3.3: rerun without retranscribing
+- Engine: pipeline/job_runner.py reuse_run_id logic
+
+Status: COMPLETED
+
+Audit Bundle Path:
+  /mnt/data/Ashby_Data/Audits/Execution/QUEST_070__2026-02-10__stuart_v1_d6_3of5_formalizeonly_run_reuse_transcript_json
+Accepted On:
+2026-02-10
+Accepted By:
+Hands (Peter)
+Completed On:
+
+2026-02-11
+Completed By:
+
+Ash (Brains)
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Implement a true formalize-only rerun: reuse transcript.json/aligned_transcript.json from a prior run without retranscribing/diarizing. Produce a NEW run_id with new minutes/journal outputs.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Extend reuse_run_id to reuse transcript.json (not only transcript.txt)
+- Skip heavy stages when reuse_run_id provided
+- Ensure ingestion/indexing references reused transcript anchors correctly
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Cross-session merges
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_052
+- QUEST_057
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Ground truth transcript must remain immutable; reruns only create new derived artifacts.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] Formalize-only rerun does not execute transcribe stage
+- [x] New run_id outputs minutes/journal artifacts
+- [x] No overwrite behavior preserved
+- [x] `python3 -m pytest -q` passes
+

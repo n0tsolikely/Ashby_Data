@@ -1,0 +1,177 @@
+STUART CODEX
+7.7 Stage 6: Indexing and Retrieval (Canonical)
+
+Status: Canonical (Regenerated v2)
+Last updated: 2026-01-12
+
+Stage 6 enables Stuart’s long-term recall: search and retrieval across saved sessions and artifacts.
+This directly implements the chat-canon use cases:
+- “Bring up all meetings where Greg attended.”
+- “Bring up all incidents with Greg.”
+- “Bring up all sessions mentioning time off.”
+- “Show every timestamp where donuts were mentioned.”
+and then print/export immediately.
+
+Chat-canon constraints enforced here:
+- retrieval results are never fabricated,
+- “attendance” vs “mention” vs “spoke” semantics are explicit,
+- LOCAL_ONLY is fully local (no silent cloud search),
+- and outputs must include jump-to-evidence actions.
+
+1) Inputs
+
+Indexing consumes:
+
+A) Session metadata
+- session.json
+- run manifests (run.json) and outputs_created lists
+
+B) Content artifacts
+- aligned_transcript.json (preferred searchable ground truth)
+- transcript.json (fallback)
+- formalization output.json (structured items)
+- evidence_map.json (jump-to-evidence)
+
+C) Overlay metadata
+- speaker_map.json (speaker label → name)
+- correction overlays (optional)
+
+2) Outputs
+
+Stage 6 produces index artifacts and updates, plus a run record:
+
+A) Global index updates
+Stored under STUART_ROOT/global_index/.
+The specific technology is implementation-defined, but the index must support:
+- session lookup
+- transcript segment search
+- structured item search (decisions/actions/timeline)
+- speaker overlay lookup
+
+B) Optional session-local index
+If needed for portability or performance.
+
+C) run record
+- run_type: index
+- profile_used
+- adapters_used (Index adapter)
+- inputs_used
+- outputs_created
+- config_snapshot (what fields were indexed)
+
+3) What must be indexable (canonical minimum)
+
+IDX-1) Sessions
+- date/time
+- title/slug
+- tags
+- artifacts present (transcript exists? minutes exists? incident exists?)
+- mode/template info for outputs
+
+IDX-2) Transcript segments
+- segment_id
+- session_id
+- contribution_id
+- start/end timestamps
+- speaker label (if present)
+- text
+
+IDX-3) Formalization structured items
+- decisions (text + citations)
+- action items (text + citations + explicit assignee if stated)
+- incident timeline entries (text + citations)
+- headings/sections for navigation
+
+IDX-4) Speaker mapping overlay
+- name → (session_id, speaker_label)
+so “show everything Greg said” can resolve to label-based segments.
+
+4) Query semantics (hard rule: no pretending)
+
+This semantic split is mandatory:
+
+Q-1) “Greg mentioned”
+Means the literal token “Greg” appears in text.
+This is always answerable via text search (if transcripts are indexed).
+
+Q-2) “Greg attended”
+Means Greg is a participant/speaker.
+This requires either:
+- explicit participant metadata, OR
+- speaker mapping overlay linking a speaker label to Greg.
+If absent, Stuart must say:
+- “I can’t confirm attendance as a speaker without mapping/participant metadata. I can search mentions, or you can map speakers.”
+
+Q-3) “Greg spoke” / “show everything Greg said”
+Requires speaker mapping overlay. If absent, provide:
+- speaker-label results only, or refuse with explanation.
+
+These rules prevent the hallucination trap where the system equates “name mentioned” with “person attended.”
+
+5) Retrieval results must be actionable
+
+When returning sessions:
+- show date/title
+- show available artifacts
+- provide actions:
+  - Open PDF
+  - Print PDF
+  - Export bundle
+  - Show transcript matches
+  - Jump to timestamp
+  - Reveal in folder
+
+When returning matches:
+- show timestamps and short excerpts
+- allow jump-to-evidence and open-around-here
+
+Chat output is sufficient in V1 as long as actions exist.
+
+6) When indexing runs (execution gating)
+
+Indexing must not run on file drop.
+
+Canonical behavior:
+- After a user explicitly runs transcription, Stuart SHOULD update the local index automatically as an internal post-step.
+- After a user explicitly runs a formalization, Stuart SHOULD update the index with structured items.
+These post-steps must still be recorded as run records for audit.
+
+Remote indexing (HYBRID/CLOUD) must never be implicit:
+- disclose, confirm, record.
+
+7) Profile behavior
+
+LOCAL_ONLY:
+- indexing and retrieval are fully local.
+- no network calls.
+- local full-text indexing is sufficient for v1.
+
+HYBRID:
+- local indexing by default.
+- remote enhancements only with explicit confirmation and audit logs.
+
+CLOUD:
+- remote indexing allowed, still requiring explicit execution triggers and audit logging.
+
+8) Failure behavior and recovery
+
+If indexing fails:
+- report failure
+- retrieval must disclose reduced capability
+- provide recovery commands:
+  - rebuild index
+  - re-index session
+  - index status
+
+Index failure must not corrupt session artifacts.
+
+9) Self-audit (7.7 v2)
+
+Chat-canon alignment checklist:
+- Recall vision: session + content recall with print/export actions. (Maintained.)
+- No hallucinated search: explicit mention vs attendance vs spoke semantics. (Maintained.)
+- LOCAL_ONLY integrity: local index only, no silent cloud calls. (Maintained.)
+- Explicit execution gating: never on file drop; remote indexing requires disclosure/confirmation. (Maintained.)
+- Evidence linkage: retrieval provides timestamps and jump-to-evidence. (Maintained.)
+
+This section is complete.

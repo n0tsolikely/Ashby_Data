@@ -1,0 +1,68 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_072
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 6 (5/5): Telegram speaker map + re-formalize (minimal)
+
+Context: Stuart Telegram
+
+Origin:
+Control Sync — 2026-02-04 (Stuart v1 finish-line: REV5)
+
+Priority: P2
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV5.txt (Dungeon 6)
+
+Status: COMPLETED
+Audit Bundle Path:
+  /mnt/data/Ashby_Data/Audits/Execution/QUEST_072__2026-02-11__stuart_v1_d6_5of5_telegram_speaker_map_and_reformalize_minimal
+Accepted On:
+2026-02-11
+Accepted By:
+Hands (Peter)
+Completed On:
+
+2026-02-11
+Completed By:
+
+Ash (Brains)
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Add minimal Telegram commands/buttons to set speaker mappings and request re-formalization without retranscribing.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Telegram flow to collect mapping
+- Trigger formalize-only rerun
+- Return updated primary PDF
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Full Telegram library UI
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_068
+- QUEST_070
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Keep it minimal: enough to prove the loop works.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] Telegram can set mapping
+- [x] Telegram can trigger re-formalize and return updated PDF
+
+

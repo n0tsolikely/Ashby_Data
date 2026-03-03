@@ -1,0 +1,49 @@
+SYNAPSE GUILD — GENERAL CONTROL SYNC SNAPSHOT
+Date: 2026-01-26
+Timestamp: 2026-01-26 22:30:20 UTC
+Scope: Synapse Governance Operating System (GENERAL)
+
+PURPOSE
+Capture high-level governance, architecture, uniqueness, comparisons to other systems, and forward improvements.
+This snapshot intentionally excludes Stuart/TG bug details.
+
+WHAT SYNAPSE GOVERNANCE IS
+- A governed AI operating system, not a UI or single agent.
+- Canon-first execution: one authoritative working state.
+- Evidence-gated completion: no success without machine-verifiable artifacts.
+- Quest lifecycle: Accept → Execute → Verify → Audit → Complete.
+- Authority separation: Human (“Hands”) decides; AI executes within constraints.
+- Resumability: continuity locks + rehydration; no reliance on chat history.
+- Interface-agnostic: Telegram/Web/CLI are adapters, not the core.
+
+WHY IT IS UNIQUE
+- Combines canon discipline, evidence-based truth, resumability, and audits as default law.
+- Enforces honesty: the system cannot claim outcomes without proof.
+- Designed and enforced operationally (not a doc-only framework).
+- Built and validated end-to-end by a solo builder without institutional scaffolding.
+
+COMPARISON TO OTHER SYSTEMS (PUBLIC)
+- LangGraph: stronger primitives for checkpoints/interrupts; lacks an opinionated governance OS.
+- SWE-agent / SWE-bench: stronger domain-specific proof (tests); narrow to SWE domain.
+- OpenHands: stronger productization (UI/RBAC/sandboxing); different center of gravity.
+- Eval tools (LangSmith/TruLens/Guardrails): stronger metrics; advisory, not authoritative.
+
+WHAT TO ADOPT (PRIMITIVES ONLY)
+- Checkpoint Artifacts (from LangGraph concept): hash-verified resume anchors.
+- Domain-specific Truth Schemas (from SWE-agent): tests/files/devices as proof.
+- Execution Profiles/Sandbox Adapters (from OpenHands): LOCAL_TRUSTED now; sandbox later.
+- Evaluators as Artifacts (from eval tools): inform Truth Gate, never override it.
+
+WHAT TO AVOID
+- Graph DSLs replacing quests.
+- UI-driven truth or metrics deciding completion.
+- Multi-user/RBAC before governance is complete.
+
+ROADMAP (GOVERNANCE-LED)
+Phase 1: Wire Truth Gate universally (no success without evidence).
+Phase 2: Add Checkpoint Artifacts + explicit resume anchors.
+Phase 3: Execution Profiles (sandbox abstraction).
+Phase 4: Optional evaluators as non-authoritative artifacts.
+
+BOTTOM LINE
+Synapse Governance is a coherent OS that can safely absorb primitives from others without losing integrity.

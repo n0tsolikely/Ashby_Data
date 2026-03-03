@@ -1,0 +1,869 @@
+SNAPSHOT_TYPE: CONTROL_SYNC
+SUBJECT: ASHBY / STUART (Meetings Module)
+DATE: 2026-02-16
+TIMEZONE: America/Toronto
+GOVERNANCE: Synapse_OS_Governance(AI)10
+SOURCE_DRAFTSHOT: DRAFTSHOT__2026-02-16__CONTROL_SYNC__REV5_GLUE
+VERBATIM_PRESERVATION_RULE: HARD (draftshot body below is UNMODIFIED)
+STATUS: CONTROL_SYNC CLOSED
+
+======================================================================
+DRAFTSHOT BODY — VERBATIM (DO NOT EDIT / DO NOT REORDER)
+======================================================================
+DRAFTSHOT
+DATE: 2026-02-16
+TYPE: CONTROL_SYNC (LIVE)
+REVISION: 3 (FULL) + APPEND1
+STATUS: ACTIVE — SESSION-LEVEL ARTIFACT
+SOURCE: Updates appended after reviewing stuart_app.zip + both screenshot batches
+
+======================================================================
+SECTION 0 — DEFINITIONS CORRECTION (BINDING)
+======================================================================
+
+FORMALIZATION (Stuart definition; binding)
+- A formalization is NOT “a file containing metadata fields.”
+- A formalization is a LOSS-MINIMIZED semantic restructuring of a complete transcript into a decision-complete structured artifact.
+- It is “meeting minutes / journal / incident report / etc.” generated from the transcript and organized for usability.
+- It is “summarization” only in the sense of removing conversational noise and reorganizing by semantic role, NOT in the sense of losing materially relevant information.
+- Templates control STRUCTURE + REQUIRED FIELDS + REQUIRED COVERAGE, not “how much we feel like summarizing.”
+- Retention level controls verbosity / quoting vs paraphrase, but must preserve all materially relevant context.
+- Formalization output formats may include Markdown + PDF render + JSON pack, but the “formalization” is the semantic artifact itself, not the storage wrapper.
+
+NON-NEGOTIABLE:
+- No fabricated transcript content.
+- No fabricated decisions/actions/quotes in formalization.
+- Evidence map must anchor claims to transcript segments (segment_id + timestamp ranges).
+
+======================================================================
+SECTION 1 — EXECUTION DECISIONS CONFIRMED (UNCHANGED + EXTENDED)
+======================================================================
+
+1) LLM INTO STUART = BOTH
+   A) Formalization LLM (template-governed, evidence-anchored)
+   B) Conversational Chat LLM (session-aware + cross-session intelligence)
+
+2) NO FAKE TRANSCRIPTION.
+   - Base44 code uses InvokeLLM to “simulate” a transcript. That is explicitly rejected.
+   - Stuart requires real ASR from real audio.
+   - Uncertainty must be marked, not hallucinated.
+
+3) NO FAKE FORMALIZATION.
+   - LLM reads real transcript segments.
+   - Formalization is template-driven and evidence-anchored.
+   - Outputs: MD/PDF/JSON are renders of the canonical semantic layer, not vibes.
+
+4) UPLOAD ≠ RUN.
+   - Upload is storage only.
+   - User explicitly selects Mode/Template/Retention/Profile + confirms Run.
+
+5) Bootstrap / Continuity pointer drift acknowledged.
+   - Not blocking.
+   - Reconcile at EOD.
+
+======================================================================
+SECTION 2 — WHAT THE STUART_APP.ZIP REALLY IS (ZIP GROK SUMMARY)
+======================================================================
+
+The Base44 “Stuart” UI bundle is a complete product-shaped frontend with a fake backend.
+It uses:
+- Vite + React
+- react-router-dom for routing
+- @tanstack/react-query for data fetching/caching
+- Tailwind + shadcn/ui (Radix wrappers)
+- framer-motion + lucide-react
+
+It models 2 primary entities (in their world):
+- Session
+- Formalization
+
+BUT: their runtime calls are primarily:
+- UploadFile (stores audio)
+- Entities CRUD (stores JSON strings)
+- InvokeLLM (used improperly for simulated transcript, formalization generation, and chat)
+
+BOTTOM LINE:
+- We want their PRODUCT SURFACE and UX flow.
+- We do NOT want their fake “LLM does everything instantly” backend strategy.
+
+======================================================================
+SECTION 3 — ZIP-LEVEL CODE REALITIES WE MUST ACCOUNT FOR
+======================================================================
+
+A) Immediate “doesn’t boot” issues if taken standalone:
+- Entry mismatch: src/main.jsx imports "@/App.jsx" but repo has "src/Apps.jsx"
+- Imports reference "@/api/base44Client" but src/api is missing (platform injected in Base44)
+- "@" alias requires Vite resolve.alias config
+- Depends on "@base44/sdk" + "@base44/vite-plugin" (must be removed for our version)
+
+B) Platform glue that must be removed or replaced:
+- Base44 AuthContext assumptions (token, user profile, platform session)
+- Navigation tracker / telemetry calls
+- base44 entities + integrations API calls
+
+C) What we KEEP vs REPLACE:
+KEEP:
+- Layout + component structure + tabs + controls + visual model
+REPLACE:
+- base44Client + InvokeLLM + entities with our own API + run contract + artifact model
+
+======================================================================
+SECTION 4 — SCREENSHOT-DRIVEN UX REQUIREMENTS (WHAT THE UI MUST FEEL LIKE)
+======================================================================
+
+From both screenshot batches, the desired Stuart UX model includes:
+
+GLOBAL HEADER (always visible)
+- Product title: “Stuart” (Voice Intelligence System)
+- Profile badge (Local / Hybrid / Cloud) that reflects REAL execution profile state
+- Export ZIP button (session export)
+- Clean “product grade” feel (not dev tool)
+
+SESSION LIBRARY (left panel)
+- List of sessions with:
+  • title
+  • date/time
+  • duration
+  • status badges (uploaded / processing / transcribed / formalized / failed)
+  • search/filter
+- Clicking selects a session; all tabs reflect that session
+
+SESSION VIEW (main panel) is TABBED, not separate pages
+Tabs:
+1) Session
+2) Chat
+3) Outputs
+
+SESSION TAB — must contain:
+- Transcript viewer with segment structure (speaker labels + timestamps)
+- Speaker mapping / overlay editing surface (pre-formalization)
+- Run config panel with:
+  • Mode (Meeting Minutes / Journal Entry / Incident Report / General Query)
+  • Template dropdown (per mode)
+  • Retention slider/selector (Low/Med/High/Near Verbatim)
+  • Profile dropdown (Local/Hybrid/Cloud)
+  • Diarization toggle
+  • Run Formalization button
+- Processing log surface that reflects REAL pipeline stages
+- No implicit processing; user explicitly runs
+
+CHAT TAB — must contain:
+- Chat interface that “feels like talking to Stuart”
+- It must answer:
+  • per-session questions (about the selected session)
+  • cross-session questions (optionally, via toggle or scope selector)
+- It must support citations to:
+  • transcript segment IDs + timestamps
+  • formalization sections (if referencing formalization artifacts)
+- It must respect profile/policy: LOCAL_ONLY cannot call remote LLM
+
+OUTPUTS TAB — must contain:
+- Formalization outputs list for the session (multiple runs allowed)
+- Views:
+  • Formatted (rendered MD)
+  • JSON pack (structured)
+  • Evidence Map (anchors)
+- Download actions (PDF/MD/ZIP) where applicable
+
+EXPORT ZIP — required behavior
+- Bundles:
+  • transcript (raw + structured segments)
+  • formalizations (MD/PDF/JSON)
+  • evidence maps
+  • run manifests/logs (optional but useful)
+- Export should be per-session; optionally allow global export later
+
+======================================================================
+SECTION 5 — KEY ARCHITECTURAL MISMATCH: BASE44 SYNC VS STUART ASYNC
+======================================================================
+
+Base44 assumes:
+- click -> LLM -> immediate transcript/formalization result
+
+Stuart reality (and should remain):
+- click -> run created -> pipeline executes -> UI polls/streams progress -> artifacts appear
+
+Therefore UI must be adapted to async reality:
+
+REQUIRED:
+- Run IDs surfaced to UI
+- Poll /api/runs/{run_id} for progress
+- Processing log shows real stage transitions:
+  ingest -> normalize -> transcribe -> optional diarize -> align -> formalize -> truth gate -> render/export -> index
+
+OPTIONAL (nice):
+- SSE/WebSocket event stream for live progress
+
+We MUST NOT hide async behind fake synchronous “InvokeLLM” semantics.
+(We can do a shim temporarily, but it’s technical debt and should be declared as such.)
+
+======================================================================
+SECTION 6 — PORT STRATEGY (FRONTEND SURGERY APPROACH)
+======================================================================
+
+Recommended fast-but-clean approach:
+
+Phase 1 — Compatibility shim to keep UI code stable
+- Implement a local "base44Client" shim with the same method signatures the UI expects,
+  but internally calling our endpoints.
+- This prevents refactoring the whole UI at once while we wire backend.
+
+Phase 2 — Replace fake calls
+- Replace "InvokeLLM" uses with:
+  • POST /api/run (transcribe + diarize + align + formalize pipeline)
+  • POST /api/chat (chat answers)
+- Replace Entities CRUD with our sessions/formalizations index endpoints.
+
+Phase 3 — Clean contract
+- Remove shim once UI speaks directly to canonical API endpoints.
+
+Non-negotiable:
+- Remove Base44 SDK/plugin dependencies.
+- Fix entrypoint import mismatch.
+- Add Vite alias config.
+- Replace auth assumptions with our auth story (can be “none/local-only” for now).
+
+======================================================================
+SECTION 7 — BACKEND REQUIREMENTS (DETAILED) TO SUPPORT THIS UI
+======================================================================
+
+We need explicit APIs (even if initially minimal):
+
+SESSIONS
+- GET  /api/sessions                     -> list sessions (with status/profile/duration)
+- POST /api/sessions                     -> create session metadata (or create on upload)
+- GET  /api/sessions/{session_id}        -> session details
+- GET  /api/sessions/{session_id}/transcript
+                                        -> segment list (id, start_ms, end_ms, speaker, text, confidence optional)
+- PATCH /api/sessions/{session_id}       -> update title/tags/profile (optional)
+
+UPLOAD
+- POST /api/upload                       -> store audio file and attach to session (upload ≠ run)
+
+RUNS
+- POST /api/run                          -> creates run with mode/template/retention/profile
+- GET  /api/runs/{run_id}                -> status + stage + logs + artifact links
+- GET  /api/sessions/{session_id}/runs   -> list runs for session
+
+FORMALIZATIONS (INDEX)
+- GET  /api/sessions/{session_id}/formalizations
+                                        -> list outputs derived from runs (md/pdf/json/evidence map)
+- GET  /api/formalizations/{id}          -> returns artifacts + metadata
+(Implementation may be “derived from run artifacts” initially; still must present stable UI contract.)
+
+CHAT
+- POST /api/chat                         -> session-scoped chat
+- POST /api/chat/global                  -> cross-session retrieval chat (optional, later)
+- Must return:
+  • answer text
+  • citations (segment IDs + timestamps)
+  • optionally “related artifacts” links
+
+EXPORT
+- GET /api/sessions/{session_id}/export  -> returns zip with transcript + outputs + evidence
+
+PROFILE CONTROL
+- Either per-session setting or global runtime default;
+  UI must show truthfully.
+- Local-only mode must hard-disable remote LLM.
+
+======================================================================
+SECTION 8 — RETRIEVAL + CHAT INTELLIGENCE (DETAILED)
+======================================================================
+
+Session chat must do:
+1) Scope selection: current session (default) vs global
+2) Retrieval:
+   - transcript segment retrieval (FTS / embeddings / hybrid later)
+   - formalization retrieval (if exists)
+   - decisions/action items index (derived from formalizations or separately extracted)
+3) Evidence discipline:
+   - citations to segment IDs + timestamps
+   - enforce “no citation = no claim” for factual meeting details
+4) Policy discipline:
+   - if LOCAL_ONLY: only local model or no model; never remote
+   - disclose when data would leave machine in HYBRID/CLOUD
+
+Cross-session chat (your “Greg was at which meetings?” vision) requires:
+- Speaker index across sessions
+- Session metadata store
+- Search capability across transcripts + formalizations
+- Optionally: structured “participants” overlay that can be corrected by user
+
+======================================================================
+SECTION 9 — WHAT WE NEED TO BUILD (CHECKLIST FROM WHAT WE LEARNED)
+======================================================================
+
+From zip + screenshots, the concrete build tasks implied include:
+
+FRONTEND (UI)
+- Make UI boot standalone (remove Base44 deps)
+- Implement profile badge + state binding
+- Implement session list + selection + status
+- Implement transcript view with segments
+- Implement speaker mapping editor
+- Implement run config panel and explicit Run
+- Implement outputs rendering (Formatted/JSON/Evidence)
+- Implement chat tab and citations display
+- Implement export zip button
+- Add async run progress + logs (polling or stream)
+
+BACKEND (STUART)
+- Sessions storage + indexing
+- Transcript segment schema + storage
+- Run contract mapping: mode/template/retention/profile
+- Artifact registry for runs -> formalizations list
+- Export zip builder
+- Chat endpoint with retrieval + citations + profile gating
+- (Optional) SSE for progress
+
+GOVERNANCE/POLICY SURFACES
+- Ensure TruthGateJudge remains single source
+- Ensure profile gating is enforced (LOCAL_ONLY safe)
+- Ensure disclosure about data leaving machine is accurate
+
+======================================================================
+SECTION 10 — STRATEGIC CLASSIFICATION (UPDATED)
+======================================================================
+
+This is not a “side quest” in the small sense.
+It is the next product surface of Stuart and likely a primary Dungeon in Guild Orders:
+- UI port + surgery
+- Backend API contract
+- Chat intelligence layer
+- Async run progress wiring
+- Export + artifacts indexing
+- Profile + policy exposure
+
+======================================================================
+SECTION 11 — CURRENT STATUS
+======================================================================
+
+Control Sync still OPEN.
+No Guild Orders generated yet.
+No file moves executed here.
+Awaiting directive from Hands.
+
+======================================================================
+END OF APPEND1
+======================================================================
+
+
+
+======================================================================
+REV4 — GLUED APPEND (FROM APPEND2)
+======================================================================
+
+
+DRAFTSHOT
+DATE: 2026-02-16
+TYPE: CONTROL_SYNC (LIVE)
+REVISION: 3 (FULL) + APPEND2
+STATUS: ACTIVE — SESSION-LEVEL ARTIFACT
+SOURCE: Appended after additional synthesis of (a) stuart_app.zip UX model, (b) screenshots UX states, and (c) Stuart Canonical Vision alignment.
+NOTE: This APPEND2 is meant to be stacked after REV3_FULL + APPEND1.
+
+======================================================================
+SECTION 12 — PRODUCT LOOP (THE “FEEL” WE’RE TARGETING)
+======================================================================
+
+The product interaction loop (what Stuart must FEEL like) is:
+
+SESSION = CONTAINER
+Inside a session, the user can manage:
+1) AUDIO (uploaded, immutable asset)
+2) TRANSCRIPTS (multiple versions; diarization/no-diarization, etc.)
+3) FORMALIZATIONS (multiple runs; template-governed, retention-governed)
+4) CHAT (assistant reads session/global knowledge; answers with evidence)
+5) EXPORTS (portable proof bundle for the session)
+
+Key idea: A “Session” is the user’s anchor. Everything is navigated from it, and every output is tied back to it.
+This matches the screenshot UI perfectly (left session list, main panel tabs, export zip in header).
+
+======================================================================
+SECTION 13 — PIPELINE STAGING (CRITICAL CORRECTION)
+======================================================================
+
+BINDING STAGING RULE:
+- DIARIZATION belongs to TRANSCRIPTION, NOT FORMALIZATION.
+
+WHY:
+- Diarization changes the structure of the transcript (speaker-separated segments).
+- Formalization consumes a transcript and re-structures it into a usable artifact; it should not be responsible for speaker separation.
+
+Therefore we enforce a 2-stage user action model:
+
+STAGE A: TRANSCRIBE (with optional diarization)
+- Inputs: audio, ASR config, diarization toggle
+- Outputs:
+  • transcript segments (segment_id, start_ms, end_ms, text)
+  • optional speaker labels (SPEAKER_01, SPEAKER_02, etc.)
+  • optional confidences (if available)
+- Artifact must be stored as a transcript version (see Section 14).
+
+STAGE B: FORMALIZE (uses an already-created transcript version)
+- Inputs:
+  • selected transcript version (from Stage A)
+  • mode (minutes/journal/incident/etc.)
+  • template (structure contract)
+  • retention level (verbosity/quoting policy)
+  • profile (local/hybrid/cloud routing)
+- Outputs:
+  • formalization artifact (semantic layer) rendered to md/pdf and/or JSON packs
+  • evidence map anchored to transcript segments + timestamps
+  • run logs + manifest
+
+THIS IS NON-NEGOTIABLE:
+- The UI must not imply that “formalize” produces diarization.
+- The UI must not imply that “transcribe” is fake or LLM-generated.
+- The UI must not hide stage boundaries.
+
+======================================================================
+SECTION 14 — TRANSCRIPT VERSIONING (REQUIRED FOR TRUST + RERUNS)
+======================================================================
+
+A session must support MULTIPLE transcripts, because the user can legitimately want:
+- a fast transcript (no diarization)
+- a diarized transcript (slower, but speaker-separated)
+- a higher-quality ASR transcript (different model/config)
+- a corrected/edited transcript overlay (future)
+
+Therefore we introduce the concept:
+
+TRANSCRIPT_VERSION
+- transcript_version_id (stable)
+- created_at
+- diarization_enabled: true/false
+- asr_engine: (local whisper/faster-whisper/remote/etc.)  [implementation detail; can start as “default”]
+- segments: list of (segment_id, start_ms, end_ms, speaker_label?, text, confidence?)
+- overlay_speaker_map_id (optional reference; see Section 15)
+
+UI REQUIREMENT:
+- Transcript selector dropdown in the Session tab:
+  • “Transcript v1 (no diarization)”
+  • “Transcript v2 (diarization)”
+  • etc.
+- The formalization config must reference WHICH transcript version is being used, so reruns are explainable.
+
+Without transcript versioning, you get “why did the minutes change?” confusion and trust collapses. That’s bullshit—we avoid it.
+
+======================================================================
+SECTION 15 — SPEAKER MAPPING (OVERLAY, NOT TRUTH MUTATION)
+======================================================================
+
+Speaker labeling must be handled as an overlay layer:
+
+DIARIZATION OUTPUT:
+- speaker labels like SPEAKER_01, SPEAKER_02 (ground truth-ish)
+- these are stable identifiers for segments
+
+USER MAPPING OVERLAY:
+- SPEAKER_01 -> “Greg”
+- SPEAKER_02 -> “Peter”
+- etc.
+
+RULE:
+- Changing the mapping does NOT rewrite transcript text; it changes how we DISPLAY and how CHAT/FORMALIZATION interpret speakers.
+- This mapping must be versioned (or at least tracked) so outputs can declare which mapping was used.
+
+WHY:
+- It enables cross-session queries like “meetings Greg was at” without hallucinating identities.
+- It allows corrections (speaker overlay edits) after diarization.
+
+CHAT + FORMALIZATION must reference the speaker map used, or at minimum be consistent with current mapping and show evidence citations.
+
+======================================================================
+SECTION 16 — UI SPEC (SCREENSHOT-LOCKED BEHAVIOR) — DETAILED
+======================================================================
+
+This section is the explicit “make Stuart feel like this” contract.
+
+A) GLOBAL HEADER
+- Must always show:
+  • Product identity ("Stuart")
+  • Profile badge (Local / Hybrid / Cloud) reflecting REAL backend profile state
+  • Export ZIP button (exports for selected session)
+- Optional later:
+  • processing indicator (queue/running)
+
+B) SESSION LIBRARY (LEFT PANEL)
+- Must show:
+  • New Session button
+  • Session list with title, date, duration, status badges
+  • Search field (for session name/id and quick filtering)
+- Clicking a session:
+  • sets “current session” context for all tabs
+  • loads transcript versions, runs, outputs
+
+C) MAIN PANEL TABS
+- Session | Chat | Outputs (exact structure)
+- No weird page navigation required; keep it a tabbed product experience.
+
+D) SESSION TAB — ACTIONS ROW
+- Must include:
+  • Transcribe button
+  • Diarization toggle BESIDE Transcribe button (moved from Base44 Run config)
+  • Transcript version selector dropdown (v1/v2/etc.)
+
+E) SESSION TAB — TRANSCRIPT VIEW
+- Segment list with:
+  • timestamp ranges
+  • speaker label (if diarized)
+  • text
+- Must support:
+  • scroll
+  • highlight/anchor for citations (segment_id)
+- Optional later:
+  • segment-level corrections (overlay edits)
+
+F) SESSION TAB — SPEAKER MAPPING PANEL
+- Map SPEAKER_XX to human names
+- This mapping affects:
+  • transcript display labels
+  • formalization speaker attribution
+  • chat entity naming
+- Must remain explicit and editable.
+
+G) SESSION TAB — FORMALIZATION CONFIG PANEL (RIGHT)
+- Must include:
+  • Mode dropdown (Minutes / Journal / Incident / General Query)
+  • Template dropdown filtered by mode
+  • Retention selector (Low/Medium/High/Near Verbatim)
+  • Profile dropdown (Local/Hybrid/Cloud)
+  • Formalize button
+- Must display:
+  • which transcript version will be used for the formalization
+
+H) PROCESSING LOG (VISIBLE)
+- Must represent REAL pipeline stages, not fake instant results.
+- The UI must show progress across:
+  upload -> transcribe -> diarize(optional) -> align -> formalize -> truth gate -> render -> index
+- Must allow user to see why something failed (error message, stage, log excerpt).
+
+I) CHAT TAB — “TALK TO STUART”
+- Default scope: CURRENT SESSION
+- Provide an explicit scope toggle for:
+  • “This Session” vs “All Sessions” (global)
+- Must allow queries like:
+  • “Which meetings was Greg at?”
+  • “When did we talk about changing door locks?”
+  • “List open decisions from last month.”
+  • “Show me every time we agreed on X.”
+- MUST return citations:
+  • transcript segment_id + timestamp
+  • optionally references to formalization section anchors
+- Must obey execution profile rules:
+  • LOCAL_ONLY must not call remote LLM
+  • HYBRID/CLOUD must disclose if data leaves machine
+
+J) OUTPUTS TAB — FORMALIZATIONS
+- Must list multiple formalizations per session (multiple runs)
+- Each output must support:
+  • Formatted (rendered Markdown)
+  • JSON pack (structured)
+  • Evidence Map view (anchors)
+  • Download buttons (PDF/MD/ZIP)
+- Output list must show:
+  • mode/template/retention/profile used
+  • created_at
+  • status
+
+K) EXPORT ZIP (PER SESSION)
+- Must bundle:
+  • original audio file
+  • transcript(s) (raw and segmented)
+  • speaker mapping overlay
+  • formalizations (md/pdf/json)
+  • evidence maps
+  • run manifests/logs (recommended)
+- This becomes the “portable proof bundle” for sharing/auditing.
+
+======================================================================
+SECTION 17 — PROFILES (LOCAL / HYBRID / CLOUD) — USER-FRIENDLY MEANING
+======================================================================
+
+We need to keep the UX simple without lying.
+
+The badge implies BOTH compute and (eventually) storage, but those are separate axes.
+For now, we define:
+
+LOCAL_ONLY
+- Compute local
+- Storage local
+- No remote LLM calls
+- No data leaves machine
+
+HYBRID
+- Storage local (default)
+- Remote allowed for LLM formalization/chat (and later remote ASR) IF enabled
+- Must disclose data leaving machine for remote operations
+
+CLOUD (FUTURE PRODUCT MODE)
+- Compute remote (GPU/server)
+- Storage remote (account-based)
+- Requires auth + multi-user + tenancy + retention policies
+- Faster and scalable, but higher infra burden
+
+UI MUST:
+- Display the badge truthfully.
+- Prevent profile settings that are not implemented (e.g., Cloud storage) from pretending to exist.
+- If “Cloud” is selected before it exists, it must either be disabled or clearly labeled “coming later” (no deception).
+
+======================================================================
+SECTION 18 — CHAT INTELLIGENCE REQUIREMENTS (DEEP)
+======================================================================
+
+To achieve “chat like I’m talking to Ash about any file/session for days”, Stuart chat must be:
+
+A) Retrieval-backed
+- Chat cannot be a raw LLM call over nothing.
+- It must retrieve relevant context:
+  • transcript segments (session and/or global)
+  • formalizations (minutes/journal/etc.)
+  • metadata (session titles/dates/duration/speaker overlays)
+
+B) Evidence-enforced
+- For factual claims about what was said/decided:
+  • citations are required
+  • citations must be segment_id + timestamp ranges
+- “No citation, no claim” for meeting facts.
+
+C) Scope-aware
+- Session scope default is safer and faster.
+- Global scope needs indexing:
+  • speaker index
+  • session metadata store
+  • transcript search across sessions
+  • formalization search
+
+D) Template-aware
+- Chat should be able to:
+  • explain templates
+  • suggest improvements to templates
+  • help author templates
+- BUT saving/updating templates is action-gated (confirm before write).
+
+======================================================================
+SECTION 19 — TEMPLATE MANAGER (CUSTOMER-FRIENDLY DESIGN)
+======================================================================
+
+Templates are a core differentiator and must be user-manageable.
+
+Introduce a Templates area (not shoved into Session tabs):
+- Sessions
+- Templates
+- Settings
+
+Templates page must support:
+- List templates (by mode)
+- Create new template
+- Import template from photo/pdf/text
+- Edit template
+- Version history
+
+Template import flow (clean + safe):
+1) User uploads photo/pdf describing company minutes template
+2) Stuart extracts structure (vision/OCR + LLM), proposes a template draft
+3) Stuart shows preview + required fields + coverage checklist
+4) User edits/approves (action-gated)
+5) Template saved as template_id + version
+6) Appears in Mode->Template dropdown for formalizations
+
+This avoids “LLM chaos” while making customization frictionless.
+
+======================================================================
+SECTION 20 — BUILD CHECKLIST (FROM EVERYTHING LEARNED) — EXTENDED
+======================================================================
+
+FRONTEND (UI surgery)
+- Remove Base44 SDK/plugin deps
+- Fix entrypoint mismatches
+- Add proper alias config
+- Replace base44Client with our API client (shim first is ok)
+- Implement async run progress (poll /runs or SSE later)
+- Implement transcript version selector
+- Move diarization toggle to Transcribe action row
+- Implement speaker mapping overlay editor
+- Implement outputs list with multiple formalizations
+- Implement citations display in chat answers
+- Implement export zip button
+
+BACKEND (Stuart services)
+- Sessions store (metadata + status + profile)
+- Upload attaches audio to session (upload ≠ run)
+- Transcribe run creates transcript_version artifacts
+- Diarization is part of transcription pipeline (optional)
+- Formalize run consumes selected transcript_version + template + retention
+- Outputs registry/index per session (formalizations list)
+- Export zip builder
+- Chat endpoint with retrieval + citations + profile gating
+- Cross-session speaker index for “Greg meetings” queries
+- (Optional) event streaming for progress
+
+GOVERNANCE
+- TruthGateJudge remains single truth gate (no duplicates)
+- Execution profile gating enforced centrally
+- Disclosure about data leaving machine accurate
+- Action-gated template creation/saving
+
+======================================================================
+SECTION 21 — STATUS
+======================================================================
+
+Control Sync still OPEN.
+Guild Orders not generated yet.
+No file moves executed here.
+Awaiting directive from Hands.
+
+======================================================================
+END OF APPEND2
+======================================================================
+
+
+======================================================================
+REV5 — APPEND (DELTA SINCE REV4_GLUE)
+======================================================================
+DATE: 2026-02-16
+CS STATE: STILL OPEN (Draftshot continues)
+SCOPE: Delta captures actions/decisions/discoveries after REV4_GLUE creation.
+
+---------------------------------------------------------------------
+A) GUILD ORDERS ARTIFACT CREATED (BIG ORDER)
+---------------------------------------------------------------------
+- Guild Orders were drafted and then glued into a single, long-form doc with a “big name”.
+- Final name:
+  GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV1
+- Purpose: convert Control Sync intent into Dungeons that can be split into Quests without drifting from primary goals.
+
+Primary emphasis locked into Guild Orders:
+- Base44 UI parity (Session/Chat/Outputs; profile badge; export ZIP; run configuration surface)
+- Real pipeline stages (upload→transcribe(+optional diarize)→align→formalize(template+retention)→render/export→index)
+- Separate Transcribe action; diarization toggle at transcription (NOT inside formalization)
+- Transcript versioning (diarize on/off variants) + speaker mapping overlay
+- LLM wiring for BOTH formalization and chat (with profile gating + evidence/citations)
+- MVP end-to-end requirement: real audio → diarized transcript → real formalization (not transcript copy) using a DEFAULT_TEST_TEMPLATE as the first proving run.
+
+---------------------------------------------------------------------
+B) STUART CODEX FULL REVIEW COMPLETED (CONTRADICTION AUDIT)
+---------------------------------------------------------------------
+Codex file reviewed end-to-end:
+- Stuart_Codex_FULL_All_Sections.txt (Generated 2026-01-12)
+
+Outcome: our current plan is overwhelmingly aligned with the Codex, with a few targeted tensions/gaps to resolve.
+
+ALIGNMENTS (no contradiction):
+1) Truth + evidence discipline:
+   - Codex explicitly prefers formalization over “summary,” and requires evidence/citations for meeting facts.
+   - Matches our “no fake transcript / no fake formalization / evidence map” rules.
+
+2) Explicit execution gating:
+   - Codex locks: Upload ≠ Run; explicit go/confirm needed.
+   - Matches our UI plan (separate Transcribe and Formalize buttons; no auto-run on upload).
+
+3) Profiles:
+   - Codex locks LOCAL_ONLY / HYBRID / CLOUD with disclosure and gating.
+   - Matches our “profile badge truth” + “don’t pretend Cloud exists if it doesn’t” rule.
+
+4) Diarization separation + speaker mapping overlay:
+   - Codex Stage 2 (Diarization) produces SPEAKER_XX labels; mapping to names is a separate overlay.
+   - Matches our “speaker mapping overlay editor” and “don’t mutate truth artifacts” rule.
+
+5) V1 MVP requirements:
+   - Codex V1 requires Meeting Minutes + Journal to work, diarization supported, export bundle exists, retrieval works.
+   - Matches our MVP dungeon (E2E pipeline + default test template) and export zip requirements.
+
+TARGETED TENSIONS / GAPS (need action):
+T1) “Chat-first interface” emphasis vs Base44 “tabs + session library” shell
+- Codex (2.1, 10.1) says chat-first and even phrases V1-1 as a “single chat UI” with minimal UI controls.
+- Our plan adopts a product shell with session list + Session/Chat/Outputs tabs + buttons (Base44 style).
+Resolution options (pick one and codify):
+  Option A (no Codex edit): keep Base44 shell but make Chat the canonical entry:
+    - Default tab = Chat
+    - Every action (transcribe, diarize toggle, formalize, export, show transcript, pick template/mode/profile) must be runnable via chat commands.
+    - Buttons remain as convenience controls (novice workflow), but chat remains complete (Codex compliant).
+  Option B (Codex edit): update Codex wording to explicitly allow “chat-first within a product shell”:
+    - Session browser + tabs are permitted if chat remains complete and primary.
+
+T2) Transcript visibility controls (Codex 2.5)
+- Codex requires transcript can be hidden/shown and that chat supports “Show transcript / Hide transcript / Open transcript around timestamp …”.
+- Our Guild Orders currently specify transcript viewer but does not explicitly require “hide transcript” toggles or chat commands for it.
+Action:
+- Add a Quest requirement: transcript visibility toggle + chat commands for transcript reveal/hide/jump.
+
+T3) Export bundle selection (Codex 2.5)
+- Codex says users should be able to export formalization-only, transcript-only, or full bundle.
+- Our plan guarantees full bundle via Export ZIP; per Codex V1 this is sufficient, but 2.5 implies selectable export types.
+Action:
+- Either (a) implement export_type parameter early, or (b) explicitly defer “export variants” to a later Quest but record as a planned compliance item.
+
+T4) Transcript versioning not explicitly named in Codex
+- Codex supports reruns and artifacts, but does not explicitly name “transcript versions” as first-class objects.
+- Our plan makes transcript versioning explicit (retranscribe with diarize on/off; select which transcript feeds formalization).
+Action:
+- Codex edit recommended: add a short canonical subsection defining Transcript Versions (artifact naming, selection rules, how formalizations reference them).
+
+---------------------------------------------------------------------
+C) CODEX EDIT RECOMMENDATIONS (PATCH LIST)
+---------------------------------------------------------------------
+These are minimal, targeted edits to align the written Codex with the new crosshairs (without changing the constitution):
+
+1) Update 2.1 Chat-first Interface:
+   - Add “Chat-first within a product shell” allowance:
+     * session library is allowed
+     * tabs are allowed
+     * chat must remain complete and default entry
+
+2) Update 2.5 Transcript Visibility and Export Controls:
+   - Add explicit UI toggle requirements (hide/show transcript)
+   - Add explicit chat commands list (show/hide/jump timestamp)
+   - Clarify export options and whether V1 ships full bundle first.
+
+3) Add a new subsection (suggest 6.x or 7.x) for Transcript Versions:
+   - artifact schema and deterministic naming
+   - relationship: transcript_version_id → run_id → artifacts
+   - formalization consumes explicit transcript_version_id
+
+4) Update 10.1 V1 Minimum Shippable Product Definition:
+   - Clarify V1-1 UI language so it doesn’t forbid the Base44 product shell,
+     while still enforcing “chat-first” completeness.
+
+---------------------------------------------------------------------
+D) NEXT STEP (WHEN HANDS COMMANDS IT)
+---------------------------------------------------------------------
+- If Hands says “edit codex,” Brains will produce an explicit patch (diff-style) against Stuart_Codex_FULL_All_Sections.txt
+  and any underlying section files that feed it (preferred).
+- If Hands says “leave codex, enforce via implementation,” Brains will add Quests that satisfy Codex constraints
+  (chat completeness, transcript visibility controls, export variants) without altering Codex text.
+
+======================================================================
+END REV5 APPEND
+======================================================================
+
+======================================================================
+DELTA SINCE LAST DRAFTSHOT REVISION (MINIMAL ADDITIONS ONLY)
+======================================================================
+- Decisions finalized after Codex review:
+  * Option A chosen: Chat-first is canonical; default tab = Chat; '+' attachment; buttons/panels are convenience only.
+  * Transcript visibility controls required (show/hide/jump/show-around/filter by speaker).
+  * Export variants required (formalization_only / transcript_only / full_bundle) and callable via chat.
+  * Transcript versions are mandatory (retranscribe diarize on/off as separate transcript artifacts) and selectable via chat/UI.
+
+- Guild Orders artifacts evolution:
+  * REV1 stitched doc preserved as exact baseline.
+  * REV2 decisions were initially captured as append-only; Hands rejected “foot-gun append at bottom” for quest conversion safety.
+  * REV4_INTEGRATED created to distribute all post-Codex decisions directly into relevant Dungeons (no “read appendix” dependency).
+  * Automated audit performed against the append-only requirements; initial A5 false negative due to brittle phrase matching; corrected audit confirmed full coverage.
+
+- Canon packaging actions taken during Control Sync (operational outcomes):
+  * A new canon zip was generated (Ashby_CANON(3).zip) with Draftshots excluded and with PAUSED Guild Orders updated.
+  * Draftshots remain workspace-only and are excluded from canon zips until after Control Sync closure (this snapshot is the closure receipt).
+
+- Current “do not touch” rule confirmed:
+  * Existing ACTIVE Guild Orders were not modified during this Control Sync; new orders remain in PAUSED until Hands activates the Raid.
+
+======================================================================
+CONTROL SYNC CLOSURE MARKER
+======================================================================
+Control Sync CLOSED on 2026-02-16.
+This file is the canonical receipt for the Control Sync.
+Draftshot is now considered CONSUMED by this snapshot.

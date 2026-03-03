@@ -1,0 +1,90 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+SIDE-QUEST_076
+
+Created By:
+Ash (Brains)
+
+Title:
+Platform Spine Alignment: unify execution profile substrate (remove parallel profile systems)
+
+Context: Ashby platform / Stuart execution gating
+
+Origin:
+Control Sync — 2026-02-07 (Stuart v1: platform spine alignment)
+
+Priority: P0
+
+Links:
+- Ashby Batch 0 contracts (archive reference): /mnt/data/Ashby_Data/Archive(IGNORE)/Ashby Execution Pack/
+  - ASHBY_PROFILE_AND_CONSENT_CONTRACT_2026-01-13.txt
+- Engine (current):
+  - ashby/core/profile.py
+  - ashby/core/execution_profiles.py
+  - ashby/modules/meetings/* (imports execution_profiles)
+
+Status: DONE
+
+Audit Bundle Path:
+  /mnt/data/Ashby_Data/Audits/Execution/SIDE-QUEST_076__2026-02-07__unify_execution_profile_substrate
+
+Accepted On:
+2026-02-07
+Accepted By:
+Hands (Peter)
+Completed On:
+2026-02-07
+Completed By:
+Ash (Brains)
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Right now the engine has TWO parallel “execution profile” systems:
+- ashby/core/profile.py (Batch 0 spine: policy/consent intent)
+- ashby/core/execution_profiles.py (meetings module currently uses this)
+
+This quest unifies to ONE canonical execution profile substrate so Stuart (and future modules like Tori)
+cannot drift onto incompatible gating/consent semantics.
+
+IMPORTANT CLARIFIER:
+- Execution profiles are NOT personality or tone.
+- They are runtime permissions (LOCAL_ONLY/HYBRID/CLOUD) + egress allowance.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Choose ONE canonical ExecutionProfile implementation for the whole platform.
+  - Target: ashby/core/profile.py becomes the canonical type and API surface.
+- Provide a compatibility shim so existing code paths do not break abruptly.
+- Update meetings module imports/usages so it no longer depends on a parallel profile system.
+- Preserve behavior:
+  - LOCAL_ONLY: must run without remote LLM usage
+  - HYBRID/CLOUD: remote LLM usage allowed only when disclosed/confirmed (if/when the consent layer is wired)
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Implementing the full door-level consent UX (buttons/UI).
+- Changing module personalities (Ash vs Stuart).
+- Rewriting router dispatch.
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- None blocking, but recommended ordering in the accepted stack:
+  - Execute after QUEST_055 and before QUEST_056 so D4 retrieval work builds on the unified substrate.
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Prefer: keep ashby/core/execution_profiles.py as a thin shim (deprecated) that imports/exports the canonical
+  types/functions from ashby/core/profile.py to minimize churn.
+- Add a unit test that asserts a single canonical ExecutionProfile type is in use (no parallel enums).
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] Only ONE canonical ExecutionProfile type exists (platform-wide)
+- [ ] ashby/modules/meetings no longer relies on a separate parallel profile system
+- [ ] Grep proof (recorded in audit bundle) shows no direct business-logic dependency on legacy profile module
+- [ ] `python3 -m pytest -q` passes

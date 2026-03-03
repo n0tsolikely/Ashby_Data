@@ -1,0 +1,16 @@
+--- /mnt/data/Ashby_Engine/Ashby_Engine/Ashby_Engine/ashby/interfaces/telegram/stuart_runner.py
++++ /mnt/data/Ashby_Engine/Ashby_Engine/Ashby_Engine/ashby/interfaces/telegram/stuart_runner.py
+@@ -14,7 +14,12 @@
+ 
+ def _env() -> Dict[str, str]:
+     env = dict(os.environ)
+-    # Optional runtime root override
++
++    # Inject canonical repo root into PYTHONPATH for subprocesses
++    repo_root = Path(__file__).resolve().parents[3]
++    existing = env.get("PYTHONPATH", "")
++    env["PYTHONPATH"] = str(repo_root) + (":" + existing if existing else "")
++
+     sr = env.get("STUART_ROOT")
+     if sr:
+         env["STUART_ROOT"] = sr

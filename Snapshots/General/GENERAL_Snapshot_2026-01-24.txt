@@ -1,0 +1,28 @@
+GENERAL CONTROL SYNC SNAPSHOT
+Date: 2026-01-24
+Scope: Stuart v1 — Rehydration, Governance Cleanup, Execution Alignment
+
+SUMMARY
+This session functioned primarily as a governance and rehydration control sync rather than active feature execution.
+The focus was on ensuring that Stuart v1 can be rehydrated cleanly, deterministically, and without historical noise.
+
+DECISIONS
+- Rehydration packs must contain only three snapshot artifacts:
+  1) Latest Stuart Control Sync
+  2) Latest Stuart End-of-Day
+- Guild governance and ceremony-related control syncs are explicitly excluded from Stuart execution rehydration.
+- Completed quests are closed based on scope satisfaction, not hypothetical future changes.
+- Talent points are awarded only for concrete, end-user-visible capabilities.
+
+STATE ALIGNMENT
+- Dungeons 3–5 are confirmed complete and closed.
+- QUEST_007 (Dungeon 6) is the sole active quest moving forward.
+- Stuart Execution Pack, Bootstrap Prompt, and Continuity Lock were updated and synchronized into the latest rehydration pack.
+
+NEXT SESSION
+- Begin execution on QUEST_007.
+- No re-litigation of closed quests or architecture.
+- Rehydrate using the cleaned rehydration pack.
+
+NOTES
+This control sync intentionally prioritized accuracy and clarity over speed.

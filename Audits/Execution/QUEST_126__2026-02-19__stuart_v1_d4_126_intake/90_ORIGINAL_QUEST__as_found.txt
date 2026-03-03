@@ -1,0 +1,113 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_126
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 4 (13/15): Back-compat + migration — virtualize legacy run transcripts into TranscriptVersions
+
+Context: (Ashby / Stuart / System / Other)
+Stuart runtime migrations
+
+Origin:
+Existing sessions/runs predate TranscriptVersion artifacts; must not break UI
+
+Priority: (P0 / P1 / P2)
+P1
+
+Links:
+- Guild Orders: Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt (Dungeon 4 + Dungeon 5 dependencies)
+- Stuart Codex (full): Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_7.4_Stage_3_Transcription.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_7.3_Stage_2_Diarization.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_6.2_Canonical_Artifacts_JSON_Markdown_PDF.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_8.1_Evidence_Anchors_and_Citations.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_3.2_Meeting_Minutes_Mode.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 30.1.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 28.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 8A.4.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 26.txt
+- Engine anchors:
+  - Ashby_Engine/ashby/interfaces/web/app.py (list/get transcripts fallbacks)
+  - Ashby_Engine/ashby/modules/meetings/init_root.py + layout.py
+  - Ashby_Engine/ashby/modules/meetings/transcript_versions.py
+
+Status: ACTIVE
+
+Audit Bundle Path:
+  /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_126__2026-02-19__stuart_v1_d4_126_intake
+
+Accepted On:
+2026-02-19
+Accepted By:
+Hands (Peter) via Codex (Brains)
+Completed On:
+
+Completed By:
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+We already have runs on disk with transcript.json/aligned_transcript.json but no TranscriptVersion artifacts. We must support them without forcing a manual migration step.
+
+This quest adds a safe back-compat layer.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+Implement one (or both) of the following in a safe way:
+
+Option A (lazy migration on access):
+- When listing transcripts for a session:
+  - If index.jsonl missing or empty, scan the session’s runs for transcript artifacts
+  - For each discovered transcript artifact, create a TranscriptVersion artifact (write-once) and append to index
+  - Set active_transcript_version_id to the newest discovered transcript version if not already set
+
+Option B (virtualization without writing):
+- If index missing, synthesize transcript versions from run artifacts in-memory with deterministic ids:
+  - transcript_version_id = tv__{run_id} (legacy)
+  - Mark these as legacy-only in response
+
+Pick Option A if you want to converge to the new storage model automatically.
+
+Important: Must NOT break existing tv__run_id URLs.
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- One-time CLI migration tooling (optional).
+- Deleting legacy artifacts.
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+QUEST_114, QUEST_119, QUEST_120
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────
+Migration safety:
+- Never overwrite existing transcript versions.
+- Avoid O(n) scans across the entire runtime; scope to the session id requested.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] Legacy sessions with only run transcripts still show transcript versions in UI
+- [ ] Old tv__run_id transcript links continue to resolve
+- [ ] No data loss or overwrites
+- [ ] pytest passes
+
+────────────────────────────────────────────────────────
+TALENT POINT
+────────────────────────────────────────────────────────
+# On completion:
+# - Talent Point Awarded: YES / NO
+# - Talent Spent On: (TALENT ID — Name in Talent Tree)
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+# Optional closing notes once the quest is completed or abandoned.

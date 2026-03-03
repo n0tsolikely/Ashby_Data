@@ -1,0 +1,1 @@
+Wired web door: /upload saves to STUART_ROOT inbox/webapp, runs run_default_pipeline, returns pdf_url; /download serves PDF (root-validated). JS shows Download PDF link.

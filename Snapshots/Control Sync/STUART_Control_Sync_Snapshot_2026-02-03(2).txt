@@ -1,0 +1,20 @@
+STUART CONTROL SYNC SNAPSHOT — 2026-02-03
+Timestamp (local): 2026-02-03 21:54:17 UTC (+0000)
+Timestamp (utc):   2026-02-03 21:54:17 UTC (+0000)
+Hands: Peter
+Operator: Ash
+
+CONTROL SYNC STATUS
+- CLOSED
+
+SUMMARY
+- Canonical Ashby_Data and Ashby_Engine confirmed unzipped and active.
+- QUEST_031–QUEST_041 accepted and ACTIVE.
+- Post-30 plan recorded as the remaining V1 scope.
+- No execution performed in this Control Sync.
+
+NEXT RESUME POINT
+- Begin Dailies.
+- Execute QUEST_031 first.
+
+End of snapshot.

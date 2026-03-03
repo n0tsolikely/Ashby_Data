@@ -1,0 +1,267 @@
+ASHBY — END OF DAY SNAPSHOT (MERGED, AUTHORITATIVE)
+DATE: 2025-12-25
+TIMEZONE: America/Toronto (local)
+OPERATOR: notsolikely
+ENV: WSL Ubuntu (RTX4070 laptop)
+
+RAID: Ashby Structural Realignment (Emergency) — ACTIVE (NOT COMPLETE)
+CORE RAID (Guild Orders 2025-12-15): PAUSED / BLOCKED until Emergency Structural Realignment completes
+
+================================================================================
+0) EXECUTIVE STATUS (WHAT TODAY WAS)
+====================================
+
+Today was a high‑risk, high‑discipline structural refactor day spanning a chat hard‑limit boundary. This merged snapshot consolidates:
+
+• The initial emergency End‑of‑Day snapshot
+• The continuation session work
+• A corrected, brutally accurate Done vs Not Done state
+• A precise, no‑guesswork resume plan
+
+This was full engine surgery performed correctly.
+
+Key truths:
+
+• Emergency Structural Realignment is NOT complete yet
+• System is stable and runnable
+• Architecture is significantly cleaner and modular
+• Remaining work is clearly scoped and blocked correctly
+
+================================================================================
+
+1. CANONICALS (LOCKED SOURCES OF TRUTH)
+   ================================================================================
+
+Canonical repo root:
+~/ashby
+
+Canonical python package:
+~/ashby/ashby
+
+Canonical venv:
+/home/notsolikely/venvs/ashby-env
+
+Activate venv:
+source /home/notsolikely/venvs/ashby-env/bin/activate
+
+CLI harness:
+cd ~/ashby
+PYTHONPATH=. python3 io/cli/ashby_interactive.py
+
+Telegram gateway:
+cd ~/ashby
+PYTHONPATH=. python3 io/telegram/ashby_telegram_control.py
+
+================================================================================
+2) STRUCTURAL REALIGNMENT — BASELINE CONTEXT (ALREADY COMPLETED)
+================================================================
+
+The following refactors were completed and verified before and during today:
+
+• Router relocated to ashby/core/router.py
+• ashby/brain/router.py retained as compatibility shim
+• Sessions extracted to ashby/brain/sessions/
+• NLU extracted to ashby/brain/nlu/
+• Memory extracted to ashby/brain/memory/
+• Truth Gate extracted to ashby/core/truth_gate.py
+• Context Snapshot extracted to ashby/core/context_snapshot.py
+• safe_chat extracted to ashby/core/safe_chat.py
+• CLI and Telegram sanity verified repeatedly
+
+These changes remain intact.
+
+================================================================================
+3) VENV RELOCATION (COMPLETED)
+==============================
+
+• Legacy nested venv was relocated and rebuilt cleanly
+• Old path:
+/home/notsolikely/home/notsolikely/ashby-env
+
+• New canonical path:
+/home/notsolikely/venvs/ashby-env
+
+• Old venv preserved as backup:
+/home/notsolikely/venvs/ashby-env_moved_backup
+
+• Packages reinstalled via pip freeze transfer
+
+Verified:
+• CLI lights control works
+• Telegram gateway starts
+
+================================================================================
+4) TELEGRAM FIXES + SECURITY NOTE
+=================================
+
+• Telegram imports fixed to reference canonical env + modules
+• Bot starts and polls correctly
+
+SECURITY WARNING:
+• Telegram token was visible in HTTP logs earlier
+• Logging muted at WARNING level
+• Token rotation recommended later (not a blocker)
+
+================================================================================
+5) ROUTER DECOMPRESSION & MODULE EXTRACTION
+===========================================
+
+5.1 Router relocation + compatibility shim
+
+• Real router: ashby/core/router.py
+• Shim retained: ashby/brain/router.py
+• CLI and Telegram still depend on shim
+
+5.2 Sessions extraction
+
+• New package: ashby/brain/sessions/
+• lighting.py (from lighting_sessions.py)
+• comfort.py (from comfort_sessions.py)
+• Old modules retained as import wrappers
+
+5.3 NLU extraction
+
+• New package: ashby/brain/nlu/
+• Modules moved:
+
+* nlu_manager.py
+* local_nlu.py
+* gpt_nlu.py
+* intent_schema.py
+  • Examples relocated to brain/nlu/examples/
+  • Compatibility wrappers retained
+
+5.4 Memory extraction
+
+• New package: ashby/brain/memory/
+• memory.py moved
+• Wrapper retained at ashby/brain/memory.py
+• **init**.py re‑exports memory API
+
+5.5 Truth Gate extraction
+
+• New module: ashby/core/truth_gate.py
+• safe_chat now calls truth_gate.apply()
+
+5.6 Context Snapshot extraction
+
+• New module: ashby/core/context_snapshot.py
+• Router uses snapshot builder
+
+5.7 safe_chat extraction
+
+• safe_chat moved to ashby/core/safe_chat.py
+• Responsibilities:
+
+* session state fetch
+* memory injection
+* context snapshot build
+* LLM call
+* truth gate enforcement
+
+================================================================================
+6) ROUTER HELPER EXTRACTION (COMPLETED TODAY)
+=============================================
+
+• New module created: ashby/core/normalize.py
+• Stateless helpers moved out of router:
+
+* _clamp_level
+* _normalize_brightness_to_0_1000
+* _normalize_group_from_free_text
+* _intensity_multiplier
+* _is_direct_light_command
+* _reply_style_for_lights
+
+• Incorrect stateful helpers were briefly added and removed
+• Router retained recent‑action helpers correctly
+• Router now imports normalize module
+
+Verified:
+• router.py compiles
+• normalize.py compiles
+• safe_chat.py compiles
+
+================================================================================
+7) SECRETS RENAME (ASHPI → ASHBY) — COMPLETED
+=============================================
+
+• secrets/ashpi_nest.env renamed to secrets/ashby_nest.env
+• All code references updated
+• Verified via grep — no remaining references
+• Telegram and Nest scripts compile
+
+================================================================================
+8) VERIFIED WORKING (END‑OF‑DAY SANITY)
+=======================================
+
+CLI verified:
+• turn on thor
+• turn off thor
+• darker / way darker
+• max
+• comfort flow ("im cold")
+
+Telegram:
+• Gateway starts and polls
+• DO NOT paste logs publicly
+
+================================================================================
+9) KNOWN ISSUES (LOG ONLY — NOT STRUCTURAL BLOCKERS)
+====================================================
+
+• Some phrases fall back to GPT (expected)
+• Direction/intensity phrasing inconsistencies
+• Occasional assistant prefix glitches (harmless)
+
+These are behavior‑layer polish items, not refactor regressions.
+
+================================================================================
+10) EMERGENCY RAID — DEFINITION OF DONE (REMAINING WORK)
+========================================================
+
+The raid is NOT complete until all items below are finished:
+
+A) Router becomes a true thin orchestrator
+• Extract lights + comfort handlers into:
+
+* ashby/capabilities/lights/handler.py
+* ashby/capabilities/comfort/handler.py
+  • Router only parses intent + dispatches
+
+B) Branding cleanup
+• Remove remaining "AshPi" strings
+• Logging + output only
+
+C) Runtime + config scaffolding
+• Introduce runtime/ directory
+• Migrate memory storage safely
+• Add config placeholders (zones, devices, capabilities)
+
+D) Wrapper removal (FINAL STEP)
+• Update CLI + Telegram imports
+• Remove compatibility wrappers
+• Full sanity test
+• Only then mark raid COMPLETE
+
+================================================================================
+11) EXACT RESUME PLAN (NEXT SESSION)
+====================================
+
+1. Activate venv
+2. Run CLI sanity
+3. Confirm Telegram compile
+4. Control Sync
+5. Extract capability handlers
+6. Finalize branding
+7. Add runtime/config scaffolding
+8. Remove wrappers
+9. Declare raid complete
+
+================================================================================
+12) STOP
+========
+
+System is stable, verified, and ready to resume without guesswork.
+
+END OF DAY SNAPSHOT — 2025‑12‑25 (MERGED)

@@ -1,0 +1,59 @@
+STUART V1 — REAL ENGINES SHIP GATE (ONE PAGE)
+DATE: 2026-02-04
+
+This is the minimal, no-excuses runbook to execute the pack correctly.
+
+================================================================================
+STEP 1 — PREP
+================================================================================
+- Unzip latest Data + Engine zips
+- Enter engine root
+- Activate venv
+- Set STRICT MODE:
+    export ASHBY_REQUIRE_REAL_ENGINES=1
+
+================================================================================
+STEP 2 — INSTALL
+================================================================================
+- Install OS deps (see 01__PREREQS)
+- Install Python deps (see 02__INSTALL)
+- Ensure ffmpeg exists:
+    which ffmpeg
+
+================================================================================
+STEP 3 — SECRETS
+================================================================================
+- Export HF token (runtime only):
+    export HF_TOKEN=xxxxxxxx
+- DO NOT PRINT OR LOG TOKEN
+
+================================================================================
+STEP 4 — VERIFY
+================================================================================
+- pytest:
+    python3 -m pytest -q
+
+- Smoke run (CLI or test harness)
+- Confirm artifacts:
+    transcript.json.engine == "faster-whisper"
+    diarization_segments.json.engine == "pyannote"
+    evidence_map.version == 1
+    exports/formalized.pdf exists AND engine == "weasyprint"
+
+================================================================================
+STEP 5 — NEGATIVE TEST (MANDATORY)
+================================================================================
+- Remove one engine (ASR / diarization / PDF)
+- Re-run smoke
+- EXPECTED: FAILURE (not stub)
+
+================================================================================
+STEP 6 — PASS / FAIL
+================================================================================
+PASS only if ALL steps above succeed.
+Otherwise: FAIL — V1 NOT SHIPPABLE.
+
+================================================================================
+STOP
+================================================================================
+When PASS is achieved, freeze release per 05__RELEASE.

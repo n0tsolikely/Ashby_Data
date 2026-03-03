@@ -1,0 +1,129 @@
+================================================================================
+IDENTITY (REQUIRED)
+================================================================================
+Quest ID:
+SIDE-QUEST_084
+
+Title:
+Stuart v1 — Side Quest: Disable Transcribe/Formalize when no audio + backend guard (no infinite spinner)
+
+Subject:
+Ashby / Stuart
+
+Origin:
+STUART_TO_DO_2026-02-20__REV1.txt (#4): pressing Transcribe/Formalize with no audio spins forever.
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- To-Do doc: STUART_TO_DO_2026-02-20__REV1.txt
+- Backend: Ashby_Engine/ashby/interfaces/web/app.py (/api/run + /api/transcribe)
+- Frontend: Stuart.jsx
+
+================================================================================
+CODEX ANCHORS + CONSTRAINT SUMMARY (DRAFT)
+================================================================================
+Codex Anchors (DRAFT):
+- Stuart_Codex_Full.txt §7.4 (Transcription requires audio)
+
+Codex Constraint Summary:
+- If required inputs are missing, the system must fail fast and clearly.
+
+================================================================================
+QUEST BOARD FOLDER STATE
+================================================================================
+Quest Board Folder State: BOARD
+
+================================================================================
+DESCRIPTION
+================================================================================
+The UI can trigger run creation even when the selected session has no audio contributions.
+
+This must be blocked on BOTH sides:
+- Frontend disables buttons and shows a clear message.
+- Backend returns 400 with a deterministic error when session has no audio.
+
+================================================================================
+SCOPE / OBJECTIVE
+================================================================================
+Frontend:
+- If selectedSession.contributions is empty, disable:
+  - Transcribe
+  - Run Formalization
+  - Speaker map actions (if they require transcripts)
+- Show message: “Upload audio before running.”
+- Ensure UI clears processing spinners on 400 error.
+
+Backend:
+- Add guards in /api/run and /api/transcribe:
+  - If session has zero contributions OR resolve_input_contribution would fail:
+    - return HTTP 400 with {code:"NO_AUDIO", message:"No audio uploaded for this session"}
+
+================================================================================
+OUT OF SCOPE
+================================================================================
+- Full cancellation support (SIDE-QUEST_086).
+
+================================================================================
+DEPENDENCIES
+================================================================================
+QUEST_130 adds /api/transcribe; this side quest should guard both endpoints.
+
+================================================================================
+RISK
+================================================================================
+Risk: R0
+
+================================================================================
+DOOR IMPACT
+================================================================================
+Door Impact:
+- WEB
+
+================================================================================
+TESTING LEVEL
+================================================================================
+Testing Level: TL2
+
+================================================================================
+VERIFICATION PLAN (DRAFT)
+================================================================================
+- Manual:
+  - Create empty session, try to transcribe => button disabled.
+  - Force API call anyway => backend returns 400 NO_AUDIO.
+  - UI does not spin forever.
+
+================================================================================
+CHANGE CLASS + VISION DELTA
+================================================================================
+Change Class: FEATURE
+Vision Delta: ALIGNED
+
+================================================================================
+SYSTEM CONTEXT STATEMENT
+================================================================================
+Input validation is truth-gate. A run cannot proceed without audio; the system must say so.
+
+================================================================================
+ANTI-DUPLICATION PLAN
+================================================================================
+- Search for existing NO_AUDIO guards:
+  - rg -n "NO_AUDIO" Ashby_Engine/
+  - rg -n "contributions" app.py
+
+================================================================================
+PLACEMENT INTENT
+================================================================================
+- Web Door: app.py
+- Frontend gating in Stuart.jsx
+
+================================================================================
+TALENT POINT
+================================================================================
+Talent Point Awarded: NO
+
+================================================================================
+EXECUTION AUDIT BUNDLE
+================================================================================
+Audit Bundle Folder Path: (set when moving to ACCEPTED)

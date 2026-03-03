@@ -1,0 +1,137 @@
+================================================================================
+ASHBY END-OF-DAY SNAPSHOT — 2026-02-04
+================================================================================
+
+SESSION CONTEXT
+- Scope: Stuart v1 full pipeline build + retro sanity + talent lock
+- Canon at start of day: QUEST_038
+- Canon at end of day: QUEST_040 + TALENTS_LOCKED
+- Governance: Rehydrated, read in full, enforced (no god-files, router-only orchestration)
+
+--------------------------------------------------------------------------------
+QUESTS EXECUTED TODAY
+--------------------------------------------------------------------------------
+
+QUEST_039 — Formalization from Canonical Transcripts
+- Goal:
+  Ensure formalization uses canonical JSON artifacts (aligned_transcript.json / transcript.json)
+  and produces deterministic, speaker-aware Markdown and evidence.
+
+- Actions Taken:
+  * Inspected existing formalization renderer.
+  * Identified failure mode where transcript section rendered empty due to missing transcript_path.
+  * Implemented robust loader:
+      - meeting → aligned_transcript.json
+      - fallback → transcript.json
+      - fallback → transcript.txt
+  * Forced Transcript section to render with SPEAKER labels when artifacts exist.
+  * Updated evidence citations to include segment_id and timestamps.
+
+- Bugs Encountered:
+  * Formalizer relied solely on passed transcript_path; pipeline did not always supply one.
+  * Evidence map initially anchored loosely without guaranteed segment IDs.
+
+- Fixes:
+  * Added helper loader for transcript artifacts.
+  * Rewired renderer to always render transcript when artifacts exist.
+  * Hardened evidence_map generation to anchor to real segments.
+
+- Verification:
+  * pytest PASS
+  * End-to-end smoke PASS:
+      - formalized.md includes Transcript section
+      - speaker labels present
+      - evidence_map.json anchors valid
+
+--------------------------------------------------------------------------------
+
+QUEST_040 — Evidence Map v1 Anchors
+- Goal:
+  Replace stub evidence map with deterministic, segment-anchored evidence_map.json (v1).
+
+- Actions Taken:
+  * Rewrote evidence_map builder with single responsibility:
+      - load segments from aligned/transcript JSON
+      - anchor claims to first/last segments
+  * Preserved write-once semantics.
+  * Ensured build_evidence_map(run_dir) signature matched orchestrator usage.
+
+- Bugs Encountered:
+  * Signature drift risk between job_runner and renderer.
+  * Early implementation complexity from layered helpers.
+
+- Fixes:
+  * Simplified evidence_map.py to a clean, minimal v1.
+  * Verified job_runner integration without refactor.
+
+- Verification:
+  * pytest PASS
+  * Smoke PASS:
+      - evidence_map.json exists
+      - anchors reference valid segment_id
+
+--------------------------------------------------------------------------------
+RETRO SANITY CHECK — STUART v1
+--------------------------------------------------------------------------------
+
+- Purpose:
+  Prove (not assume) that the system is structurally sound before locking talents.
+
+- Executed Checks:
+  * Full engine + data inventory (find-based, not assumed).
+  * Grep proof:
+      - job_runner contains no model logic (no Whisper, pyannote, WeasyPrint imports).
+  * Full pytest run.
+  * End-to-end isolated smoke run under fresh STUART_ROOT:
+      audio → normalize → diarize → ASR → align → formalize → evidence → PDF
+
+- Results:
+  * All canonical artifacts produced.
+  * Truthful fallbacks engaged where deps missing.
+  * No god-file drift detected.
+
+- Verdict:
+  RETRO SANITY PASS
+
+--------------------------------------------------------------------------------
+TALENT LOCK
+--------------------------------------------------------------------------------
+
+- Location:
+  Ashby_Data/Talent Tree/Stuart/
+
+- Files Updated:
+  * TALENT_TREE.txt (append-only)
+  * TALENT_LOG.txt (append-only, canonical entries)
+
+- Talents Locked:
+  1) TALENT_STUART_LOCAL_SPEECH_UNDERSTANDING_V1
+  2) TALENT_STUART_STRUCTURED_MEETING_INTELLIGENCE_PIPELINE_V1
+  3) TALENT_STUART_DETERMINISTIC_DOCUMENT_FORMALIZATION_V1
+
+- Evidence:
+  Audits/Retro/RETRO_SANITY_2026-02-04_032715
+
+--------------------------------------------------------------------------------
+KNOWN LIMITATIONS (ACCEPTED)
+--------------------------------------------------------------------------------
+- Real ASR / diarization deps not installed in environment (truthful stub fallback in place).
+- No real-time processing.
+- No speaker identity resolution (labels only).
+- PDF styling minimal (renderer real but not themed).
+
+--------------------------------------------------------------------------------
+END STATE
+--------------------------------------------------------------------------------
+- Stuart v1 is structurally complete, truthful, modular, and shippable.
+- All work is artifact-backed and audited.
+- Talents locked based on executed evidence.
+- Ready for:
+    * EOD freeze
+    * Door polish (Telegram/Web)
+    * Real-engine enablement
+    * v1.1 planning
+
+================================================================================
+END OF SNAPSHOT
+================================================================================

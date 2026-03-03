@@ -1,0 +1,66 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_074
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Support: export bundle v1 (session zip: manifests + artifacts + exports)
+
+Context: Stuart exports
+
+Origin:
+Control Sync — 2026-02-04 (Stuart v1 finish-line: REV5)
+
+Priority: P2
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV5.txt (Export requirement)
+
+Status: COMPLETED
+Audit Bundle Path:
+  /mnt/data/Ashby_Data/Audits/Execution/QUEST_074__2026-02-11__stuart_v1_export_bundle_v1_session_zip_readonly
+Accepted On:
+2026-02-11
+Accepted By:
+Hands (Peter)
+Completed On:
+2026-02-11
+
+Completed By:
+Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Implement a deterministic export bundle zip for a session/run containing run.json, contribution/session metadata, artifacts, and exports (minutes/journal PDF/MD). Bundle must be read-only copy.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Add bundler function that builds zip for a run or session
+- Bundle naming includes session_id + date
+- No mutation of canonical store
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Cloud upload
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_045
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Bundle should include evidence_map.json.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [x] Export bundle zip is created deterministically
+- [x] Zip contains primary outputs + run manifest
+

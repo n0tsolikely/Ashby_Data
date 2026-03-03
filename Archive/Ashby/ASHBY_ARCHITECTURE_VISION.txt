@@ -1,0 +1,300 @@
+ASHBY_ARCHITECTURE_VISION.txt
+
+GOAL
+Ashby is an agentic platform (a skeleton) that turns intelligence (LLM reasoning) into reliable, stateful operation over real systems. It must be modular, brand-agnostic, zone-based, and removable-by-module. Any engineer should be able to open the repo, instantly see where everything lives, and add/remove modules without breaking the core.
+
+NON-NEGOTIABLE PRINCIPLES
+
+1. NO GOD FILES. Ever.
+2. Separate WHAT from HOW:
+
+   * WHAT = intent, policy, domain logic, state, sessions, scheduling, truth gating
+   * HOW = brand/device execution adapters (Tuya, Nest, Reolink, etc.)
+3. Router is a dumb orchestrator only.
+4. Modules are removable: remove lights and the system still runs; remove devices and it still chats.
+5. Zone-based domain model:
+
+   * zones are abstract (zone1..zoneN)
+   * rooms are mappings/labels to zones (user-defined)
+   * devices attach to zones/rooms with category/role/capabilities
+6. Action-Gated Truth:
+
+   * Ashby must never claim an action occurred unless execution confirmed it (or explicitly says it failed).
+7. Config-first, not code-first:
+
+   * zones, device registry, aliases, and mappings live in JSON/YAML configs, not hardcoded in Python.
+8. Clear boundaries and naming:
+
+   * Core platform stays stable
+   * Feature modules plug in cleanly
+   * Brand adapters are isolated
+
+TARGET REPO LAYOUT (END STATE)
+ashby/
+README.md
+pyproject.toml (or requirements.txt)
+ashby/
+**init**.py
+
+```
+core/
+  router.py                 # thin orchestrator, no domain logic
+  app.py                    # entrypoint wiring (optional)
+  logging.py                # shared logging utilities
+  errors.py                 # shared exceptions
+  config_loader.py          # loads configs/registry
+  truth_gate.py             # action verification + response constraints
+  scheduler.py              # timers/cron/delayed actions (later)
+  context_snapshot.py       # builds state snapshot injected into chat
+
+brain/
+  chat_engine.py            # LLM interface (safe_chat), prompt assembly
+  nlu/
+    nlu_manager.py          # hybrid extractor (local + gpt)
+    gpt_nlu.py
+    local_nlu.py
+    intent_schema.py
+  memory/
+    memory_store.py         # per-user memory (get/set/patch)
+  policy/
+    action_policy.py        # “should we act or clarify?”
+    clarify_policy.py       # clarifier questions logic
+    style_policy.py         # response style rules
+  sessions/
+    session_manager.py      # base session store + helpers
+    lights_session.py
+    comfort_session.py
+    (future) cameras_session.py
+
+domain/
+  models/
+    device.py               # Device model (id, capabilities, brand, category, role)
+    zone.py                 # Zone model (zone id, labels)
+    room.py                 # Room model (optional label->zone)
+    action.py               # Action request/result types
+    state.py                # HouseState (authoritative state snapshot)
+  registry/
+    device_registry.py      # loads devices from config; queries by capability/zone/alias
+    alias_registry.py       # user phrases -> zone/device hints
+  resolution/
+    target_resolver.py      # resolves “the lights” -> group/devices based on context
+    capability_matcher.py   # matches intent needs to device capabilities
+
+modules/                     # FEATURE MODULES (brand-agnostic)
+  lights/
+    handler.py              # interprets lights intents, uses resolver + service
+    service.py              # high-level ops: set_level, off, on, scene
+    schemas.py              # lights-specific action/result shapes
+  plugs/
+    handler.py
+    service.py
+  thermostat/
+    handler.py
+    service.py
+  cameras/
+    handler.py
+    service.py
+  meetings/                  # STUART MODULE
+    handler.py              # meeting ingestion / commands
+    service.py              # transcription + diarization + summarization pipeline
+    storage.py              # meeting records, indexes
+  (future modules...)
+
+adapters/                    # BRAND-SPECIFIC EXECUTION (HOW)
+  tuya/
+    lights_adapter.py       # implements LightsAdapter interface via Tuya
+    plugs_adapter.py
+  nest/
+    thermostat_adapter.py
+  reolink/
+    camera_adapter.py
+  (future brands...)
+
+interfaces/                  # CONTRACTS BETWEEN MODULES & ADAPTERS
+  lights.py                  # LightsAdapter protocol/interface
+  plugs.py
+  thermostat.py
+  cameras.py
+  storage.py                 # persistent store interface (optional)
+
+io/
+  telegram/
+    telegram_app.py          # transport integration (Telegram)
+  cli/
+    cli.py                   # local testing harness
+  voice/
+    (later)
+
+configs/
+  zones.json                 # zone1..zoneN + labels
+  rooms.json                 # room labels -> zone ids (optional)
+  devices.json               # device inventory (id, brand, category, role, capabilities, zone)
+  aliases.json               # user phrases -> {zone/device/category hints}
+  modules.json               # enabled/disabled modules + default settings
+  brands.json                # brand credentials references, not secrets
+
+secrets/                     # NOT committed
+  .env                       # keys/tokens
+```
+
+WHAT HAPPENS IN EACH LAYER (RESPONSIBILITY MAP)
+
+1. TRANSPORT (Telegram / CLI / Voice)
+
+* receives raw user text/voice
+* calls core.router.handle_input(user_id, text, metadata)
+* never contains device logic
+
+2. CORE ROUTER (thin orchestrator)
+
+* builds request context
+* calls brain.nlu.extract_intent()
+* calls brain.policy.action_policy: act vs clarify vs chat
+* dispatches to the correct module handler (lights/plugs/thermostat/cameras/meetings/chat)
+* receives action plan
+* executes via module service (which calls adapters)
+* passes results into truth_gate/context_snapshot
+* calls brain.chat_engine to generate final response constrained by verified results
+
+Router does NOT:
+
+* parse slang deeply
+* resolve devices
+* contain Tuya/Nest/Reolink calls
+* contain module-specific logic
+
+3. BRAIN (reasoning infrastructure)
+
+* NLU: intent + entities + confidence
+* Sessions: “we’re in a lights session” state, last_delta, awaiting_target, etc.
+* Policy: decide whether to act or ask a question
+* Style: command replies short, vibe replies chatty, etc.
+* Memory: store/retrieve per-user preferences and last known states
+
+4. DOMAIN (model + resolution)
+
+* authoritative device/zone registry and lookup
+* resolves ambiguous phrases (“the lights”, “in here”) using:
+
+  * active session
+  * user’s last target
+  * zone defaults
+  * alias mappings
+  * capability matching
+* produces clean targets and action specs for modules
+
+5. MODULES (feature logic, brand-agnostic)
+   Each module has:
+
+* handler.py (interprets intents into module actions using domain resolution)
+* service.py (executes module actions using adapter interfaces)
+* does not contain brand specifics
+
+Example:
+modules/lights/handler.py:
+
+* takes intent “lights.adjust” + context
+* calls target_resolver to decide which lights group
+* calls lights.service.set_level(target, level)
+* returns ActionResult(s)
+
+6. ADAPTERS (brand-specific execution)
+
+* implement interface contracts (LightsAdapter, ThermostatAdapter, etc.)
+* translate generic actions into vendor API calls
+* return standardized results (success/failure + actual state if available)
+* are swappable without changing modules
+
+7. TRUTH GATE + SNAPSHOT INJECTION (hallucination resistance)
+
+* Only verified execution results can be described as “done”
+* If uncertain: “I tried X but couldn’t confirm Y”
+* Builds a compact state snapshot:
+
+  * last_action
+  * active sessions
+  * preferred_temp
+  * last_known_temp
+  * last_targets
+  * device/zone context
+* Chat engine uses snapshot + verified results to produce grounded replies
+
+ZONE-BASED SYSTEM (MANDATORY)
+
+* zones are canonical: zone1..zoneN
+* rooms are human labels mapped to zones (optional convenience)
+* devices attach to zones with:
+
+  * category: lights/plugs/thermostat/cameras/…
+  * role: main/ambient/desk/porch/security/…
+  * capabilities: on_off, brightness, color_temp, color_rgb, motion, recording, etc.
+* NLU can extract “kitchen” but domain resolves “kitchen” -> zone3 via rooms/aliases
+* NO hardcoded “bedroom/kitchen” inside code logic
+
+MODULE REMOVABILITY RULE
+
+* modules load via a registry (configs/modules.json)
+* router only dispatches to enabled modules
+* if a module is disabled or missing, router falls back to:
+
+  * clarification (if needed)
+  * or pure chat
+* adapters are optional per module:
+
+  * lights module can exist without tuya adapter (just returns “no adapter configured”)
+
+HOW STUART FITS THE ASHBY SKELETON
+Stuart is a module, not a separate platform.
+
+Stuart (meetings module) uses the SAME Ashby platform pieces:
+
+* transport (Telegram/web/cli)
+* router orchestration
+* session handling (meeting capture session)
+* memory/storage (meeting archive, decisions, action items)
+* policy (when to start/stop recording, ask clarifiers)
+* truth gating (don’t claim diarization is perfect if confidence is low)
+* scheduling (send summary 10 minutes after meeting ends)
+* chat engine for narrative summaries
+
+What changes is ONLY the domain + module:
+
+* domain models for meeting records, speakers, timestamps, decisions
+* adapters for audio/transcription backends (e.g., Whisper, cloud STT, diarization engines)
+  So Ashby is the skeleton; Stuart is “meetings” running on it.
+
+WHAT WE DO NEXT (REORG PLAN, HIGH LEVEL)
+
+1. Freeze behavior: don’t change features while moving code.
+2. Create the new folder structure (core/ brain/ domain/ modules/ adapters/ interfaces/ configs/ io/).
+3. Move Tuya execution OUT of router into adapters/tuya + modules/lights/service.py.
+4. Ensure router only dispatches:
+
+   * intent -> module handler -> service -> adapter
+5. Introduce interface contracts in interfaces/ so modules never import tuya directly.
+6. Move target resolution logic out of router into domain/resolution/target_resolver.py.
+7. Centralize registry/config loading (configs/*.json) and kill hardcoded labels.
+8. Add module registry + enable/disable switch.
+9. Keep a clean test harness (io/cli) to validate each module independently.
+
+QUALITY BAR (THE “ANY ENGINEER CAN READ IT” RULE)
+
+* Every folder has a short README.md explaining purpose
+* Every module has:
+
+  * handler/service separation
+  * interface-only dependency on adapters
+* No circular imports
+* No vendor code outside adapters/
+* Router stays under a sane size and reads like a pipeline, not a brain
+
+END RESULT (VISION)
+Ashby becomes a clean, scalable platform where:
+
+* “Intelligence” (LLM) is plugged into a real operating system of state + policy + execution
+* IoT control is just one set of modules
+* Stuart (meetings) is another module
+* Future systems (Tori, etc.) are modules too
+* Any brand can be added by writing an adapter that satisfies the interface
+* Any category can be added by writing a new module with handler/service
+* Nothing becomes a god file because the architecture makes it impossible by design

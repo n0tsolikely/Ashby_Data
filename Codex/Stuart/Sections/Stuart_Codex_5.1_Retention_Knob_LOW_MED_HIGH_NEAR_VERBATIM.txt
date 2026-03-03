@@ -1,0 +1,108 @@
+STUART CODEX
+5.1 Retention Knob (LOW / MED / HIGH / NEAR-VERBATIM) (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines the retention knob as a first-class control. We already established retention defaults per template (Section 4.3). This section defines how retention behaves operationally and how it prevents the failure mode you repeatedly called out: “AI summaries that lose the payload.”
+
+Retention controls phrasing preservation and consolidation. It does not weaken truth rules.
+
+1) Why retention exists
+
+In speech-to-knowledge, the most common failure is over-compression:
+- the system outputs generic abstractions (“they talked about a pig”),
+- losing the actual language that carries value (especially for creators, comedians, and nuanced meetings).
+
+Retention exists to give the user a reliable dial that controls loss.
+
+2) Retention is a contract, not a vibe
+
+Retention must be:
+- predictable,
+- repeatable,
+- and consistent across runs.
+
+If a user runs a session twice with the same transcript, same template, same retention:
+- the output should be structurally consistent,
+- and the level of paraphrase vs quotation should be consistent.
+
+3) Canonical retention levels (behavioral rules)
+
+LOW
+- Consolidate aggressively.
+- Prefer short bullet points.
+- Preserve only essential phrasing (names, key terms, direct commitments).
+- Include few/no long quote blocks.
+- Still must cite decisions/actions.
+Use when: user wants quick executive view.
+
+MED
+- Balanced consolidation.
+- Preserve key phrases and representative quotes.
+- Maintain structured sections with readable paragraphs.
+Use when: standard minutes and journals.
+
+HIGH
+- Preserve most phrasing.
+- Use frequent quote blocks or near-verbatim bullets.
+- Consolidate only obvious repeats and filler.
+Use when: detailed minutes, creator work, sensitive records.
+
+NEAR-VERBATIM
+- “Organized transcript” behavior:
+  - remove disfluencies and obvious stutters where safe,
+  - keep wording largely intact,
+  - organize into template sections,
+  - minimal paraphrase.
+Use when: wording is the payload.
+
+4) Retention interacts with templates
+
+Templates define:
+- default retention,
+- and where quote blocks should appear.
+
+Retention can be overridden per run, but templates provide sensible defaults so users don’t have to think.
+
+5) Retention does not override truth rules
+
+Retention cannot:
+- invent decisions,
+- invent action item assignments,
+- invent timelines,
+- invent root causes,
+- or invent intent.
+
+Retention only affects how much phrasing is preserved and how much consolidation occurs.
+
+6) Practical implication: long meetings and “token limits”
+
+Higher retention outputs can be long (especially near-verbatim).
+Therefore, Stuart must not rely on “one huge model call.”
+
+Instead, the pipeline must support:
+- chunked/hierarchical formalization,
+- section-by-section aggregation,
+- and merging with de-duplication,
+while preserving citations.
+
+This avoids truncation and keeps outputs complete even for hour-long, multi-speaker meetings.
+
+(Implementation details are defined later in Pipeline; this section locks the requirement that retention must remain feasible at scale.)
+
+7) UI and chat interaction
+
+Users can set retention via:
+- template defaults (recommended),
+- UI override (optional),
+- or chat command (“Set retention to HIGH”).
+
+Stuart should always show what retention was used in a generated artifact’s metadata.
+
+8) Self-audit (5.1)
+
+- This section reflects our chat decisions: “summary” is the wrong mental model; retention is the dial that prevents loss and preserves creator-grade wording.
+- It explicitly ties retention to the long-meeting problem and requires chunked/hierarchical formalization rather than hoping context limits are enough.
+- It preserves the invariant that retention never weakens truth/evidence rules.
+This section is complete.

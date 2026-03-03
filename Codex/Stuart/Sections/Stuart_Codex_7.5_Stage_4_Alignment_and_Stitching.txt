@@ -1,0 +1,164 @@
+STUART CODEX
+7.5 Stage 4: Alignment and Stitching (Canonical)
+
+Status: Canonical (Regenerated v2)
+Last updated: 2026-01-12
+
+Stage 4 merges diarization (Stage 2) and transcription (Stage 3) into a single coherent, citeable, time-aligned record that downstream stages can trust.
+
+This stage exists because:
+- Stage 3 gives words and timestamps (ground truth text).
+- Stage 2 gives speaker segmentation (probabilistic).
+- Stuart must support “who said what” without guessing or rewriting history.
+
+Chat-canon constraints enforced here:
+- Transcript text is ground truth and is not rewritten by diarization.
+- Diarization is probabilistic and must be applied conservatively with uncertainty disclosure.
+- Speaker name mapping is an overlay (never rewrites diarization or transcript).
+- Timestamps must remain stable for evidence, printing, and jump-to-audio.
+
+1) Inputs
+
+Stage 4 consumes:
+
+A) Transcript output (required)
+- transcript.json (Stage 3)
+- transcription_report.json (optional)
+
+B) Diarization output (optional, but required for many multi-speaker meeting workflows)
+- diarization.json (Stage 2)
+- diarization_report.json (optional)
+
+C) Optional overlays (never treated as ground truth)
+- speaker_map.json (user mapping: SPEAKER_00 → “Greg”)
+- transcript_corrections.json (if user applied a correction overlay)
+- speaker_corrections.json (if user corrected diarization label spans)
+
+D) Optional chunking artifacts
+- chunk_plan.json / speech_segments.json (from Stage 1 planning)
+
+2) Outputs (minimum required)
+
+Stage 4 MUST produce:
+
+A) aligned_transcript.json (machine)
+Primary downstream transcript representation. Must include at minimum:
+- segment_id (stable)
+- contribution_id (source reference for multi-contribution sessions)
+- start_time, end_time (stable; do not drift)
+- text (ground truth; unchanged unless an explicit correction overlay is applied and tracked)
+- speaker_label (SPEAKER_00 / SPEAKER_01 / UNKNOWN)
+- speaker_confidence (if provided by diarizer or computed by aligner)
+- overlap_flag (true/false) where applicable
+- attribution_status (confident / uncertain / unavailable)
+- provenance:
+  - transcription_run_id
+  - diarization_run_id (or null)
+  - alignment_run_id
+
+B) aligned_transcript.txt (human)
+- readable transcript
+- speaker labels shown where confident
+- explicit UNKNOWN and/or uncertainty markers where not confident
+- no hard-wrap corruption
+
+C) alignment_report.json (recommended)
+- attribution coverage (% attributed vs unknown)
+- overlap summary (if supported)
+- low-confidence attribution intervals
+- warnings and recommended user actions
+
+D) run record (required)
+- run_type: align
+- profile_used
+- adapters_used (Alignment adapter)
+- inputs_used
+- outputs_created
+- config_snapshot (thresholds and policies)
+
+3) Canonical alignment rules (LOCKED)
+
+AL-1) Do not rewrite transcript words
+Alignment MUST NOT change transcript wording as a side-effect of diarization.
+Any cleanup belongs in derived views, never in the ground truth transcript artifacts.
+
+AL-2) Preserve timestamps exactly
+Alignment must not shift time anchors. If internal chunk merging occurs, Stage 4 must preserve exact original times through deterministic mapping.
+
+AL-3) Conservative attribution with thresholds
+Speaker labels must be applied only when confidence is above threshold.
+When below threshold:
+- set speaker_label = UNKNOWN (or equivalent)
+- set attribution_status = uncertain
+No silent “best guess.”
+
+AL-4) Preserve overlap as a first-class signal
+If overlap is detected:
+- mark overlap_flag
+- keep evidence that overlap occurred
+- do not pretend the overlap is cleanly separable if it is not.
+When uncertain, label uncertainty.
+
+AL-5) Speaker mapping is overlay-only
+Mapping SPEAKER_00 → Greg is applied as display metadata.
+The canonical aligned transcript still stores the diarizer’s label for auditability.
+
+AL-6) Corrections are overlays with audit logs
+User edits to speaker labels or transcript text must be represented as overlays:
+- who, when, what, where (time ranges/segment ids)
+- original vs corrected values
+The original ground truth remains available for audit.
+
+4) Segment granularity and re-segmentation
+
+Alignment may re-segment transcript segments to improve attribution alignment. If so:
+- preserve traceability to original segment ids via parent_segment_id
+- keep timestamps authoritative
+- never paraphrase; re-segmentation is structural only.
+
+5) Multi-contribution sessions
+
+If session contains multiple contributions:
+- every aligned segment must include contribution_id
+- citations must jump to the correct source file + timestamp range.
+
+6) Degraded mode (no diarization)
+
+If diarization.json is absent:
+- aligned_transcript.json still exists with speaker_label = UNKNOWN
+- attribution_status = unavailable
+- alignment_report warns clearly.
+
+Downstream:
+- minutes may proceed only if user confirms degraded attribution
+- speaker-based queries must be honest about limitations.
+
+7) Profile constraints
+
+LOCAL_ONLY:
+- alignment runs fully local.
+
+HYBRID/CLOUD:
+- alignment may run remote only with explicit disclosure/confirmation if transcript/diarization data must leave the machine.
+- run record captures provider/adapter and data scope.
+
+8) Failure behavior
+
+If alignment fails:
+- transcript.json remains valid ground truth
+- diarization.json remains valid if present
+- run marked failed
+- user can retry or proceed without attribution
+
+Alignment failure must never block access to raw transcript artifacts.
+
+9) Self-audit (7.5 v2)
+
+Chat-canon alignment checklist:
+- No auto-run: alignment only runs after explicit execution, not on upload. (Maintained.)
+- Transcript truth: no rewriting words; diarization adds metadata only. (Maintained.)
+- Uncertainty discipline: thresholds + UNKNOWN + overlap marking. (Maintained.)
+- Speaker mapping overlay separation: mapping never rewrites diarization/transcript. (Maintained.)
+- Evidence integrity: stable timestamps and traceability for long and multi-source sessions. (Maintained.)
+
+This section is complete.

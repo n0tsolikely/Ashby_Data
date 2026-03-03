@@ -1,0 +1,115 @@
+STUART CODEX
+9.2 Compliance Considerations (Healthcare / Elder Care / Sensitive Orgs) (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section captures compliance considerations relevant to Stuart’s target environments, especially:
+- elder care / nursing home incident reports,
+- internal corporate meetings,
+- and other privacy-sensitive recordings.
+
+Important:
+This is not legal advice. It is an engineering posture specification that helps avoid obvious violations and reduces risk.
+
+Chat-canon drivers:
+- You explicitly want a version that can be fully offline/local for sensitive settings.
+- You want to avoid the user having to answer “where did the data go?”
+- Therefore LOCAL_ONLY must be viable and usable.
+
+1) Threat model (what can go wrong)
+
+C1) Unauthorized disclosure
+Audio/transcripts contain personal or medical information and leak externally.
+
+C2) Retention risk
+Data is kept longer than necessary or stored in unknown places (cloud providers).
+
+C3) Access control failures
+On shared machines, recordings become accessible to the wrong people.
+
+C4) Misattribution and error risk
+Incorrect transcripts or speaker attributions can create false records.
+
+C5) Policy drift
+Users start using HYBRID/CLOUD without realizing it, violating internal policies.
+
+2) Engineering posture for sensitive environments
+
+SENS-1) LOCAL_ONLY is the safe baseline
+For healthcare/elder care and similar sensitive environments:
+- default recommended profile is LOCAL_ONLY
+- no network calls
+- no remote processing
+
+SENS-2) Clear UI indicators for profile
+Stuart must display the current profile clearly (LOCAL_ONLY vs HYBRID vs CLOUD).
+Users should not have to “remember” what mode they’re in.
+
+SENS-3) Explicit confirmation before any remote action
+If a user is in HYBRID/CLOUD and tries a remote adapter:
+- explicit disclosure + confirmation is required.
+For regulated environments, you may lock the app to LOCAL_ONLY by policy (future admin setting).
+
+SENS-4) Audit logs for evidence and disputes
+Because incidents may become formal records:
+- evidence maps and run logs are essential.
+- uncertainty must be disclosed.
+- correction overlays must be auditable (who changed what and when).
+
+SENS-5) Data lifecycle controls
+Stuart must support:
+- delete session
+- export session
+- reveal storage location
+So organizations can follow internal retention policies.
+
+3) Transcript accuracy posture (avoid “false records”)
+
+In sensitive environments, a transcript can be mistaken for a perfect record.
+Therefore:
+- transcripts must be labeled as ASR-derived,
+- low-confidence regions should be flagged,
+- diarization uncertainty should be disclosed,
+- and users should be able to correct via overlays.
+
+Stuart must never silently “fix” errors without a trail.
+Truth discipline beats “nice looking minutes.”
+
+4) Redaction posture
+
+For regulated environments, exporting incident reports may require redaction.
+Therefore:
+- sanitized export bundles should exist (vNext),
+- redaction reports should be produced for audit.
+
+But the strongest stance remains:
+- don’t send to cloud; keep it local.
+
+5) Meeting recording consent
+
+Recording meetings often requires consent (varies by jurisdiction and policy).
+Stuart should not encourage unlawful recording.
+
+Engineering posture:
+- if Stuart adds “join meeting” or live capture later, consent prompts and disclaimers should exist.
+- In V1, rely on user-provided recordings (they already recorded it).
+
+6) Template sharing restrictions
+
+In sensitive environments, sharing templates externally is risky.
+Therefore:
+- template sharing is future/gated (Section 4.7),
+- LOCAL_ONLY should default to no sharing,
+- if sharing exists later, scrub/preview/review must be mandatory.
+
+7) Self-audit (9.2)
+
+Chat-canon alignment checklist:
+- LOCAL_ONLY viability: designed as the safe baseline for elder care incidents and private org meetings. (Maintained.)
+- Profile clarity + explicit confirmations: prevents accidental policy drift. (Maintained.)
+- Auditability + uncertainty disclosure: avoids creating false “perfect records” and supports disputes. (Maintained.)
+- Data lifecycle controls: supports retention policies (delete/export/reveal). (Maintained.)
+- Template sharing is gated: avoids PII leakage. (Maintained.)
+
+This section is complete.

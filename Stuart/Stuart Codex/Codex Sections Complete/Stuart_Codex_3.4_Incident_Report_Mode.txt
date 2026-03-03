@@ -1,0 +1,122 @@
+STUART CODEX
+3.4 Incident Report Mode (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines Incident Report Mode. Incident reporting is a core use case because organizations often require structured documentation with strict truth discipline.
+
+Incident Report Mode produces:
+- a verbatim transcript (always generated internally), and
+- an incident formalization shaped by an organization-specific template, with strict evidence rules.
+
+1) Inputs and assumptions
+
+Typical input:
+- A recorded incident debrief, incident call, or voice note describing an incident.
+- Could be single speaker or multi-speaker.
+- May include sensitive personal or organizational data.
+
+Assumptions:
+- The recording may include partial information and uncertainty.
+- Root cause may not be known at time of reporting.
+
+2) Required artifacts (minimum)
+
+Upon execution (transcription + incident report run), Stuart must produce at minimum:
+- transcript.json
+- transcript.txt
+- incident_report.json
+- incident_report.md
+- incident_report.pdf
+- evidence_map.json
+
+3) Core structure (template-driven but with canonical anchors)
+
+Incident reporting differs by company. Templates are first-class for this mode.
+However, Stuart should support canonical anchor fields that most incident reports share:
+
+I1) Summary (high-level, factual)
+- what happened (as stated)
+- impact (as stated)
+- current status (as stated)
+No invention.
+
+I2) Timeline
+- ordered events with timestamps or relative ordering
+- citations to transcript
+If exact times are not stated, Stuart must represent uncertainty (“time not stated; described as ‘later that evening’”).
+
+I3) Detection and response
+- how it was detected (if stated)
+- what actions were taken (if stated)
+- who took actions (only if explicit and confidence permits)
+
+I4) Impact
+- who/what was affected (if stated)
+- severity labels only if user provides them or template requires them
+
+I5) Root cause
+- only if explicitly stated
+- otherwise “unknown / under investigation”
+
+I6) Follow-ups / next actions
+- action items with assignee if explicitly stated
+- unassigned otherwise
+- citations
+
+4) Strict truth rules for incidents
+
+Incidents are high-stakes.
+
+Rules:
+- Stuart must not invent a root cause.
+- Stuart must not invent an impact scope.
+- Stuart must not claim mitigation success unless stated.
+- Stuart must label uncertainties clearly.
+- Stuart must treat “hypotheses” as hypotheses, not facts.
+
+5) Privacy requirements
+
+Incidents often include PII and sensitive information.
+Therefore:
+- LOCAL_ONLY must be fully supported for incident reporting.
+- HYBRID/CLOUD runs must disclose exactly what data is sent.
+- Redaction should be supported when remote stages are used.
+
+6) Retention levels
+
+Retention can be used to control detail:
+- LOW: high-level report
+- MED: balanced report with key details
+- HIGH: detailed report with near-verbatim evidence blocks
+- NEAR-VERBATIM: “organized transcript as incident report” style
+
+The template may override recommended retention.
+
+7) Re-running incident reports
+
+After transcription exists:
+- Users can switch templates (company formats),
+- re-run the incident report formalization,
+- without re-transcribing.
+
+This supports organizations with multiple report formats (internal vs external).
+
+8) Printing and export
+
+Incident reports must be printable and shareable.
+- PDF export is mandatory.
+- Markdown export supports internal editing, but must be treated as user-edited if modified outside Stuart.
+
+9) Self-audit (3.4)
+
+This section reflects our chat decisions:
+- incident reporting is an important mode, template-driven per org,
+- transcript always exists internally,
+- strict truth rules are non-negotiable (no invented root cause/impact),
+- evidence and citations are required,
+- privacy is central and LOCAL_ONLY must work,
+- and print-ready exports are required.
+
+This section is complete.

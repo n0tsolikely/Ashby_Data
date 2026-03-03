@@ -1,0 +1,248 @@
+# ASHBY — END OF DAY SNAPSHOT
+
+**Date:** 2025-12-29
+**Timezone:** America/Toronto
+**Raid:** Ashby Structural Realignment (Emergency)
+**Status:** **COMPLETE** ✅
+**Operator:** notsolikely
+**Canonical Root:** `~/ashby`
+**Canonical Python Path:** `~/ashby/ashby`
+**Canonical Environment:** `ashby-env`
+
+---
+
+## 1. RAID PURPOSE (RECAP)
+
+This Emergency Structural Realignment raid existed to:
+
+* Eliminate architectural drift and zombie files
+* Establish **one canonical router**
+* Enforce WHAT vs HOW separation
+* Remove duplicated execution logic
+* Finish AshPi → Ashby naming cleanup
+* End with a **verified, restorable backup artifact**
+
+No feature work. No behavior redesign. Structure only.
+
+---
+
+## 2. WORK COMPLETED (AUTHORITATIVE)
+
+### STEP 0 — Safety
+
+* Created temporary router backups
+* Verified ability to restore quickly if needed
+
+### STEP 1 — Router Thinning (Lights)
+
+* Removed all legacy lights ON/OFF/ADJUST execution blocks from router
+* Router now **only dispatches** to:
+
+  * `ashby/capabilities/lights/handler.py`
+* Verified via CLI harness with real Tuya devices
+
+### STEP 2 — Comfort Extraction
+
+* Created `ashby/capabilities/comfort/handler.py`
+* Moved all comfort logic out of router:
+
+  * active session follow-ups
+  * `comfort.cold` trigger
+* Router now dispatches comfort identically to lights
+* Verified via CLI harness
+
+### STEP 3 — IO Import Migration
+
+* IO now imports canonical router directly:
+
+  * `io/cli/ashby_interactive.py`
+  * `io/telegram/ashby_telegram_control.py`
+* Removed dependency on compatibility router path
+
+### STEP 4 — Zombie Wrapper Purge
+
+Deleted re-export / compatibility-only files:
+
+* `ashby/brain/router.py`
+* `ashby/brain/comfort_sessions.py`
+* `ashby/brain/lighting_sessions.py`
+* `ashby/brain/gpt_nlu.py`
+* `ashby/brain/local_nlu.py`
+* `ashby/brain/intent_schema.py`
+* `ashby/brain/nlu_manager.py`
+* `ashby/brain/memory.py`
+
+Canonical implementations remain under:
+
+* `ashby/brain/nlu/`
+* `ashby/brain/sessions/`
+* `ashby/brain/memory/`
+
+### STEP 5 — AshPi → Ashby Naming Purge
+
+* Renamed legacy scripts (`ashpi_*` → `ashby_*`)
+* Cleaned AshPi references from:
+
+  * logs
+  * CLI output
+  * comments
+  * NLU strings
+* Remaining occurrences are **intentionally allowed**:
+
+  * archived venv: `archive/venvs/ashpi-env`
+  * router backup artifacts
+  * real email string in secrets
+
+### STEP 6 — Final Sanity
+
+* CLI harness passed with natural language inputs
+* Telegram gateway launched and processed commands
+* Lights + comfort flows operate end-to-end
+
+---
+
+## 3. VERIFIED FILE STATE
+
+### Modified
+
+* `ashby/ashby/core/router.py`
+* `ashby/ashby/capabilities/lights/handler.py`
+* `ashby/ashby/capabilities/comfort/handler.py`
+* `io/cli/ashby_interactive.py`
+* `io/telegram/ashby_telegram_control.py`
+* `ashby/ashby/control/device_control.py`
+* `ashby/ashby/control/lights_tuya.py`
+* `ashby/ashby/brain/nlu/*`
+* `scripts/*`
+
+### Created
+
+* `ashby/ashby/capabilities/comfort/handler.py`
+
+### Deleted
+
+* All compatibility / re-export brain wrappers
+
+---
+
+## 4. BACKUP STATUS (CRITICAL)
+
+### Backup Artifact
+
+* **Filename:** `ASHBY_BACKUP_2025-12-29.tar.gz`
+* **Location:** Ubuntu home directory
+* **Verified by extraction** into clean directory
+* **Confirmed contents:**
+
+  * router
+  * lights handler
+  * comfort handler
+  * IO scripts
+  * secrets (with redacted variants)
+  * memory state
+
+### Verification Performed
+
+* `tar -tzf` (list)
+* full extract into `~/backup_verify`
+* key files present
+* extract size ~86 MB
+* cleanup performed after verification
+
+This backup is **trusted** and ready for:
+
+* USB copy
+* long-term storage
+* portfolio reference
+
+---
+
+## 5. LOGGING & PROFANITY RULE (LOCKED)
+
+* Profanity is allowed in **chat output only**
+* Profanity is **NOT allowed** in:
+
+  * logs
+  * persisted memory
+  * diagnostics
+  * portfolio demos
+
+Action item for future:
+
+* Introduce centralized log sanitizer at logging boundary
+
+---
+
+## 6. POST-RAID BUGS & POLISH ITEMS (FOR NEXT CONTROL SYNC)
+
+### High Priority
+
+1. **Group normalization bug**
+
+   * GPT returns `Thor` vs `thor`
+   * Causes device lookup failures
+   * Fix: lowercase + underscore normalization at router or NLU boundary
+
+2. **Truth gating violation**
+
+   * Assistant claims success even when execution failed
+   * Fix: only confirm actions when device_control returns ok=True
+
+### Medium Priority
+
+3. **Follow-up intent handling**
+
+   * `again`, `more`, `on`, `off` sometimes treated as chat
+
+4. **"All lights" natural language support**
+
+   * Expected phrases:
+
+     * "turn on all the lights"
+     * "make it bright in here"
+   * Default to all groups unless session target exists
+
+5. **Max-intent inconsistencies**
+
+   * Some max phrases resolve to 60–70% instead of 100%
+
+6. **Comfort session timing edge cases**
+
+   * `yes` occasionally misrouted if session expires
+
+### Low Priority
+
+7. **CLI output corruption**
+
+   * Occasional prefixed artifacts in output
+
+8. **Thermostat integration**
+
+   * Currently conversational only
+   * Future HA / Nest adapter work
+
+---
+
+## 7. NEXT CONTROL SYNC — PROPOSED AGENDA
+
+1. Formally close Emergency Structural Realignment raid
+2. Decide scope for behavioral polish (non-structural)
+3. Plan truth-gated execution integration
+4. Plan NLU normalization + alias resolution
+5. Decide thermostat integration path
+6. Logging sanitizer implementation
+
+---
+
+## 8. FINAL STATUS
+
+Ashby is now:
+
+* structurally clean
+* modular
+* router-thin
+* handler-driven
+* free of naming drift
+* backed up with a verified artifact
+
+This marks the end of the Emergency Structural Realignment raid.

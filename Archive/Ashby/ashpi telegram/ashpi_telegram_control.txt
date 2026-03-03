@@ -1,0 +1,246 @@
+from env import (
+    ENDPOINT,
+    ACCESS_ID,
+    ACCESS_KEY,
+    USERNAME,
+    PASSWORD,
+    DEVICE_ID,
+    TELEGRAM_TOKEN,
+)
+from tuya_iot import TuyaOpenAPI
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+import logging
+import json
+import requests
+import re
+from openai import OpenAI
+
+# ---------- Logging ----------
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO,
+)
+logger = logging.getLogger(__name__)
+
+# ---------- OpenAI / AshPi brain ----------
+client = OpenAI()  # uses OPENAI_API_KEY from env
+
+
+def ask_ashpi(user_message: str, action_summary: str = "") -> str:
+    """
+    Send a message to Ash and get a reply back.
+    action_summary = text like "I already set heat to 24°C."
+    """
+    system_msg = (
+        "You are Ash, a blunt, sweary, supportive AI friend. "
+        "You live on a Raspberry Pi as 'AshPi' and talk to the user over Telegram. "
+        "You can control their home (heat, smart plug) behind the scenes. "
+        "If the system tells you that an action was already performed "
+        "(like changing heat or switching plugs), acknowledge it casually "
+        "and then respond in your usual style. Keep replies fairly short."
+    )
+
+    full_user_message = user_message
+    if action_summary:
+        full_user_message = f"{user_message}\n\n(System note: {action_summary})"
+
+    resp = client.chat.completions.create(
+        model="gpt-4.1-mini",
+        messages=[
+            {"role": "system", "content": system_msg},
+            {"role": "user", "content": full_user_message},
+        ],
+        temperature=0.7,
+    )
+    return resp.choices[0].message.content.strip()
+
+
+# ---------- Tuya (plug) setup ----------
+openapi = TuyaOpenAPI(ENDPOINT, ACCESS_ID, ACCESS_KEY)
+openapi.connect(USERNAME, PASSWORD, "1", "smartlife")  # 1 = US/CA
+
+
+def set_plug(on: bool):
+    """Turn Tuya plug on/off."""
+    commands = {
+        "commands": [
+            {"code": "switch_1", "value": on}
+        ]
+    }
+    res = openapi.post(f"/v1.0/devices/{DEVICE_ID}/commands", commands)
+    return res
+
+
+# ---------- Nest (thermostat) setup ----------
+nest_env = {}
+with open("ashpi_nest.env") as f:
+    for line in f:
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if "=" in line:
+            key, val = line.split("=", 1)
+            val = val.strip().strip('"').strip("'")
+            nest_env[key] = val
+
+NEST_REFRESH_TOKEN = nest_env["NEST_REFRESH_TOKEN"]
+NEST_CLIENT_ID = nest_env["NEST_CLIENT_ID"]
+NEST_CLIENT_SECRET = nest_env["NEST_CLIENT_SECRET"]
+NEST_DEVICE = nest_env["NEST_DEVICE"]
+
+TOKEN_URL = "https://www.googleapis.com/oauth2/v4/token"
+EXECUTE_URL = (
+    f"https://smartdevicemanagement.googleapis.com/v1/{NEST_DEVICE}:executeCommand"
+)
+
+
+def get_nest_access_token():
+    data = {
+        "client_id": NEST_CLIENT_ID,
+        "client_secret": NEST_CLIENT_SECRET,
+        "refresh_token": NEST_REFRESH_TOKEN,
+        "grant_type": "refresh_token",
+    }
+    r = requests.post(TOKEN_URL, data=data)
+    r.raise_for_status()
+    body = r.json()
+    if "access_token" not in body:
+        raise RuntimeError(f"Failed to get Nest access token: {body}")
+    return body["access_token"]
+
+
+def set_heat_celsius(temp_c: float):
+    access_token = get_nest_access_token()
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json",
+    }
+    payload = {
+        "command": "sdm.devices.commands.ThermostatTemperatureSetpoint.SetHeat",
+        "params": {"heatCelsius": float(temp_c)},
+    }
+    r = requests.post(EXECUTE_URL, headers=headers, data=json.dumps(payload))
+    return r
+
+
+# ---------- Telegram handlers ----------
+
+def start(update, context):
+    update.message.reply_text(
+        "Yo, it's AshPi over Telegram.\n\n"
+        "You can use commands:\n"
+        "/plug_on  - turn outlet ON\n"
+        "/plug_off - turn outlet OFF\n"
+        "/heat <temp> - set Nest heat in °C (e.g. /heat 24)\n\n"
+        "Or just talk to me:\n"
+        "- \"heat 23\"\n"
+        "- \"turn the plug on\"\n"
+        "- \"yo ash whatsup bro\"\n"
+    )
+
+
+def plug_on(update, context):
+    res = set_plug(True)
+    if isinstance(res, dict) and res.get("success"):
+        update.message.reply_text("✅ Plug turned ON.")
+    else:
+        update.message.reply_text(f"⚠️ Failed to turn plug ON: {res}")
+
+
+def plug_off(update, context):
+    res = set_plug(False)
+    if isinstance(res, dict) and res.get("success"):
+        update.message.reply_text("✅ Plug turned OFF.")
+    else:
+        update.message.reply_text(f"⚠️ Failed to turn plug OFF: {res}")
+
+
+def heat(update, context):
+    if not context.args:
+        update.message.reply_text("Usage: /heat <temp_celsius>  (e.g. /heat 24)")
+        return
+
+    try:
+        temp = float(context.args[0])
+    except ValueError:
+        update.message.reply_text("Bro, give me a number like: /heat 22")
+        return
+
+    try:
+        r = set_heat_celsius(temp)
+        if 200 <= r.status_code < 300:
+            update.message.reply_text(f"🔥 Heat set to {temp}°C.")
+        else:
+            update.message.reply_text(
+                f"⚠️ Failed to set heat: {r.status_code} {r.text}"
+            )
+    except Exception as e:
+        update.message.reply_text(f"⚠️ Error talking to Nest: {e}")
+
+
+def handle_message(update, context):
+    text = update.message.text.strip()
+    lower = text.lower()
+    action_summary = ""
+
+    # ----- Detect heat change in natural language -----
+    temp_match = re.search(r"(\d+(\.\d+)?)", lower)
+    if any(word in lower for word in ["heat", "temp", "temperature"]) and temp_match:
+        temp_val = float(temp_match.group(1))
+        try:
+            r = set_heat_celsius(temp_val)
+            if 200 <= r.status_code < 300:
+                action_summary += f"Heat was set to {temp_val}°C. "
+            else:
+                action_summary += (
+                    f"Tried to set heat to {temp_val}°C but API responded with "
+                    f"{r.status_code}: {r.text} "
+                )
+        except Exception as e:
+            action_summary += f"Tried to set heat but there was an error: {e} "
+
+    # ----- Detect plug control in natural language -----
+    if "plug" in lower or "outlet" in lower:
+        turn_on = None
+        if "on" in lower:
+            turn_on = True
+        elif "off" in lower:
+            turn_on = False
+
+        if turn_on is not None:
+            res = set_plug(turn_on)
+            if isinstance(res, dict) and res.get("success"):
+                state = "ON" if turn_on else "OFF"
+                action_summary += f"Plug was turned {state}. "
+            else:
+                action_summary += f"Tried to change plug state but got: {res}. "
+
+    # ----- Ask AshPi for a reply -----
+    try:
+        reply = ask_ashpi(text, action_summary=action_summary.strip())
+    except Exception as e:
+        reply = f"Bro, something went wrong talking to my brain: {e}"
+
+    update.message.reply_text(reply)
+
+
+def main():
+    updater = Updater(TELEGRAM_TOKEN, use_context=True)
+    dp = updater.dispatcher
+
+    # Command handlers
+    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(CommandHandler("plug_on", plug_on))
+    dp.add_handler(CommandHandler("plug_off", plug_off))
+    dp.add_handler(CommandHandler("heat", heat))
+
+    # Any non-command text goes to AshPi
+    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_message))
+
+    updater.start_polling()
+    updater.idle()
+
+
+if __name__ == "__main__":
+    main()
+9*

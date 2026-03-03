@@ -1,0 +1,14 @@
+# 04_OUTCOME.md
+- Created `/home/notsolikely/Ashby_Data/Proofs/D8/` artifacts:
+  - `user_full_bundle.zip`
+  - `user_transcript_only.zip`
+  - `user_formalization_only.zip`
+  - `dev_bundle.zip`
+  - `sha256.txt`
+  - `zip_tree_user_full.txt`
+  - `zip_tree_dev.txt`
+  - `CHECKLIST.md`
+- Added deterministic rerun bundles for hash proof:
+  - `user_full_bundle_run2.zip`
+  - `dev_bundle_run2.zip`
+- Verification script reported `OVERALL=PASS`.

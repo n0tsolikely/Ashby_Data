@@ -1,0 +1,68 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_042
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 2 (1/7): retention + template become first-class run params (validated)
+
+Context: Stuart formalization params
+
+Origin:
+Control Sync — 2026-02-04 (Stuart v1 finish-line: REV7)
+
+Priority: P0
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV7.txt (Dungeon 2)
+- Stuart Codex 3.2/3.3: retention levels must be honored
+- Engine: ashby/modules/meetings/router/router.py + pipeline/job_runner.py
+
+Status: COMPLETED
+Audit Bundle Path:
+Audits/Execution/QUEST_042__2026-02-04__stuart_v1_dungeon_2_1_7_retention_template_become_first_class_run_params_validat_2026-02-04
+Accepted On:
+2026-02-04
+
+Accepted By:
+Hands (Peter)
+
+Completed On:
+2026-02-04
+Completed By:
+Ash (Brains)
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Add strict, validated run params for `retention` and `template_id` across the router→plan→job_runner chain. Default retention = MED, template_id = default. Invalid values must fail before creating a run.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Define allowed retentions: LOW / MED / HIGH / NEAR_VERBATIM
+- Define allowed templates via template registry (default for now)
+- Record validated params into run.json
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Door UI for choosing these values (Dungeon 5/6)
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- (none)
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Keep param names stable: `retention`, `template_id`.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] Invalid retention/template causes validation error before run creation
+- [ ] run.json records retention/template_id
+- [ ] `python3 -m pytest -q` passes
+

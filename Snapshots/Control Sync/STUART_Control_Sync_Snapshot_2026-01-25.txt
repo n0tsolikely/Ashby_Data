@@ -1,0 +1,109 @@
+STUART CONTROL SYNC SNAPSHOT
+Date: 2026-01-25
+Type: Control Sync Snapshot (Canonical – Merged)
+
+Purpose:
+Re-establish strict execution discipline for Stuart v1 AND lock the new “Buffs / Session Rehydration” operating model so future sessions can begin with minimal prompting and zero drift.
+
+================================================================================
+DECISIONS AND LOCKS (MERGED)
+================================================================================
+
+1) Canonical Engine Rule (Hard Lock)
+- There is exactly one canonical Ashby_Engine repository.
+- All work must be performed in-place on that repository.
+- Engine zip files are distribution artifacts only, never working copies.
+
+2) Governance Artifact Authority
+- All quests, guild orders, quest boards, snapshots, and talent trees are edited only under:
+  /mnt/data/Ashby_Data/
+- Rehydration Pack contents are reference-only and must not be edited unless explicitly ordered.
+
+3) Quest Completion Criteria (Truth Gate)
+- A quest may only be marked Completed if all applicable Definition of Done items are satisfied.
+- Talent Awarded fields must be internally consistent and truthful.
+- Any unmet Definition of Done item requires the quest to remain or return to Active.
+
+4) Quest Metadata Hygiene
+- Accepted Date and Completed Date must be filled accurately.
+- Talent Awarded must be YES with details or NO with no contradictions.
+- Quest Template is mandatory for all quest files.
+- Folder placement (Accepted / Completed) is the authoritative state machine.
+
+5) Codex Authority
+- The FULL Stuart Codex is authoritative and canonical.
+- Codex supersedes interpretation and prevents scope drift.
+- Relevant Codex sections must be reread before and after implementing quests.
+
+6) Execution Mode (Reaffirmed)
+- One quest executed at a time by default.
+- Multiple quests may be accepted concurrently, but this is a commitment stack.
+- Abandonment of an accepted quest requires a Control Sync decision.
+
+================================================================================
+BUFFS / SESSION REHYDRATION MODEL (NEW LOCK)
+================================================================================
+
+7) “Buffs” Pattern (Session Operating Law)
+- Every new session begins by “Buffing up” before a Raid.
+- Buffs are canonical documents stored under:
+  /mnt/data/Ashby_Data/Buffs/
+- Buffs eliminate repeated explanation while preserving full rigor.
+
+Canonical Buffs:
+- ASHBY_EXECUTION_PROTOCOL.txt
+- ASHBY_DATA_DIRECTORY_MAP.txt
+- ASHBY_SESSION_START_CHECK.txt
+
+8) Session Upload Order (Locked)
+Hands will upload in this order:
+1) Synapse Governance (always first)
+2) Ashby_Data (full)
+3) Ashby_Engine (full repo)
+4) Rehydration Pack (only if required/available; reference-only)
+
+Brains must review Synapse Governance first, then run the Session Start Check.
+
+9) 60-Second Ignition Key
+- ASHBY_SESSION_START_CHECK.txt defines the mandatory session start checklist.
+- It explicitly confirms:
+  - Canonical folders present
+  - Continuity Lock + Bootstrap Prompt (resume law)
+  - Active Guild Orders
+  - Quest Board state
+  - Latest Control Sync + End-of-Day snapshots
+  - Tests runnable
+- If any step fails or is ambiguous, Brains must STOP and ask Hands.
+
+10) “Next” Interaction Contract
+- Hands may drive the session with minimal prompts (e.g., “next”).
+- Brains must always:
+  - State the next deterministic step
+  - Ask for confirmation only when scope, ambiguity, or risk exists
+
+================================================================================
+TALENTS (REFERENCE-ONLY RULE)
+================================================================================
+
+11) Talent Tree Authority
+- Talent rules are authoritative in:
+  /mnt/data/Ashby_Data/Talent Tree/TALENT TREE GUIDE.txt
+- Talent = new durable capability, not effort.
+- Brains must not duplicate talent policy elsewhere.
+
+================================================================================
+ROLES (RECONFIRMED)
+================================================================================
+
+- Hands (User): Final authority, approves scope, governance, and state changes.
+- Brains (Assistant): Implements, audits, enforces governance, and stops on uncertainty.
+
+================================================================================
+STATUS
+================================================================================
+- Execution discipline restored.
+- Buff-based session rehydration locked.
+- System now supports “drop files → buff up → next, next, next” workflow.
+- Ready to proceed with active quests under this model.
+
+End of snapshot.

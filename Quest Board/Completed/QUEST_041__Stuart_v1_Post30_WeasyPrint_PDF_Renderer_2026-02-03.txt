@@ -1,0 +1,90 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+
+QUEST ID:
+QUEST_041
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Post-30: Stage 6 PDF Rendering (MD→HTML→WeasyPrint PDF; LOCAL_ONLY)
+
+Context: Stuart render
+
+Origin:
+Control Sync — 2026-02-03 (Post-30 plan)
+
+Priority: P0
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-03_REV4.txt (PDF output requirement)
+- Engine: meetings/render/export_pdf.py (currently PDF stub)
+
+Status: COMPLETED
+
+Audit Bundle Path:
+Audits/Execution/QUEST_041__2026-02-03__stuart_v1_post30_weasyprint_pdf_renderer_2026-02-03
+
+Accepted On:
+2026-02-03
+
+Accepted By:
+Hands (Peter)
+
+Completed On:
+2026-02-04
+
+Completed By:
+Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Replace the PDF stub with real deterministic PDF rendering using WeasyPrint.
+Renderer must be LOCAL_ONLY, reproducible, and compatible with door downloads.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Implement export_pdf() using WeasyPrint:
+-   - convert formalized.md to deterministic HTML (minimal converter inside repo)
+-   - apply canon CSS
+-   - render to exports/formalized.pdf
+- Update Telegram/Web/CLI return contracts if needed so pdf_path always points to the real PDF.
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Fancy styling/theme system.
+- External markdown-to-pdf libraries that introduce nondeterminism.
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_034 (WeasyPrint deps preflight)
+- QUEST_039 (formalized.md real content)
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- WeasyPrint may require system libs (pango/cairo). Use QUEST_034 preflight to detect and message clearly.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] WeasyPrint PDF renderer implemented and replaces stub in pipeline.
+- [ ] formalized.pdf is valid and non-trivial (size > stub) and contains transcript section.
+- [ ] Door returns pdf path from state.artifacts/formalized_pdf reliably.
+- [ ] `python3 -m pytest -q` PASS.
+
+────────────────────────────────────────────────────────
+TALENT POINT
+────────────────────────────────────────────────────────
+On completion:
+- Talent Point Awarded: YES
+- Talent Spent On: TBD — PDF Rendering (WeasyPrint)
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+(optional)

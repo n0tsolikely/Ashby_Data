@@ -1,0 +1,120 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_115
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 4 (2/15): Plumb transcript_version_id through RunRequest → UIState → plan
+
+Context: (Ashby / Stuart / System / Other)
+Stuart meetings — router/plan plumbing for transcript selection
+
+Origin:
+Guild Orders — Dungeon 4 requirement: formalize run must declare which transcript_version_id it consumed
+
+Priority: (P0 / P1 / P2)
+P0
+
+Links:
+- Guild Orders: Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-16_REV4.txt (Dungeon 4 + Dungeon 5 dependencies)
+- Stuart Codex (full): Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_7.4_Stage_3_Transcription.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_7.3_Stage_2_Diarization.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_6.2_Canonical_Artifacts_JSON_Markdown_PDF.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_8.1_Evidence_Anchors_and_Citations.txt
+- Stuart Codex anchor: Ashby_Data/Stuart/Stuart Codex/Codex Sections (Complete)/Stuart_Codex_3.2_Meeting_Minutes_Mode.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 30.1.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 28.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 8A.4.txt
+- Ashby platform codex anchor: Ashby_Engine/ASHBY CODEX — 26.txt
+- Engine anchors:
+  - Ashby_Engine/ashby/modules/meetings/schemas/plan.py (UIState)
+  - Ashby_Engine/ashby/modules/meetings/schemas/run_request.py (RunRequest)
+  - Ashby_Engine/ashby/modules/meetings/plan_builder.py (formalize step params)
+  - Ashby_Engine/ashby/interfaces/web/app.py (/api/run uses RunRequest.from_dict(ui))
+- Frontend anchor (already sending transcript_version_id):
+  - Ashby_Engine/webapp/stuart_frontend/stuart_app/src/pages/Stuart.jsx
+
+Status: ACTIVE
+
+Audit Bundle Path:
+  /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_115__2026-02-19__stuart_v1_d4_115_intake
+
+Accepted On:
+2026-02-19
+Accepted By:
+Hands (Peter) via Codex (Brains)
+Completed On:
+
+Completed By:
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Right now the UI includes a transcript_version_id in its run request, but the backend RunRequest/UIState/plan plumbing does not carry it through. That makes transcript selection fake.
+
+This quest makes transcript selection real by adding transcript_version_id to the canonical run param contract and ensuring the FORMALIZE plan step includes it.
+
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+Update the door-facing run request contract to include transcript_version_id:
+
+- Extend UIState dataclass (schemas/plan.py) to include:
+  - transcript_version_id: Optional[str] = None
+
+- Extend RunRequest dataclass (schemas/run_request.py) to include:
+  - transcript_version_id: Optional[str] = None
+
+- Update RunRequest.from_dict(...) to read:
+  - transcript_version_id (canonical)
+  - tolerate legacy aliases if any exist (optional)
+
+- Update RunRequest.to_ui_state / from_ui_state to round-trip transcript_version_id
+
+- Update plan_builder.build_plan(...):
+  - When building FORMALIZE step params, include transcript_version_id if present
+  - Do NOT change other params (mode/template_id/retention/speakers)
+
+Add minimal validation in router.validate if needed:
+- If transcript_version_id is provided, it must be a non-empty string (deeper validation belongs later).
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Actually loading transcript versions during execution (later quest).
+- Changing UI (it already sends the field).
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+QUEST_114 (store exists so later quests can validate ids).
+
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────
+Keep backwards compatibility:
+- If transcript_version_id absent, behavior is unchanged.
+- Formalize plan MUST remain deterministic: the chosen transcript id is part of the plan params.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] RunRequest accepts transcript_version_id from /api/run payload ui
+- [ ] UIState carries transcript_version_id
+- [ ] Formalize plan step includes transcript_version_id when supplied
+- [ ] Existing tests pass
+
+────────────────────────────────────────────────────────
+TALENT POINT
+────────────────────────────────────────────────────────
+# On completion:
+# - Talent Point Awarded: YES / NO
+# - Talent Spent On: (TALENT ID — Name in Talent Tree)
+
+────────────────────────────────────────────────────────
+FINAL NOTES
+────────────────────────────────────────────────────────
+# Optional closing notes once the quest is completed or abandoned.

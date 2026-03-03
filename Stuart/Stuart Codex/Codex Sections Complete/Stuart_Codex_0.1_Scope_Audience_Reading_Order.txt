@@ -1,0 +1,85 @@
+STUART CODEX
+0.1 Scope, Audience, and Reading Order (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-11
+
+Purpose of this document
+This section explains what the Stuart Codex is, who it is for, what it covers, what it does not cover, and the recommended reading order. The Stuart Codex is written so that a competent engineer (who has never heard of Stuart) can implement Stuart exactly as intended, without “filling in gaps” by guessing.
+
+What “Stuart” is in one sentence
+Stuart is an Ashby agent (a module on top of the Ashby platform) that turns audio into trustworthy, evidence-backed artifacts: a verbatim transcript as ground truth, plus optional, user-triggered mode+template “formalizations” (meeting minutes, journal entries, incident reports, creator notes, captions, translations) and searchable recall across saved sessions.
+
+What problem Stuart solves
+Most people lose the content of spoken work:
+- Meetings: decisions and action items disappear into memory and fragmented notes.
+- Journaling / reflection: people talk better than they write; spoken journals become unusable without structure.
+- Incidents: critical timelines and actions are poorly captured, and post-incident writeups become painful.
+- Creators: ideas come out as messy monologues; the value is in the wording, but it needs organization.
+- Media: captions/subtitles and translations are needed, quickly, and correctly.
+
+Stuart solves this by (1) producing a verbatim, time-aligned transcript as the ground truth, and (2) deriving structured artifacts from that truth only when the user explicitly instructs it to do so, while remaining auditable and citation-backed.
+
+Audience
+This Codex is written for:
+- Builders: engineers implementing Stuart on top of Ashby.
+- Maintainers: future developers who will extend Stuart without breaking invariants.
+- Operators / deployers: people configuring Stuart in LOCAL_ONLY, HYBRID, or CLOUD profiles.
+- Power users: people designing templates and workflows.
+It is not written as marketing. It is a build manual and a constitution.
+
+Scope (what is covered)
+The Codex covers:
+- Stuart’s constitution and invariants (what cannot change without an explicit “breaking change” decision).
+- The chat-first interaction model and explicit execution gating.
+- Modes (meeting minutes, journal/diary, incident report, creator notes, subtitles/captions, translation).
+- Templates (structure control inside a mode) and retention levels (how much original phrasing is preserved).
+- Storage and artifacts: how transcripts and formalizations are saved, printed, exported, indexed, and queried.
+- The pipeline stages from audio ingestion through diarization, transcription, alignment, formalization, and indexing.
+- Adapter boundaries: local vs remote diarization, transcription, and formalization, without changing the canonical artifact schema.
+- Privacy/security requirements per execution profile.
+
+Non-scope (what is NOT covered)
+This Codex intentionally does not:
+- Specify a UI design aesthetic or front-end styling beyond the interaction model.
+- Commit to a single vendor/model for ASR, diarization, or LLM formalization; those are adapter choices.
+- Ship a template marketplace in v1. Template sharing is described as a future, gated capability.
+- Require live meeting “joining” (Teams/Zoom/RingCentral) in v1. Live capture is a vNext extension.
+- Attempt to solve every industry workflow in v1 (doctor/chef/etc). Those are future modes/templates.
+
+Canonicality and “no drift”
+This Codex is the source of truth for Stuart’s intent and constraints. Implementations must follow it, not reinterpret it.
+If a future decision changes behavior, the Codex must be updated first (or at the same time), and the change must be explicitly documented as either:
+- Clarification (no behavior change), or
+- Backward-compatible extension, or
+- Breaking change (requires migration plan).
+
+Normative language
+To eliminate ambiguity, this Codex uses:
+- MUST: mandatory, breaking Stuart’s contract if violated.
+- SHOULD: strongly recommended; deviation requires explicit justification.
+- MAY: optional; implement if useful.
+
+Reading order (recommended)
+If you are implementing Stuart, read in this order:
+1) 1. Stuart Constitution (locks the invariants and what Stuart is)
+2) 2. User Experience and Interaction Model (prevents building the wrong UI and execution semantics)
+3) 6. Data Model and Storage (defines artifacts and file structure; determines everything downstream)
+4) 7. Pipeline (defines the actual processing stages and required outputs)
+5) 8. Adapters (defines swap points: local vs remote, providers, performance)
+6) 9. Privacy and Security (ensures profiles are not hand-waved)
+7) 10. V1 Launch Scope (what to ship first, what not to ship)
+8) 3–5 (Modes, Templates, Retention) as needed for feature work
+9) 11. vNext Appendix (future evolution; do not contaminate v1 with it)
+
+How to read Stuart’s outputs
+Every session produces a ground-truth transcript internally. All other outputs are derived views (“formalizations” or artifacts) that must cite evidence from the transcript. If an output claim cannot be supported by transcript evidence, it must be marked as uncertain or excluded.
+
+The “human trust” principle
+Stuart must be designed so that:
+- A user can verify any structured claim by jumping to the exact timestamp.
+- A user can re-run formalizations and templates without re-uploading audio.
+- A user can correct speaker identities without rewriting history.
+- A user can print formalizations cleanly without formatting corruption.
+
+This section is complete.

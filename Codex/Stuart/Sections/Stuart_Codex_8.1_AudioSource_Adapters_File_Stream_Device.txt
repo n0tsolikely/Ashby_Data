@@ -1,0 +1,139 @@
+STUART CODEX
+8.1 AudioSource Adapters (File / Stream / Device) (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines AudioSource adapters: the components that provide audio into Stuart’s session/contribution model.
+
+Why this matters:
+- V1 must accept common real-world meeting recordings (phone recordings, exported call audio, video files).
+- Future versions should support “live capture” and “join meeting” workflows (Teams/Zoom/RingCentral), but those are vNext.
+- The adapter interface must support both without refactoring the entire pipeline.
+
+Chat-canon constraints enforced here:
+- Chat-first + explicit execution gating: adding an audio source does not automatically transcribe.
+- LOCAL_ONLY constraints: audio capture and ingestion must work entirely local.
+- Artifact-first design: sources become contributions stored and referenced deterministically.
+
+1) What an AudioSource adapter is
+
+An AudioSource adapter is responsible for:
+- enumerating or accepting a source,
+- reading audio data (from file or live stream),
+- providing metadata (duration if known, sample rate, channels),
+- and delivering a stable time base so timestamps remain meaningful.
+
+AudioSource adapters do not:
+- perform transcription,
+- perform diarization,
+- or decide templates/modes.
+They only provide audio into the contribution model.
+
+2) AudioSource adapter interface (conceptual)
+
+A minimal adapter interface must support:
+
+- can_open(source_descriptor) -> bool
+- open(source_descriptor) -> AudioHandle
+- read(AudioHandle, start_time, duration) -> audio_frames
+  (for file sources; for live streams, read() yields frames as they arrive)
+- get_metadata(AudioHandle) -> metadata (duration, sample_rate, channels, codec, etc.)
+- close(AudioHandle)
+
+Optional but recommended:
+- seek support (for files)
+- checksum/hash support (for integrity)
+- “capture to file” support (for live sources)
+
+3) Source types (canonical categories)
+
+SRC-1) File sources (V1 core)
+Examples:
+- .wav, .mp3, .m4a
+- video files (.mp4) where audio will be extracted in normalization stage
+
+Behavior:
+- Stage 0 stores the file as a contribution.
+- No processing happens until user submits a run.
+
+SRC-2) Device capture (optional in V1, but architecturally supported)
+Examples:
+- microphone recording initiated from Stuart UI
+- system audio capture (future / higher complexity)
+
+Behavior:
+- the adapter writes a captured audio file to the session contribution folder
+- capture metadata is stored
+- capture ends, and then the user chooses what to do (transcribe/formalize)
+
+Important: capture itself is not “transcribe.” Capture is input creation.
+
+SRC-3) Stream sources (vNext)
+Examples:
+- “listen to this meeting live”
+- join a Teams/Zoom/RingCentral call as a bot participant
+- tap a live audio feed (with consent)
+
+These are future features. The adapter interface must allow:
+- streaming frames with timestamps
+- writing a durable recording to the session folder
+- later pipeline stages to operate on the recorded artifact exactly as if it were a file
+
+4) Time base requirements (locked)
+
+Time base is what makes “jump to 37:12” meaningful.
+
+TB-1) File sources use file timeline
+Timestamp 0 is file start.
+All downstream evidence references map to this time base.
+
+TB-2) Live sources must create a stable recording timeline
+For live capture:
+- the adapter must produce a stable monotonic time base
+- and should write a single recorded file (or a sequence with a deterministic map)
+so that downstream stages can reference timestamps reliably.
+
+TB-3) If drift occurs, record it
+If a live capture source is subject to drift or jitter:
+- adapter should record drift metrics or a time map artifact.
+Do not hide drift; it matters for evidence integrity.
+
+5) Consent and disclosure (policy note)
+
+Live capture and meeting bots introduce real-world consent requirements.
+V1 may avoid this entirely by requiring users to upload recordings.
+But the adapter design should support future guardrails:
+- “I have consent to record”
+- meeting platform rules and compliance
+This belongs more deeply in security/policy sections, but it is relevant to the adapter’s responsibilities.
+
+6) Profile behavior
+
+LOCAL_ONLY:
+- file and device capture are fully local.
+- stream/join-meeting adapters are typically incompatible with LOCAL_ONLY because they require network.
+If a user tries to use a network-dependent source adapter under LOCAL_ONLY:
+- Stuart must refuse or require an explicit profile change (with user confirmation).
+
+HYBRID/CLOUD:
+- network source adapters may be permitted with disclosure and audit logs.
+
+7) Artifact expectations (how sources become contributions)
+
+Regardless of source type, the result is:
+- a contribution in the session folder,
+- with source_metadata.json,
+- with a content hash when possible.
+
+This is what makes the rest of the pipeline consistent.
+
+8) Self-audit (8.1)
+
+Chat-canon alignment checklist:
+- Input does not auto-process: AudioSource adapters only create contributions; transcription requires explicit submit/confirm. (Maintained.)
+- Artifact-first: sources become stored contributions with metadata and deterministic paths. (Maintained.)
+- LOCAL_ONLY compatibility: file/device capture works; network live sources are blocked unless profile changes. (Maintained.)
+- Future-proofing without v1 bloat: adapter interface supports vNext live capture without forcing it into v1. (Maintained.)
+
+This section is complete.

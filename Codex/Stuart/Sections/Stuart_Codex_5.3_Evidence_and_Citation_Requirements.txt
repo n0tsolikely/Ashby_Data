@@ -1,0 +1,104 @@
+STUART CODEX
+5.3 Evidence and Citation Requirements (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines how evidence and citations work in Stuart outputs. This is the core mechanism that turns “AI text” into “auditably derived artifacts.” Without citations, minutes and incident reports become untrustworthy.
+
+This section applies to:
+- formalizations (meeting, journal, incident, creator),
+- general query answers,
+- and any output that claims something about what was said.
+
+1) Core principle: every factual claim must be traceable
+
+If Stuart outputs a statement as factual about the recording, the system must be able to show:
+- where it came from in the transcript,
+- and where it came from in the audio (timestamp).
+
+This is how Stuart survives “I didn’t say that” disputes.
+
+2) Citation levels
+
+Stuart supports multiple citation granularities, controlled by mode/template:
+
+CIT1) Segment-level citations (strict)
+- Each bullet/claim has direct references to transcript segment IDs and timestamps.
+Use for: decisions, action items, incident timelines.
+
+CIT2) Section-level citations (moderate)
+- A section includes a short list of supporting segments/timestamps.
+Use for: discussion summaries where many points are woven together.
+
+CIT3) Narrative linkage (light, journal)
+- Journal prose may be less citation-heavy, but must still be traceable.
+At minimum, the system must keep internal mappings that allow “show supporting transcript for paragraph 2.”
+If the journal presents specific factual claims (“Greg said X”), those must be cited strictly.
+
+The template controls which level is required per section.
+
+3) Evidence map (artifact requirement)
+
+Every formalization run MUST produce an evidence map artifact that contains:
+- a stable identifier for each output unit (section, bullet, paragraph, timeline item),
+- the transcript segment IDs that support it,
+- timestamps/ranges,
+- and confidence flags if relevant (e.g., low diarization confidence).
+
+Even if citations are not shown in the user-facing PDF, the evidence map must exist for audit and retrieval.
+
+4) Transcript segment identifiers
+
+To support citations, transcript.json must assign stable segment IDs, such as:
+- segment_000123
+with:
+- start_time, end_time
+- speaker_label
+- text
+- confidence (if available)
+- source contribution reference (if multi-contribution session)
+
+These IDs are what citations refer to.
+
+5) Duplicated and merged claims (avoid citation drift)
+
+When chunked/hierarchical formalization merges partial outputs:
+- citations must be merged, not dropped.
+If an action item appears in two chunks, the final action item should reference both evidence sources (or the strongest one), but must not lose traceability.
+
+6) Speaker attribution citations
+
+When a claim includes “who said it,” citations must include:
+- speaker label from diarization,
+- and speaker mapping info if applied.
+
+If speaker mapping is uncertain:
+- the claim must include uncertainty markers.
+
+7) Query answers also require citations
+
+General query answers that reference audio content must cite evidence.
+Example:
+User: “Where did we mention time off?”
+Answer: list timestamps and transcript excerpts with citations.
+
+If the user asks a non-content question (“How do I use templates?”), citations are not needed.
+
+8) Display rules (what users see)
+
+Stuart should support:
+- “show citations” toggle in UI,
+- “jump to timestamp” actions,
+- and “show supporting transcript” actions.
+
+In printing:
+- PDFs may include citations inline (timestamp brackets) or as footnotes, depending on template.
+- Even if not printed, evidence maps must exist.
+
+9) Self-audit (5.3)
+
+- This section encodes our trust contract: outputs must be verifiable and disputes must be resolvable.
+- It operationalizes the earlier “evidence-backed structured claims” invariant.
+- It anticipates chunked/hierarchical formalization by requiring citation preservation across merges.
+This section is complete.

@@ -1,0 +1,76 @@
+QUEST TEMPLATE — SYNAPSE GUILD
+QUEST ID:
+QUEST_047
+
+Created By:
+Ash (Brains)
+
+Title:
+Stuart v1 — Dungeon 2 (6/7): formalizer v1 (journal → journal.json with truth discipline)
+
+Context: Stuart journal formalization
+
+Origin:
+Control Sync — 2026-02-04 (Stuart v1 finish-line: REV7)
+
+Priority: P0
+
+Links:
+- Guild Orders: GUILD_ORDERS_STUART_V1_2026-02-04_REV7.txt (Dungeon 2)
+- Stuart Codex 3.3: journal must be readable, not invented
+
+Status: COMPLETED
+Audit Bundle Path:
+Audits/Execution/QUEST_047__2026-02-04__stuart_v1_dungeon_2_6_7_llm_formalizer_v1_journal_journal_json_with_truth_discip_2026-02-04
+Accepted On:
+2026-02-04
+
+Accepted By:
+Hands (Peter)
+
+Completed On:
+2026-02-06
+
+Completed By:
+Ash (Brains)
+
+────────────────────────────────────────────────────────
+DESCRIPTION
+────────────────────────────────────────────────────────
+Implement the v1 journal formalizer that calls an LLM to convert transcript segments into a valid journal.json (v1).
+
+Must honor execution profile gating: LOCAL_ONLY uses deterministic fallback; HYBRID/CLOUD may use LLM when enabled.
+────────────────────────────────────────────────────────
+SCOPE / OBJECTIVE
+────────────────────────────────────────────────────────
+- Add `formalize_journal_to_journal_json(run_dir, template_id, retention)`
+- Require citations for factual claims; allow uncited narrative if clearly subjective
+- Validate output against schema; record failure receipts
+
+────────────────────────────────────────────────────────
+OUT OF SCOPE
+────────────────────────────────────────────────────────
+- Multiple templates beyond default
+
+────────────────────────────────────────────────────────
+DEPENDENCIES
+────────────────────────────────────────────────────────
+- QUEST_043
+- QUEST_045
+────────────────────────────────────────────────────────
+EXECUTION NOTES
+────────────────────────────────────────────────────────
+- Profile gating required:
+  - LOCAL_ONLY: no remote LLM calls. Must run fully offline. Provide deterministic fallback formalization.
+  - HYBRID/CLOUD: remote LLM calls allowed only when explicitly enabled; must gracefully fall back if unavailable.
+  - Tests must mock any remote LLM calls.
+
+- Journal mode often has one speaker; diarization may be skipped but transcript still is ground truth.
+
+────────────────────────────────────────────────────────
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────────────────────
+- [ ] Journal mode produces a valid `artifacts/journal.json`
+- [ ] Factual claims include citations
+- [ ] `python3 -m pytest -q` passes
+

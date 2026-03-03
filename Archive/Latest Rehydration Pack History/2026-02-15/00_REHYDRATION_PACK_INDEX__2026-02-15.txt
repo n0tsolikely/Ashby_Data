@@ -1,0 +1,18 @@
+REHYDRATION PACK INDEX — 2026-02-15
+
+This folder contains the minimum set of anchors to rehydrate Ash + Stuart state.
+
+Required:
+- BOOTSTRAP_PROMPT_2026-02-15.txt
+- CONTINUITY_LOCK_2026-02-15.txt
+
+Reference snapshots:
+- Control Sync:
+  Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot_2026-02-15__BOOT_ENV_HARDENING.txt
+- End of Day:
+  Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot_2026-02-15__BOOT_ENV_HARDENING.txt
+
+Notes:
+- Previous rehydration artifacts were archived to:
+  Ashby_Data/Archive/Latest Rehydration Pack History/2026-02-15/
+- execution pack/ is retained for now as historical reference, but D6 execution is complete.

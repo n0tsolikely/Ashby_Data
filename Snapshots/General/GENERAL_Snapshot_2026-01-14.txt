@@ -1,0 +1,173 @@
+GENERAL SNAPSHOT — STUART + ASHBY (SPEC/CONTRACT WORK) — THIS CHAT
+Date: 2026-01-14
+Scope: Everything in this chat related to Ashby/Stuart planning + canon/contract creation + handoff workflows.
+Explicit exclusion: ALL early ChatGPT UI/HAR/error-log discussion is out-of-scope and intentionally ignored.
+
+1) What this chat accomplished (high-level)
+This chat did NOT implement code directly. It created the “sealed instruction packs” and the shared decisions needed to:
+- Build Stuart as a module hosted by Ashby (not a fork).
+- Add only the minimal, platform-grade Ashby engine primitives (Batch 0) required so Stuart can run cleanly.
+- Enable a clean handoff to brand new chats with near-zero drift by externalizing decisions into explicit contract files.
+
+Core philosophy established:
+- Ashby is the platform/engine.
+- Stuart is a module (module_key = “meetings”, user-facing name “Stuart”) that runs inside Ashby.
+- Canon is artifacts + explicit state, not chat history.
+- “Brains/hands” workflow: assistant outputs commands + file contents; user runs commands in WSL and pastes output back.
+
+2) Canon hierarchy we used (how decisions are treated)
+We separated “constitutional law” from “work orders”:
+
+A) Codex folders (constitutional law; long-lived)
+- Ashby Codex (stored inside Ashby Data).
+- Stuart Codex FULL + sections (stored inside Stuart Codex folder).
+
+B) Docs folder (long-lived context; explanatory)
+- Canonical vision and technical blueprint docs (Ashby).
+- Canonical vision doc (Stuart).
+
+C) Execution Packs (consumable work orders; meant to be executed, then archived)
+- Stuart Execution Pack: rehydrate + architecture tree + contract docs.
+- Ashby Batch 0 Execution Pack: runbook + 6 contracts to implement minimal platform spine.
+
+Key rule:
+- Codex is not “executed.”
+- Execution Packs are executed and become operationally obsolete once the target state exists in code.
+
+3) Stuart: the final agreed build target
+Stuart is a deterministic, artifact-first pipeline for “meetings” that produces evidence-backed outputs.
+
+3.1 Identity / placement
+- Module name (user-facing): Stuart
+- Module key (internal): meetings
+- Runs as an Ashby module, not as a separate engine.
+
+3.2 Pipeline sequencing (first working vertical slice)
+Agreed build order (CLI-first):
+1) Scaffold (folders + interfaces + minimal wiring)
+2) Stage 0: session init + ingest (deterministic storage + manifests)
+3) Stage 1: normalize audio (ffmpeg/local)
+4) Stage 3: transcribe (ASR adapter)
+5) Captions: SRT output
+Then later (after working slice):
+- diarization, alignment, formalization, indexing/retrieval expansions
+
+3.3 Storage and artifacts (non-negotiable)
+- Artifacts are the canonical memory.
+- Deterministic paths under runtime/stuart/sessions/{session_id}/...
+- No silent overwrite of ground truth artifacts.
+- New execution = new run_id (append-only behavior).
+
+3.4 Truth/evidence discipline
+- Any “claim” (decisions/actions/incidents/attribution) must include citations into transcript segments/timestamps.
+- Speaker labels (SPEAKER_00, etc) are ground truth; real names are overlays only.
+- If evidence is weak, output must label ambiguity instead of fabricating certainty.
+
+3.5 Profiles/adapters
+- LOCAL_ONLY default, with HYBRID/CLOUD as explicit choices requiring disclosure+consent logging.
+- Stuart has domain-level adapters (ASR, diarization, formalization, caption renderers, indexing), while Ashby has platform-level adapters (devices/vendors/storage/transports).
+
+4) Stuart canon/contract files created in this chat (what exists now)
+These are intended to live in: Stuart/Execution Pack/ (not inside Stuart Codex).
+
+A) Stuart implementation map + rehydrate
+- STUART_IN_ASHBY_ARCHITECTURE_TREE_VISION_2026-01-13.txt
+  Purpose: the target file tree + handshake points + module boundaries (Stuart in Ashby).
+- STUART_REHYDRATE_PACKET_2026-01-13.txt
+  Purpose: exact upload order + “resume prompt” to continue in a new chat without drift.
+
+B) Stuart “seal the gaps” docs
+- STUART_V1_CANON_GAPS_AND_ADDITIONS_2026-01-13.txt
+  Purpose: checklist of what was underspecified + what to lock to eliminate drift.
+
+C) Stuart contract docs (the hard constraints)
+- STUART_ID_CONVENTIONS_AND_HASHING_2026-01-13.txt
+- STUART_ARTIFACT_VERSIONING_AND_IMMUTABILITY_2026-01-13.txt
+- STUART_ERROR_TAXONOMY_AND_RESUME_RULES_2026-01-13.txt
+- STUART_PROFILE_AND_ADAPTER_MATRIX_2026-01-13.txt
+- STUART_TRUTH_AND_EVIDENCE_CONTRACT_2026-01-13.txt
+- STUART_RETRIEVAL_INDEXING_CONTRACT_2026-01-13.txt
+
+Notes:
+- These contract files are what make “new chat continuation” deterministic. They remove ambiguity about IDs, artifacts, resume semantics, profiles, truth/evidence, and retrieval requirements.
+
+5) Ashby: what we decided was needed BEFORE coding Stuart
+Ashby is not “finished,” but we agreed a minimal platform spine must exist to host Stuart cleanly.
+
+We explicitly separated:
+- Platform primitives (Ashby Batch 0) — generic, reusable across modules.
+- Module logic (Stuart) — domain-specific.
+
+Truth Gate architectural decision:
+- One platform Truth Gate “judge” (generic).
+- Module-specific evidence providers and/or policy plugins.
+- No duplicated per-module “truth gates” with separate logic.
+
+6) Ashby Batch 0: minimal engine expansion scope (what was specified here)
+Goal: implement platform-grade primitives, not Stuart hacks, so Stuart can run today and the platform can expand later without rewrites.
+
+We created an “Ashby Batch 0 Expansion Pack” consisting of:
+- 1 runbook + 6 contracts (repo-aware; additive-only; no redesign).
+
+7) Ashby files created in this chat (Batch 0 spec pack + context docs)
+These were intended to live as follows:
+
+A) Ashby Execution Pack (consumable work order set; upload to Batch 0 build chat)
+- ASHBY_BATCH_0_ENGINE_EXPANSION_RUNBOOK_2026-01-13.txt
+- ASHBY_STORAGE_ADAPTER_CONTRACT_2026-01-13.txt
+- ASHBY_RESULT_OBJECTS_CONTRACT_2026-01-13.txt
+- ASHBY_PROFILE_AND_CONSENT_CONTRACT_2026-01-13.txt
+- ASHBY_TRUTH_GATE_SPINE_CONTRACT_2026-01-13.txt
+- ASHBY_MODULE_REGISTRY_CONTRACT_2026-01-13.txt
+- ASHBY_SESSION_MODEL_CONTRACT_2026-01-13.txt
+
+B) Ashby Docs (context/reference; not part of execution pack)
+- ASHBY_THE_CANONICAL_VISION_2026-01-13.txt
+- ASHBY_CANONICAL_TECHNICAL_BLUEPRINT_2026-01-13.txt
+
+8) New-chat handoff workflows agreed in this chat
+We converged on a strict method to avoid “what is this file?” tangents and prevent drift:
+
+A) Always send a directive first
+- First message in a new chat must state: objective, what the uploads represent, and that output must be stepwise commands + file contents + smoke tests only.
+
+B) Use a checkpoint before coding
+- New chat must list received filenames and name exact repo paths it will touch before writing any code.
+
+C) Upload strategy (10-file limit)
+- Preferred pattern: two-upload flow:
+  1) Engine.zip + Data.zip + Batch 0 runbook/contracts (and optional blueprint) in one upload.
+  2) Optional extra context file(s) (e.g., canonical vision) in the next upload.
+
+D) Two-chat separation (to keep threads clean and non-drifting)
+- Chat A: Ashby Batch 0 implementation only (platform primitives).
+- Chat B: Stuart implementation only (module build using Stuart Execution Pack).
+
+9) Implementation workflow agreed (brains/hands)
+- User works locally (WSL/Ubuntu + VS Code recommended).
+- Assistant outputs in batches to avoid truncation:
+  - FILES AFFECTED
+  - full file contents in code blocks
+  - commands to create/move files
+  - smoke tests to run after each batch
+- The user runs commands and pastes terminal output back for patching.
+
+Commit strategy:
+- Build locally first; do not push noisy half-baked commits.
+- Once the vertical slice runs, then create a clean canonical commit.
+
+10) File organization decisions (important cleanup)
+- Stuart Canonical Vision belongs in Stuart/Docs (NOT inside Stuart Codex).
+- Stuart Execution Pack belongs in its own folder (not in Codex).
+- Ashby Execution Pack belongs in Ashby Data/Ashby Execution Pack.
+- Ashby Canonical Vision + Technical Blueprint belong in Ashby Data/DOCS (not in execution pack).
+
+11) What remained to do after this chat (before Ashby Batch 0 completion snapshot)
+This chat ended with:
+- Stuart fully specced/contracted for deterministic implementation.
+- Ashby Batch 0 fully specced/contracted and ready to implement in a new chat.
+Next intended actions (at the time of this chat snapshot):
+- Implement Ashby Batch 0 using the runbook/contracts in a new chat.
+- Then implement Stuart as a module using the Stuart Execution Pack + architecture tree vision, in another new chat.
+
+END OF SNAPSHOT

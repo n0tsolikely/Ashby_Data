@@ -1,0 +1,60 @@
+QUEST ID: QUEST_014
+Title: Stuart v1 — Dungeon 3 (1 of 2): Mode registry + defaults
+Context: Stuart
+Origin: Guild Orders: GUILD_ORDERS_STUART_V1_2026-01-16_REV3.txt (Dungeon 3)
+Priority: P0
+Links:
+- Guild Orders: Stuart v1 — Dungeon 3
+- Control Sync Snapshot: modes = journal/diary + meeting; v1 ships 1 template per mode
+- Supersedes (decomposition of): QUEST_004
+Status: COMPLETED
+Accepted On: Completed On:
+Completed On: DESCRIPTION
+
+DESCRIPTION
+────────────────────────────────────────
+Make Stuart modes first-class and enumerated so the system never hallucinates options. This establishes v1 modes and their defaults.
+
+SCOPE / OBJECTIVE
+────────────────────────────────────────
+Implement the mode registry (v1 only):
+- journal (alias: diary)
+- meeting
+
+Implement mode defaults:
+- journal: speakers default = 1
+- meeting: speakers default = auto
+
+Provide validation and a simple interface that other components can query for allowed modes and defaults.
+
+OUT OF SCOPE
+────────────────────────────────────────
+Template registry and template storage directories (QUEST_015).
+Mode/template selection UI and door rendering (Dungeon 8/9).
+Any additional modes beyond journal/meeting.
+
+DEPENDENCIES
+────────────────────────────────────────
+- QUEST_002
+
+EXECUTION NOTES
+────────────────────────────────────────
+Mode registry must be authoritative and enumerated.
+Unknown mode requests must trigger clarification listing allowed values, not silent coercion.
+
+COMPLETION CRITERIA (REQUIRED)
+────────────────────────────────────────
+- [x] Mode registry exists with values: journal (alias diary), meeting.
+- [x] Mode defaults exist: journal→1 speaker, meeting→auto.
+- [x] Validation rejects unknown modes and returns the list of allowed modes for clarification prompts.
+- [x] A minimal smoke test proves the registry can answer: “what modes are available?”
+
+TALENT POINT
+────────────────────────────────────────
+On completion:
+- Talent Point Awarded: YES
+- Talent Spent On: TALENT_STUART_MODE_REGISTRY_ENUM — Enumerated Mode Registry + Defaults
+
+FINAL NOTES
+────────────────────────────────────────
+(optional)

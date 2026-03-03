@@ -1,0 +1,70 @@
+schema_version: 1
+
+roots:
+  data_root: "Ashby_Data"
+  engine_root: "Ashby_Engine"
+
+subject:
+  key: ashby
+  name: Ashby
+  legacy_subject: true
+  notes: >
+    This file is a POINTER INDEX only.
+    Operational state truth is derived from Snapshots / Quest Board / Guild Orders / Audits artifacts.
+    Architectural and invariant truth is defined in the Synapse Codex and Synapse Governance.
+    Ground truth comes from Snapshots / Quest Board / Guild Orders / Audits artifacts.
+
+modules:
+  stuart:
+    module_key: meetings
+    notes: "Stuart work artifacts are co-located under Ashby_Data."
+
+pointers:
+  latest_rehydration_pack_dir: "Ashby_Data/Latest Rehydration Pack/"
+
+  rehydration_pack_contains:
+    continuity_locks_dir: "Ashby_Data/Latest Rehydration Pack/Continuity Locks/"
+    execution_pack_dir: "Ashby_Data/Latest Rehydration Pack/execution pack/"
+    bundle_dir: "Ashby_Data/Latest Rehydration Pack/Bundle/"
+
+  snapshots_dirs:
+    control_sync: "Ashby_Data/Snapshots/Control Sync/"
+    end_of_day: "Ashby_Data/Snapshots/End of Day/"
+    general: "Ashby_Data/Snapshots/General/"
+
+  quest_board_dirs:
+    abandoned: "Ashby_Data/Quest Board/Abandoned/"
+    accepted: "Ashby_Data/Quest Board/Accepted/"
+    completed: "Ashby_Data/Quest Board/Completed/"
+
+  guild_orders_dirs:
+    active: "Ashby_Data/Guild Orders/ACTIVE/"
+    completed: "Ashby_Data/Guild Orders/COMPLETED/"
+    paused: "Ashby_Data/Guild Orders/PAUSED/"
+
+  evidence_anchors:
+    execution_audits_dir: "Ashby_Data/Audits/Execution/"
+    confirmations_dir: "Ashby_Data/confirmations/"
+
+reading_rules:
+  snapshots:
+    latest_determination: "By filename date; within same date read ALL in lexicographic order."
+    note: >
+      If multiple snapshots exist for the same date, they are ALL relevant and must be read.
+  rehydration_pack:
+    continuity_lock_source: "Inside latest_rehydration_pack_dir/Continuity Locks/"
+    execution_pack_source: "Inside latest_rehydration_pack_dir/ (execution pack folder)"
+  quests:
+    truth_source: "Quest Board folder locations (BOARD/Accepted/Completed/Abandoned)."
+  guild_orders:
+    truth_source: "Guild Orders folder locations (ACTIVE/COMPLETED/PAUSED)."
+
+governance_anchor:
+  description: "Execution laws, terminology, lifecycle rules, and invariant definitions."
+  source_of_truth: "Synapse Governance pack (required read order enforced externally)"
+  note: "Subject state does not redefine governance; it points to it."
+
+metadata:
+  last_index_update_utc: "2026-02-18T19:49:05Z"
+  owner: "Hands"
+  maintainer: "Ash (Brains)"

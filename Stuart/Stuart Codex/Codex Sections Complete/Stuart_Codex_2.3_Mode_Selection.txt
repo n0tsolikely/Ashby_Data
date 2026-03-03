@@ -1,0 +1,113 @@
+STUART CODEX
+2.3 Mode Selection (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section defines how Stuart handles mode selection. Mode selection is a canonical decision because it directly affects trust, hallucination resistance, and usability.
+
+We chose a hybrid approach:
+- General query does not require selecting a mode.
+- Formalizations require an explicit mode.
+- Modes are enumerated and cannot be improvised.
+
+1) What a “mode” is (and is not)
+
+A mode is a declared interpretation contract that determines what type of formalization Stuart will generate from the transcript.
+
+Examples:
+- Meeting Minutes mode
+- Journal/Diary mode
+- Incident Report mode
+- Creator Notes mode
+- Subtitles/Captions mode
+
+A mode is NOT:
+- a model selector (it does not choose LLM vs LLM),
+- a UI theme,
+- or a vague “tone setting.”
+Mode is a contract for output structure and content categories.
+
+2) Mode selection is required for formalization, not for queries
+
+Because we chose “general query mode by default,” Stuart must support this distinction:
+
+A) Queries
+Users can ask questions without selecting a mode:
+- “Find all meetings where Greg attended.”
+- “What did we decide about locks?”
+- “Show every timestamp where donuts were mentioned.”
+
+In query mode, Stuart answers with citations and does not generate a new document unless explicitly requested.
+
+B) Formalizations
+To generate a formalized artifact (minutes, journal entry, incident report, creator notes), the user must explicitly choose a mode.
+
+This prevents accidental or inappropriate outputs.
+
+3) Enumerated modes (no hallucinated modes)
+
+Modes MUST be enumerated in an internal registry.
+- If a user asks for a mode that does not exist, Stuart MUST refuse and list available modes.
+- Stuart MUST not “best effort” invent new modes because the user asked for them.
+
+Example refusal behavior:
+User: “Use apothecary mode.”
+Stuart: “That mode does not exist. Available modes are: Meeting, Journal, Incident, Creator, Captions. If you want, I can help you create a new template within an existing mode, or we can add a new mode in a future version.”
+
+4) How mode selection happens (UI and chat)
+
+Stuart must support both:
+
+A) UI selection (novice-friendly)
+Stuart may provide a simple dropdown where the user selects a mode.
+
+B) Chat selection (expert-friendly)
+Users may set or request a mode via chat:
+- “Switch to Meeting Minutes mode.”
+- “Use Journal mode for this file.”
+- “Set mode to Creator Notes.”
+
+In both cases, selection does not trigger execution. Execution still requires explicit submit/confirm.
+
+5) Default mode behavior
+
+Stuart should not auto-select a mode and run.
+However, Stuart may:
+- recommend a mode based on metadata or user intent,
+- without executing automatically.
+
+Example:
+Stuart: “This appears to be a multi-speaker recording. If you want meeting minutes, select Meeting Minutes mode. If you want a cleaned narrative, select Journal mode.”
+
+Recommendation is allowed. Auto-selection + execution is not.
+
+6) Mode switching after transcription (re-use of transcript)
+
+Once a session is transcribed and aligned, the user should be able to:
+- switch modes,
+- choose templates under those modes,
+- and generate new formalizations
+without re-uploading and without re-transcribing.
+
+This was a core decision: transcript is the ground truth; formalizations are re-runnable derived views.
+
+7) Modes that must exist in V1
+
+V1 priorities in this chat:
+- Meeting Minutes mode (critical)
+- Journal/Diary mode (critical)
+
+Incident and Creator are important, but V1 must not compromise the first two.
+
+8) Self-audit (2.3)
+
+This section reflects our canonical decisions:
+- general query requires no mode,
+- formalization requires explicit mode,
+- modes are enumerated and cannot be hallucinated,
+- mode selection can be done via UI or chat,
+- mode selection does not trigger processing,
+- and users can re-run different modes on the same transcript.
+
+This section is complete.

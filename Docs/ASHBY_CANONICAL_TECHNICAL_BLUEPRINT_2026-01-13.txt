@@ -1,0 +1,392 @@
+ASHBY — CANONICAL TECHNICAL BLUEPRINT (HUMAN-READABLE)
+Version date: 2026-01-13
+Canonical status: LOCKED (amend only via Control Sync)
+
+Purpose
+This document is the technical companion to “ASHBY — THE CANONICAL VISION”.
+The Vision defines what Ashby MUST be.
+This Blueprint defines how the architecture is expected to LOOK when implemented:
+- stable seams (interfaces)
+- stable directory responsibilities
+- canonical runtime pipeline
+- canonical data model fields (at a practical level)
+- the minimum “rails” required before building more modules/agents
+
+This is still human-readable. It is not raw code.
+But it is specific enough that if two engineers build it independently, they converge.
+
+============================================================
+1) Canonical separation: WHAT vs HOW (enforced in code layout)
+============================================================
+
+Ashby must make the WHAT/HOW boundary physically obvious in the repository.
+
+- WHAT lives in:
+  - core policy
+  - truth gate
+  - state model
+  - sessions
+  - modules (domain interpretation)
+
+- HOW lives in:
+  - adapters (vendor/protocol calls)
+  - transports (telegram/cli/http)
+  - connectors (filesystem/network clients)
+  - device SDK wrappers
+
+If a file contains both WHAT and HOW, the architecture is leaking.
+
+============================================================
+2) Canonical repository tree (end-state contract)
+============================================================
+
+This is the intended end-state shape. The exact filenames can vary, but the responsibility boundaries cannot.
+
+ashby/
+  core/
+    router.py                 # thin orchestrator / dispatch
+    policy/
+      policy_engine.py        # ACT/CLARIFY/CONFIRM/REFUSE decisions
+      permissions.py          # authz
+      confirmation.py         # blast radius + confirmation rules
+      profiles.py             # LOCAL_ONLY/HYBRID/CLOUD enforcement
+    truth/
+      truth_gate.py           # constrain language by truth posture
+      response_constraints.py # forbidden phrases, posture mapping rules
+    state/
+      belief_model.py         # state as belief + confidence + staleness
+      staleness.py            # decay rules per attribute
+      house_state.py          # domain-independent world model container
+    sessions/
+      session_manager.py      # session lifecycle, expiry, pending clarification
+      session_models.py       # session objects
+    registry/
+      module_registry.py      # loaded modules + capabilities
+      adapter_registry.py     # loaded adapters + capabilities
+      entity_registry.py      # devices/entities + scope graph
+      scope_graph.py          # zones generalized
+    scheduler/
+      scheduler.py            # job queue, triggers
+      watchers.py             # watcher primitives
+    logging/
+      events.py               # structured event shapes
+      audit_log.py            # append-only audit
+      redaction.py            # remove secrets, PII rules
+    storage/
+      storage_adapter.py      # abstract FS/DB
+      artifact_store.py       # canonical artifacts + lineage
+      runtime_store.py        # local-only caches + ephemeral state
+    errors.py                 # canonical error taxonomy + helpers
+
+  interfaces/
+    # Stable contracts. These are the “handshake points”.
+    tool_runtime.py           # executes tool calls through adapters
+    adapter.py                # base adapter interface + capability declarations
+    module.py                 # base module interface + lifecycle hooks
+    models/
+      intent.py               # IntentRecord + TargetSet
+      action.py               # ActionPlan + ToolCall + ActionResult
+      policy.py               # PolicyDecision
+      truth.py                # truth posture enums + constraints
+      artifacts.py            # artifact metadata + manifests
+      sessions.py             # session shapes
+      errors.py               # error object shape
+
+  adapters/
+    # HOW. Vendor/protocol implementations only.
+    tuya/
+    nest/
+    reolink/
+    homeassistant_bridge/
+    zigbee/
+    matter/
+    local_fs/
+    sqlite/
+    # Each adapter provides:
+    # - capability declaration
+    # - tool implementations
+    # - verification support flags
+
+  modules/
+    # Domain meaning. No vendor code.
+    lights/
+      handler.py              # module entrypoint called by router
+      domain.py               # domain semantics
+      templates.py            # response templates (truth-aware)
+      tests/                  # module scenario tests
+    comfort/
+    irrigation/
+    cameras/
+    meetings/                 # Stuart lives here as a hosted organ
+    inventory/
+
+io/
+  cli/
+    cli_entry.py
+  telegram/
+    telegram_entry.py
+  api/
+    http_entry.py             # pinned until core API stable
+
+configs/
+  schemas/
+    # canonical schemas for:
+    # - modules
+    # - adapters
+    # - entity registry
+    # - scope graph
+    # - profiles and permissions
+  instances/
+    # a user’s deployment config files
+
+runtime/
+  # local-only mutable state
+  sessions/
+  cache/
+  artifacts/
+  audit/
+  indexes/
+
+secrets/
+  # redacted templates only; real secrets never committed
+  README.md
+  env_template.py             # REDACTED placeholders
+
+tests/
+  harness/
+    scenario_runner.py
+    fixtures/
+    golden/
+scripts/
+  # one-off admin/maintenance scripts (not core behavior)
+
+Rules that must remain true:
+- No vendor SDK import inside modules/
+- No policy decisions inside adapters/
+- Router never grows into a brain
+- Interfaces remain stable and versioned
+- runtime/ is local-only and never required to be committed
+
+============================================================
+3) Canonical runtime pipeline (pseudo-logic)
+============================================================
+
+This is the “thin router” law expressed as steps.
+
+router.handle(request_envelope):
+  1) intent = nlu.extract_intent(request_envelope)
+  2) target_set = registry.resolve_targets(intent)
+  3) policy = policy_engine.evaluate(user_id, intent, target_set, profile, session_state)
+     - returns ACT/CLARIFY/CONFIRM/REFUSE/DEFER/NO-OP
+  4) if policy is CLARIFY/CONFIRM/REFUSE/NO-OP:
+       return truth_gate.render(policy_payload, posture=UNKNOWN or NO-OP)
+  5) module = module_registry.select(intent.intent_type)
+  6) module_output = module.handle(intent, target_set, policy, session_state)
+     - returns one of:
+       - ActionPlan
+       - ClarifyPayload
+       - PipelineRunPlan (for compute modules)
+  7) execute module_output via tool_runtime or pipeline executor
+  8) update state model using ActionResults / verified telemetry
+  9) response = truth_gate.render(results + state_updates + module_messages)
+  10) audit log + structured logs
+  11) return response
+
+The router coordinates. It does not interpret.
+
+============================================================
+4) Canonical data models (practical field lists)
+============================================================
+
+This section is not meant to replace Preservation Pack #2.
+It is meant to prevent “field drift” when implementing.
+
+4.1 IntentRecord (interfaces/models/intent.py)
+Required:
+- schema_name = "ashby.intent"
+- schema_version
+- intent_type (string)
+- raw_text (string)
+- user_id (string)
+- correlation_id (string)
+- requested_at (ISO8601 UTC)
+- target_hints:
+    - zones: [zone_key] (optional)
+    - devices: [device_key] (optional)
+    - entities: [entity_key] (optional)
+- parameters: dict (canonical, typed where possible)
+- ambiguity:
+    - is_ambiguous: bool
+    - ambiguity_reason: str | null
+    - confidence: float 0..1
+
+4.2 TargetSet (interfaces/models/intent.py)
+Required:
+- zones: [zone_id]
+- devices: [device_key]
+- entities: [entity_key]
+- blast_radius:
+    - device_count: int
+    - zone_count: int
+
+4.3 PolicyDecision (interfaces/models/policy.py)
+Required:
+- decision: "ACT"|"CLARIFY"|"CONFIRM"|"REFUSE"|"DEFER"|"NO-OP"
+- reason: str
+- requires_confirmation: bool
+- confirmation_payload: dict | null
+- refusal_payload: dict | null
+- clarify_payload: dict | null
+- constraints:
+    - allowed_tools: [tool_name] | null
+    - max_blast_radius: int | null
+    - profile: "LOCAL_ONLY"|"HYBRID"|"CLOUD"
+- created_at, correlation_id
+
+4.4 ToolCall (interfaces/models/action.py)
+Required:
+- tool_name (string)
+- adapter_key (string)
+- parameters (dict)
+- target_keys (devices/entities)
+- timeout_s (number)
+- correlation_id
+
+4.5 ActionPlan (interfaces/models/action.py)
+Required:
+- plan_id (string/ULID)
+- steps: [ToolCall]
+- expected_effects: dict
+- verification_expectations: dict (optional)
+- created_at, correlation_id
+
+4.6 ActionResult (interfaces/models/action.py)
+Required:
+- ok: bool (overall)
+- attempted: [target_key]
+- succeeded: [target_key]
+- failed: [ {target_key, error_obj} ]
+- verification_class:
+    - "VERIFIED"|"LAST_KNOWN"|"UNKNOWN"|"FAILED"|"NO-OP"
+- raw_adapter_responses: dict (sanitized)
+- started_at, finished_at
+- correlation_id
+
+4.7 Error object (interfaces/models/errors.py)
+Required:
+- error_code (string; stable taxonomy)
+- message (human-readable)
+- detail (dict; optional)
+- stage (string)
+- created_at
+- correlation_id
+
+4.8 StateBelief (interfaces/models/state.py)
+Required:
+- key (e.g., "lights.bedroom.power" or entity-specific)
+- value (typed)
+- confidence (float 0..1)
+- truth_posture ("VERIFIED"|"LAST_KNOWN"|"UNKNOWN")
+- evidence_ref:
+    - type: "action_result"|"telemetry"|"user_assertion"
+    - ref_id: string
+- last_updated
+- staleness:
+    - expires_at
+    - decay_policy_id
+
+4.9 ArtifactManifest (interfaces/models/artifacts.py)
+Required:
+- artifact_type ("transcript"|"minutes"|"incident"|"audit" etc)
+- session_id (if applicable)
+- run_id (for pipeline runs)
+- created_at
+- files: [ {path, mime_type, sha256} ]
+- lineage: { parent_run_id | null }
+
+============================================================
+5) Truth Gate mechanics (platform-level)
+============================================================
+
+Truth Gate is not “tone control.”
+It is the enforcement of Action-Gated Truth.
+
+Truth Gate responsibilities:
+- pick truth posture for the response based on ActionResults / state / artifacts
+- block forbidden phrases that imply certainty without evidence
+- force explicit representation of partial success
+- force explicit admission of unknown/stale state
+- ensure claims that reference reality link back to truth objects
+
+Practical rules:
+- If any target failed: response must mention partial success.
+- If verification_class is LAST_KNOWN: response must include uncertainty marker + offer refresh.
+- If state belief is stale: response must label staleness and propose verification.
+- If a module produces artifacts: response may claim artifact existence VERIFIED if artifact files exist + hash.
+
+============================================================
+6) Policy + confirmation mechanics (safety rails)
+============================================================
+
+Policy is where “Ashby treats humans safely” becomes code.
+
+Minimum confirmation triggers (examples, not exhaustive):
+- blast_radius >= threshold
+- dangerous device categories (locks, garage, heating extremes)
+- ambiguous targets (multiple matches)
+- profile escalation required (LOCAL_ONLY can’t run a requested cloud tool)
+- repeated failures or contradictory state
+
+Confirmation must be explicit and logged:
+- what is being confirmed
+- why it needs confirmation
+- what will happen if confirmed
+- scope of effect
+
+============================================================
+7) Scheduler/watchers mechanics (safe autonomy)
+============================================================
+
+Scheduler primitives:
+- Job (id, schedule, scope, action_plan, constraints)
+- Watcher (id, trigger, condition, action_plan, throttle, kill switch)
+
+Watcher constraints:
+- must never exceed configured blast radius
+- must respect profiles and permissions
+- must fail safe (no repeated runaway actions)
+- must log every run with ActionResults
+
+============================================================
+8) Evaluation harness (how we prevent platform rot)
+============================================================
+
+The harness must:
+- run the same pipeline as production transports
+- test truth gate phrases and posture enforcement
+- test partial success behavior
+- test removability (disable a module, verify graceful degradation)
+- test adapter swap (replace vendor adapter, verify modules still compile and run)
+
+Golden scenarios should include:
+- mixed success device operations
+- stale state contradictions
+- ambiguous target resolution requiring clarify/confirm
+- offline profile enforcement
+
+============================================================
+9) “Reality drift” checklist (what to look for during development)
+============================================================
+
+If you see any of these patterns, stop and fix architecture before adding features:
+
+- A module calls a vendor SDK directly
+- An adapter returns only raw text without structured results
+- Router grows with domain logic (“if intent == lights then …” everywhere)
+- Policy decisions happen inside module code without platform enforcement
+- Truth Gate is bypassed because “it’s annoying”
+- State is inferred from chat history (“the user said earlier”)
+- Config changes behavior without validation
+- Adding a new module requires editing many unrelated files (boundary collapse)
+
+END OF ASHBY — CANONICAL TECHNICAL BLUEPRINT

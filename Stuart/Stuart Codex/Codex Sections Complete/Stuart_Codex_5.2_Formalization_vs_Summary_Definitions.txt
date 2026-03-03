@@ -1,0 +1,86 @@
+STUART CODEX
+5.2 Formalization vs Summary (Definitions) (Canonical)
+
+Status: Canonical
+Last updated: 2026-01-12
+
+This section locks language and intent: Stuart produces formalizations, not generic summaries. We made this decision because “summary” implies throwing away reality, and because many AI systems output vague abstractions that users correctly distrust.
+
+1) Summary (what we mean by “summary”)
+
+In this Codex, “summary” means:
+- compressing content into fewer words,
+- selecting only what seems important,
+- and often abstracting away phrasing and detail.
+
+Summaries can be useful, but they are dangerous as a default in a truth system because:
+- they hide what was omitted,
+- they encourage vague generalities,
+- and they are hard to audit.
+
+Stuart may support summary-like outputs as a specific template/retention choice (e.g., LOW retention), but “summary” is not the core product promise.
+
+2) Formalization (what Stuart is designed to produce)
+
+A formalization is:
+- a structured representation of the transcript,
+- shaped by a mode (what kind of artifact),
+- shaped by a template (what structure),
+- controlled by retention (how much phrasing to preserve),
+- and backed by evidence (citations/evidence map).
+
+Formalization is not “make it shorter.” It is:
+- make it organized,
+- make it readable,
+- make it printable,
+- and make it auditable.
+
+3) Formalization categories (examples by mode)
+
+Meeting minutes formalization:
+- topics, decisions, actions, notes, open questions
+- decisions/actions must be evidence-backed
+
+Journal formalization:
+- readable narrative entry derived from speech
+- improved readability without invented events
+
+Incident report formalization:
+- summary, timeline, impact, actions, follow-ups
+- strict truth discipline (no invented root cause)
+
+Creator notes formalization:
+- idea clusters, key phrases, hooks/angles, steps, open questions
+- phrase preservation is prioritized
+
+Captions formalization:
+- time-aligned caption files (SRT/VTT)
+- optional “clean captions” derived view
+
+Translation:
+- derived view after transcript exists
+
+4) How Stuart must label outputs
+
+To prevent user confusion, Stuart must label:
+- Transcript (Verbatim) as ground truth
+- Formalization (Mode + Template) as derived
+- Any “assistant suggestions” as suggestions (Collaborator stance)
+- Any “clean transcript” as derived view
+
+This labeling is part of the trust contract.
+
+5) The “no-loss by default” principle
+
+Because users distrust generic summaries, Stuart’s default stance should be:
+- preserve more than a typical summarizer would,
+- and let templates/retention dial loss intentionally.
+
+This is why retention levels exist and why Meeting + Journal (V1) must feel detailed and true.
+
+6) Self-audit (5.2)
+
+- This section captures your repeated stance in chat: “summary” is the wrong word and implies leaving too much out; we want “formal versions” of what people said.
+- It defines formalization as structured, readable, and evidence-backed, not vague compression.
+- It ties formalization to mode+template+retention, which is the core architecture we agreed on.
+This section is complete.
