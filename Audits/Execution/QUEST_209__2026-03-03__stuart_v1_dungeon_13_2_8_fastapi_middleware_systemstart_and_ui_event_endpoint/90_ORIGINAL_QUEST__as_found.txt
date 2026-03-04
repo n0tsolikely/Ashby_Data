@@ -1,0 +1,59 @@
+# QUEST_209 — Stuart v1 — Dungeon 13 (2/8) — FastAPI Middleware + system.start + /api/ui/event
+
+IDENTITY
+- Quest ID: QUEST_209
+- Title: Stuart v1 — Dungeon 13 (2/8) — FastAPI Middleware + system.start + /api/ui/event
+- Dungeon: 13 (Realtime observability telemetry)
+- Priority: P0
+- Risk Class: R1
+- Expected Testing Level: TL3
+- Date Authored: 2026-03-03
+
+SYSTEM CONTEXT STATEMENT
+- This quest binds request/response lifecycle observability in the web door and exposes UI telemetry ingestion.
+
+REPO ARCHITECTURE ANCHORS (ANTI-DRIFT)
+- `Ashby_Engine/ashby/interfaces/web/app.py`
+- `Ashby_Engine/ashby/interfaces/web/http_envelope.py`
+- `Ashby_Engine/ashby/modules/meetings/observability/events.py`
+
+DELIVERABLES
+- Correlation middleware:
+  - read `X-Correlation-Id` or generate UUID
+  - attach trace/span to `request.state`
+  - emit `api.request_received` and `api.response_sent` with `duration_ms`
+  - on exception emit `api.error` + `alert.backend_exception`
+- Startup event emission:
+  - `system.start` with safe config booleans/strings
+- New endpoint:
+  - `POST /api/ui/event`
+  - routes UI telemetry to `events.jsonl` + `ui.jsonl`
+  - emits alerts for UI error/fetch-failed events
+
+CONSTRAINT SUMMARY
+- Required event fields must exist on all emits.
+- No raw auth/header/body logging.
+- Must remain best-effort and non-fatal.
+
+ACCEPTANCE CRITERIA
+- Middleware events emitted for normal and failing requests.
+- `/api/ui/event` writes expected sink files and alert routes.
+- Startup emits single `system.start` per backend boot.
+
+VERIFICATION PLAN
+- `cd /home/notsolikely/Ashby_Engine`
+- `PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_observability_api_middleware.py tests/test_ui_event_endpoint_logging.py`
+
+DEPENDENCIES
+- QUEST_208
+
+OUT OF SCOPE
+- Frontend caller integration.
+- Pipeline instrumentation.
+
+NO-ZOMBIE / NO-SIDEWAYS BUILD RULES
+- Reuse existing app middleware path; no parallel app wrappers.
+- No duplicate UI event endpoints.
+
+AUDIT BUNDLE
+- `/home/notsolikely/Ashby_Data/Audits/Execution/QUEST_209__YYYY-MM-DD__stuart_v1_d13_2of8_api_middleware_ui_event/`

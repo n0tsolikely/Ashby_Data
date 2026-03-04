@@ -1,0 +1,73 @@
+# QUEST_207 — Stuart v1 — Dungeon 12 (10/10) — Full System Smoke Proof Pack: Recorded Outputs + Regression Invocation
+
+(Quest template: Synapse OS — Architecture Transcendence Protocol, Stuart v1)
+
+IDENTITY
+- Quest ID: QUEST_207
+- Title: Stuart v1 — Dungeon 12 (10/10) — Full System Smoke Proof Pack: Recorded Outputs + Regression Invocation
+- Dungeon: 12 (Full system smoke test pack)
+- Owner: OpenAI Codex (CLI execution)
+- Priority: P0
+- Risk Class: R1
+- Expected Testing Level: TL4
+- Date Authored: 2026-03-03
+
+SYSTEM CONTEXT STATEMENT
+- This is the capstone quest for D12: execute the complete smoke ritual, capture required output artifacts, and prove reproducibility.
+
+DELIVERABLES
+- Executed `scripts/full_system_smoke_test.sh` proof run
+- `docs/smoke_outputs/<YYYY-MM-DD>/run.log`
+- `docs/smoke_outputs/<YYYY-MM-DD>/artifacts_list.txt`
+- `docs/smoke_outputs/<YYYY-MM-DD>/export_list.txt`
+- Documentation update describing when to rerun smoke pack and how to interpret failures
+
+TASK BREAKDOWN
+1) Execute full script end-to-end in baseline LOCAL_ONLY mode.
+2) Capture and persist required output files.
+3) Validate all D12 checklist assertions are explicitly visible in outputs.
+4) Add optional HYBRID/CLOUD skip markers when not enabled.
+
+ACCEPTANCE CRITERIA
+- Full D12 checklist verifiably passes from recorded outputs.
+- Baseline run passes with no remote dependency.
+- Proof artifacts are in canonical docs path and reusable.
+
+VERIFICATION PLAN
+- `cd /home/notsolikely/Ashby_Engine`
+- `bash scripts/full_system_smoke_test.sh`
+- `test -f docs/smoke_outputs/$(date +%F)/run.log`
+- `rg -n "PASS|FAIL|BLOCKED|D12" docs/smoke_outputs/$(date +%F)/run.log`
+
+DEPENDENCIES
+- QUEST_198
+- QUEST_199
+- QUEST_200
+- QUEST_201
+- QUEST_202
+- QUEST_203
+- QUEST_204
+- QUEST_205
+- QUEST_206
+
+OUT OF SCOPE
+- New platform features outside D12 smoke obligations.
+
+AUDIT BUNDLE
+- `/home/notsolikely/Ashby_Data/Audits/Execution/QUEST_207__YYYY-MM-DD__stuart_v1_d12_10of10_full_smoke_proof_pack/`
+
+REPO ARCHITECTURE ANCHORS (ANTI-DRIFT)
+- Backend door/API: `Ashby_Engine/ashby/interfaces/web/app.py`
+- Chat rails: `Ashby_Engine/ashby/modules/meetings/chat/answer.py`, `.../chat/commands.py`
+- Pipeline lifecycle: `Ashby_Engine/ashby/modules/meetings/pipeline/job_runner.py`
+- Transcript/version overlays: `Ashby_Engine/ashby/modules/meetings/transcript_versions.py`, `.../session_state.py`
+- Export contract: `Ashby_Engine/ashby/modules/meetings/export/bundle.py`
+- Webapp door: `Ashby_Engine/webapp/stuart_frontend/stuart_app/src/pages/Stuart.jsx`, `.../src/api/stuartClient.js`
+- Startup seams: `Ashby_Engine/Stuart`, `Ashby_Engine/scripts/stuart_up.sh`
+
+NO-ZOMBIE / NO-SIDEWAYS BUILD RULES
+- Reuse existing doors, adapters, and pipeline seams; do not create parallel smoke frameworks.
+- Extend canonical files above unless a new file is strictly required and justified in audit.
+- No dead flags, duplicate scripts, or shadow endpoints.
+- Any new helper must be wired into active execution path and verified by the smoke run.
+- Before implementation, run anti-dup checks (`rg`) for existing behavior and document findings in audit.

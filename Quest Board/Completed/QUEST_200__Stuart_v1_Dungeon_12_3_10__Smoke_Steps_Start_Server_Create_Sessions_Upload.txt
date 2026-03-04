@@ -1,0 +1,63 @@
+# QUEST_200 — Stuart v1 — Dungeon 12 (3/10) — Smoke Steps: Start Server + Create Sessions + Upload
+
+(Quest template: Synapse OS — Architecture Transcendence Protocol, Stuart v1)
+
+IDENTITY
+- Quest ID: QUEST_200
+- Title: Stuart v1 — Dungeon 12 (3/10) — Smoke Steps: Start Server + Create Sessions + Upload
+- Dungeon: 12 (Full system smoke test pack)
+- Owner: OpenAI Codex (CLI execution)
+- Priority: P0
+- Risk Class: R1
+- Expected Testing Level: TL3
+- Date Authored: 2026-03-03
+
+SYSTEM CONTEXT STATEMENT
+- D12 phases 1-3 require reliable startup checks plus deterministic creation/upload flow.
+- This quest wires those steps into the smoke script with explicit pass/fail assertions.
+
+DELIVERABLES
+- Smoke script phases for:
+  - API startup/health/version check
+  - session creation (meeting + journal)
+  - fixture uploads
+- Deterministic extraction of created IDs for later phases
+
+TASK BREAKDOWN
+1) Add startup assertions and fail-fast behavior.
+2) Add API calls for create session(s) and upload fixture files.
+3) Persist IDs in shell vars and append to run log.
+
+ACCEPTANCE CRITERIA
+- Script fails clearly if startup/create/upload fails.
+- IDs are captured and reused in later phases.
+
+VERIFICATION PLAN
+- Run script through phase 3.
+- Confirm log contains session IDs and upload receipts.
+
+DEPENDENCIES
+- QUEST_198
+- QUEST_199
+
+OUT OF SCOPE
+- Transcribe/formalize/chat assertions.
+
+AUDIT BUNDLE
+- `/home/notsolikely/Ashby_Data/Audits/Execution/QUEST_200__YYYY-MM-DD__stuart_v1_d12_3of10_start_create_upload/`
+
+REPO ARCHITECTURE ANCHORS (ANTI-DRIFT)
+- Backend door/API: `Ashby_Engine/ashby/interfaces/web/app.py`
+- Chat rails: `Ashby_Engine/ashby/modules/meetings/chat/answer.py`, `.../chat/commands.py`
+- Pipeline lifecycle: `Ashby_Engine/ashby/modules/meetings/pipeline/job_runner.py`
+- Transcript/version overlays: `Ashby_Engine/ashby/modules/meetings/transcript_versions.py`, `.../session_state.py`
+- Export contract: `Ashby_Engine/ashby/modules/meetings/export/bundle.py`
+- Webapp door: `Ashby_Engine/webapp/stuart_frontend/stuart_app/src/pages/Stuart.jsx`, `.../src/api/stuartClient.js`
+- Startup seams: `Ashby_Engine/Stuart`, `Ashby_Engine/scripts/stuart_up.sh`
+
+NO-ZOMBIE / NO-SIDEWAYS BUILD RULES
+- Reuse existing doors, adapters, and pipeline seams; do not create parallel smoke frameworks.
+- Extend canonical files above unless a new file is strictly required and justified in audit.
+- No dead flags, duplicate scripts, or shadow endpoints.
+- Any new helper must be wired into active execution path and verified by the smoke run.
+- Before implementation, run anti-dup checks (`rg`) for existing behavior and document findings in audit.

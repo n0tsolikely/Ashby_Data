@@ -1,0 +1,13 @@
+Stuart
+ashby/interfaces/web/app.py
+ashby/modules/meetings/export/bundle.py
+ashby/modules/meetings/observability/
+docs/full_system_smoke_test.md
+docs/smoke_outputs/
+scripts/full_system_smoke_test.sh
+tests/fixtures/stuart_smoke/
+tests/test_observability_api_middleware.py
+tests/test_observability_events_core.py
+tests/test_ui_event_endpoint_logging.py
+webapp/stuart_frontend/stuart_app/src/components/stuart/ChatInterface.jsx
+webapp/stuart_frontend/stuart_app/src/pages/Stuart.jsx

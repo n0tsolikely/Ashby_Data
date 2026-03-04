@@ -1,0 +1,129 @@
+## Command Receipt Log
+WRAPPER: synapse_quest_run.sh
+ENGINE_ROOT: /home/notsolikely/Ashby_Engine
+DATA_ROOT: /home/notsolikely/Ashby_Data
+---
+CMD: cd /home/notsolikely/Ashby_Engine && mkdir -p docs/smoke_outputs/2026-03-04 && export ASHBY_EVENT_LOGGING=1 && export STUART_ROOT="/home/notsolikely/ashby_runtime/stuart" && PYTHONPATH=/home/notsolikely/Ashby_Engine python /tmp/d13_observability_proof.py | tee docs/smoke_outputs/2026-03-04/d13_observability_run.log && python3 tools/realtime_log_doctor.py --stuart-root "" --lines 400 | tee docs/smoke_outputs/2026-03-04/d13_observability_doctor.log && tail -n 80 "/realtime_log/events.jsonl" > docs/smoke_outputs/2026-03-04/d13_events_tail.jsonl && tail -n 80 "/realtime_log/alerts.jsonl" > docs/smoke_outputs/2026-03-04/d13_alerts_tail.jsonl && tail -n 80 "/realtime_log/ui.jsonl" > docs/smoke_outputs/2026-03-04/d13_ui_tail.jsonl && tail -n 80 "/realtime_log/llm.jsonl" > docs/smoke_outputs/2026-03-04/d13_llm_tail.jsonl
+PROOF_CORRELATION_ID=proof-ac1d988f-43c7-4a15-8c89-a1bf42385105
+PROOF_ROOT=/home/notsolikely/ashby_runtime/stuart
+No alerts found in realtime logs.tail: cannot open '/realtime_log/events.jsonl' for reading: No such file or directory
+RC: 1
+BLOCKED: command failed (see RC above): cd /home/notsolikely/Ashby_Engine && mkdir -p docs/smoke_outputs/2026-03-04 && export ASHBY_EVENT_LOGGING=1 && export STUART_ROOT="/home/notsolikely/ashby_runtime/stuart" && PYTHONPATH=/home/notsolikely/Ashby_Engine python /tmp/d13_observability_proof.py | tee docs/smoke_outputs/2026-03-04/d13_observability_run.log && python3 tools/realtime_log_doctor.py --stuart-root "" --lines 400 | tee docs/smoke_outputs/2026-03-04/d13_observability_doctor.log && tail -n 80 "/realtime_log/events.jsonl" > docs/smoke_outputs/2026-03-04/d13_events_tail.jsonl && tail -n 80 "/realtime_log/alerts.jsonl" > docs/smoke_outputs/2026-03-04/d13_alerts_tail.jsonl && tail -n 80 "/realtime_log/ui.jsonl" > docs/smoke_outputs/2026-03-04/d13_ui_tail.jsonl && tail -n 80 "/realtime_log/llm.jsonl" > docs/smoke_outputs/2026-03-04/d13_llm_tail.jsonl
+CMD: cd /home/notsolikely/Ashby_Engine && mkdir -p docs/smoke_outputs/2026-03-04 && export ASHBY_EVENT_LOGGING=1 && export STUART_ROOT=/home/notsolikely/ashby_runtime/stuart && PYTHONPATH=/home/notsolikely/Ashby_Engine python /tmp/d13_observability_proof.py | tee docs/smoke_outputs/2026-03-04/d13_observability_run.log && python3 tools/realtime_log_doctor.py --stuart-root /home/notsolikely/ashby_runtime/stuart --lines 400 | tee docs/smoke_outputs/2026-03-04/d13_observability_doctor.log && tail -n 80 /home/notsolikely/ashby_runtime/stuart/realtime_log/events.jsonl > docs/smoke_outputs/2026-03-04/d13_events_tail.jsonl && tail -n 80 /home/notsolikely/ashby_runtime/stuart/realtime_log/alerts.jsonl > docs/smoke_outputs/2026-03-04/d13_alerts_tail.jsonl && tail -n 80 /home/notsolikely/ashby_runtime/stuart/realtime_log/ui.jsonl > docs/smoke_outputs/2026-03-04/d13_ui_tail.jsonl && tail -n 80 /home/notsolikely/ashby_runtime/stuart/realtime_log/llm.jsonl > docs/smoke_outputs/2026-03-04/d13_llm_tail.jsonl
+PROOF_CORRELATION_ID=proof-a517862e-5290-4555-81c0-abe070734858
+PROOF_ROOT=/home/notsolikely/ashby_runtime/stuart
+alerts=7 events=22
+
+[1] correlation_id=proof-ac1d988f-43c7-4a15-8c89-a1bf42385105
+  alert_event=alert.llm_disabled_on_chat level=WARNING cause=provider_disabled
+  summary=LLM disabled while handling chat request
+  chain:
+    - seq=0 component=api event=api.request_received summary=POST /api/ui/event
+    - seq=1 component=ui event=ui.chat_send summary=proof ui event
+    - seq=2 component=api event=api.response_sent summary=POST /api/ui/event -> 200
+    - seq=3 component=api event=api.request_received summary=GET /api/registry
+    - seq=4 component=api event=api.response_sent summary=GET /api/registry -> 200
+    - seq=5 component=pipeline event=pipeline.step_start summary=proof pipeline stage
+    - seq=6 component=llm event=llm.disabled summary=LLM disabled for LOCAL_ONLY chat profile
+    - seq=7 component=llm event=alert.llm_disabled_on_chat summary=LLM disabled while handling chat request
+
+[2] correlation_id=proof-ac1d988f-43c7-4a15-8c89-a1bf42385105
+  alert_event=alert.llm_disabled_on_chat level=WARNING cause=provider_disabled
+  summary=LLM disabled while handling chat request
+  chain:
+    - seq=0 component=api event=api.request_received summary=POST /api/ui/event
+    - seq=1 component=ui event=ui.chat_send summary=proof ui event
+    - seq=2 component=api event=api.response_sent summary=POST /api/ui/event -> 200
+    - seq=3 component=api event=api.request_received summary=GET /api/registry
+    - seq=4 component=api event=api.response_sent summary=GET /api/registry -> 200
+    - seq=5 component=pipeline event=pipeline.step_start summary=proof pipeline stage
+    - seq=6 component=llm event=llm.disabled summary=LLM disabled for LOCAL_ONLY chat profile
+    - seq=7 component=llm event=alert.llm_disabled_on_chat summary=LLM disabled while handling chat request
+
+[3] correlation_id=proof-a517862e-5290-4555-81c0-abe070734858
+  alert_event=ui.error level=ERROR cause=unknown
+  summary=proof ui error
+  chain:
+    - seq=0 component=api event=api.request_received summary=POST /api/ui/event
+    - seq=1 component=ui event=ui.chat_send summary=proof ui event
+    - seq=2 component=api event=api.response_sent summary=POST /api/ui/event -> 200
+    - seq=3 component=api event=api.request_received summary=POST /api/ui/event
+    - seq=4 component=ui event=ui.error summary=proof ui error
+    - seq=5 component=ui event=alert.ui_error summary=proof ui error
+    - seq=7 component=api event=api.response_sent summary=POST /api/ui/event -> 200
+    - seq=8 component=api event=api.request_received summary=GET /api/registry
+    - seq=9 component=api event=api.response_sent summary=GET /api/registry -> 200
+    - seq=10 component=pipeline event=pipeline.step_start summary=proof pipeline stage
+    - seq=11 component=llm event=llm.disabled summary=LLM disabled for LOCAL_ONLY chat profile
+    - seq=12 component=llm event=alert.llm_disabled_on_chat summary=LLM disabled while handling chat request
+
+[4] correlation_id=proof-a517862e-5290-4555-81c0-abe070734858
+  alert_event=alert.ui_error level=ERROR cause=ui_error
+  summary=proof ui error
+  chain:
+    - seq=0 component=api event=api.request_received summary=POST /api/ui/event
+    - seq=1 component=ui event=ui.chat_send summary=proof ui event
+    - seq=2 component=api event=api.response_sent summary=POST /api/ui/event -> 200
+    - seq=3 component=api event=api.request_received summary=POST /api/ui/event
+    - seq=4 component=ui event=ui.error summary=proof ui error
+    - seq=5 component=ui event=alert.ui_error summary=proof ui error
+    - seq=7 component=api event=api.response_sent summary=POST /api/ui/event -> 200
+    - seq=8 component=api event=api.request_received summary=GET /api/registry
+    - seq=9 component=api event=api.response_sent summary=GET /api/registry -> 200
+    - seq=10 component=pipeline event=pipeline.step_start summary=proof pipeline stage
+    - seq=11 component=llm event=llm.disabled summary=LLM disabled for LOCAL_ONLY chat profile
+    - seq=12 component=llm event=alert.llm_disabled_on_chat summary=LLM disabled while handling chat request
+
+[5] correlation_id=proof-a517862e-5290-4555-81c0-abe070734858
+  alert_event=alert.ui_error level=ERROR cause=ui_error
+  summary=proof ui error
+  chain:
+    - seq=0 component=api event=api.request_received summary=POST /api/ui/event
+    - seq=1 component=ui event=ui.chat_send summary=proof ui event
+    - seq=2 component=api event=api.response_sent summary=POST /api/ui/event -> 200
+    - seq=3 component=api event=api.request_received summary=POST /api/ui/event
+    - seq=4 component=ui event=ui.error summary=proof ui error
+    - seq=5 component=ui event=alert.ui_error summary=proof ui error
+    - seq=7 component=api event=api.response_sent summary=POST /api/ui/event -> 200
+    - seq=8 component=api event=api.request_received summary=GET /api/registry
+    - seq=9 component=api event=api.response_sent summary=GET /api/registry -> 200
+    - seq=10 component=pipeline event=pipeline.step_start summary=proof pipeline stage
+    - seq=11 component=llm event=llm.disabled summary=LLM disabled for LOCAL_ONLY chat profile
+    - seq=12 component=llm event=alert.llm_disabled_on_chat summary=LLM disabled while handling chat request
+
+[6] correlation_id=proof-a517862e-5290-4555-81c0-abe070734858
+  alert_event=alert.llm_disabled_on_chat level=WARNING cause=provider_disabled
+  summary=LLM disabled while handling chat request
+  chain:
+    - seq=0 component=api event=api.request_received summary=POST /api/ui/event
+    - seq=1 component=ui event=ui.chat_send summary=proof ui event
+    - seq=2 component=api event=api.response_sent summary=POST /api/ui/event -> 200
+    - seq=3 component=api event=api.request_received summary=POST /api/ui/event
+    - seq=4 component=ui event=ui.error summary=proof ui error
+    - seq=5 component=ui event=alert.ui_error summary=proof ui error
+    - seq=7 component=api event=api.response_sent summary=POST /api/ui/event -> 200
+    - seq=8 component=api event=api.request_received summary=GET /api/registry
+    - seq=9 component=api event=api.response_sent summary=GET /api/registry -> 200
+    - seq=10 component=pipeline event=pipeline.step_start summary=proof pipeline stage
+    - seq=11 component=llm event=llm.disabled summary=LLM disabled for LOCAL_ONLY chat profile
+    - seq=12 component=llm event=alert.llm_disabled_on_chat summary=LLM disabled while handling chat request
+
+[7] correlation_id=proof-a517862e-5290-4555-81c0-abe070734858
+  alert_event=alert.llm_disabled_on_chat level=WARNING cause=provider_disabled
+  summary=LLM disabled while handling chat request
+  chain:
+    - seq=0 component=api event=api.request_received summary=POST /api/ui/event
+    - seq=1 component=ui event=ui.chat_send summary=proof ui event
+    - seq=2 component=api event=api.response_sent summary=POST /api/ui/event -> 200
+    - seq=3 component=api event=api.request_received summary=POST /api/ui/event
+    - seq=4 component=ui event=ui.error summary=proof ui error
+    - seq=5 component=ui event=alert.ui_error summary=proof ui error
+    - seq=7 component=api event=api.response_sent summary=POST /api/ui/event -> 200
+    - seq=8 component=api event=api.request_received summary=GET /api/registry
+    - seq=9 component=api event=api.response_sent summary=GET /api/registry -> 200
+    - seq=10 component=pipeline event=pipeline.step_start summary=proof pipeline stage
+    - seq=11 component=llm event=llm.disabled summary=LLM disabled for LOCAL_ONLY chat profile
+    - seq=12 component=llm event=alert.llm_disabled_on_chat summary=LLM disabled while handling chat request
+RC: 0
+PASS: governance validation OK for QUEST_215 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_215__2026-03-03__stuart_v1_dungeon_13_8_8_observability_docs_operational_validation_and_proof_pack
+OK: finalize complete (validation PASS recorded).

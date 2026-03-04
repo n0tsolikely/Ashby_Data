@@ -1,0 +1,441 @@
+## Command Receipt Log
+WRAPPER: synapse_quest_run.sh
+ENGINE_ROOT: /home/notsolikely/Ashby_Engine
+DATA_ROOT: /home/notsolikely/Ashby_Data
+---
+CMD: cd /home/notsolikely/Ashby_Engine && STUART_SMOKE_USE_MINI_FIXTURES=1 ASHBY_ASR_ENABLE=0 STUART_SMOKE_AUTOSTART_BACKEND=1 STUART_SMOKE_RUN_TIMEOUT_SEC=300 bash scripts/full_system_smoke_test.sh && rg -n "PASS: session chat citations \+ scope lock checks complete" docs/smoke_outputs/2026-03-04/run.log && test -f /tmp/d12_chat_session_grounded.json && test -f /tmp/d12_chat_session_lock.json
+D12 FULL SYSTEM SMOKE TEST
+DATE_UTC=2026-03-04
+OUT_DIR=docs/smoke_outputs/2026-03-04
+BASE_URL=http://127.0.0.1:8844
+USE_MINI_FIXTURES=1
+MEETING_FIXTURE=tests/fixtures/stuart_smoke/meeting_fixture_3speakers_8s.wav
+JOURNAL_FIXTURE=tests/fixtures/stuart_smoke/journal_fixture_1speaker_8s.wav
+
+PHASE 1: Start server
+API not reachable. Starting backend via scripts/stuart_web.py ...
+PASS: API reachable at http://127.0.0.1:8844
+PHASE 2: Create session(s)
+PASS: meeting_session_id=ses_01KJV90QWSXNEQBQY80AS1VP4E
+PASS: journal_session_id=ses_01KJV90QX0C945Z4KGEA8ZDZB6
+PHASE 3: Upload fixture audio
+PASS: uploaded meeting fixture -> /tmp/d12_upload_meeting.json
+PASS: uploaded journal fixture -> /tmp/d12_upload_journal.json
+PHASE 4: Transcribe (diarize ON/OFF)
+RUN run_01KJV90QZEHG5NYC986DFCNAM6 status=succeeded
+RUN run_01KJV90QZQNGD0Y7YJZ1GRYA8Z status=succeeded
+PASS: transcript_versions_count=2 (details in /tmp/d12_transcripts_meeting.json)
+PHASE 5: Map speakers
+PASS: speaker_map persisted for transcript_version_id=trv_01KJV90XAXCT90NMKPX9XVYJJQ (details in /tmp/d12_speaker_map_get.json)
+PHASE 6: Formalize (DEFAULT_TEST_TEMPLATE)
+RUN run_01KJV90Y6X2G51JRNV2RM9KJDZ status=succeeded
+RUN run_01KJV90Y76ZG3B715K7FH6KV38 status=succeeded
+meta_ok mode=meeting template_id=default retention=MED template_version=2
+meta_ok mode=journal template_id=default retention=MED template_version=2
+PASS: formalize meeting+journal metadata and PDF checks complete
+PHASE 7: Session chat hard-lock checks
+curl: (22) The requested URL returned error: 500
+RC: 22
+BLOCKED: command failed (see RC above): cd /home/notsolikely/Ashby_Engine && STUART_SMOKE_USE_MINI_FIXTURES=1 ASHBY_ASR_ENABLE=0 STUART_SMOKE_AUTOSTART_BACKEND=1 STUART_SMOKE_RUN_TIMEOUT_SEC=300 bash scripts/full_system_smoke_test.sh && rg -n "PASS: session chat citations \+ scope lock checks complete" docs/smoke_outputs/2026-03-04/run.log && test -f /tmp/d12_chat_session_grounded.json && test -f /tmp/d12_chat_session_lock.json
+CMD: tail -n 200 /tmp/stuart_smoke_backend.log
+INFO:     Started server process [22483]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8844 (Press CTRL+C to quit)
+INFO:     127.0.0.1:48638 - "GET /api/registry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48642 - "POST /api/sessions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48652 - "POST /api/sessions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48656 - "POST /api/upload?session_id=ses_01KJV90QWSXNEQBQY80AS1VP4E&mode=meeting&title=D12%20Meeting%20Fixture HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48664 - "POST /api/upload?session_id=ses_01KJV90QX0C945Z4KGEA8ZDZB6&mode=journal&title=D12%20Journal%20Fixture HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48674 - "POST /api/transcribe HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48680 - "POST /api/transcribe HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48690 - "GET /api/runs/run_01KJV90QZEHG5NYC986DFCNAM6 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45052 - "GET /api/runs/run_01KJV90QZEHG5NYC986DFCNAM6 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45058 - "GET /api/runs/run_01KJV90QZEHG5NYC986DFCNAM6 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45072 - "GET /api/runs/run_01KJV90QZEHG5NYC986DFCNAM6 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45076 - "GET /api/runs/run_01KJV90QZEHG5NYC986DFCNAM6 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45082 - "GET /api/runs/run_01KJV90QZEHG5NYC986DFCNAM6 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45084 - "GET /api/runs/run_01KJV90QZEHG5NYC986DFCNAM6 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45090 - "GET /api/runs/run_01KJV90QZQNGD0Y7YJZ1GRYA8Z HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45092 - "GET /api/sessions/ses_01KJV90QWSXNEQBQY80AS1VP4E/transcripts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45108 - "PUT /api/transcripts/trv_01KJV90XAXCT90NMKPX9XVYJJQ/speaker_map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45116 - "GET /api/transcripts/trv_01KJV90XAXCT90NMKPX9XVYJJQ/speaker_map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45122 - "POST /api/run HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45124 - "POST /api/run HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45130 - "GET /api/runs/run_01KJV90Y6X2G51JRNV2RM9KJDZ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45146 - "GET /api/runs/run_01KJV90Y6X2G51JRNV2RM9KJDZ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45150 - "GET /api/runs/run_01KJV90Y76ZG3B715K7FH6KV38 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45164 - "GET /api/runs/run_01KJV90Y6X2G51JRNV2RM9KJDZ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45166 - "GET /api/runs/run_01KJV90Y76ZG3B715K7FH6KV38 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45168 - "GET /api/runs/run_01KJV90QZEHG5NYC986DFCNAM6 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45184 - "POST /api/chat HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 416, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/fastapi/applications.py", line 1135, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/starlette/applications.py", line 107, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/fastapi/routing.py", line 115, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/fastapi/routing.py", line 101, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/fastapi/routing.py", line 355, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/fastapi/routing.py", line 243, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/notsolikely/Ashby_Engine/ashby/interfaces/web/app.py", line 1089, in api_chat
+    hits = retrieve_hits(text, session_id=req.session_id, limit=10)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/notsolikely/Ashby_Engine/ashby/modules/meetings/chat/retrieval.py", line 84, in retrieve_hits
+    rows = sqlite_fts.search(conn, q, limit=max(int(limit), 1), session_id=session_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/notsolikely/Ashby_Engine/ashby/modules/meetings/index/sqlite_fts.py", line 282, in search
+    rows = conn.execute(
+           ^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: only
+INFO:     Shutting down
+RC: 0
+CMD: cd /home/notsolikely/Ashby_Engine && STUART_SMOKE_USE_MINI_FIXTURES=1 ASHBY_ASR_ENABLE=0 STUART_SMOKE_AUTOSTART_BACKEND=1 STUART_SMOKE_RUN_TIMEOUT_SEC=300 bash scripts/full_system_smoke_test.sh && rg -n "PASS: session chat citations \+ scope lock checks complete" docs/smoke_outputs/2026-03-04/run.log && test -f /tmp/d12_chat_session_grounded.json && test -f /tmp/d12_chat_session_lock.json
+D12 FULL SYSTEM SMOKE TEST
+DATE_UTC=2026-03-04
+OUT_DIR=docs/smoke_outputs/2026-03-04
+BASE_URL=http://127.0.0.1:8844
+USE_MINI_FIXTURES=1
+MEETING_FIXTURE=tests/fixtures/stuart_smoke/meeting_fixture_3speakers_8s.wav
+JOURNAL_FIXTURE=tests/fixtures/stuart_smoke/journal_fixture_1speaker_8s.wav
+
+PHASE 1: Start server
+API not reachable. Starting backend via scripts/stuart_web.py ...
+PASS: API reachable at http://127.0.0.1:8844
+PHASE 2: Create session(s)
+PASS: meeting_session_id=ses_01KJV92RBDF406DHHSCYQF1790
+PASS: journal_session_id=ses_01KJV92RBMC69JX4K4VHC1Y5FX
+PHASE 3: Upload fixture audio
+PASS: uploaded meeting fixture -> /tmp/d12_upload_meeting.json
+PASS: uploaded journal fixture -> /tmp/d12_upload_journal.json
+PHASE 4: Transcribe (diarize ON/OFF)
+RUN run_01KJV92REK2X0QARF511WAD53M status=succeeded
+RUN run_01KJV92REVPMDS7NHWJ31WKZ69 status=succeeded
+PASS: transcript_versions_count=2 (details in /tmp/d12_transcripts_meeting.json)
+PHASE 5: Map speakers
+PASS: speaker_map persisted for transcript_version_id=trv_01KJV92XN75AZMKKNHK6S14ZGY (details in /tmp/d12_speaker_map_get.json)
+PHASE 6: Formalize (DEFAULT_TEST_TEMPLATE)
+RUN run_01KJV92YN3TBF1HKZA1WW0KYSY status=succeeded
+RUN run_01KJV92YNCZA2V72XDQPCQF6SB status=succeeded
+meta_ok mode=meeting template_id=default retention=MED template_version=2
+meta_ok mode=journal template_id=default retention=MED template_version=2
+PASS: formalize meeting+journal metadata and PDF checks complete
+PHASE 7: Session chat hard-lock checks
+session chat expected non-empty citations
+RC: 1
+BLOCKED: command failed (see RC above): cd /home/notsolikely/Ashby_Engine && STUART_SMOKE_USE_MINI_FIXTURES=1 ASHBY_ASR_ENABLE=0 STUART_SMOKE_AUTOSTART_BACKEND=1 STUART_SMOKE_RUN_TIMEOUT_SEC=300 bash scripts/full_system_smoke_test.sh && rg -n "PASS: session chat citations \+ scope lock checks complete" docs/smoke_outputs/2026-03-04/run.log && test -f /tmp/d12_chat_session_grounded.json && test -f /tmp/d12_chat_session_lock.json
+CMD: cd /home/notsolikely/Ashby_Engine && STUART_SMOKE_USE_MINI_FIXTURES=1 ASHBY_ASR_ENABLE=0 STUART_SMOKE_AUTOSTART_BACKEND=1 STUART_SMOKE_RUN_TIMEOUT_SEC=300 bash scripts/full_system_smoke_test.sh && rg -n "PASS: session chat citations \+ scope lock checks complete" docs/smoke_outputs/2026-03-04/run.log && test -f /tmp/d12_chat_session_grounded_request.json && test -f /tmp/d12_chat_session_grounded.json && test -f /tmp/d12_chat_session_lock.json && test -f /tmp/d12_search_probe.json
+D12 FULL SYSTEM SMOKE TEST
+DATE_UTC=2026-03-04
+OUT_DIR=docs/smoke_outputs/2026-03-04
+BASE_URL=http://127.0.0.1:8844
+USE_MINI_FIXTURES=1
+MEETING_FIXTURE=tests/fixtures/stuart_smoke/meeting_fixture_3speakers_8s.wav
+JOURNAL_FIXTURE=tests/fixtures/stuart_smoke/journal_fixture_1speaker_8s.wav
+
+PHASE 1: Start server
+API not reachable. Starting backend via scripts/stuart_web.py ...
+PASS: API reachable at http://127.0.0.1:8844
+PHASE 2: Create session(s)
+PASS: meeting_session_id=ses_01KJVABSH1F9A1J85EKZSBMMTP
+PASS: journal_session_id=ses_01KJVABSH6ETD13GDZJ3FF8CA7
+PHASE 3: Upload fixture audio
+PASS: uploaded meeting fixture -> /tmp/d12_upload_meeting.json
+PASS: uploaded journal fixture -> /tmp/d12_upload_journal.json
+PHASE 4: Transcribe (diarize ON/OFF)
+RUN run_01KJVABSKJWXTTHPJEA153NN0M status=succeeded
+RUN run_01KJVABSKTPAC24S95ARKZ1XN3 status=succeeded
+PASS: transcript_versions_count=2 (details in /tmp/d12_transcripts_meeting.json)
+PHASE 5: Map speakers
+PASS: speaker_map persisted for transcript_version_id=trv_01KJVABYPHSFAXJT6RHKX98PQZ (details in /tmp/d12_speaker_map_get.json)
+PHASE 6: Formalize (DEFAULT_TEST_TEMPLATE)
+RUN run_01KJVABZT852VY7NMY3ARWNVKR status=succeeded
+RUN run_01KJVABZTHXNVNZMMA147DQQ2V status=succeeded
+meta_ok mode=meeting template_id=default retention=MED template_version=2
+meta_ok mode=journal template_id=default retention=MED template_version=2
+PASS: formalize meeting+journal metadata and PDF checks complete
+PHASE 7: Session chat hard-lock checks
+search probe failed: no indexed hit for transcript-derived tokens
+RC: 1
+BLOCKED: command failed (see RC above): cd /home/notsolikely/Ashby_Engine && STUART_SMOKE_USE_MINI_FIXTURES=1 ASHBY_ASR_ENABLE=0 STUART_SMOKE_AUTOSTART_BACKEND=1 STUART_SMOKE_RUN_TIMEOUT_SEC=300 bash scripts/full_system_smoke_test.sh && rg -n "PASS: session chat citations \+ scope lock checks complete" docs/smoke_outputs/2026-03-04/run.log && test -f /tmp/d12_chat_session_grounded_request.json && test -f /tmp/d12_chat_session_grounded.json && test -f /tmp/d12_chat_session_lock.json && test -f /tmp/d12_search_probe.json
+CMD: cd /home/notsolikely/Ashby_Engine && STUART_SMOKE_USE_MINI_FIXTURES=1 ASHBY_ASR_ENABLE=0 STUART_SMOKE_AUTOSTART_BACKEND=1 STUART_SMOKE_RUN_TIMEOUT_SEC=300 bash scripts/full_system_smoke_test.sh && rg -n "PHASE7_SESSION_CHAT_REQUEST_JSON=" docs/smoke_outputs/2026-03-04/run.log && rg -n "PASS: session chat citations \+ scope lock checks complete" docs/smoke_outputs/2026-03-04/run.log && test -f /tmp/d12_chat_session_grounded_request.json && test -f /tmp/d12_chat_session_grounded.json && test -f /tmp/d12_chat_session_lock.json && test -f /tmp/d12_search_probe.json
+D12 FULL SYSTEM SMOKE TEST
+DATE_UTC=2026-03-04
+OUT_DIR=docs/smoke_outputs/2026-03-04
+BASE_URL=http://127.0.0.1:8844
+USE_MINI_FIXTURES=1
+MEETING_FIXTURE=tests/fixtures/stuart_smoke/meeting_fixture_3speakers_8s.wav
+JOURNAL_FIXTURE=tests/fixtures/stuart_smoke/journal_fixture_1speaker_8s.wav
+
+PHASE 1: Start server
+API not reachable. Starting backend via scripts/stuart_web.py ...
+PASS: API reachable at http://127.0.0.1:8844
+PHASE 2: Create session(s)
+PASS: meeting_session_id=ses_01KJVAERZZ3HSTKBJT1FYHA5ER
+PASS: journal_session_id=ses_01KJVAES06R50C3Y1BZBW659VP
+PHASE 3: Upload fixture audio
+PASS: uploaded meeting fixture -> /tmp/d12_upload_meeting.json
+PASS: uploaded journal fixture -> /tmp/d12_upload_journal.json
+PHASE 4: Transcribe (diarize ON/OFF)
+RUN run_01KJVAES2N9XEYP8M1G5W72A95 status=succeeded
+RUN run_01KJVAES2WRHDEV8MWPFPCWD9K status=succeeded
+PASS: transcript_versions_count=2 (details in /tmp/d12_transcripts_meeting.json)
+PHASE 5: Map speakers
+PASS: speaker_map persisted for transcript_version_id=trv_01KJVAEXZN7XMHSD1PDBPACEPG (details in /tmp/d12_speaker_map_get.json)
+PHASE 6: Formalize (DEFAULT_TEST_TEMPLATE)
+RUN run_01KJVAEYPPPFVE1JQRKFEFXK55 status=succeeded
+RUN run_01KJVAEYPZQ9RJA4CSSZV2C6T3 status=succeeded
+meta_ok mode=meeting template_id=default retention=MED template_version=2
+meta_ok mode=journal template_id=default retention=MED template_version=2
+PASS: formalize meeting+journal metadata and PDF checks complete
+PHASE 7: Session chat hard-lock checks
+PHASE7_SEARCH_TOKEN=meeting
+PHASE7_SEARCH_PROBE_FILE=/tmp/d12_search_probe.json
+PHASE7_SESSION_CHAT_REQUEST_JSON={"session_id": "ses_01KJVAERZZ3HSTKBJT1FYHA5ER", "text": "Summarize evidence in this session for meeting", "ui": {"selected_session_id": "ses_01KJVAERZZ3HSTKBJT1FYHA5ER"}, "history_tail": []}
+PHASE7_SESSION_CHAT_RESPONSE_FILE=/tmp/d12_chat_session_grounded.json
+session_chat_truth_gate_no_evidence_ok
+curl: (22) The requested URL returned error: 500
+RC: 22
+BLOCKED: command failed (see RC above): cd /home/notsolikely/Ashby_Engine && STUART_SMOKE_USE_MINI_FIXTURES=1 ASHBY_ASR_ENABLE=0 STUART_SMOKE_AUTOSTART_BACKEND=1 STUART_SMOKE_RUN_TIMEOUT_SEC=300 bash scripts/full_system_smoke_test.sh && rg -n "PHASE7_SESSION_CHAT_REQUEST_JSON=" docs/smoke_outputs/2026-03-04/run.log && rg -n "PASS: session chat citations \+ scope lock checks complete" docs/smoke_outputs/2026-03-04/run.log && test -f /tmp/d12_chat_session_grounded_request.json && test -f /tmp/d12_chat_session_grounded.json && test -f /tmp/d12_chat_session_lock.json && test -f /tmp/d12_search_probe.json
+CMD: tail -n 160 /tmp/stuart_smoke_backend.log
+INFO:     Started server process [24516]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8844 (Press CTRL+C to quit)
+INFO:     127.0.0.1:48624 - "GET /api/registry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48634 - "POST /api/sessions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48642 - "POST /api/sessions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48650 - "POST /api/upload?session_id=ses_01KJVAERZZ3HSTKBJT1FYHA5ER&mode=meeting&title=D12%20Meeting%20Fixture HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48652 - "POST /api/upload?session_id=ses_01KJVAES06R50C3Y1BZBW659VP&mode=journal&title=D12%20Journal%20Fixture HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48658 - "POST /api/transcribe HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48674 - "POST /api/transcribe HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48680 - "GET /api/runs/run_01KJVAES2N9XEYP8M1G5W72A95 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48692 - "GET /api/runs/run_01KJVAES2N9XEYP8M1G5W72A95 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45286 - "GET /api/runs/run_01KJVAES2N9XEYP8M1G5W72A95 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45290 - "GET /api/runs/run_01KJVAES2N9XEYP8M1G5W72A95 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45294 - "GET /api/runs/run_01KJVAES2N9XEYP8M1G5W72A95 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45298 - "GET /api/runs/run_01KJVAES2N9XEYP8M1G5W72A95 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45312 - "GET /api/runs/run_01KJVAES2WRHDEV8MWPFPCWD9K HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45318 - "GET /api/sessions/ses_01KJVAERZZ3HSTKBJT1FYHA5ER/transcripts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45326 - "PUT /api/transcripts/trv_01KJVAEXZN7XMHSD1PDBPACEPG/speaker_map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45334 - "GET /api/transcripts/trv_01KJVAEXZN7XMHSD1PDBPACEPG/speaker_map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45344 - "POST /api/run HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45356 - "POST /api/run HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45364 - "GET /api/runs/run_01KJVAEYPPPFVE1JQRKFEFXK55 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45368 - "GET /api/runs/run_01KJVAEYPPPFVE1JQRKFEFXK55 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45378 - "GET /api/runs/run_01KJVAEYPZQ9RJA4CSSZV2C6T3 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45382 - "GET /api/runs/run_01KJVAEYPPPFVE1JQRKFEFXK55 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45388 - "GET /api/runs/run_01KJVAEYPZQ9RJA4CSSZV2C6T3 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45392 - "GET /api/runs/run_01KJVAES2N9XEYP8M1G5W72A95 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45398 - "GET /api/transcripts/trv_01KJVAEXZN7XMHSD1PDBPACEPG HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45410 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45424 - "POST /api/chat HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 416, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/fastapi/applications.py", line 1135, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/starlette/applications.py", line 107, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/fastapi/routing.py", line 115, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/fastapi/routing.py", line 101, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/fastapi/routing.py", line 355, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/notsolikely/venvs/ashby-env/lib/python3.12/site-packages/fastapi/routing.py", line 243, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/notsolikely/Ashby_Engine/ashby/interfaces/web/app.py", line 1089, in api_chat
+    hits = retrieve_hits(text, session_id=req.session_id, limit=10)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/notsolikely/Ashby_Engine/ashby/modules/meetings/chat/retrieval.py", line 84, in retrieve_hits
+    rows = sqlite_fts.search(conn, q, limit=max(int(limit), 1), session_id=session_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/notsolikely/Ashby_Engine/ashby/modules/meetings/index/sqlite_fts.py", line 282, in search
+    rows = conn.execute(
+           ^^^^^^^^^^^^^
+sqlite3.OperationalError: fts5: syntax error near "'"
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [24516]
+RC: 0
+CMD: cd /home/notsolikely/Ashby_Engine && STUART_SMOKE_USE_MINI_FIXTURES=1 ASHBY_ASR_ENABLE=0 STUART_SMOKE_AUTOSTART_BACKEND=1 STUART_SMOKE_RUN_TIMEOUT_SEC=300 bash scripts/full_system_smoke_test.sh && rg -n "PHASE7_SESSION_CHAT_REQUEST_JSON=" docs/smoke_outputs/2026-03-04/run.log && rg -n "PASS: session chat citations \+ scope lock checks complete" docs/smoke_outputs/2026-03-04/run.log && test -f /tmp/d12_chat_session_grounded_request.json && test -f /tmp/d12_chat_session_grounded.json && test -f /tmp/d12_chat_session_lock.json && test -f /tmp/d12_search_probe.json
+D12 FULL SYSTEM SMOKE TEST
+DATE_UTC=2026-03-04
+OUT_DIR=docs/smoke_outputs/2026-03-04
+BASE_URL=http://127.0.0.1:8844
+USE_MINI_FIXTURES=1
+MEETING_FIXTURE=tests/fixtures/stuart_smoke/meeting_fixture_3speakers_8s.wav
+JOURNAL_FIXTURE=tests/fixtures/stuart_smoke/journal_fixture_1speaker_8s.wav
+
+PHASE 1: Start server
+API not reachable. Starting backend via scripts/stuart_web.py ...
+PASS: API reachable at http://127.0.0.1:8844
+PHASE 2: Create session(s)
+PASS: meeting_session_id=ses_01KJVAGRB1VB48MZZJXQ92W3PR
+PASS: journal_session_id=ses_01KJVAGRB80JM2VQ0W92NGYT4T
+PHASE 3: Upload fixture audio
+PASS: uploaded meeting fixture -> /tmp/d12_upload_meeting.json
+PASS: uploaded journal fixture -> /tmp/d12_upload_journal.json
+PHASE 4: Transcribe (diarize ON/OFF)
+RUN run_01KJVAGRDMJ8V9GSRZG9HMFTH1 status=succeeded
+RUN run_01KJVAGRDZ7H1B58N7CVN3EPJN status=succeeded
+PASS: transcript_versions_count=2 (details in /tmp/d12_transcripts_meeting.json)
+PHASE 5: Map speakers
+PASS: speaker_map persisted for transcript_version_id=trv_01KJVAGXMA5PSXYQ4K2G8FDTBK (details in /tmp/d12_speaker_map_get.json)
+PHASE 6: Formalize (DEFAULT_TEST_TEMPLATE)
+RUN run_01KJVAGYQJ277B8KSZ05CW39TH status=succeeded
+RUN run_01KJVAGYQZ7J175QDXHFRMVFGD status=succeeded
+meta_ok mode=meeting template_id=default retention=MED template_version=2
+meta_ok mode=journal template_id=default retention=MED template_version=2
+PASS: formalize meeting+journal metadata and PDF checks complete
+PHASE 7: Session chat hard-lock checks
+PHASE7_SEARCH_TOKEN=meeting
+PHASE7_SEARCH_PROBE_FILE=/tmp/d12_search_probe.json
+PHASE7_SESSION_CHAT_REQUEST_JSON={"session_id": "ses_01KJVAGRB1VB48MZZJXQ92W3PR", "text": "Summarize evidence in this session for meeting", "ui": {"selected_session_id": "ses_01KJVAGRB1VB48MZZJXQ92W3PR"}, "history_tail": []}
+PHASE7_SESSION_CHAT_RESPONSE_FILE=/tmp/d12_chat_session_grounded.json
+session_chat_truth_gate_no_evidence_ok
+session_scope_lock_ok
+PASS: session chat citations + scope lock checks complete
+PHASE 8: Global chat cold-start checks [PENDING next quest]
+PHASE 9: Root UI surface check [PENDING next quest]
+PHASE 10: Export bundle checks [PENDING next quest]
+STATUS=QUEST_204 phases 1-7 complete
+WROTE docs/smoke_outputs/2026-03-04/run.log
+33:PHASE7_SESSION_CHAT_REQUEST_JSON={"session_id": "ses_01KJVAGRB1VB48MZZJXQ92W3PR", "text": "Summarize evidence in this session for meeting", "ui": {"selected_session_id": "ses_01KJVAGRB1VB48MZZJXQ92W3PR"}, "history_tail": []}
+37:PASS: session chat citations + scope lock checks complete
+RC: 0
+CMD: cd /home/notsolikely/Ashby_Engine && STUART_SMOKE_USE_MINI_FIXTURES=1 ASHBY_ASR_ENABLE=0 STUART_SMOKE_AUTOSTART_BACKEND=1 STUART_SMOKE_RUN_TIMEOUT_SEC=300 bash scripts/full_system_smoke_test.sh && python3 - <<'PY'
+import json
+p=json.load(open('/tmp/d12_search_probe.json','r',encoding='utf-8'))
+print('probe_ok',p.get('ok'),'selected',p.get('selected_token'),'candidates',len(p.get('candidates') or []),'hits',p.get('hits_count'))
+assert p.get('selected_token')
+PY && rg -n "PASS: session chat citations \+ scope lock checks complete" docs/smoke_outputs/2026-03-04/run.log
+bash: line 6: warning: here-document at line 1 delimited by end-of-file (wanted `PY')
+D12 FULL SYSTEM SMOKE TEST
+DATE_UTC=2026-03-04
+OUT_DIR=docs/smoke_outputs/2026-03-04
+BASE_URL=http://127.0.0.1:8844
+USE_MINI_FIXTURES=1
+MEETING_FIXTURE=tests/fixtures/stuart_smoke/meeting_fixture_3speakers_8s.wav
+JOURNAL_FIXTURE=tests/fixtures/stuart_smoke/journal_fixture_1speaker_8s.wav
+
+PHASE 1: Start server
+API not reachable. Starting backend via scripts/stuart_web.py ...
+PASS: API reachable at http://127.0.0.1:8844
+PHASE 2: Create session(s)
+PASS: meeting_session_id=ses_01KJVAKZX0TZ4R7PHFJJZG90FX
+PASS: journal_session_id=ses_01KJVAKZX8TEVAS4EFYDMN97V9
+PHASE 3: Upload fixture audio
+PASS: uploaded meeting fixture -> /tmp/d12_upload_meeting.json
+PASS: uploaded journal fixture -> /tmp/d12_upload_journal.json
+PHASE 4: Transcribe (diarize ON/OFF)
+RUN run_01KJVAKZZQWJC54GYYEPWCT5B8 status=succeeded
+RUN run_01KJVAM000VFTYJ3BXXT2PMP9A status=succeeded
+PASS: transcript_versions_count=2 (details in /tmp/d12_transcripts_meeting.json)
+PHASE 5: Map speakers
+PASS: speaker_map persisted for transcript_version_id=trv_01KJVAM57D46XFVMPZTD1C4X1B (details in /tmp/d12_speaker_map_get.json)
+PHASE 6: Formalize (DEFAULT_TEST_TEMPLATE)
+RUN run_01KJVAM67KFG692ZRG1DD0SJ3T status=succeeded
+RUN run_01KJVAM67YPTABBS4FQ7VDPAK2 status=succeeded
+meta_ok mode=meeting template_id=default retention=MED template_version=2
+meta_ok mode=journal template_id=default retention=MED template_version=2
+PASS: formalize meeting+journal metadata and PDF checks complete
+PHASE 7: Session chat hard-lock checks
+PHASE7_SEARCH_TOKEN=hello
+PHASE7_SEARCH_PROBE_FILE=/tmp/d12_search_probe.json
+PHASE7_SESSION_CHAT_REQUEST_JSON={"session_id": "ses_01KJVAKZX0TZ4R7PHFJJZG90FX", "text": "Summarize evidence in this session for hello", "ui": {"selected_session_id": "ses_01KJVAKZX0TZ4R7PHFJJZG90FX"}, "history_tail": []}
+PHASE7_SESSION_CHAT_RESPONSE_FILE=/tmp/d12_chat_session_grounded.json
+session_chat_truth_gate_no_evidence_ok
+session_scope_lock_ok
+PASS: session chat citations + scope lock checks complete
+PHASE 8: Global chat cold-start checks [PENDING next quest]
+PHASE 9: Root UI surface check [PENDING next quest]
+PHASE 10: Export bundle checks [PENDING next quest]
+STATUS=QUEST_204 phases 1-7 complete
+WROTE docs/smoke_outputs/2026-03-04/run.log
+  File "<stdin>", line 5
+    PY && rg -n "PASS: session chat citations \+ scope lock checks complete" docs/smoke_outputs/2026-03-04/run.log
+                                                                                                     ^
+SyntaxError: leading zeros in decimal integer literals are not permitted; use an 0o prefix for octal integers
+RC: 1
+BLOCKED: command failed (see RC above): cd /home/notsolikely/Ashby_Engine && STUART_SMOKE_USE_MINI_FIXTURES=1 ASHBY_ASR_ENABLE=0 STUART_SMOKE_AUTOSTART_BACKEND=1 STUART_SMOKE_RUN_TIMEOUT_SEC=300 bash scripts/full_system_smoke_test.sh && python3 - <<'PY'
+import json
+p=json.load(open('/tmp/d12_search_probe.json','r',encoding='utf-8'))
+print('probe_ok',p.get('ok'),'selected',p.get('selected_token'),'candidates',len(p.get('candidates') or []),'hits',p.get('hits_count'))
+assert p.get('selected_token')
+PY && rg -n "PASS: session chat citations \+ scope lock checks complete" docs/smoke_outputs/2026-03-04/run.log
+CMD: cd /home/notsolikely/Ashby_Engine && python3 -c 'import json; p=json.load(open("/tmp/d12_search_probe.json","r",encoding="utf-8")); print("probe_ok",p.get("ok"),"selected",p.get("selected_token"),"candidates",len(p.get("candidates") or []),"hits",p.get("hits_count")); assert p.get("selected_token")' && rg -n "PASS: session chat citations \+ scope lock checks complete" docs/smoke_outputs/2026-03-04/run.log && rg -n "PHASE7_SESSION_CHAT_REQUEST_JSON=" docs/smoke_outputs/2026-03-04/run.log
+probe_ok True selected hello candidates 13 hits 3
+37:PASS: session chat citations + scope lock checks complete
+33:PHASE7_SESSION_CHAT_REQUEST_JSON={"session_id": "ses_01KJVAKZX0TZ4R7PHFJJZG90FX", "text": "Summarize evidence in this session for hello", "ui": {"selected_session_id": "ses_01KJVAKZX0TZ4R7PHFJJZG90FX"}, "history_tail": []}
+RC: 0
+PASS: governance validation OK for QUEST_204 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_204__2026-03-03__stuart_v1_dungeon_12_7_10_smoke_sessionchat_hardlock_and_citation_enforcement
+OK: finalize complete (validation PASS recorded).

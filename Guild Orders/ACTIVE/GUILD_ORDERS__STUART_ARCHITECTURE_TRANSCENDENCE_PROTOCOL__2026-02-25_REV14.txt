@@ -1105,3 +1105,75 @@ Proof requirements:
 Dependencies:
 - D4/5/6/7/8/10/11 completed enough that the end-to-end flow is viable.
 ======================================================================
+
+======================================================================
+DUNGEON 13 — REALTIME OBSERVABILITY TELEMETRY (CAUSAL CHAIN DEBUGGING)
+======================================================================
+Goal:
+Implement a deterministic, privacy-safe realtime telemetry layer that records the full causal chain:
+UI action -> API request -> router decision -> pipeline steps -> storage/audio/LLM seams -> response/alert.
+
+This dungeon is for runtime diagnosis, not product analytics.
+
+Deliverables (binding):
+1) Core observability module
+   - ashby/modules/meetings/observability/events.py
+   - sinks under $STUART_ROOT/realtime_log/:
+     - events.jsonl
+     - alerts.jsonl
+     - ui.jsonl
+     - llm.jsonl
+   - telemetry gate: ASHBY_EVENT_LOGGING=1 only
+   - required per-event fields: correlation_id/session_id/run_id/trace_id/span_id/parent_span_id/seq/duration_ms
+   - 50MB rotation with suffixed archive files and active-file continuity
+
+2) API lifecycle + startup + UI event ingestion
+   - middleware emits api.request_received / api.response_sent (+duration)
+   - exception path emits api.error + alert.backend_exception
+   - startup emits system.start (safe config booleans/strings only)
+   - POST /api/ui/event ingests frontend telemetry and routes to events/ui/alerts sinks
+
+3) Frontend propagation
+   - X-Correlation-Id on all API requests
+   - required UI action events:
+     ui.click_run, ui.upload_started, ui.upload_finished,
+     ui.chat_send, ui.export_clicked, ui.session_loaded
+   - no raw chat/audio payloads in telemetry (length/hash metadata only)
+
+4) Frontend failure capture
+   - window.onerror + window.onunhandledrejection -> ui.error
+   - fetch non-2xx/exception capture -> ui.fetch_failed
+
+5) Pipeline seam instrumentation
+   - storage.lookup / storage.lookup_miss
+   - audio.loaded / audio.missing
+   - pipeline.step_start / pipeline.step_end
+   - llm.call / llm.response / llm.error / llm.disabled / llm.fallback
+   - required alerts:
+     alert.audio_missing, alert.pipeline_degraded,
+     alert.llm_not_called, alert.llm_disabled_on_chat, alert.llm_error
+
+6) Doctor tool
+   - tools/realtime_log_doctor.py
+   - reads recent events/alerts, groups by correlation_id, prints causal chains + likely cause categories
+
+7) Test suite
+   - observability tests covering startup/middleware/ui endpoint/required fields/alerts/rotation
+   - temp STUART_ROOT + ASHBY_EVENT_LOGGING=1 deterministic runs
+
+8) Operational docs + proof
+   - docs/OBSERVABILITY_REALTIME_LOGGING.md
+   - commands for enable/tail/doctor usage
+   - proof receipts showing populated events/alerts/ui/llm logs and diagnosable causal chains
+
+Privacy/Safety laws (binding):
+- No secrets in telemetry (keys/tokens/passwords/authorization headers/redacted errors).
+- No raw prompts/completions.
+- No raw chat text/audio bytes in UI telemetry.
+- Best-effort logging only: telemetry must never crash the app.
+
+Definition of done (Dungeon 13):
+- D13 quests 208-215 complete with governance PASS.
+- Runtime session shows traceable correlation_id chain across UI -> API -> pipeline/LLM.
+- Doctor tool can explain at least one degraded path from logs alone.
+======================================================================

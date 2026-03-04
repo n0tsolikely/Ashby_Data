@@ -1,0 +1,76 @@
+# QUEST_198 — Stuart v1 — Dungeon 12 (1/10) — Smoke Pack Scaffold: Script + Docs + Output Capture Layout
+
+(Quest template: Synapse OS — Architecture Transcendence Protocol, Stuart v1)
+
+IDENTITY
+- Quest ID: QUEST_198
+- Title: Stuart v1 — Dungeon 12 (1/10) — Smoke Pack Scaffold: Script + Docs + Output Capture Layout
+- Dungeon: 12 (Full system smoke test pack)
+- Owner: OpenAI Codex (CLI execution)
+- Priority: P0
+- Risk Class: R1
+- Expected Testing Level: TL2
+- Date Authored: 2026-03-03
+
+SYSTEM CONTEXT STATEMENT
+- Dungeon 12 requires a deterministic, repeatable full-system smoke ritual with captured outputs.
+- This quest establishes the canonical scaffolding only: script path, docs path, and output capture conventions.
+
+CODEx / GUILD ANCHORS
+- Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-25_REV14.txt (DUNGEON 12 block)
+- Ashby_Data/Stuart/Docs/Stuart - The Canonical Vision.txt
+- Ashby_Data/Codex/ASHBY CODEX FULL.txt (truth/traceability/observability invariants)
+
+CONSTRAINT SUMMARY
+- Deterministic and copy/paste safe.
+- No legacy UI paths.
+- Output capture path must be date-addressable.
+
+ANTI-DUP PLAN
+- Search existing smoke/proof scripts and docs under `Ashby_Engine/scripts`, `Ashby_Engine/tools`, `Ashby_Engine/docs`.
+
+DELIVERABLES
+- `scripts/full_system_smoke_test.sh` (scaffold with phase structure and strict shell mode)
+- `docs/full_system_smoke_test.md` (mirrors script phases)
+- `docs/smoke_outputs/<YYYY-MM-DD>/` output contract and writer behavior defined
+
+TASK BREAKDOWN
+1) Add shell scaffold and phase labels for D12 steps.
+2) Add docs skeleton mirroring exact script order.
+3) Add output directory creation + run log redirection contract.
+
+ACCEPTANCE CRITERIA
+- Script exists, is executable, and prints phase headers in D12 order.
+- Docs exist and map 1:1 to script phases.
+- Output directory contract is explicit and deterministic.
+
+VERIFICATION PLAN
+- `cd /home/notsolikely/Ashby_Engine`
+- `bash -n scripts/full_system_smoke_test.sh`
+- `rg -n "PHASE|D12|smoke_outputs" scripts/full_system_smoke_test.sh docs/full_system_smoke_test.md`
+
+DEPENDENCIES
+- None
+
+OUT OF SCOPE
+- Actual API calls and behavioral assertions.
+- Fixture content generation.
+
+AUDIT BUNDLE
+- `/home/notsolikely/Ashby_Data/Audits/Execution/QUEST_198__YYYY-MM-DD__stuart_v1_d12_1of10_smoke_pack_scaffold/`
+
+REPO ARCHITECTURE ANCHORS (ANTI-DRIFT)
+- Backend door/API: `Ashby_Engine/ashby/interfaces/web/app.py`
+- Chat rails: `Ashby_Engine/ashby/modules/meetings/chat/answer.py`, `.../chat/commands.py`
+- Pipeline lifecycle: `Ashby_Engine/ashby/modules/meetings/pipeline/job_runner.py`
+- Transcript/version overlays: `Ashby_Engine/ashby/modules/meetings/transcript_versions.py`, `.../session_state.py`
+- Export contract: `Ashby_Engine/ashby/modules/meetings/export/bundle.py`
+- Webapp door: `Ashby_Engine/webapp/stuart_frontend/stuart_app/src/pages/Stuart.jsx`, `.../src/api/stuartClient.js`
+- Startup seams: `Ashby_Engine/Stuart`, `Ashby_Engine/scripts/stuart_up.sh`
+
+NO-ZOMBIE / NO-SIDEWAYS BUILD RULES
+- Reuse existing doors, adapters, and pipeline seams; do not create parallel smoke frameworks.
+- Extend canonical files above unless a new file is strictly required and justified in audit.
+- No dead flags, duplicate scripts, or shadow endpoints.
+- Any new helper must be wired into active execution path and verified by the smoke run.
+- Before implementation, run anti-dup checks (`rg`) for existing behavior and document findings in audit.

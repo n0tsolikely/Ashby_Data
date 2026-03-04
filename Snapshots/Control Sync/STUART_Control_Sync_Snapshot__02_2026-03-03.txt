@@ -1,0 +1,80 @@
+================================================================================
+CONTROL SYNC SNAPSHOT
+================================================================================
+A) Header (required)
+- Subject: STUART
+- Date: 2026-03-03
+- Topic: D13 observability quest acceptance + runtime findings
+- Snapshot Type: Control_Sync
+- World State: Fog Lifted
+- Codex Freeze status: PRESENT (/home/notsolikely/Ashby_Data/Codex/CODEX_FREEZE.md)
+
+B) Rehydration Review (required when resuming)
+- Latest Control Sync Snapshot reviewed: (fill)
+- Latest End-of-Day Snapshot reviewed: (fill)
+- Relevant General Snapshots reviewed: (fill)
+
+C) Current Reality (State Surface)
+- Active Guild Orders / Raids: (fill)
+- Paused Guild Orders / Raids: (fill)
+- Quest Board summary: (fill)
+- Blockers: (fill)
+- Known risks / unknowns: (fill)
+
+D) Binding Decisions (required when binding decisions exist)
+1) Accepted Dungeon 13 observability quest pack: QUEST_208 through QUEST_215.
+2) Quest pack is sequenced to enforce modular architecture and avoid god files/zombie paths:
+   - core observability module
+   - API middleware and UI ingest endpoint
+   - frontend correlation/event emission
+   - error/fetch capture
+   - pipeline/storage/LLM seam instrumentation
+   - doctor tool
+   - tests + rotation proofs
+   - docs + operational proof pack
+3) Observability scope is runtime-rooted, append-only JSONL, gated by ASHBY_EVENT_LOGGING=1, with STUART_ROOT default to ~/ashby_runtime/stuart.
+4) Snapshot note requirement acknowledged: include discussion context on key loading and active behavior diagnostics.
+
+Deferred / Not decided:
+1) Execute accepted D13 quests in numerical order via governed wrapper flow.
+2) After D13 implementation, run full end-to-end runtime proof and capture Doctor output against real alerts/events.
+3) Optional follow-up: reduce noisy run-status polling and soften early /speakers 404 into explicit not-ready semantics if still desired.
+
+Decision changes (if any):
+- prior decision → new decision (with reference)
+
+E) Scope Commitment (required)
+- Quests to accept now (by ID): (fill)
+- Deferred work (and why): (fill)
+- Expected side-work (bugs/refactors): (fill)
+
+F) Artifacts Touched / Created (required)
+- Codex/TOC updates: (paths)
+- Guild Orders/Raids updates: (paths)
+- Dungeon/Quest artifacts: (paths)
+- Other data artifacts: (paths)
+
+G) NOTES
+Context from this session:
+- Created D12 quest pack (QUEST_198..QUEST_207) with explicit anti-drift architecture anchors and no-zombie constraints.
+- Created D13 quest pack (QUEST_208..QUEST_215) for realtime observability/causal-chain telemetry.
+- Repo review findings captured:
+  - No hardcoded live OPENAI/GEMINI key assignments found in active source paths.
+  - Runtime key usage is env-backed for OpenAI and Gemini in active Ashby/Stuart paths.
+  - Telegram token in this repo path is file-backed via secrets_store/env.py (REDACTED placeholder in current file view).
+- Runtime behavior notes captured:
+  - Early /api/runs/{run_id}/speakers 404 ("transcript json missing") is consistent with async artifact creation race, not immediate run failure.
+  - Chat fallback behavior can be retrieval/guardrail-driven when evidence/profile conditions do not invoke LLM synthesis.
+
+H) Exit Condition + Closure Statement (required)
+- Closure statement: This Control Sync is CLOSED only when this Snapshot exists as a file.
+- Started At: 2026-03-03T13:58:33.823546-05:00
+- Closed At: 2026-03-03T20:15:22.858598-05:00
+- Participants: Peter, Codex
+- Reason: Post-quest alignment and next execution wave
+- Next immediate action: Execute QUEST_208 through QUEST_215 in order with wrapper receipts
+
+- If execution will begin: state the first Quest to accept/execute.
+- If no execution committed: state why.
+
+END OF SNAPSHOT

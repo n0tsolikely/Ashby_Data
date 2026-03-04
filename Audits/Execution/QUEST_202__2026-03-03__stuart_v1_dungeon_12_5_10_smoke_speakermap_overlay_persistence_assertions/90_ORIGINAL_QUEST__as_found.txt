@@ -1,0 +1,59 @@
+# QUEST_202 — Stuart v1 — Dungeon 12 (5/10) — Smoke: Speaker Map Overlay Persistence Assertions
+
+(Quest template: Synapse OS — Architecture Transcendence Protocol, Stuart v1)
+
+IDENTITY
+- Quest ID: QUEST_202
+- Title: Stuart v1 — Dungeon 12 (5/10) — Smoke: Speaker Map Overlay Persistence Assertions
+- Dungeon: 12 (Full system smoke test pack)
+- Owner: OpenAI Codex (CLI execution)
+- Priority: P1
+- Risk Class: R1
+- Expected Testing Level: TL3
+- Date Authored: 2026-03-03
+
+SYSTEM CONTEXT STATEMENT
+- D12 requires proving speaker map overlay persistence with rerender-only semantics.
+- This quest adds deterministic overlay write/read/assert steps to smoke pack.
+
+DELIVERABLES
+- Script step applying speaker map to active diarized transcript version
+- Verification that mapping persists and is read back correctly
+- Log assertion showing no re-transcribe required
+
+TASK BREAKDOWN
+1) Resolve active transcript_version_id for diarized run.
+2) Write overlay via canonical transcript speaker_map endpoint.
+3) Re-read and assert keys/values match expected mapping.
+
+ACCEPTANCE CRITERIA
+- Overlay roundtrip passes.
+- Script logs explicit PASS marker for overlay persistence.
+
+VERIFICATION PLAN
+- Run speaker-map phase and validate returned payload in run log.
+
+DEPENDENCIES
+- QUEST_201
+
+OUT OF SCOPE
+- Formalization checks and chat tests.
+
+AUDIT BUNDLE
+- `/home/notsolikely/Ashby_Data/Audits/Execution/QUEST_202__YYYY-MM-DD__stuart_v1_d12_5of10_speaker_overlay_persistence/`
+
+REPO ARCHITECTURE ANCHORS (ANTI-DRIFT)
+- Backend door/API: `Ashby_Engine/ashby/interfaces/web/app.py`
+- Chat rails: `Ashby_Engine/ashby/modules/meetings/chat/answer.py`, `.../chat/commands.py`
+- Pipeline lifecycle: `Ashby_Engine/ashby/modules/meetings/pipeline/job_runner.py`
+- Transcript/version overlays: `Ashby_Engine/ashby/modules/meetings/transcript_versions.py`, `.../session_state.py`
+- Export contract: `Ashby_Engine/ashby/modules/meetings/export/bundle.py`
+- Webapp door: `Ashby_Engine/webapp/stuart_frontend/stuart_app/src/pages/Stuart.jsx`, `.../src/api/stuartClient.js`
+- Startup seams: `Ashby_Engine/Stuart`, `Ashby_Engine/scripts/stuart_up.sh`
+
+NO-ZOMBIE / NO-SIDEWAYS BUILD RULES
+- Reuse existing doors, adapters, and pipeline seams; do not create parallel smoke frameworks.
+- Extend canonical files above unless a new file is strictly required and justified in audit.
+- No dead flags, duplicate scripts, or shadow endpoints.
+- Any new helper must be wired into active execution path and verified by the smoke run.
+- Before implementation, run anti-dup checks (`rg`) for existing behavior and document findings in audit.

@@ -1,0 +1,84 @@
+## Command Receipt Log
+WRAPPER: synapse_quest_run.sh
+ENGINE_ROOT: /home/notsolikely/Ashby_Engine
+DATA_ROOT: /home/notsolikely/Ashby_Data
+---
+CMD: cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_observability_pipeline_storage_llm.py
+..F                                                                      [100%]
+=================================== FAILURES ===================================
+________________ test_pipeline_audio_missing_and_degraded_alert ________________
+
+tmp_path = PosixPath('/tmp/pytest-of-notsolikely/pytest-65/test_pipeline_audio_missing_an0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x757ea9e47c80>
+
+    def test_pipeline_audio_missing_and_degraded_alert(tmp_path: Path, monkeypatch) -> None:
+        monkeypatch.setenv("ASHBY_EVENT_LOGGING", "1")
+        monkeypatch.setenv("STUART_ROOT", str(tmp_path / "rt"))
+    
+        run_id = "run_pipe_1"
+        run_dir = tmp_path / "rt" / "runs" / run_id
+        run_dir.mkdir(parents=True, exist_ok=True)
+    
+        state = {
+            "status": "queued",
+            "session_id": "ses_1",
+            "plan": {"steps": [{"kind": "validate"}]},
+            "progress": 0,
+        }
+    
+        def fake_get_run_state(_run_id: str):
+            return dict(state)
+    
+        def fake_update_run_state(_run_id: str, **kwargs):
+            state.update({k: v for k, v in kwargs.items() if v is not None})
+            return dict(state)
+    
+        def fake_layout():
+            root = tmp_path / "rt"
+            return _Layout(root=root, runs=root / "runs", overlays=root / "overlays")
+    
+        def fake_resolve_input_contribution(**kwargs):
+            return _Resolved(
+                contribution_id="con_1",
+                source_path=tmp_path / "rt" / "missing_audio.wav",
+                source_kind="audio",
+            )
+    
+        monkeypatch.setattr(jr, "get_run_state", fake_get_run_state)
+        monkeypatch.setattr(jr, "update_run_state", fake_update_run_state)
+        monkeypatch.setattr(jr, "init_stuart_root", fake_layout)
+        monkeypatch.setattr(jr, "resolve_input_contribution", fake_resolve_input_contribution)
+        monkeypatch.setattr(jr, "get_meetings_adapter_matrix", lambda profile: _MatrixFailNormalize())
+        monkeypatch.setattr(jr, "get_execution_profile", lambda: "LOCAL_ONLY")
+        monkeypatch.setattr(jr, "load_session_state", lambda session_id: {})
+    
+>       result = jr.run_job(run_id)
+                 ^^^^^^^^^^^^^^^^^^
+
+tests/test_observability_pipeline_storage_llm.py:171: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+ashby/modules/meetings/pipeline/job_runner.py:631: in run_job
+    a0 = matrix.normalize(run_dir, resolved.source_path)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <tests.test_observability_pipeline_storage_llm._MatrixFailNormalize object at 0x757ea8a81e50>
+run_dir = PosixPath('/tmp/pytest-of-notsolikely/pytest-65/test_pipeline_audio_missing_an0/rt/runs/run_pipe_1')
+source_path = PosixPath('/tmp/pytest-of-notsolikely/pytest-65/test_pipeline_audio_missing_an0/rt/missing_audio.wav')
+
+    def normalize(self, run_dir: Path, source_path: Path):
+>       raise RuntimeError("normalize_failed")
+E       RuntimeError: normalize_failed
+
+tests/test_observability_pipeline_storage_llm.py:42: RuntimeError
+=========================== short test summary info ============================
+FAILED tests/test_observability_pipeline_storage_llm.py::test_pipeline_audio_missing_and_degraded_alert
+1 failed, 2 passed in 0.26s
+RC: 1
+BLOCKED: command failed (see RC above): cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_observability_pipeline_storage_llm.py
+CMD: cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_observability_pipeline_storage_llm.py
+...                                                                      [100%]
+3 passed in 0.16s
+RC: 0
+PASS: governance validation OK for QUEST_212 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_212__2026-03-03__stuart_v1_dungeon_13_5_8_pipeline_storage_audio_and_llm_seam_instrumentation
+OK: finalize complete (validation PASS recorded).

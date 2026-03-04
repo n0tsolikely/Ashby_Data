@@ -1,0 +1,84 @@
+## Command Receipt Log
+WRAPPER: synapse_quest_run.sh
+ENGINE_ROOT: /home/notsolikely/Ashby_Engine
+DATA_ROOT: /home/notsolikely/Ashby_Data
+---
+CMD: cd /home/notsolikely/Ashby_Engine && STUART_SMOKE_USE_MINI_FIXTURES=1 ASHBY_ASR_ENABLE=0 STUART_SMOKE_AUTOSTART_BACKEND=1 STUART_SMOKE_AUTOSTART_FRONTEND=1 STUART_SMOKE_RUN_TIMEOUT_SEC=300 bash scripts/full_system_smoke_test.sh && test -f docs/smoke_outputs/2026-03-04/run.log && test -f docs/smoke_outputs/2026-03-04/artifacts_list.txt && test -f docs/smoke_outputs/2026-03-04/export_list.txt && rg -n "PASS|FAIL|BLOCKED|D12|SKIP:" docs/smoke_outputs/2026-03-04/run.log
+D12 FULL SYSTEM SMOKE TEST
+DATE_UTC=2026-03-04
+OUT_DIR=docs/smoke_outputs/2026-03-04
+BASE_URL=http://127.0.0.1:8844
+FRONTEND_URL=http://127.0.0.1:4173
+USE_MINI_FIXTURES=1
+MEETING_FIXTURE=tests/fixtures/stuart_smoke/meeting_fixture_3speakers_8s.wav
+JOURNAL_FIXTURE=tests/fixtures/stuart_smoke/journal_fixture_1speaker_8s.wav
+SKIP: HYBRID profile smoke not enabled in baseline LOCAL_ONLY run
+SKIP: CLOUD profile smoke not enabled in baseline LOCAL_ONLY run
+
+PHASE 1: Start server
+API not reachable. Starting backend via scripts/stuart_web.py ...
+PASS: API reachable at http://127.0.0.1:8844
+PHASE 2: Create session(s)
+PASS: meeting_session_id=ses_01KJVF1W9KEYSE5PZXVN83M6HV
+PASS: journal_session_id=ses_01KJVF1W9VEMRKFVHDGEAX5TJ5
+PHASE 3: Upload fixture audio
+PASS: uploaded meeting fixture -> /tmp/d12_upload_meeting.json
+PASS: uploaded journal fixture -> /tmp/d12_upload_journal.json
+PHASE 4: Transcribe (diarize ON/OFF)
+RUN run_01KJVF1WCH024ZVCJD4GMSQX4G status=succeeded
+RUN run_01KJVF1WCVQ6PBMQWP2EZXWPCH status=succeeded
+PASS: transcript_versions_count=2 (details in /tmp/d12_transcripts_meeting.json)
+PHASE 5: Map speakers
+PASS: speaker_map persisted for transcript_version_id=trv_01KJVF225Y96ZKC88X70F2X9GS (details in /tmp/d12_speaker_map_get.json)
+PHASE 6: Formalize (DEFAULT_TEST_TEMPLATE)
+RUN run_01KJVF22RCG4K88K0P2TV771DP status=succeeded
+RUN run_01KJVF22RPP71A59CPZT37X90R status=succeeded
+meta_ok mode=meeting template_id=default retention=MED template_version=2
+meta_ok mode=journal template_id=default retention=MED template_version=2
+PASS: formalize meeting+journal metadata and PDF checks complete
+PHASE 7: Session chat hard-lock checks
+PHASE7_SEARCH_TOKEN=hello
+PHASE7_SEARCH_PROBE_FILE=/tmp/d12_search_probe.json
+PHASE7_SESSION_CHAT_REQUEST_JSON={"session_id": "ses_01KJVF1W9KEYSE5PZXVN83M6HV", "text": "Summarize evidence in this session for hello", "ui": {"selected_session_id": "ses_01KJVF1W9KEYSE5PZXVN83M6HV"}, "history_tail": []}
+PHASE7_SESSION_CHAT_RESPONSE_FILE=/tmp/d12_chat_session_grounded.json
+session_chat_truth_gate_no_evidence_ok
+session_scope_lock_ok
+PASS: session chat citations + scope lock checks complete
+PHASE 8: Global chat cold-start checks
+PHASE8_GLOBAL_CHAT_REQUEST_JSON={"text": "hello", "ui": {}, "history_tail": []}
+PHASE8_GLOBAL_CHAT_RESPONSE_FILE=/tmp/d12_chat_global.json
+global_chat_hits_ok count=15
+global_chat_open_session_ok count=4
+global_chat_citation_ok session_id=ses_01KHGXFBDZY9E9HX5NVMZRRQQC segment_id=323 t_start=637.96 t_end=639.56
+PASS: global chat cold-start hits/actions/citations checks complete
+PHASE 9: Root UI surface check
+Frontend not reachable. Starting Vite frontend...
+root_ui_surface_ok
+PASS: root UI surface check complete
+PHASE 10: Export bundle checks
+export_bundle_checks_ok
+PASS: export bundle checks complete
+wrote_artifacts_list=docs/smoke_outputs/2026-03-04/artifacts_list.txt
+wrote_export_list=docs/smoke_outputs/2026-03-04/export_list.txt
+STATUS=QUEST_207 phases 1-10 complete
+WROTE docs/smoke_outputs/2026-03-04/run.log
+WROTE docs/smoke_outputs/2026-03-04/artifacts_list.txt
+WROTE docs/smoke_outputs/2026-03-04/export_list.txt
+1:D12 FULL SYSTEM SMOKE TEST
+9:SKIP: HYBRID profile smoke not enabled in baseline LOCAL_ONLY run
+10:SKIP: CLOUD profile smoke not enabled in baseline LOCAL_ONLY run
+14:PASS: API reachable at http://127.0.0.1:8844
+16:PASS: meeting_session_id=ses_01KJVF1W9KEYSE5PZXVN83M6HV
+17:PASS: journal_session_id=ses_01KJVF1W9VEMRKFVHDGEAX5TJ5
+19:PASS: uploaded meeting fixture -> /tmp/d12_upload_meeting.json
+20:PASS: uploaded journal fixture -> /tmp/d12_upload_journal.json
+24:PASS: transcript_versions_count=2 (details in /tmp/d12_transcripts_meeting.json)
+26:PASS: speaker_map persisted for transcript_version_id=trv_01KJVF225Y96ZKC88X70F2X9GS (details in /tmp/d12_speaker_map_get.json)
+32:PASS: formalize meeting+journal metadata and PDF checks complete
+40:PASS: session chat citations + scope lock checks complete
+47:PASS: global chat cold-start hits/actions/citations checks complete
+51:PASS: root UI surface check complete
+54:PASS: export bundle checks complete
+RC: 0
+PASS: governance validation OK for QUEST_207 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_207__2026-03-03__stuart_v1_dungeon_12_10_10_full_system_smoke_proof_pack_recorded_outputs_and_regressions
+OK: finalize complete (validation PASS recorded).

@@ -1,0 +1,48 @@
+# QUEST_213 — Stuart v1 — Dungeon 13 (6/8) — Realtime Log Doctor: Causal Chain Diagnostics
+
+IDENTITY
+- Quest ID: QUEST_213
+- Title: Stuart v1 — Dungeon 13 (6/8) — Realtime Log Doctor: Causal Chain Diagnostics
+- Dungeon: 13 (Realtime observability telemetry)
+- Priority: P1
+- Risk Class: R1
+- Expected Testing Level: TL2
+- Date Authored: 2026-03-03
+
+SYSTEM CONTEXT STATEMENT
+- This quest adds offline triage tooling so operators can diagnose failures by correlation ID without network access.
+
+REPO ARCHITECTURE ANCHORS (ANTI-DRIFT)
+- New CLI tool path: `Ashby_Engine/tools/realtime_log_doctor.py`
+- Event schema source: `ashby/modules/meetings/observability/events.py`
+
+DELIVERABLES
+- `tools/realtime_log_doctor.py` with CLI:
+  - `--stuart-root`
+  - `--lines`
+- Reads last N lines from events/alerts JSONL.
+- Groups alerts by correlation_id and prints causal chains.
+- Emits likely-cause categories from local heuristics only.
+
+ACCEPTANCE CRITERIA
+- Doctor runs on sample logs and prints grouped incident summaries.
+- No secrets emitted by doctor output.
+
+VERIFICATION PLAN
+- `cd /home/notsolikely/Ashby_Engine`
+- `python3 tools/realtime_log_doctor.py --stuart-root "$HOME/ashby_runtime/stuart" --lines 400`
+- `PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_realtime_log_doctor.py`
+
+DEPENDENCIES
+- QUEST_208
+- QUEST_209
+- QUEST_212
+
+OUT OF SCOPE
+- Live dashboards or external log shipping.
+
+NO-ZOMBIE / NO-SIDEWAYS BUILD RULES
+- Single local doctor tool only; no extra runtime services.
+
+AUDIT BUNDLE
+- `/home/notsolikely/Ashby_Data/Audits/Execution/QUEST_213__YYYY-MM-DD__stuart_v1_d13_6of8_log_doctor/`

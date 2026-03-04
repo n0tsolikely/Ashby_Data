@@ -1,0 +1,58 @@
+# QUEST_212 — Stuart v1 — Dungeon 13 (5/8) — Pipeline/Storage/Audio/LLM Seam Instrumentation
+
+IDENTITY
+- Quest ID: QUEST_212
+- Title: Stuart v1 — Dungeon 13 (5/8) — Pipeline/Storage/Audio/LLM Seam Instrumentation
+- Dungeon: 13 (Realtime observability telemetry)
+- Priority: P0
+- Risk Class: R1
+- Expected Testing Level: TL3
+- Date Authored: 2026-03-03
+
+SYSTEM CONTEXT STATEMENT
+- This quest instruments execution seams that explain why a pipeline result happened (or degraded).
+
+REPO ARCHITECTURE ANCHORS (ANTI-DRIFT)
+- `Ashby_Engine/ashby/modules/meetings/pipeline/job_runner.py`
+- `Ashby_Engine/ashby/modules/meetings/formalize/minutes_json.py`
+- `Ashby_Engine/ashby/modules/meetings/formalize/journal_json.py`
+- `Ashby_Engine/ashby/modules/llm/http_gateway.py`
+- `Ashby_Engine/ashby/modules/meetings/store.py`
+
+DELIVERABLES
+- Storage events: `storage.lookup`, `storage.lookup_miss`
+- Audio events: `audio.loaded`, `audio.missing`
+- Pipeline events: `pipeline.step_start`, `pipeline.step_end`
+- LLM events: `llm.call`, `llm.response`, `llm.error`, `llm.disabled`, `llm.fallback`
+- LLM alert conditions:
+  - `alert.llm_not_called`
+  - `alert.llm_disabled_on_chat`
+  - `alert.llm_error`
+- Additional degraded-state alerts:
+  - `alert.audio_missing`
+  - `alert.pipeline_degraded`
+
+CONSTRAINT SUMMARY
+- LLM logging must include provider/model/status/reason/tokens only.
+- No prompts/completions or raw transcript content.
+
+ACCEPTANCE CRITERIA
+- Instrumented events appear across normal and degraded code paths.
+- Alert conditions trigger with safe payloads.
+
+VERIFICATION PLAN
+- `cd /home/notsolikely/Ashby_Engine`
+- `PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_observability_pipeline_storage_llm.py`
+
+DEPENDENCIES
+- QUEST_208
+- QUEST_209
+
+OUT OF SCOPE
+- Doctor CLI and documentation.
+
+NO-ZOMBIE / NO-SIDEWAYS BUILD RULES
+- Instrument seam points only; avoid scattering ad-hoc logging in leaf helpers.
+
+AUDIT BUNDLE
+- `/home/notsolikely/Ashby_Data/Audits/Execution/QUEST_212__YYYY-MM-DD__stuart_v1_d13_5of8_pipeline_storage_llm_events/`

@@ -1,0 +1,69 @@
+## Command Receipt Log
+WRAPPER: synapse_quest_run.sh
+ENGINE_ROOT: /home/notsolikely/Ashby_Engine
+DATA_ROOT: /home/notsolikely/Ashby_Data
+---
+CMD: cd /home/notsolikely/Ashby_Engine && bash -n scripts/full_system_smoke_test.sh && STUART_SMOKE_USE_MINI_FIXTURES=1 ASHBY_ASR_ENABLE=0 STUART_SMOKE_AUTOSTART_BACKEND=1 STUART_SMOKE_RUN_TIMEOUT_SEC=300 bash scripts/full_system_smoke_test.sh && rg -n 'QUEST_202|speaker map overlay|assert overlay persistence' docs/full_system_smoke_test.md && test -f /tmp/d12_speaker_map_get.json
+D12 FULL SYSTEM SMOKE TEST
+DATE_UTC=2026-03-04
+OUT_DIR=docs/smoke_outputs/2026-03-04
+BASE_URL=http://127.0.0.1:8844
+USE_MINI_FIXTURES=1
+MEETING_FIXTURE=tests/fixtures/stuart_smoke/meeting_fixture_3speakers_8s.wav
+JOURNAL_FIXTURE=tests/fixtures/stuart_smoke/journal_fixture_1speaker_8s.wav
+
+PHASE 1: Start server
+API not reachable. Starting backend via scripts/stuart_web.py ...
+PASS: API reachable at http://127.0.0.1:8844
+PHASE 2: Create session(s)
+PASS: meeting_session_id=ses_01KJV85W80V325CT0QTNMCQPTD
+PASS: journal_session_id=ses_01KJV85W88E5FX9XBKD7DKYBF0
+PHASE 3: Upload fixture audio
+PASS: uploaded meeting fixture -> /tmp/d12_upload_meeting.json
+PASS: uploaded journal fixture -> /tmp/d12_upload_journal.json
+PHASE 4: Transcribe (diarize ON/OFF)
+RUN run_01KJV85WATM80FSRY0THBMKJ5C status=succeeded
+RUN run_01KJV85WB3YQC4XC4T4Y6NQN44 status=succeeded
+PASS: transcript_versions_count=2 (details in /tmp/d12_transcripts_meeting.json)
+PHASE 5: Map speakers
+curl: (22) The requested URL returned error: 422
+RC: 22
+BLOCKED: command failed (see RC above): cd /home/notsolikely/Ashby_Engine && bash -n scripts/full_system_smoke_test.sh && STUART_SMOKE_USE_MINI_FIXTURES=1 ASHBY_ASR_ENABLE=0 STUART_SMOKE_AUTOSTART_BACKEND=1 STUART_SMOKE_RUN_TIMEOUT_SEC=300 bash scripts/full_system_smoke_test.sh && rg -n 'QUEST_202|speaker map overlay|assert overlay persistence' docs/full_system_smoke_test.md && test -f /tmp/d12_speaker_map_get.json
+CMD: cd /home/notsolikely/Ashby_Engine && bash -n scripts/full_system_smoke_test.sh && STUART_SMOKE_USE_MINI_FIXTURES=1 ASHBY_ASR_ENABLE=0 STUART_SMOKE_AUTOSTART_BACKEND=1 STUART_SMOKE_RUN_TIMEOUT_SEC=300 bash scripts/full_system_smoke_test.sh && rg -n 'QUEST_202|speaker map overlay|assert overlay persistence' docs/full_system_smoke_test.md && test -f /tmp/d12_speaker_map_get.json
+D12 FULL SYSTEM SMOKE TEST
+DATE_UTC=2026-03-04
+OUT_DIR=docs/smoke_outputs/2026-03-04
+BASE_URL=http://127.0.0.1:8844
+USE_MINI_FIXTURES=1
+MEETING_FIXTURE=tests/fixtures/stuart_smoke/meeting_fixture_3speakers_8s.wav
+JOURNAL_FIXTURE=tests/fixtures/stuart_smoke/journal_fixture_1speaker_8s.wav
+
+PHASE 1: Start server
+API not reachable. Starting backend via scripts/stuart_web.py ...
+PASS: API reachable at http://127.0.0.1:8844
+PHASE 2: Create session(s)
+PASS: meeting_session_id=ses_01KJV89103ZPYBNGPKN8S2MMN8
+PASS: journal_session_id=ses_01KJV8910BBSRGY4C1W6C8S28D
+PHASE 3: Upload fixture audio
+PASS: uploaded meeting fixture -> /tmp/d12_upload_meeting.json
+PASS: uploaded journal fixture -> /tmp/d12_upload_journal.json
+PHASE 4: Transcribe (diarize ON/OFF)
+RUN run_01KJV8912XH8HWMDMK3C2BY6Q3 status=succeeded
+RUN run_01KJV89137BB8VKRN46Z69C85N status=succeeded
+PASS: transcript_versions_count=2 (details in /tmp/d12_transcripts_meeting.json)
+PHASE 5: Map speakers
+PASS: speaker_map persisted for transcript_version_id=trv_01KJV896HV47DEKT9ZK691A8P4 (details in /tmp/d12_speaker_map_get.json)
+PHASE 6: Formalize (DEFAULT_TEST_TEMPLATE) [PENDING next quest]
+PHASE 7: Session chat hard-lock checks [PENDING next quest]
+PHASE 8: Global chat cold-start checks [PENDING next quest]
+PHASE 9: Root UI surface check [PENDING next quest]
+PHASE 10: Export bundle checks [PENDING next quest]
+STATUS=QUEST_202 phases 1-5 complete
+WROTE docs/smoke_outputs/2026-03-04/run.log
+58:## QUEST_202 Scope Update
+60:`QUEST_202` implements:
+63:8. Persist speaker map overlay via transcript speaker_map endpoint
+64:9. Read back and assert overlay persistence without re-transcribe
+RC: 0
+PASS: governance validation OK for QUEST_202 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_202__2026-03-03__stuart_v1_dungeon_12_5_10_smoke_speakermap_overlay_persistence_assertions
+OK: finalize complete (validation PASS recorded).

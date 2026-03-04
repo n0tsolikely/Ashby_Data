@@ -1,0 +1,41 @@
+# QUEST_211 — Stuart v1 — Dungeon 13 (4/8) — Frontend Global Error + Fetch Failure Capture
+
+IDENTITY
+- Quest ID: QUEST_211
+- Title: Stuart v1 — Dungeon 13 (4/8) — Frontend Global Error + Fetch Failure Capture
+- Dungeon: 13 (Realtime observability telemetry)
+- Priority: P1
+- Risk Class: R1
+- Expected Testing Level: TL3
+- Date Authored: 2026-03-03
+
+SYSTEM CONTEXT STATEMENT
+- This quest captures UI runtime failures and network failures so silent client-side breakage is observable.
+
+REPO ARCHITECTURE ANCHORS (ANTI-DRIFT)
+- `Ashby_Engine/webapp/stuart_frontend/stuart_app/src/main.*`
+- `Ashby_Engine/webapp/stuart_frontend/stuart_app/src/api/stuartClient.js`
+
+DELIVERABLES
+- `window.onerror` and `window.onunhandledrejection` handlers posting `ui.error`.
+- API wrapper non-2xx and exception hooks posting `ui.fetch_failed` with route/status/duration.
+- Redacted/truncated error payload handling.
+
+ACCEPTANCE CRITERIA
+- Synthetic frontend error appears in `alerts.jsonl` as `alert.ui_error`.
+- Synthetic fetch failure appears in `alerts.jsonl` as `alert.ui_fetch_failed`.
+
+VERIFICATION PLAN
+- Browser/dev integration smoke + targeted tests for error event posting.
+
+DEPENDENCIES
+- QUEST_210
+
+OUT OF SCOPE
+- Backend pipeline/LLM instrumentation.
+
+NO-ZOMBIE / NO-SIDEWAYS BUILD RULES
+- Use single UI event emission path; no alternate error-report channels.
+
+AUDIT BUNDLE
+- `/home/notsolikely/Ashby_Data/Audits/Execution/QUEST_211__YYYY-MM-DD__stuart_v1_d13_4of8_frontend_error_fetch_capture/`

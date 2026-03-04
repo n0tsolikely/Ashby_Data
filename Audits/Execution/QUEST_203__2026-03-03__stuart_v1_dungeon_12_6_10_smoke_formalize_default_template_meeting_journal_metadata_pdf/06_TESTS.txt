@@ -1,0 +1,86 @@
+## Command Receipt Log
+WRAPPER: synapse_quest_run.sh
+ENGINE_ROOT: /home/notsolikely/Ashby_Engine
+DATA_ROOT: /home/notsolikely/Ashby_Data
+---
+CMD: cd /home/notsolikely/Ashby_Engine && STUART_SMOKE_USE_MINI_FIXTURES=1 ASHBY_ASR_ENABLE=0 STUART_SMOKE_AUTOSTART_BACKEND=1 STUART_SMOKE_RUN_TIMEOUT_SEC=300 bash scripts/full_system_smoke_test.sh && rg -n "PHASE 6 \(formalize\): PASS" docs/smoke_outputs/2026-03-03/run.log && test -f /tmp/stuart_smoke_meeting_run_formalize.json && test -f /tmp/stuart_smoke_journal_run_formalize.json
+D12 FULL SYSTEM SMOKE TEST
+DATE_UTC=2026-03-04
+OUT_DIR=docs/smoke_outputs/2026-03-04
+BASE_URL=http://127.0.0.1:8844
+USE_MINI_FIXTURES=1
+MEETING_FIXTURE=tests/fixtures/stuart_smoke/meeting_fixture_3speakers_8s.wav
+JOURNAL_FIXTURE=tests/fixtures/stuart_smoke/journal_fixture_1speaker_8s.wav
+
+PHASE 1: Start server
+API not reachable. Starting backend via scripts/stuart_web.py ...
+FAIL: backend startup failed. See /tmp/stuart_smoke_backend.log
+RC: 1
+BLOCKED: command failed (see RC above): cd /home/notsolikely/Ashby_Engine && STUART_SMOKE_USE_MINI_FIXTURES=1 ASHBY_ASR_ENABLE=0 STUART_SMOKE_AUTOSTART_BACKEND=1 STUART_SMOKE_RUN_TIMEOUT_SEC=300 bash scripts/full_system_smoke_test.sh && rg -n "PHASE 6 \(formalize\): PASS" docs/smoke_outputs/2026-03-03/run.log && test -f /tmp/stuart_smoke_meeting_run_formalize.json && test -f /tmp/stuart_smoke_journal_run_formalize.json
+CMD: tail -n 120 /tmp/stuart_smoke_backend.log
+INFO:     Started server process [20988]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8844 (Press CTRL+C to quit)
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [20988]
+RC: 0
+CMD: cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine python3 scripts/stuart_web.py >/tmp/stuart_bg_test.log 2>&1 & pid=$!; sleep 4; kill -0 $pid && echo ALIVE || echo DEAD; tail -n 40 /tmp/stuart_bg_test.log; kill $pid >/dev/null 2>&1 || true
+ALIVE
+INFO:     Started server process [21278]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8844 (Press CTRL+C to quit)
+RC: 0
+CMD: cd /home/notsolikely/Ashby_Engine && STUART_SMOKE_USE_MINI_FIXTURES=1 ASHBY_ASR_ENABLE=0 STUART_SMOKE_AUTOSTART_BACKEND=1 STUART_SMOKE_RUN_TIMEOUT_SEC=300 bash scripts/full_system_smoke_test.sh && rg -n "PHASE 6 \(formalize\): PASS" docs/smoke_outputs/2026-03-04/run.log && test -f /tmp/d12_meeting_formalize_run.json && test -f /tmp/d12_journal_formalize_run.json
+D12 FULL SYSTEM SMOKE TEST
+DATE_UTC=2026-03-04
+OUT_DIR=docs/smoke_outputs/2026-03-04
+BASE_URL=http://127.0.0.1:8844
+USE_MINI_FIXTURES=1
+MEETING_FIXTURE=tests/fixtures/stuart_smoke/meeting_fixture_3speakers_8s.wav
+JOURNAL_FIXTURE=tests/fixtures/stuart_smoke/journal_fixture_1speaker_8s.wav
+
+PHASE 1: Start server
+API not reachable. Starting backend via scripts/stuart_web.py ...
+PASS: API reachable at http://127.0.0.1:8844
+PHASE 2: Create session(s)
+PASS: meeting_session_id=ses_01KJV8V5R7Q25NKMK3NQS0W5VN
+PASS: journal_session_id=ses_01KJV8V5RD2F4HBFGEJVCA6B7K
+PHASE 3: Upload fixture audio
+PASS: uploaded meeting fixture -> /tmp/d12_upload_meeting.json
+PASS: uploaded journal fixture -> /tmp/d12_upload_journal.json
+PHASE 4: Transcribe (diarize ON/OFF)
+RUN run_01KJV8V5V1DZ48PF4MAW0M8NVY status=succeeded
+RUN run_01KJV8V5V9SAZ2VKCBH1C8P4MD status=succeeded
+PASS: transcript_versions_count=2 (details in /tmp/d12_transcripts_meeting.json)
+PHASE 5: Map speakers
+PASS: speaker_map persisted for transcript_version_id=trv_01KJV8VB3NRXWAT5Y5RRBP69WP (details in /tmp/d12_speaker_map_get.json)
+PHASE 6: Formalize (DEFAULT_TEST_TEMPLATE)
+RUN run_01KJV8VC4F710EC9FC8DX7EBZ3 status=succeeded
+RUN run_01KJV8VC4TEKBXB3HBCQGCWXFP status=succeeded
+meta_ok mode=meeting template_id=default retention=MED template_version=2
+meta_ok mode=journal template_id=default retention=MED template_version=2
+PASS: formalize meeting+journal metadata and PDF checks complete
+PHASE 7: Session chat hard-lock checks [PENDING next quest]
+PHASE 8: Global chat cold-start checks [PENDING next quest]
+PHASE 9: Root UI surface check [PENDING next quest]
+PHASE 10: Export bundle checks [PENDING next quest]
+STATUS=QUEST_203 phases 1-6 complete
+WROTE docs/smoke_outputs/2026-03-04/run.log
+RC: 1
+BLOCKED: command failed (see RC above): cd /home/notsolikely/Ashby_Engine && STUART_SMOKE_USE_MINI_FIXTURES=1 ASHBY_ASR_ENABLE=0 STUART_SMOKE_AUTOSTART_BACKEND=1 STUART_SMOKE_RUN_TIMEOUT_SEC=300 bash scripts/full_system_smoke_test.sh && rg -n "PHASE 6 \(formalize\): PASS" docs/smoke_outputs/2026-03-04/run.log && test -f /tmp/d12_meeting_formalize_run.json && test -f /tmp/d12_journal_formalize_run.json
+CMD: cd /home/notsolikely/Ashby_Engine && rg -n "PASS: formalize meeting\+journal metadata and PDF checks complete" docs/smoke_outputs/2026-03-04/run.log && test -f /tmp/d12_meeting_formalize_run.json && test -f /tmp/d12_journal_formalize_run.json && python3 - <<'PY'
+import json
+for p in ('/tmp/d12_meeting_formalize_run.json','/tmp/d12_journal_formalize_run.json'):
+    obj=json.load(open(p,'r',encoding='utf-8'))
+    assert (obj.get('downloads') or {}).get('primary',{}).get('pdf',{}).get('url')
+print('formalize_receipts_ok')
+PY
+29:PASS: formalize meeting+journal metadata and PDF checks complete
+formalize_receipts_ok
+RC: 0
+PASS: governance validation OK for QUEST_203 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_203__2026-03-03__stuart_v1_dungeon_12_6_10_smoke_formalize_default_template_meeting_journal_metadata_pdf
+OK: finalize complete (validation PASS recorded).

@@ -1,0 +1,59 @@
+# QUEST_201 — Stuart v1 — Dungeon 12 (4/10) — Smoke: Transcribe ON/OFF + Transcript Version Assertions
+
+(Quest template: Synapse OS — Architecture Transcendence Protocol, Stuart v1)
+
+IDENTITY
+- Quest ID: QUEST_201
+- Title: Stuart v1 — Dungeon 12 (4/10) — Smoke: Transcribe ON/OFF + Transcript Version Assertions
+- Dungeon: 12 (Full system smoke test pack)
+- Owner: OpenAI Codex (CLI execution)
+- Priority: P0
+- Risk Class: R1
+- Expected Testing Level: TL3
+- Date Authored: 2026-03-03
+
+SYSTEM CONTEXT STATEMENT
+- D12 binding requires transcribe runs with diarization ON and OFF and proof of transcript versioning.
+- This quest adds those exact assertions to smoke automation.
+
+DELIVERABLES
+- Smoke steps for transcribe ON and OFF
+- Polling/wait logic for run completion
+- Assertion output proving distinct transcript_version_ids exist and are selectable
+
+TASK BREAKDOWN
+1) Submit diarization ON transcribe run and await terminal state.
+2) Submit diarization OFF transcribe run and await terminal state.
+3) Query transcript versions and assert at least two IDs with expected metadata.
+
+ACCEPTANCE CRITERIA
+- Script records two transcript versions for same session.
+- Failure message is explicit if versions are missing.
+
+VERIFICATION PLAN
+- Execute phases through transcribe and inspect run log + transcript listing artifact.
+
+DEPENDENCIES
+- QUEST_200
+
+OUT OF SCOPE
+- Speaker map persistence and formalization.
+
+AUDIT BUNDLE
+- `/home/notsolikely/Ashby_Data/Audits/Execution/QUEST_201__YYYY-MM-DD__stuart_v1_d12_4of10_transcribe_versions/`
+
+REPO ARCHITECTURE ANCHORS (ANTI-DRIFT)
+- Backend door/API: `Ashby_Engine/ashby/interfaces/web/app.py`
+- Chat rails: `Ashby_Engine/ashby/modules/meetings/chat/answer.py`, `.../chat/commands.py`
+- Pipeline lifecycle: `Ashby_Engine/ashby/modules/meetings/pipeline/job_runner.py`
+- Transcript/version overlays: `Ashby_Engine/ashby/modules/meetings/transcript_versions.py`, `.../session_state.py`
+- Export contract: `Ashby_Engine/ashby/modules/meetings/export/bundle.py`
+- Webapp door: `Ashby_Engine/webapp/stuart_frontend/stuart_app/src/pages/Stuart.jsx`, `.../src/api/stuartClient.js`
+- Startup seams: `Ashby_Engine/Stuart`, `Ashby_Engine/scripts/stuart_up.sh`
+
+NO-ZOMBIE / NO-SIDEWAYS BUILD RULES
+- Reuse existing doors, adapters, and pipeline seams; do not create parallel smoke frameworks.
+- Extend canonical files above unless a new file is strictly required and justified in audit.
+- No dead flags, duplicate scripts, or shadow endpoints.
+- Any new helper must be wired into active execution path and verified by the smoke run.
+- Before implementation, run anti-dup checks (`rg`) for existing behavior and document findings in audit.

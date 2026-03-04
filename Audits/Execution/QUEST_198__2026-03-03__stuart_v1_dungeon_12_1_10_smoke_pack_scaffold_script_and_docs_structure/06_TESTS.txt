@@ -1,0 +1,35 @@
+## Command Receipt Log
+WRAPPER: synapse_quest_run.sh
+ENGINE_ROOT: /home/notsolikely/Ashby_Engine
+DATA_ROOT: /home/notsolikely/Ashby_Data
+---
+CMD: cd /home/notsolikely/Ashby_Engine && chmod +x scripts/full_system_smoke_test.sh && bash -n scripts/full_system_smoke_test.sh && rg -n 'PHASE|D12|smoke_outputs' scripts/full_system_smoke_test.sh docs/full_system_smoke_test.md
+docs/full_system_smoke_test.md:1:# Full System Smoke Test (D12)
+docs/full_system_smoke_test.md:9:- `docs/smoke_outputs/<YYYY-MM-DD>/run.log`
+docs/full_system_smoke_test.md:11:Later D12 quests add:
+docs/full_system_smoke_test.md:13:- `docs/smoke_outputs/<YYYY-MM-DD>/artifacts_list.txt`
+docs/full_system_smoke_test.md:14:- `docs/smoke_outputs/<YYYY-MM-DD>/export_list.txt`
+docs/full_system_smoke_test.md:32:Behavioral assertions and end-to-end checks are implemented in subsequent D12 quests.
+scripts/full_system_smoke_test.sh:4:# D12 smoke scaffold (phase-only in QUEST_198).
+scripts/full_system_smoke_test.sh:8:OUT_DIR="docs/smoke_outputs/${DATE_UTC}"
+scripts/full_system_smoke_test.sh:14:  echo "D12 FULL SYSTEM SMOKE TEST (SCAFFOLD)"
+scripts/full_system_smoke_test.sh:19:  echo "PHASE 1: Start server"
+scripts/full_system_smoke_test.sh:20:  echo "PHASE 2: Create session(s)"
+scripts/full_system_smoke_test.sh:21:  echo "PHASE 3: Upload fixture audio"
+scripts/full_system_smoke_test.sh:22:  echo "PHASE 4: Transcribe (diarize ON/OFF)"
+scripts/full_system_smoke_test.sh:23:  echo "PHASE 5: Map speakers"
+scripts/full_system_smoke_test.sh:24:  echo "PHASE 6: Formalize (DEFAULT_TEST_TEMPLATE)"
+scripts/full_system_smoke_test.sh:25:  echo "PHASE 7: Session chat hard-lock checks"
+scripts/full_system_smoke_test.sh:26:  echo "PHASE 8: Global chat cold-start checks"
+scripts/full_system_smoke_test.sh:27:  echo "PHASE 9: Root UI surface check"
+scripts/full_system_smoke_test.sh:28:  echo "PHASE 10: Export bundle checks"
+RC: 0
+FAIL: governance validation errors:
+- 03_VERIFY.md is placeholder-only; it must contain real verification content
+- 04_OUTCOME.md is placeholder-only; it must state what is now true + artifacts/paths
+BLOCKED: governance validate failed (see output above).
+FAIL: governance validation errors:
+- 03_VERIFY.md must reference 06_TESTS.txt (raw receipts)
+BLOCKED: governance validate failed (see output above).
+PASS: governance validation OK for QUEST_198 at /home/notsolikely/Ashby_Data/Audits/Execution/QUEST_198__2026-03-03__stuart_v1_dungeon_12_1_10_smoke_pack_scaffold_script_and_docs_structure
+OK: finalize complete (validation PASS recorded).

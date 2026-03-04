@@ -1,0 +1,57 @@
+# QUEST_205 — Stuart v1 — Dungeon 12 (8/10) — Smoke: Global Chat Cold Start Hits + Open Session Actions + Citations
+
+(Quest template: Synapse OS — Architecture Transcendence Protocol, Stuart v1)
+
+IDENTITY
+- Quest ID: QUEST_205
+- Title: Stuart v1 — Dungeon 12 (8/10) — Smoke: Global Chat Cold Start Hits + Open Session Actions + Citations
+- Dungeon: 12 (Full system smoke test pack)
+- Owner: OpenAI Codex (CLI execution)
+- Priority: P0
+- Risk Class: R1
+- Expected Testing Level: TL3
+- Date Authored: 2026-03-03
+
+SYSTEM CONTEXT STATEMENT
+- D12 requires global chat to work from cold start and return actionable evidence-linked results.
+- This quest codifies those assertions in smoke automation.
+
+DELIVERABLES
+- Global chat phase from no required selected session
+- Assertions for session hits/match reasons, open_session actions, and citations
+
+TASK BREAKDOWN
+1) Submit global chat question targeting known fixture keyword.
+2) Assert response includes at least one hit and one open_session action.
+3) Assert citation anchors include session_id/segment/timestamps.
+
+ACCEPTANCE CRITERIA
+- Global chat cold-start contract passes in smoke run.
+
+VERIFICATION PLAN
+- Execute global chat phase and verify JSON assertions in run log.
+
+DEPENDENCIES
+- QUEST_203
+
+OUT OF SCOPE
+- Export validation and root surface checks.
+
+AUDIT BUNDLE
+- `/home/notsolikely/Ashby_Data/Audits/Execution/QUEST_205__YYYY-MM-DD__stuart_v1_d12_8of10_global_chat_cold_start/`
+
+REPO ARCHITECTURE ANCHORS (ANTI-DRIFT)
+- Backend door/API: `Ashby_Engine/ashby/interfaces/web/app.py`
+- Chat rails: `Ashby_Engine/ashby/modules/meetings/chat/answer.py`, `.../chat/commands.py`
+- Pipeline lifecycle: `Ashby_Engine/ashby/modules/meetings/pipeline/job_runner.py`
+- Transcript/version overlays: `Ashby_Engine/ashby/modules/meetings/transcript_versions.py`, `.../session_state.py`
+- Export contract: `Ashby_Engine/ashby/modules/meetings/export/bundle.py`
+- Webapp door: `Ashby_Engine/webapp/stuart_frontend/stuart_app/src/pages/Stuart.jsx`, `.../src/api/stuartClient.js`
+- Startup seams: `Ashby_Engine/Stuart`, `Ashby_Engine/scripts/stuart_up.sh`
+
+NO-ZOMBIE / NO-SIDEWAYS BUILD RULES
+- Reuse existing doors, adapters, and pipeline seams; do not create parallel smoke frameworks.
+- Extend canonical files above unless a new file is strictly required and justified in audit.
+- No dead flags, duplicate scripts, or shadow endpoints.
+- Any new helper must be wired into active execution path and verified by the smoke run.
+- Before implementation, run anti-dup checks (`rg`) for existing behavior and document findings in audit.

@@ -1,0 +1,69 @@
+# QUEST_208 — Stuart v1 — Dungeon 13 (1/8) — Realtime Observability Core Module + JSONL Sinks
+
+(Quest template: Synapse OS — Architecture Transcendence Protocol, Stuart v1)
+
+IDENTITY
+- Quest ID: QUEST_208
+- Title: Stuart v1 — Dungeon 13 (1/8) — Realtime Observability Core Module + JSONL Sinks
+- Dungeon: 13 (Realtime observability telemetry)
+- Owner: OpenAI Codex (CLI execution)
+- Priority: P0
+- Risk Class: R1
+- Expected Testing Level: TL3
+- Date Authored: 2026-03-03
+
+SYSTEM CONTEXT STATEMENT
+- This quest creates the canonical backend telemetry substrate for Stuart with runtime-rooted JSONL logging.
+- It defines schema enforcement, field completeness, rotation, redaction, and event routing without touching run artifact layout.
+
+REPO ARCHITECTURE ANCHORS (ANTI-DRIFT)
+- Runtime root/config seams: `Ashby_Engine/ashby/modules/meetings/config.py`
+- Backend door: `Ashby_Engine/ashby/interfaces/web/app.py`
+- Meetings module root: `Ashby_Engine/ashby/modules/meetings/`
+
+CONSTRAINT SUMMARY
+- Telemetry is gated by `ASHBY_EVENT_LOGGING=1` only.
+- Default runtime root must be `$HOME/ashby_runtime/stuart` with `STUART_ROOT` override.
+- Realtime logs must live under `$STUART_ROOT/realtime_log/` only.
+- No secrets, no raw prompts, no raw chat bodies in logs.
+
+DELIVERABLES
+- New module: `ashby/modules/meetings/observability/events.py`
+- Append-only JSONL sinks:
+  - `events.jsonl`
+  - `alerts.jsonl`
+  - `ui.jsonl`
+  - `llm.jsonl`
+- Core APIs: `is_enabled`, `get_stuart_root`, `ensure_realtime_dir`, `rotate_if_needed`, `next_seq`, `redact`, `write_jsonl`, `emit_event`, `emit_alert`
+
+TASK BREAKDOWN
+1) Implement schema-complete event construction (required fields always present).
+2) Implement per-correlation seq counters.
+3) Implement 50MB rotation with suffixed archival and active file continuity.
+4) Implement deep redaction and safe-string handling.
+5) Implement best-effort write semantics that never crash app.
+
+ACCEPTANCE CRITERIA
+- No log files created when `ASHBY_EVENT_LOGGING` is unset.
+- When enabled, sink files are auto-created under runtime root.
+- Event records include required IDs/trace/seq/timing/component fields.
+- Redaction prevents key/token leakage in nested payloads.
+
+VERIFICATION PLAN
+- `cd /home/notsolikely/Ashby_Engine`
+- `PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_observability_events_core.py`
+- `rg -n "ASHBY_EVENT_LOGGING|realtime_log|emit_event|emit_alert" ashby/modules/meetings/observability/events.py`
+
+DEPENDENCIES
+- None
+
+OUT OF SCOPE
+- API middleware wiring.
+- Frontend correlation propagation.
+
+NO-ZOMBIE / NO-SIDEWAYS BUILD RULES
+- Do not add alternate telemetry frameworks.
+- Keep all logging logic centralized in observability module; no duplication across unrelated files.
+
+AUDIT BUNDLE
+- `/home/notsolikely/Ashby_Data/Audits/Execution/QUEST_208__YYYY-MM-DD__stuart_v1_d13_1of8_observability_core/`

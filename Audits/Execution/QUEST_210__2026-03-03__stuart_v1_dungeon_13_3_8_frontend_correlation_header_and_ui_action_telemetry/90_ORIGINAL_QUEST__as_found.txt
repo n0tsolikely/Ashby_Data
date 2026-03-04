@@ -1,0 +1,56 @@
+# QUEST_210 — Stuart v1 — Dungeon 13 (3/8) — Frontend Correlation Header + UI Action Telemetry
+
+IDENTITY
+- Quest ID: QUEST_210
+- Title: Stuart v1 — Dungeon 13 (3/8) — Frontend Correlation Header + UI Action Telemetry
+- Dungeon: 13 (Realtime observability telemetry)
+- Priority: P0
+- Risk Class: R1
+- Expected Testing Level: TL3
+- Date Authored: 2026-03-03
+
+SYSTEM CONTEXT STATEMENT
+- This quest propagates correlation IDs from UI to backend and records required UI action events.
+
+REPO ARCHITECTURE ANCHORS (ANTI-DRIFT)
+- `Ashby_Engine/webapp/stuart_frontend/stuart_app/src/api/stuartClient.js`
+- `Ashby_Engine/webapp/stuart_frontend/stuart_app/src/pages/Stuart.jsx`
+- `Ashby_Engine/webapp/stuart_frontend/stuart_app/src/components/stuart/*.jsx`
+
+DELIVERABLES
+- API wrapper support for `X-Correlation-Id` on all requests.
+- UI event posts to `/api/ui/event` for:
+  - `ui.click_run`
+  - `ui.upload_started`
+  - `ui.upload_finished`
+  - `ui.chat_send`
+  - `ui.export_clicked`
+  - `ui.session_loaded`
+- Data minimization:
+  - chat text logged as len + sha256 only
+  - audio upload logged as filename + size only
+
+CONSTRAINT SUMMARY
+- No raw chat/audio content in UI telemetry.
+- Include `session_id`/`run_id` when known; else null.
+
+ACCEPTANCE CRITERIA
+- Network traces show correlation header on API requests.
+- UI actions appear in backend `ui.jsonl` with required fields.
+
+VERIFICATION PLAN
+- `cd /home/notsolikely/Ashby_Engine/webapp/stuart_frontend/stuart_app`
+- `npx eslint src/api/stuartClient.js src/pages/Stuart.jsx --quiet`
+- Frontend integration test(s) for correlation + ui event payload shape
+
+DEPENDENCIES
+- QUEST_209
+
+OUT OF SCOPE
+- Global error handlers and fetch-failure capture.
+
+NO-ZOMBIE / NO-SIDEWAYS BUILD RULES
+- Extend existing API wrapper; do not create second client stack.
+
+AUDIT BUNDLE
+- `/home/notsolikely/Ashby_Data/Audits/Execution/QUEST_210__YYYY-MM-DD__stuart_v1_d13_3of8_frontend_correlation_ui_actions/`

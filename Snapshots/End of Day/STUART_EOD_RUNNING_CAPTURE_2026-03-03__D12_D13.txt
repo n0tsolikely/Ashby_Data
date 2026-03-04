@@ -1,0 +1,52 @@
+STUART EOD RUNNING CAPTURE — 2026-03-03 (America/Toronto)
+STATUS: LIVE WORKLOG FOR SNAPSHOT FORMALIZATION
+
+PURPOSE
+- Preserve full detail for end-of-day snapshot quality.
+- Prevent loss of D12 and D13 decisions, fixes, blockers, and outcomes.
+
+D12 BACKFILL (COMPLETED)
+- QUEST_198: created full-system smoke scaffold + docs structure.
+- QUEST_199: added meeting/journal fixture pack + manifest/readme.
+- QUEST_200: implemented smoke phases 1-3 (start/create/upload) with receipts.
+- QUEST_201: implemented transcribe ON/OFF + transcript-version assertions + timeout/mini fixture controls.
+- QUEST_202: speaker-map persistence checks; fixed payload escaping issues.
+- QUEST_203: formalize phase checks; metadata + PDF proof for meeting/journal.
+- QUEST_204: deterministic session chat lock checks:
+  - logged exact request JSON
+  - added transcript-derived search probe receipts
+  - resolved FTS query syntax edge cases
+  - pass criterion supports truth-gate no-evidence without hallucinating citations.
+- QUEST_205: global chat cold-start checks for hits/open_session/citations.
+- QUEST_206: root UI surface + export verification:
+  - frontend root contract asserted
+  - user/dev export bundle content filters asserted
+  - fixed dev export absolute-path leakage via JSON path sanitization.
+- QUEST_207: capstone proof run:
+  - full 1-10 smoke PASS
+  - run.log + artifacts_list.txt + export_list.txt generated
+  - HYBRID/CLOUD skip markers emitted for baseline local run.
+
+D13 INTAKE + DECISIONS
+- Accepted quests: QUEST_208..QUEST_215.
+- Consent artifact created for schema/state modifications tied to QUEST_208:
+  /home/notsolikely/Ashby_Data/confirmations/CONFIRM_R2__QUEST_208__2026-03-03__schema_state_change.txt
+- Active Guild Orders appended with new DUNGEON 13 block (realtime observability telemetry scope).
+
+D13 EXECUTION NOTES (ONGOING)
+- QUEST_208 started:
+  - audit bundle initialized
+  - observability module scaffold and initial tests being implemented.
+
+SNAPSHOT DIRECTIVE
+- When generating EOD snapshot, include ALL D12 and D13 details above with:
+  - implemented behavior
+  - blockers/fixes
+  - test receipts and command outcomes
+  - files changed
+  - any remaining risks/limitations
+
+OPERATOR DIRECTIVE (2026-03-03 late session)
+- Preserve exhaustive D12 and D13 execution notes for EOD formalization.
+- Do not omit decisions, failed attempts, mitigations, or partial work receipts.
+- Maintain per-quest capture quality so snapshot material remains complete even if context is interrupted.

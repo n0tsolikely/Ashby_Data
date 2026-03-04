@@ -1,0 +1,53 @@
+# QUEST_215 — Stuart v1 — Dungeon 13 (8/8) — Observability Docs + Operational Validation + Proof Pack
+
+IDENTITY
+- Quest ID: QUEST_215
+- Title: Stuart v1 — Dungeon 13 (8/8) — Observability Docs + Operational Validation + Proof Pack
+- Dungeon: 13 (Realtime observability telemetry)
+- Priority: P0
+- Risk Class: R1
+- Expected Testing Level: TL4
+- Date Authored: 2026-03-03
+
+SYSTEM CONTEXT STATEMENT
+- This capstone quest publishes operational docs and proves end-to-end observability in a real Stuart runtime session.
+
+REPO ARCHITECTURE ANCHORS (ANTI-DRIFT)
+- `Ashby_Engine/docs/OBSERVABILITY_REALTIME_LOGGING.md`
+- `Ashby_Engine/scripts/stuart_up.sh` / `Ashby_Engine/Stuart` startup path
+- `Ashby_Engine/tools/realtime_log_doctor.py`
+
+DELIVERABLES
+- New docs: `docs/OBSERVABILITY_REALTIME_LOGGING.md`
+- Usage instructions for env flags, tailing logs, and doctor tool.
+- Operational proof receipts from runtime session with causal chain examples.
+
+CONSTRAINT SUMMARY
+- Explicitly document privacy/safety policy for telemetry.
+- No secrets or raw prompts in examples.
+
+ACCEPTANCE CRITERIA
+- Docs include exact commands and expected outputs/patterns.
+- Runtime proof demonstrates UI→API→pipeline→LLM chain trace by correlation_id.
+
+VERIFICATION PLAN
+- Run full observability workflow with `ASHBY_EVENT_LOGGING=1` and runtime root outside repo.
+- Validate `events.jsonl`, `alerts.jsonl`, `ui.jsonl`, `llm.jsonl` population and doctor output.
+
+DEPENDENCIES
+- QUEST_208
+- QUEST_209
+- QUEST_210
+- QUEST_211
+- QUEST_212
+- QUEST_213
+- QUEST_214
+
+OUT OF SCOPE
+- External log aggregation platforms.
+
+NO-ZOMBIE / NO-SIDEWAYS BUILD RULES
+- Use canonical startup/runtime configuration; no secondary launcher stacks.
+
+AUDIT BUNDLE
+- `/home/notsolikely/Ashby_Data/Audits/Execution/QUEST_215__YYYY-MM-DD__stuart_v1_d13_8of8_observability_docs_proof/`

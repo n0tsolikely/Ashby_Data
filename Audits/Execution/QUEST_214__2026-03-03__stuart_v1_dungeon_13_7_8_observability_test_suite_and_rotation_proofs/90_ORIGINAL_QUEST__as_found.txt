@@ -1,0 +1,53 @@
+# QUEST_214 — Stuart v1 — Dungeon 13 (7/8) — Observability Test Suite + Rotation Proofs
+
+IDENTITY
+- Quest ID: QUEST_214
+- Title: Stuart v1 — Dungeon 13 (7/8) — Observability Test Suite + Rotation Proofs
+- Dungeon: 13 (Realtime observability telemetry)
+- Priority: P0
+- Risk Class: R1
+- Expected Testing Level: TL4
+- Date Authored: 2026-03-03
+
+SYSTEM CONTEXT STATEMENT
+- This quest codifies required behavior with deterministic tests covering startup, middleware, ui events, required fields, disabled/alert rails, and rotation.
+
+REPO ARCHITECTURE ANCHORS (ANTI-DRIFT)
+- `Ashby_Engine/tests/` (new focused observability test modules)
+- `ashby/modules/meetings/observability/events.py`
+- `ashby/interfaces/web/app.py`
+
+DELIVERABLES
+- Tests for:
+  - `system.start` emission
+  - `/api/ui/event` sink routing
+  - request middleware start/end with duration
+  - required fields on every event
+  - llm.disabled behavior path
+  - alert sink writes on warning/error
+  - file rotation with size override
+
+ACCEPTANCE CRITERIA
+- All observability tests pass in temp STUART_ROOT with `ASHBY_EVENT_LOGGING=1`.
+- Rotation test proves suffixed file behavior + active file continuity.
+
+VERIFICATION PLAN
+- `cd /home/notsolikely/Ashby_Engine`
+- `PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_observability_*.py tests/test_realtime_log_doctor.py`
+
+DEPENDENCIES
+- QUEST_208
+- QUEST_209
+- QUEST_210
+- QUEST_211
+- QUEST_212
+- QUEST_213
+
+OUT OF SCOPE
+- Documentation publishing.
+
+NO-ZOMBIE / NO-SIDEWAYS BUILD RULES
+- Keep tests scoped to observability contracts; no unrelated refactor churn.
+
+AUDIT BUNDLE
+- `/home/notsolikely/Ashby_Data/Audits/Execution/QUEST_214__YYYY-MM-DD__stuart_v1_d13_7of8_observability_tests_rotation/`
