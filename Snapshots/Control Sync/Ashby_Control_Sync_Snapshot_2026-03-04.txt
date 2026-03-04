@@ -1,0 +1,106 @@
+================================================================================
+CONTROL SYNC SNAPSHOT
+================================================================================
+A) Header (required)
+- Subject: Ashby
+- Date: 2026-03-04
+- Topic: Control Sync Close: D12/D13 backfill with completed work + error ledger
+- Snapshot Type: Control_Sync
+- World State: Fog Lifted
+- Codex Freeze status: PRESENT (/home/notsolikely/Ashby_Data/Codex/CODEX_FREEZE.md)
+
+B) Rehydration Review (required when resuming)
+- Latest Control Sync Snapshot reviewed: /home/notsolikely/Ashby_Data/Snapshots/Control Sync/STUART_Control_Sync_Snapshot__02_2026-03-03.txt
+- Latest End-of-Day Snapshot reviewed: /home/notsolikely/Ashby_Data/Snapshots/End of Day/STUART_End_of_Day_Snapshot__03_2026-03-03.txt
+- Relevant General Snapshots reviewed:
+  - /home/notsolikely/Ashby_Data/Snapshots/General/Ashby_General_Snapshot_2026-03-04.txt
+  - /home/notsolikely/Ashby_Data/Snapshots/General/STUART_General_Snapshot_2026-02-24.txt
+
+C) Current Reality (State Surface)
+- Active Guild Orders / Raids:
+  - /home/notsolikely/Ashby_Data/Guild Orders/ACTIVE/GUILD_ORDERS__STUART_ARCHITECTURE_TRANSCENDENCE_PROTOCOL__2026-02-25_REV14.txt
+- Paused Guild Orders / Raids:
+  - /home/notsolikely/Ashby_Data/Guild Orders/PAUSED/ASHBY CONTROL SYNC #U2014 GUILD ORDERS-2025-12-15.txt
+- Quest Board summary:
+  - Completed is populated through QUEST_215 (plus side quests in Completed).
+  - Accepted currently has no active quest files (only `.gitkeep`).
+  - Quest Board root currently has no separate BOARD folder in this data layout.
+- Blockers:
+  - Live runtime behavior mismatch remains: user-reported chat path not consistently reaching expected LLM responses.
+  - Runtime startup/env mismatch still occurs when launching without proper module path (`ModuleNotFoundError: ashby` in one invocation path).
+- Known risks / unknowns:
+  - Some runtime issues only reproduce in user terminal/browser context and require realtime log receipts from that exact session.
+  - Non-fatal ASR/torchaudio deprecation warning noise may obscure signal during debugging unless filtered.
+
+D) Binding Decisions (required when binding decisions exist)
+1) Governance record amended: a General snapshot was written to backfill pre/open-sync context that had not been captured in a dedicated control-open event.
+2) D12/D13 execution posture remains receipts-first: quest work must be proven by wrapper command logs, changed-file evidence, and verify artifacts.
+3) Runtime debugging posture remains observability-first: use realtime log chain + audit watcher before claiming root cause.
+4) Product truth-gate policy locked: no hallucinated citations/evidence; allow explicit no-evidence response path when retrieval has no hits.
+5) Architecture policy reaffirmed: no god files, no sideways duplicate architecture, extend existing seams/modules.
+6) Canon packaging policy reaffirmed: include repo architecture only; exclude venv/log/cache/node and other junk artifacts.
+
+Deferred / Not decided:
+1) Live runtime issue: Stuart chat still not consistently exercising expected LLM connected path in user-run webapp sessions.
+2) UX gap: chat scroll behavior and message visibility in active UI sessions still requires final confirmation under real user runtime.
+3) Formalization mode controls/UI separation expectations remain to be finalized (chat always-connected with fallback; formalization mode selectable).
+4) D12 deterministic smoke hardening and any remaining accepted board quests continue in numbered order with receipts.
+5) Full guild-orders-to-repo capability parity review remains an ongoing closure task.
+
+Decision changes (if any):
+- prior decision → new decision (with reference)
+
+E) Scope Commitment (required)
+- Quests to accept now (by ID): None at close time; focus is execution/debug of already accepted/completed D12-D13 work and runtime parity validation.
+- Deferred work (and why):
+  - Full closure of live LLM chat runtime mismatch deferred pending deterministic runtime receipts from active user session logs.
+  - Any additional guild-order parity deltas deferred until runtime-path debugging receipts are complete.
+- Expected side-work (bugs/refactors):
+  - Small targeted fixes for startup/env consistency, frontend chat UX polish, and telemetry readability.
+  - Test harness stabilization and deterministic smoke assertions where retrieval legitimately returns no evidence.
+
+F) Artifacts Touched / Created (required)
+- Codex/TOC updates: None in this close action.
+- Guild Orders/Raids updates: None in this close action.
+- Dungeon/Quest artifacts: Existing quest/audit artifacts remain under /home/notsolikely/Ashby_Data/Audits/Execution and /home/notsolikely/Ashby_Data/Quest Board/Completed.
+- Other data artifacts:
+  - /home/notsolikely/Ashby_Data/Snapshots/General/Ashby_General_Snapshot_2026-03-04.txt
+  - /home/notsolikely/Ashby_Data/Snapshots/Control Sync/Ashby_Control_Sync_Snapshot_2026-03-04.txt
+
+G) NOTES
+Completed Work Ledger (high-level):
+- Multiple quest waves reviewed/executed/validated with governance audit bundles.
+- Control sync + snapshot + rehydration pack updates were performed across session windows.
+- Runtime observability work introduced, including realtime log protocol/watch flow and related docs/tooling.
+- Repo hygiene actions performed (quest runner naming consistency updates in governance/agents contexts; packaging refreshes).
+- Targeted code/test actions were run for chat/gateway/observability behavior, with pass receipts where obtained.
+
+Error / Incident Ledger (captured from this workstream):
+- `unexpected status 403 Forbidden` reported by Codex transport endpoint during one run (non-product runtime transport failure).
+- Quest test import failure: `ModuleNotFoundError: tests.chat_test_utils` (mitigated by making tests importable and rerunning).
+- Frontend lint gate failed on unrelated pre-existing unused imports (quest-scoped targeted lint used for truthful receipt separation).
+- Runtime UI/backend issues reported:
+  - `formalizationConfig is not define` surfaced in chat window path.
+  - `/api/runs/<run_id>/speakers` returned `404 Not Found` while transcription run status endpoint continued returning `200`.
+  - Transcribe-related payload surfaced `ok:false` with `error:"transcript json missing"` in one observed path.
+- Launch/env issue observed in user terminal:
+  - running `python scripts/stuart_web.py` produced `ModuleNotFoundError: No module named 'ashby'` (environment/PYTHONPATH context mismatch).
+- Dependency/runtime warning stream observed (non-fatal): torchaudio deprecation warnings, pyannote/speechbrain warning noise, Torch codec migration warnings.
+
+What We Were Trying to Resolve:
+- Ensure Stuart webapp chat uses LLM gateway path by default with fallback behavior only when needed.
+- Make runtime causality observable in logs so “why did X happen / not happen” is answerable from receipts.
+- Keep execution deterministic and governed while advancing D12/D13 quests without architectural drift.
+
+H) Exit Condition + Closure Statement (required)
+- Closure statement: This Control Sync is CLOSED only when this Snapshot exists as a file.
+- Started At: 2026-03-03T20:15:29.817377-05:00
+- Closed At: 2026-03-04T01:10:54.323118-05:00
+- Participants: Peter, Codex
+- Reason: D13 accepted; ready for execution wave
+- Next immediate action: Resume accepted quests in order with runtime-log-first debugging to close LLM chat path and D12 deterministic smoke gaps.
+
+- If execution will begin: state the first Quest to accept/execute.
+- If no execution committed: state why.
+
+END OF SNAPSHOT

@@ -1,0 +1,66 @@
+================================================================================
+GENERAL SNAPSHOT
+================================================================================
+A) Header (required)
+- Subject: Ashby
+- Date: 2026-03-04
+- Topic: Control Sync Backfill: D10-D13 execution + runtime diagnostics context
+- Snapshot Type: General
+
+B) Purpose
+Backfill the active Control Sync with complete working context that occurred before/around formal sync management so governance history reflects actual execution, debugging, architectural decisions, and operator directives.
+
+C) Content (facts / notes)
+Timeline Backfill (condensed, high-signal):
+1) Governance/Quest Operations
+- Multiple Control Sync and quest-board operations were performed across D10-D13 windows.
+- Quests were reviewed, accepted, executed in numbered order where directed, and moved through governance lifecycle with receipts.
+- Wrapper path standardization was repeatedly addressed (quest_run naming drift versus synapse_quest_run naming expectations).
+- User-directed audit rigor emphasized: no heuristics for review claims, prove implementation via file diffs/tests/receipts.
+
+2) Repo/Architecture Review Intent
+- Repeated instruction to review Stuart Codex + guild orders + snapshots + live repo state before building.
+- Architectural constraints reaffirmed: no god files, no zombie/dead architecture, modular separation, extend existing seams instead of sideways duplication.
+- Requirement to keep backend cleanly backend-only over time while preserving product behavior.
+
+3) Execution/Verification Streams
+- Targeted test runs completed for specific quests and chat/gateway components.
+- Evidence docs and verify artifacts written into quest audit bundles.
+- Some failures were repaired with minimal deterministic fixes and rerun to PASS.
+- Existing repo debt (unrelated lint failures) was separated from quest-scoped validation via targeted lint/test receipts.
+
+4) Runtime/LLM/Frontend Issues Under Active Investigation
+- Stuart chat observed as non-LLM auto-response path in user runtime despite intended gateway integration.
+- UI/runtime symptoms reported: message visibility issues, manual scroll friction, missing mode controls expectations, and error "formalizationConfig is not defined".
+- Transcribe flow observed: speakers endpoint 404 during polling with run status still progressing; user-facing confusion over interim errors.
+- Explicit error surfaced: run payload showed ok=false with "transcript json missing" in one path.
+- Direct startup issue reported: `python scripts/stuart_web.py` from repo root failed with ModuleNotFoundError: ashby (PYTHONPATH/env context mismatch).
+
+5) Observability Direction (D12 focus)
+- Objective locked: deterministic causal-chain telemetry from UI action -> API -> routing -> pipeline -> storage -> LLM/fallback -> response.
+- Runtime logging/watch workflow created so operator and Codex can tail and diagnose behavior with receipts.
+- Requirement reiterated: no secrets in logs, correlate by IDs, preserve truth-gate behavior (no fabricated citations/evidence).
+
+6) Deterministic Smoke/Phase-7 Requirement
+- Phase-7 retrieval behavior clarified: hits/citations may be empty if evidence absent; harness must pass either grounded-citation path or explicit no-evidence truth gate path.
+- Request to print exact chat request JSON, persist outputs in /tmp artifacts, and use guaranteed transcript token for deterministic search checks.
+
+7) Packaging/State Management
+- Canon zip packaging was done multiple times with strict exclusions (venv, logs, caches, node junk) while preserving full repo architecture.
+- Rehydration/snapshot references shifted toward date-sorted latest pointers instead of hardcoded filenames.
+
+8) Current Critical Product Gap
+- User priority remains unresolved in live runtime: Stuart chat should attempt connected LLM path by default, with fallback when unavailable, and runtime logs should make failures obvious in realtime.
+
+D) Binding marker (conditional)
+- (none)
+
+E) NOTES
+Operator directives to preserve in governance memory:
+- Include complete context, not just quest IDs.
+- Keep EOD snapshots detailed (steps taken, decisions, errors, blocked items, why).
+- Maintain strict repo hygiene and modular architecture.
+- Use runtime observability for realtime diagnosis of what the app is actually doing.
+- Continue accepted quests in order unless explicitly paused.
+
+END OF SNAPSHOT

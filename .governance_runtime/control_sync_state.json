@@ -1,9 +1,6 @@
 {
-  "active": true,
-  "participants": "Peter, Codex",
-  "reason": "D13 accepted; ready for execution wave",
-  "started_at": "2026-03-03T20:15:29.817377-05:00",
-  "subject": "Ashby",
-  "timezone": "EST",
-  "topic": "D13 observability execution"
+  "active": false,
+  "closed_at": "2026-03-04T01:10:54.323118-05:00",
+  "last_closed_snapshot": "/home/notsolikely/Ashby_Data/Snapshots/Control Sync/Ashby_Control_Sync_Snapshot_2026-03-04.txt",
+  "subject": "Ashby"
 }
