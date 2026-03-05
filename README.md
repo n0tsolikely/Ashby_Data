@@ -33,7 +33,7 @@ Ashby is intentionally split into two repositories.
 ### Engine
 
 ```id="engine_repo"
-github.com/n0tsolikely/ashby
+github.com/n0tsolikely/Ashby_Engine
 ```
 
 Contains:
