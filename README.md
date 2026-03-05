@@ -1,4 +1,36 @@
-# Ashby Data
+# Ashby_Data
+
+**Ashby_Data is the canonical “data folder” repo for `Ashby_Engine`.**  
+It contains the persistent system state, architecture docs, and governance artifacts used while building Ashby and its modules (starting with **Stuart**) using the **Synapse** governance framework.
+
+If you’re looking for the runtime code, go here:
+- **Ashby_Engine**: https://github.com/n0tsolikely/Ashby_Engine
+
+If you’re looking for the governance framework that defines how this state/logging works, go here:
+- **Synapse**: https://github.com/n0tsolikely/Synapse
+
+## What this repo is
+This repository is the *in-use* Ashby data workspace (Synapse-governed). It includes:
+- Canonical Vision (what Ashby is and why)
+- Codex docs (architecture + constraints)
+- Snapshots (Control Sync / End-of-Day / General)
+- Guild Orders / Quest Board (scoped execution)
+- Execution Audits (evidence/receipts + verification)
+- Supporting docs and continuity artifacts
+
+## What this repo is NOT
+- Not the runnable engine/runtime (that’s `Ashby_Engine`)
+- Not a standalone package
+- Not meant to be “pip installed”
+
+## Start here (recommended reading order)
+1) Canonical Vision
+2) Ashby Codex (Full)
+3) Stuart Codex (module)
+4) Latest Snapshots (Control Sync + End-of-Day) for current state
+5) Guild Orders + Quest Board + Execution Audits to see work-in-progress and receipts
+
+## Ashby Data
 
 **Ashby_Data** is the canonical governance and operational state repository for the Ashby system.
 
@@ -26,7 +58,10 @@ This repository allows Ashby sessions to be reconstructed deterministically even
 
 ---
 
-# Relationship to the Engine
+# Repo Relationship
+
+- Engine runtime: https://github.com/n0tsolikely/Ashby_Engine
+- Synapse governance framework: https://github.com/n0tsolikely/Synapse
 
 Ashby is intentionally split into two repositories.
 
