@@ -1,6 +1,6 @@
 # QUEST_199 — Stuart v1 — Dungeon 12 (2/10) — Fixture Audio Pack: Meeting + Journal
 
-(Quest template: Synapse OS — Architecture Transcendence Protocol, Stuart v1)
+(Quest template: Synapse — Architecture Transcendence Protocol, Stuart v1)
 
 IDENTITY
 - Quest ID: QUEST_199

@@ -224,7 +224,7 @@ Policy:
 
 7.2 Synapse Governance (reference pack, not edited during Stuart work unless ordered)
 Path:
-- /mnt/data/Synapse_OS_Governance/
+- /mnt/data/Synapse_Governance/
 Review tier:
 - Tier 0 at the start of a new session (per Hands’ rule)
 

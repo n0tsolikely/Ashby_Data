@@ -1,6 +1,6 @@
 # QUEST_208 — Stuart v1 — Dungeon 13 (1/8) — Realtime Observability Core Module + JSONL Sinks
 
-(Quest template: Synapse OS — Architecture Transcendence Protocol, Stuart v1)
+(Quest template: Synapse — Architecture Transcendence Protocol, Stuart v1)
 
 IDENTITY
 - Quest ID: QUEST_208

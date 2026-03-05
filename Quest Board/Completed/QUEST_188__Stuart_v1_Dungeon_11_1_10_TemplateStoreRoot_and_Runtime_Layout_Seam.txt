@@ -1,6 +1,6 @@
 # QUEST_188 — Stuart v1 — Dungeon 11 (1/10) — TemplateStoreRoot + Runtime Layout Seam
 
-(Quest template: Synapse OS — Architecture Transcendence Protocol, Stuart v1)
+(Quest template: Synapse — Architecture Transcendence Protocol, Stuart v1)
 
 IDENTITY
 - Quest ID: QUEST_188
@@ -65,7 +65,7 @@ REPO / MONSTER ANCHORS (read before modifying anything)
   - MONSTER/repomap/snapshot_repomap_pack_current/WEB_API.md (see /api/registry and existing /api/run contract)
 
 CONSTRAINT SUMMARY
-- **NO** template storage under Ashby_Data (Synapse OS data only).
+- **NO** template storage under Ashby_Data (Synapse data only).
 - **YES** template storage under STUART_RUNTIME_ROOT (same root as sessions/index).
 - Single-seam path resolver so moving TemplateStoreRoot later is a one-line change.
 - Keep architecture modular: no god-files, no dumping everything into job_runner.py or app.py.

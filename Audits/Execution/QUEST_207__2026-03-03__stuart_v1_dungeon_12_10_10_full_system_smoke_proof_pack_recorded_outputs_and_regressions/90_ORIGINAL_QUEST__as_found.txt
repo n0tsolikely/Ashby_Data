@@ -1,6 +1,6 @@
 # QUEST_207 — Stuart v1 — Dungeon 12 (10/10) — Full System Smoke Proof Pack: Recorded Outputs + Regression Invocation
 
-(Quest template: Synapse OS — Architecture Transcendence Protocol, Stuart v1)
+(Quest template: Synapse — Architecture Transcendence Protocol, Stuart v1)
 
 IDENTITY
 - Quest ID: QUEST_207

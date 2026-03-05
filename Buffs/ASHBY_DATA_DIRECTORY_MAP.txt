@@ -17,7 +17,7 @@ Define these at session start:
 - CANON_ROOT      = extracted canon bundle root (folder containing Ashby_Data/ and Ashby_Engine/)
 - DATA_ROOT       = CANON_ROOT/Ashby_Data
 - ENGINE_ROOT     = CANON_ROOT/Ashby_Engine
-- GOVERNANCE_ROOT = Synapse OS Governance root (separate pack)
+- GOVERNANCE_ROOT = Synapse Governance root (separate pack)
 - STUART_ROOT     = runtime artifact root (outside repo; env var STUART_ROOT)
 
 0.2 Naming reality (don’t “fix” it without orders)

@@ -11,7 +11,7 @@ It exists so a future rehydration can reconstruct truth from artifacts, not memo
 ================================================================================
 1) CANON ROOTS (SINGLE SOURCE OF TRUTH)
 ================================================================================
-- Governance: /mnt/data/Synapse_OS_Governance
+- Governance: /mnt/data/Synapse_Governance
 - Data:       /mnt/data/Ashby_Data
 - Engine:     /mnt/data/Ashby_Engine
 

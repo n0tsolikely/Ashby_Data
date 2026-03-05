@@ -7,8 +7,8 @@ Quest
 - Audit bundle: /mnt/data/Ashby_Data/Audits/Execution/QUEST_038__2026-02-03__stuart_v1_post30_alignment_diarization_to_asr_2026-02-03
 
 Codex / locks consulted
-- Synapse governance: /mnt/data/Synapse_OS_Governance/Processes/SYNAPSE_GUILD__THE_LOOP.txt
-- Synapse governance: /mnt/data/Synapse_OS_Governance/Processes/SYNAPSE_GUILD__EXECUTION_AUDITS.txt
+- Synapse governance: /mnt/data/Synapse_Governance/Processes/SYNAPSE_GUILD__THE_LOOP.txt
+- Synapse governance: /mnt/data/Synapse_Governance/Processes/SYNAPSE_GUILD__EXECUTION_AUDITS.txt
 - World State gate: /mnt/data/Ashby_Data/Codex/CODEX_FREEZE.md (exists)
 - Stuart codex: /mnt/data/Ashby_Data/Stuart/Stuart Codex/Stuart_Codex_FULL_All_Sections.txt (alignment is stage 3)
 

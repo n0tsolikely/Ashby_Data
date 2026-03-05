@@ -9,7 +9,7 @@ CURRENT PHASE: Post-D7 closure / awaiting next scoped raid action.
 BINDING DECISIONS (LAW)
 ================================================================================
 1) Canonical roots (no parallel state):
-   - Governance: /home/notsolikely/Synapse_OS/governance
+   - Governance: /home/notsolikely/Synapse/governance
    - Data: /home/notsolikely/Ashby_Data
    - Engine: /home/notsolikely/Ashby_Engine
 
@@ -31,7 +31,7 @@ BINDING DECISIONS (LAW)
    - Use latest Control Sync snapshot resolved by date/counter rule.
 
 6) Canonical quest execution wrapper:
-   - /home/notsolikely/Synapse_OS/governance/tools/synapse_quest_run.sh
+   - /home/notsolikely/Synapse/governance/tools/synapse_quest_run.sh
    - End-of-wave enforcement active: when Accepted queue drains, wrapper must produce detailed EOD snapshot or completion is blocked/reverted.
 
 ================================================================================
@@ -57,9 +57,9 @@ ACTIVE SCOPE / COMMITMENTS
 REQUIRED READ FIRST
 ================================================================================
 1) Governance routing:
-   - /home/notsolikely/Synapse_OS/governance/README.txt
-   - /home/notsolikely/Synapse_OS/governance/INDEX.txt
-   - /home/notsolikely/Synapse_OS/governance/SYNAPSE_STATE.yaml
+   - /home/notsolikely/Synapse/governance/README.txt
+   - /home/notsolikely/Synapse/governance/INDEX.txt
+   - /home/notsolikely/Synapse/governance/SYNAPSE_STATE.yaml
 
 2) Subject Buffs:
    - /home/notsolikely/Ashby_Data/Buffs/ASHBY_SESSION_START_CHECK.txt

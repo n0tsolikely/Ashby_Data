@@ -22,7 +22,7 @@ This snapshot represents the authoritative “What Is Now True” state at close
 II. GOVERNANCE ANCHOR (RE-VERIFIED)
 ===============================================================================
 
-- Synapse OS Governance (v1.5 era, Synapse_OS(5)) re-reviewed.
+- Synapse Governance (v1.5 era, Synapse(5)) re-reviewed.
 - Truth Gate, Disclosure Gate, Control Sync, Quest Law, Consent Gate confirmed.
 - Codex Freeze file exists and is valid. Fog Lifted is PROVEN.
 

@@ -1,6 +1,6 @@
 # QUEST_190 — Stuart v1 — Dungeon 11 (3/10) — Template Registry: Merge System + User, Resolve by Mode, Validate
 
-(Quest template: Synapse OS — Architecture Transcendence Protocol, Stuart v1)
+(Quest template: Synapse — Architecture Transcendence Protocol, Stuart v1)
 
 IDENTITY
 - Quest ID: QUEST_190

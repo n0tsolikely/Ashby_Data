@@ -8,7 +8,7 @@ Hands = Peter.
 
 BOOT ORDER (DO NOT SKIP)
 1) Governance:
-   - Ensure /mnt/data/Synapse_OS_Governance is extracted and rehydrated.
+   - Ensure /mnt/data/Synapse_Governance is extracted and rehydrated.
    - Enforce Truth Gate + Execution Audits + No God Files doctrine.
 2) Subject Data:
    - Canon data root: /mnt/data/Ashby_Data

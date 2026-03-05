@@ -5,7 +5,7 @@ Status: Binding continuity anchor for resume
 ================================================================================
 0) CANONICAL ROOTS + NO-HEURISTICS LOCK
 ================================================================================
-- Governance root: /home/notsolikely/Synapse_OS/governance
+- Governance root: /home/notsolikely/Synapse/governance
 - Data root: /home/notsolikely/Ashby_Data
 - Engine root: /home/notsolikely/Ashby_Engine
 

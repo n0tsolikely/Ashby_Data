@@ -58,7 +58,7 @@ Define roots (must be resolved each session):
 - CANON_ROOT      = the extracted canon bundle root (folder containing Ashby_Data/ and Ashby_Engine/)
 - DATA_ROOT       = CANON_ROOT/Ashby_Data
 - ENGINE_ROOT     = CANON_ROOT/Ashby_Engine
-- GOVERNANCE_ROOT = Synapse OS Governance root (separate pack; environment-specific)
+- GOVERNANCE_ROOT = Synapse Governance root (separate pack; environment-specific)
 - STUART_ROOT     = runtime artifact root (outside repo; controlled by env var STUART_ROOT)
 
 2.1 Governance: Edited (Canonical, mutable)

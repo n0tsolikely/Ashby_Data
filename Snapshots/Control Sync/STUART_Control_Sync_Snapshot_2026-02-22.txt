@@ -4,11 +4,11 @@ Type: Governance/Execution Discipline Patch (Quest Template Sync)
 
 WHY:
 - Recent Codex-executed quests show degraded audit bundle completeness vs earlier quests.
-- Root cause identified: subject-local Quest Template in Ashby_Data was not aligned with Synapse OS governance template (v1.5), and referenced legacy audit paths.
+- Root cause identified: subject-local Quest Template in Ashby_Data was not aligned with Synapse governance template (v1.5), and referenced legacy audit paths.
 
 DETERMINATIONS (BINDING FOR EXECUTOR):
 1) Quest Template Source of Truth:
-   - Governance template: Synapse OS v1.5 (governance/Quest Board/QUEST_TEMPLATE.txt)
+   - Governance template: Synapse v1.5 (governance/Quest Board/QUEST_TEMPLATE.txt)
    - Subject-local template MUST match governance structure and MUST require audit bundles.
 
 2) Audit Bundle Structure (NON-NEGOTIABLE ONCE ACCEPTED):
@@ -26,7 +26,7 @@ DETERMINATIONS (BINDING FOR EXECUTOR):
 
 CHANGES MADE (ARTIFACTS):
 - Updated: Ashby_Data/Quest Board/QUEST_TEMPLATE.txt
-  - Synced to Synapse OS governance v1.5 template
+  - Synced to Synapse governance v1.5 template
   - Bound placeholder paths to Ashby_Data
 - Updated: Ashby_Data/SUBJECT_STATE.yaml
   - Reading rules now declare quest/guild order truth by folder location (not status fields)

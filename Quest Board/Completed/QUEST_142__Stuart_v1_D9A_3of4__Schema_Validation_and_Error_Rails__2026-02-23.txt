@@ -3,7 +3,7 @@ Version: v1.5
 Last Updated: 2026-02-14
 Status: Canon Template (must comply with Quest Validation Rules)
 Subject Copy: Ashby_Data/Quest Board/QUEST_TEMPLATE.txt
-Provenance: Synapse OS governance/Quest Board/QUEST_TEMPLATE.txt (v1.5)
+Provenance: Synapse governance/Quest Board/QUEST_TEMPLATE.txt (v1.5)
 Sync Date: 2026-02-22
 
 

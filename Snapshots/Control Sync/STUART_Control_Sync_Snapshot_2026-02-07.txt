@@ -153,7 +153,7 @@ E) Canon Extraction (local working tree)
 - Canonical working directories are extracted into /mnt/data:
   - /mnt/data/Ashby_Data
   - /mnt/data/Ashby_Engine
-  - /mnt/data/Synapse_OS_Governance
+  - /mnt/data/Synapse_Governance
 - Zip archives are treated as inert exports unless Hands explicitly orders a re-extract.
 
 ────────────────────────────────────────────────────────

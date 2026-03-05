@@ -23,7 +23,7 @@ FINAL DECISIONS (BINDING)
      - Draftshot is marked CONSUMED (retained as evidence)
 
 2) Governance Canon Update:
-   - SynapseOS Governance AI11 accepted as canonical and merged into WSL Synapse_OS repo.
+   - SynapseOS Governance AI11 accepted as canonical and merged into WSL Synapse repo.
    - Commit recorded: 4c9838c (main) including governance + runtime tooling alignment.
 
 3) Stuart Transcript Versioning:

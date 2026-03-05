@@ -1,6 +1,6 @@
 # QUEST_202 — Stuart v1 — Dungeon 12 (5/10) — Smoke: Speaker Map Overlay Persistence Assertions
 
-(Quest template: Synapse OS — Architecture Transcendence Protocol, Stuart v1)
+(Quest template: Synapse — Architecture Transcendence Protocol, Stuart v1)
 
 IDENTITY
 - Quest ID: QUEST_202

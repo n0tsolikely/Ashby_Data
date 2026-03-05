@@ -25,7 +25,7 @@ DATE (America/Toronto): 2026-02-15 14:56:18 EST
 
 CANON BASELINE (Reference Only)
 - Ashby/Stuart Canon Zip provided by Hands (treated as canon on Hands side)
-- Governance Pack provided by Hands: Synapse_OS_Governance(AI).zip
+- Governance Pack provided by Hands: Synapse_Governance(AI).zip
 - Today is Stuart-focused (Web UI + pipeline behavior)
 
 PURPOSE (Why this draft exists)

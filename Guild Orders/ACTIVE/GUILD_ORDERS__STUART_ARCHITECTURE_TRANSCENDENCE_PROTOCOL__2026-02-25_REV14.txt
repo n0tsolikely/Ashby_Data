@@ -5,7 +5,7 @@ ORIGINAL_DATE: 2026-02-16
 TIMEZONE: America/Toronto
 REVISION: 2026-02-28_REV13 (Control Sync: D11 Template Management Lock-In — Local-first runtime store + reuse discovery pass + staged import)
 STATUS: ACTIVE (Raid in progress; governed execution baseline)
-GOVERNANCE: Synapse_OS_Governance(AI)10
+GOVERNANCE: Synapse_Governance(AI)10
 CANONICAL INPUTS (authoritative for this Guild Orders):
 - Ashby_Data/Codex/ASHBY CODEX FULL.txt
 - Ashby_Data/Stuart/Docs/Stuart - The Canonical Vision.txt

@@ -8,7 +8,7 @@ PURPOSE
 - This prompt is NOT permission to execute; it is permission to become consistent.
 
 CANONICAL ROOTS (ABSOLUTE)
-- Governance: /mnt/data/Synapse_OS_Governance
+- Governance: /mnt/data/Synapse_Governance
 - Data:       /mnt/data/Ashby_Data
 - Engine:     /mnt/data/Ashby_Engine
 
@@ -22,10 +22,10 @@ PACK RULE (IMPORTANT)
 
 MANDATORY READ ORDER (SESSION START)
 1) Synapse Governance (Tier 0)
-   - /mnt/data/Synapse_OS_Governance/README.txt
-   - /mnt/data/Synapse_OS_Governance/INDEX.txt
-   - /mnt/data/Synapse_OS_Governance/Processes/SYNAPSE_GUILD__THE_LOOP.txt
-   - /mnt/data/Synapse_OS_Governance/Processes/SYNAPSE_GUILD__TRUTH_GATE.txt
+   - /mnt/data/Synapse_Governance/README.txt
+   - /mnt/data/Synapse_Governance/INDEX.txt
+   - /mnt/data/Synapse_Governance/Processes/SYNAPSE_GUILD__THE_LOOP.txt
+   - /mnt/data/Synapse_Governance/Processes/SYNAPSE_GUILD__TRUTH_GATE.txt
 
 2) Subject Buffs (Ashby) — Tier 0
    - /mnt/data/Ashby_Data/Buffs/ASHBY_SESSION_START_CHECK.txt

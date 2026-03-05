@@ -6,7 +6,7 @@ Purpose:
 
 Governance relationship:
 - This pack is SUBJECT STATE continuity (not governance law).
-- Governance source of truth: /home/notsolikely/Synapse_OS/governance
+- Governance source of truth: /home/notsolikely/Synapse/governance
 - If conflict exists, governance locks/processes win.
 
 ================================================================================
@@ -62,9 +62,9 @@ Meaning:
 D) REQUIRED READ ORDER (SESSION START)
 ================================================================================
 1) Governance routing:
-   - /home/notsolikely/Synapse_OS/governance/README.txt
-   - /home/notsolikely/Synapse_OS/governance/INDEX.txt
-   - /home/notsolikely/Synapse_OS/governance/SYNAPSE_STATE.yaml
+   - /home/notsolikely/Synapse/governance/README.txt
+   - /home/notsolikely/Synapse/governance/INDEX.txt
+   - /home/notsolikely/Synapse/governance/SYNAPSE_STATE.yaml
 
 2) Subject Buffs:
    - /home/notsolikely/Ashby_Data/Buffs/ASHBY_SESSION_START_CHECK.txt
@@ -88,7 +88,7 @@ D) REQUIRED READ ORDER (SESSION START)
 E) EXECUTION WRAPPER + NEXT SAFE ACTION
 ================================================================================
 Canonical quest execution wrapper:
-- /home/notsolikely/Synapse_OS/governance/tools/synapse_quest_run.sh
+- /home/notsolikely/Synapse/governance/tools/synapse_quest_run.sh
 
 Current safe action:
 - Rehydrate from latest resolved artifacts.

@@ -3,7 +3,7 @@ Date: 2026-03-02
 Scope: QUEST_168 (Stuart v1 D7 10/10)
 
 ## Command(s) Run
-1. `bash /home/notsolikely/Synapse_OS/governance/tools/synapse_quest_run.sh cmd QUEST_168 "source /home/notsolikely/venvs/ashby-env/bin/activate && cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_minutes_gateway_call_cloud_only.py tests/test_meetings_journal_gateway_call_cloud_only.py tests/test_meetings_minutes_truth_guards_empty_sections.py tests/test_meetings_render_md_pdf_evidence.py tests/test_meetings_render_journal_md_pdf_evidence.py tests/test_meetings_web_upload_run.py tests/test_delete_run_removes_fs_and_index.py tests/test_delete_session_removes_runs_and_index.py tests/test_delete_transcript_version_cascade.py"`
+1. `bash /home/notsolikely/Synapse/governance/tools/synapse_quest_run.sh cmd QUEST_168 "source /home/notsolikely/venvs/ashby-env/bin/activate && cd /home/notsolikely/Ashby_Engine && PYTHONPATH=/home/notsolikely/Ashby_Engine pytest -q tests/test_meetings_minutes_gateway_call_cloud_only.py tests/test_meetings_journal_gateway_call_cloud_only.py tests/test_meetings_minutes_truth_guards_empty_sections.py tests/test_meetings_render_md_pdf_evidence.py tests/test_meetings_render_journal_md_pdf_evidence.py tests/test_meetings_web_upload_run.py tests/test_delete_run_removes_fs_and_index.py tests/test_delete_session_removes_runs_and_index.py tests/test_delete_transcript_version_cascade.py"`
 
 ## Key Output Excerpts
 - `............ [100%]`

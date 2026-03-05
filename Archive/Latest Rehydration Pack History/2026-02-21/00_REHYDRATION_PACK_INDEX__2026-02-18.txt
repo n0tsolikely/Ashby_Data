@@ -6,7 +6,7 @@ Purpose:
 
 Governance relationship:
 - This pack is subject-state continuity, not constitutional governance.
-- Governance law is in: /home/notsolikely/Synapse_OS/governance
+- Governance law is in: /home/notsolikely/Synapse/governance
 - If any conflict exists, governance locks/processes win.
 
 ================================================================================

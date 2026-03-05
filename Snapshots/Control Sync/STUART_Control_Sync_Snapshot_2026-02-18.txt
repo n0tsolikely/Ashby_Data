@@ -2,7 +2,7 @@ SNAPSHOT_TYPE: CONTROL_SYNC
 SUBJECT: STUART (Ashby)
 DATE: 2026-02-18
 TIMEZONE: America/Toronto
-GOVERNANCE: Synapse_OS
+GOVERNANCE: Synapse
 STATUS: CONTROL_SYNC OPEN
 
 CONTROL_SYNC_OPENING_DECLARATION
@@ -16,7 +16,7 @@ ACTIVE_SCOPE
 
 LOCKED_CONSTRAINTS
 - No governance logic inside `Ashby_Engine`
-- Governance/state artifacts remain in `Ashby_Data` and `Synapse_OS`
+- Governance/state artifacts remain in `Ashby_Data` and `Synapse`
 - No Base44 platform dependencies in canonical Stuart frontend runtime
 
 OPEN_FOCUS

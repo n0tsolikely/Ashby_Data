@@ -6,7 +6,7 @@ PURPOSE
 - This file is binding resume law. If it conflicts with casual memory, this wins.
 
 CANONICAL ROOTS
-- Governance canon: /mnt/data/Synapse_OS_Governance
+- Governance canon: /mnt/data/Synapse_Governance
 - Subject data canon: /mnt/data/Ashby_Data
 - Subject engine canon: /mnt/data/Ashby_Engine
 

@@ -63,8 +63,8 @@ export DATA_ROOT="$CANON_ROOT/Ashby_Data"
 export ENGINE_ROOT="$CANON_ROOT/Ashby_Engine"
 
 2.3 Governance root (environment-specific; must be located)
-Set this to wherever the Synapse OS Governance pack is extracted:
-export GOVERNANCE_ROOT="/mnt/data/Synapse_OS_Governance"
+Set this to wherever the Synapse Governance pack is extracted:
+export GOVERNANCE_ROOT="/mnt/data/Synapse_Governance"
 # If governance is stored under a different folder name, point there instead.
 
 2.4 Stuart runtime root (artifact output surface)

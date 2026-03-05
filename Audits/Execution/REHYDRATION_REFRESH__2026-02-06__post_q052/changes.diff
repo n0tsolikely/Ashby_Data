@@ -247,10 +247,10 @@
  MANDATORY READ ORDER (SESSION START)
 -1) Synapse Governance
 +1) Synapse Governance (Tier 0)
-    - /mnt/data/Synapse_OS_Governance/README.txt
-    - /mnt/data/Synapse_OS_Governance/INDEX.txt
-    - /mnt/data/Synapse_OS_Governance/Processes/SYNAPSE_GUILD__THE_LOOP.txt
-    - /mnt/data/Synapse_OS_Governance/Processes/SYNAPSE_GUILD__TRUTH_GATE.txt
+    - /mnt/data/Synapse_Governance/README.txt
+    - /mnt/data/Synapse_Governance/INDEX.txt
+    - /mnt/data/Synapse_Governance/Processes/SYNAPSE_GUILD__THE_LOOP.txt
+    - /mnt/data/Synapse_Governance/Processes/SYNAPSE_GUILD__TRUTH_GATE.txt
  
 -2) Subject Buffs (Ashby)
 +2) Subject Buffs (Ashby) — Tier 0

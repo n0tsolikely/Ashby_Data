@@ -1,6 +1,6 @@
 # QUEST_205 — Stuart v1 — Dungeon 12 (8/10) — Smoke: Global Chat Cold Start Hits + Open Session Actions + Citations
 
-(Quest template: Synapse OS — Architecture Transcendence Protocol, Stuart v1)
+(Quest template: Synapse — Architecture Transcendence Protocol, Stuart v1)
 
 IDENTITY
 - Quest ID: QUEST_205

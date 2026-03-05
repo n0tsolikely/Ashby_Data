@@ -49,7 +49,7 @@ B) Work Performed (Quest-by-Quest) (required)
 - Operational/governance work after quest completion:
   - Committed and pushed latest `Ashby_Engine` main commit `4397276` to `origin/main`.
   - Built distribution archive `/home/notsolikely/Ashby_Canon(14).zip` including `Ashby_Engine` + `Ashby_Data` with junk exclusions (`.git`, venvs, node_modules, caches, logs, pycache).
-  - Implemented governance hardening in `/home/notsolikely/Synapse_OS/governance/tools/synapse_quest_run.sh` (v1.4): when Accepted queue drains, wrapper auto-writes detailed EOD and blocks/reverts completion if EOD fails.
+  - Implemented governance hardening in `/home/notsolikely/Synapse/governance/tools/synapse_quest_run.sh` (v1.4): when Accepted queue drains, wrapper auto-writes detailed EOD and blocks/reverts completion if EOD fails.
 
 C) Completed Work Summary (required when anything completed)
 - QUEST_167 — Delete TranscriptVersion Cascade Warnings IndexCleanup

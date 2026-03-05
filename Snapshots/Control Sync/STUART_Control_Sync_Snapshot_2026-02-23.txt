@@ -52,7 +52,7 @@ Binding Decisions (LAW)
 - No attempt to execute 9B before 9A is proven working.
 
 4) Governance Constraints (LAW)
-- No fabricated audits/receipts (per Synapse governance hardening applied in Synapse_OS).
+- No fabricated audits/receipts (per Synapse governance hardening applied in Synapse).
 - Any proof/UI quests requiring a running Stuart surface must be marked BLOCKED if the surface isn’t available; no fake completion.
 
 Deferred / Not Decided

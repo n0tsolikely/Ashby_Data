@@ -1,6 +1,6 @@
 # QUEST_191 — Stuart v1 — Dungeon 11 (4/10) — Templates API: CRUD + Preview + Registry Payload Upgrade
 
-(Quest template: Synapse OS — Architecture Transcendence Protocol, Stuart v1)
+(Quest template: Synapse — Architecture Transcendence Protocol, Stuart v1)
 
 IDENTITY
 - Quest ID: QUEST_191

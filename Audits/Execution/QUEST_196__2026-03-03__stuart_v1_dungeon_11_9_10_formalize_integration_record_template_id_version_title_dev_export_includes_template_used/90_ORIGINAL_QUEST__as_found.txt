@@ -1,6 +1,6 @@
 # QUEST_196 — Stuart v1 — Dungeon 11 (9/10) — Formalize Integration: Record template_id+version+title; Dev Export Includes Template Used
 
-(Quest template: Synapse OS — Architecture Transcendence Protocol, Stuart v1)
+(Quest template: Synapse — Architecture Transcendence Protocol, Stuart v1)
 
 IDENTITY
 - Quest ID: QUEST_196

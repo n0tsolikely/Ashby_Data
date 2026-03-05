@@ -14,7 +14,7 @@ Session scope: Stuart D4 execution closeout with governance-compliant quest clos
 
 1) Governance + state operations executed
 - Ran Synapse doctor gate:
-  `python3 /home/notsolikely/Synapse_OS/runtime/synapse.py doctor --governance-root /home/notsolikely/Synapse_OS/governance`
+  `python3 /home/notsolikely/Synapse/runtime/synapse.py doctor --governance-root /home/notsolikely/Synapse/governance`
   Result: PASS.
 - Confirmed Control Sync state through canonical writer:
   `python3 .../synapse_snapshot_writer.py --data-root /home/notsolikely/Ashby_Data --subject STUART status`
@@ -116,7 +116,7 @@ Verification receipts summary:
 
 1) Governance doctor gate
 - Command:
-  `python3 /home/notsolikely/Synapse_OS/runtime/synapse.py doctor --governance-root /home/notsolikely/Synapse_OS/governance`
+  `python3 /home/notsolikely/Synapse/runtime/synapse.py doctor --governance-root /home/notsolikely/Synapse/governance`
 - Result: PASS.
 
 2) Control sync state receipt

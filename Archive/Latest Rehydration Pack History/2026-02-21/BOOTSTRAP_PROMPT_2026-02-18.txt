@@ -12,7 +12,7 @@ Non-negotiables:
 - On uncertainty/conflict -> Disclosure Gate + stop.
 
 Canonical roots:
-- Governance: /home/notsolikely/Synapse_OS/governance
+- Governance: /home/notsolikely/Synapse/governance
 - Data: /home/notsolikely/Ashby_Data
 - Engine: /home/notsolikely/Ashby_Engine
 

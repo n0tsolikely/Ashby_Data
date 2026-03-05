@@ -7,7 +7,7 @@ LOCKED FACTS
 1) Canon roots
 - Data:  /mnt/data/Ashby_Data
 - Engine: /mnt/data/Ashby_Engine
-- Governance: /mnt/data/Synapse_OS_Governance (must be extracted and read)
+- Governance: /mnt/data/Synapse_Governance (must be extracted and read)
 
 2) Completed Quest Phase
 - Stuart pipeline build phase is complete through QUEST_041.

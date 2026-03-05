@@ -47,7 +47,7 @@ Artifacts (chat-side):
   - SHA256: f8e127190ef0dfd739835d2eedb6f44a140f91aebb1c5f8d91a8b8b0d0760e9a
 
 Important nuance:
-- This chat produced policy + tooling intent. Actual enforcement depends on what is installed in Peter’s WSL environment (Synapse_OS + quest_run.sh + governance guard). Codex logs indicate these changes were applied.
+- This chat produced policy + tooling intent. Actual enforcement depends on what is installed in Peter’s WSL environment (Synapse + quest_run.sh + governance guard). Codex logs indicate these changes were applied.
 
 2.2 Monster workflow stabilized into a real archive sequence
 - Insight/decision: MONSTER_REFRESH.zip is an immutable snapshot of a given run (canon + monster + fingerprint). Archive it; don’t treat it as the live workspace.

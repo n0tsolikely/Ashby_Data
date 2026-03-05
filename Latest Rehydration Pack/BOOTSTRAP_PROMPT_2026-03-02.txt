@@ -13,7 +13,7 @@ Non-negotiables:
 - On uncertainty/conflict -> Disclosure Gate + STOP.
 
 Canonical roots:
-- Governance: /home/notsolikely/Synapse_OS/governance
+- Governance: /home/notsolikely/Synapse/governance
 - Data: /home/notsolikely/Ashby_Data
 - Engine: /home/notsolikely/Ashby_Engine
 
@@ -53,7 +53,7 @@ Latest resolution rule:
 
 Execution wrapper law:
 - Run quest work through:
-  /home/notsolikely/Synapse_OS/governance/tools/synapse_quest_run.sh
+  /home/notsolikely/Synapse/governance/tools/synapse_quest_run.sh
 
 Immediate operating instruction:
 - Rehydrate from resolved latest artifacts.

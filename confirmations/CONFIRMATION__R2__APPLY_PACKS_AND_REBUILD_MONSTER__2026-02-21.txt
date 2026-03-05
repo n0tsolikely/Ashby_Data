@@ -12,4 +12,4 @@ Authority:
 - Hands instruction (chat): "now you must take both packs ... add them into the ashby data for the new canon, archiving the old buff and rehydration pack ... then run the monster ... and give me the full monster"
 
 Notes:
-- This confirmation is recorded to satisfy the Synapse OS Risk Rubric R2 consent requirement.
+- This confirmation is recorded to satisfy the Synapse Risk Rubric R2 consent requirement.

@@ -1,6 +1,6 @@
 # QUEST_200 — Stuart v1 — Dungeon 12 (3/10) — Smoke Steps: Start Server + Create Sessions + Upload
 
-(Quest template: Synapse OS — Architecture Transcendence Protocol, Stuart v1)
+(Quest template: Synapse — Architecture Transcendence Protocol, Stuart v1)
 
 IDENTITY
 - Quest ID: QUEST_200

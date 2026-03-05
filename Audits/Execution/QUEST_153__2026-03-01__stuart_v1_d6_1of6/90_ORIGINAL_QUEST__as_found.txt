@@ -21,7 +21,7 @@ LINKS:
 - Monster workspace zip: /mnt/data/MONSTER_ASHBY__THE_MONSTER_WORKSPACE__20260301_012623.zip
 
 GOVERNANCE:
-- Synapse OS 5 governance (Quest Template v1.5, Truth Gate, Disclosure Gate)
+- Synapse 5 governance (Quest Template v1.5, Truth Gate, Disclosure Gate)
 - “No zombie plumbing” constraint: build on existing Stuart UI + API; do not create parallel search/UI implementations.
 
 ================================================================================

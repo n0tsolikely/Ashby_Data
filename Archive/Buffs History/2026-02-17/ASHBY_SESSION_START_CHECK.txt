@@ -48,9 +48,9 @@ pwd
 ls -la /mnt/data
 
 2.2 Review Synapse Governance (Tier 0)
-ls -la "/mnt/data/Synapse_OS_Governance"
+ls -la "/mnt/data/Synapse_Governance"
 # Optional quick index view:
-find "/mnt/data/Synapse_OS_Governance" -maxdepth 3 -type f -name "*.txt" -print | sort
+find "/mnt/data/Synapse_Governance" -maxdepth 3 -type f -name "*.txt" -print | sort
 
 2.3 Confirm canonical governance tree exists
 ls -la "/mnt/data/Ashby_Data"
@@ -186,7 +186,7 @@ Definition:
 When Hands says "enter protocol mode", Ash must behave as if the following artifacts
 were freshly dropped and extracted as canonical inputs:
 
-1) Governance Canon (/mnt/data/Synapse_OS_Governance)
+1) Governance Canon (/mnt/data/Synapse_Governance)
 2) Data Canon (/mnt/data/Ashby_Data)
 3) Engine Canon (/mnt/data/Ashby_Engine)
 
@@ -231,7 +231,7 @@ Once ZIP archives are extracted, the resulting directories become the ONLY
 canonical working roots for the session.
 
 Canonical Roots:
-- Governance: /mnt/data/Synapse_OS_Governance/
+- Governance: /mnt/data/Synapse_Governance/
 - Data:       /mnt/data/Ashby_Data/
 - Engine:     /mnt/data/Ashby_Engine/
 
@@ -261,7 +261,7 @@ Execution Packs, and Engine code.
 CANONICAL ROOT INVARIANTS (GOV / DATA / ENGINE)
 ────────────────────────────────────────────────────────
 Canonical Roots (absolute):
-- Governance: /mnt/data/Synapse_OS_Governance/
+- Governance: /mnt/data/Synapse_Governance/
 - Data:       /mnt/data/Ashby_Data/
 - Engine:     /mnt/data/Ashby_Engine/
 
@@ -271,7 +271,7 @@ Rule (No Parallel Roots):
 - NEVER write new state under nested roots such as:
   - /mnt/data/Ashby_Data/Ashby_Data/...
   - /mnt/data/Ashby_Engine/Ashby_Engine/... (except as the extracted repo layout itself)
-  - /mnt/data/Synapse_OS_Governance/Synapse Governance/... (except as the extracted governance layout itself)
+  - /mnt/data/Synapse_Governance/Synapse Governance/... (except as the extracted governance layout itself)
 
 Data Root is Law:
 - All mutable state writes (Snapshots, Quest Board, Talent Tree logs, etc.) must be rooted at:
@@ -288,7 +288,7 @@ Engine Root is Law:
   inside the canonical extracted engine directory (never in ZIPs or duplicate extracts).
 
 Governance Root is Law:
-- Governance text is read from /mnt/data/Synapse_OS_Governance/.
+- Governance text is read from /mnt/data/Synapse_Governance/.
 - Do not create alternate governance roots.
 
 Session Start Check (required):

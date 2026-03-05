@@ -1,6 +1,6 @@
 # QUEST_206 — Stuart v1 — Dungeon 12 (9/10) — Smoke: Root UI Surface + Export Bundle Verification
 
-(Quest template: Synapse OS — Architecture Transcendence Protocol, Stuart v1)
+(Quest template: Synapse — Architecture Transcendence Protocol, Stuart v1)
 
 IDENTITY
 - Quest ID: QUEST_206

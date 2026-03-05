@@ -19,7 +19,7 @@ Active Canon Working Dirs (single source of truth):
 - /mnt/data/Ashby_Engine
 
 Synapse Governance (present in workspace):
-- /mnt/data/Synapse_OS_Governance
+- /mnt/data/Synapse_Governance
 
 ────────────────────────────────────────────────────────
 GOVERNANCE LOCKS (BINDING)

@@ -10,7 +10,7 @@ CONTROL SYNC STATUS
 CANONICAL ROOTS CONFIRMED
 - Data:       /mnt/data/Ashby_Data
 - Engine:     /mnt/data/Ashby_Engine
-- Governance: /mnt/data/Synapse_OS_Governance
+- Governance: /mnt/data/Synapse_Governance
 
 RAID INTENT (TODAY)
 - Finish Stuart v1 into a usable end-to-end product loop:

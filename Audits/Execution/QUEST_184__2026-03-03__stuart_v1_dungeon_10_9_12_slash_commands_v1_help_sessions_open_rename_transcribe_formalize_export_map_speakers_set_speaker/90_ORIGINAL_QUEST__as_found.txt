@@ -7,7 +7,7 @@ QUEST ID: QUEST_184
 TITLE: Stuart v1 — Dungeon 10 (9/12) — Slash Commands v1 (/help, /sessions, /open, /rename, /transcribe, /formalize, /export, /map_speakers, /set_speaker)
 GUILD / DUNGEON: STUART v1 / DUNGEON 10 (9 of 12)
 PRIORITY: P0
-OWNER: OpenAI Codex (CLI execution) under Synapse OS governance
+OWNER: OpenAI Codex (CLI execution) under Synapse governance
 STATE: ACCEPTED (place this file into Ashby_Data/Quest Board/Accepted)
 CREATED: 2026-03-03
 LAST UPDATED: 2026-03-03

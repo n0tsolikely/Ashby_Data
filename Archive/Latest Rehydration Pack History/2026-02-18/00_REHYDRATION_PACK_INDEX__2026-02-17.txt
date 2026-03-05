@@ -60,14 +60,14 @@ A) Buffs (always load these first after Bootstrap Prompt):
 B) Governance (if anything feels unclear, stop guessing and read governance):
 NOTE:
 - Synapse governance is shipped as a separate zip alongside the canon.
-- If the folder 'Synapse_OS_Governance(AI)10/' is not present in the working directory, extract:
-  - Synapse_OS_Governance(AI)10.zip
+- If the folder 'Synapse_Governance(AI)10/' is not present in the working directory, extract:
+  - Synapse_Governance(AI)10.zip
   exactly once, then treat it as READ-ONLY.
 
-- Synapse_OS_Governance(AI)10/Continuity/SYNAPSE_GUILD__REHYDRATION_PACK_CHECKLIST.txt
-- Synapse_OS_Governance(AI)10/Continuity/SYNAPSE_GUILD__BOOTSTRAP_PROMPT.txt
-- Synapse_OS_Governance(AI)10/Continuity/SYNAPSE_GUILD__CONTINUITY_LOCK.txt
-- Synapse_OS_Governance(AI)10/Continuity/SYNAPSE_GUILD__EXECUTION_PACKS.txt
+- Synapse_Governance(AI)10/Continuity/SYNAPSE_GUILD__REHYDRATION_PACK_CHECKLIST.txt
+- Synapse_Governance(AI)10/Continuity/SYNAPSE_GUILD__BOOTSTRAP_PROMPT.txt
+- Synapse_Governance(AI)10/Continuity/SYNAPSE_GUILD__CONTINUITY_LOCK.txt
+- Synapse_Governance(AI)10/Continuity/SYNAPSE_GUILD__EXECUTION_PACKS.txt
 
 C) Then read (in this order):
 1. Ashby_Data/Latest Rehydration Pack/CONTINUITY_LOCK_2026-02-17.txt

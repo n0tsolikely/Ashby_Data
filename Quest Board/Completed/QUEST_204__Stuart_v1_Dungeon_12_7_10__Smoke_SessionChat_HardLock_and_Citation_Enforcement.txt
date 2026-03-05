@@ -1,6 +1,6 @@
 # QUEST_204 — Stuart v1 — Dungeon 12 (7/10) — Smoke: Session Chat Hard Lock + Citation Enforcement
 
-(Quest template: Synapse OS — Architecture Transcendence Protocol, Stuart v1)
+(Quest template: Synapse — Architecture Transcendence Protocol, Stuart v1)
 
 IDENTITY
 - Quest ID: QUEST_204

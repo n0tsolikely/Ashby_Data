@@ -27,7 +27,7 @@ C) Current Reality (State Surface)
 
 D) Binding Decisions (required when binding decisions exist)
 1) Canonical quest runner wrapper path is unified to:
-   /home/notsolikely/Synapse_OS/governance/tools/synapse_quest_run.sh
+   /home/notsolikely/Synapse/governance/tools/synapse_quest_run.sh
    (legacy /home/notsolikely/Ashby_Data/tools/quest_run.sh path removed from /home/notsolikely/AGENTS.md).
 2) Dungeon 6 quest set is accepted on Quest Board:
    QUEST_153, QUEST_154, QUEST_155, QUEST_156, QUEST_157, QUEST_158.
@@ -62,7 +62,7 @@ H) Exit Condition + Closure Statement (required)
 - Closed At: 2026-03-01T23:33:42.881900-05:00
 - Participants: Hands,Codex
 - Reason: Resume from continuity lock and select next scope from ACTIVE Guild Orders
-- Next immediate action: Start QUEST_153 via /home/notsolikely/Synapse_OS/governance/tools/synapse_quest_run.sh and capture live receipts
+- Next immediate action: Start QUEST_153 via /home/notsolikely/Synapse/governance/tools/synapse_quest_run.sh and capture live receipts
 
 - If execution will begin: state the first Quest to accept/execute.
 - If no execution committed: state why.

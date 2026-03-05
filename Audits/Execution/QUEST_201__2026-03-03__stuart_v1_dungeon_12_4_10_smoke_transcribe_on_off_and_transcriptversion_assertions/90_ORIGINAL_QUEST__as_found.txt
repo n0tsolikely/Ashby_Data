@@ -1,6 +1,6 @@
 # QUEST_201 — Stuart v1 — Dungeon 12 (4/10) — Smoke: Transcribe ON/OFF + Transcript Version Assertions
 
-(Quest template: Synapse OS — Architecture Transcendence Protocol, Stuart v1)
+(Quest template: Synapse — Architecture Transcendence Protocol, Stuart v1)
 
 IDENTITY
 - Quest ID: QUEST_201

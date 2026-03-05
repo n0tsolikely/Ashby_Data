@@ -10,7 +10,7 @@ CONTROL SYNC STATUS
 CANONICAL ROOTS CONFIRMED
 - Data:       /mnt/data/Ashby_Data
 - Engine:     /mnt/data/Ashby_Engine
-- Governance: /mnt/data/Synapse_OS_Governance
+- Governance: /mnt/data/Synapse_Governance
 
 PURPOSE OF TODAY
 - Finish Stuart V1 (Meetings module + Journal mode) to the point where Hands can:

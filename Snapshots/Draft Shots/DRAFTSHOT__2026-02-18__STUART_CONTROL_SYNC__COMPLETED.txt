@@ -277,7 +277,7 @@ Objective:
 
 Actions performed (governance pack):
 1) Starting point enforced:
-   - Used Synapse_OS_Governance(AI)10.zip as the ONLY baseline (no prior AI11 artifacts reused).
+   - Used Synapse_Governance(AI)10.zip as the ONLY baseline (no prior AI11 artifacts reused).
 2) Draftshots governance updated without truncation:
    - Processes/SYNAPSE_GUILD__DRAFTSHOTS.txt updated to encode:
      - Draftshots = living formalizations (meeting minutes), not transcripts.
@@ -304,7 +304,7 @@ Actions performed (governance pack):
    - No shrink violations: 0
 
 Artifacts minted (downloads):
-- Synapse_OS_Governance(AI)11.zip (new canonical governance pack)
+- Synapse_Governance(AI)11.zip (new canonical governance pack)
 - AI10→AI11 diff + full evidence JSON produced (hashes + mirror check + no shrink report)
 
 NOTES / CURRENT TRUTH
@@ -330,7 +330,7 @@ CONTROL SYNC CONTINUATION — KEY DECISIONS + STATE UPDATES
   - Snapshot bridge rule (Draftshot ACTIVE → Snapshot is formalization of Draftshot → reference Draftshot REV → mark CONSUMED)
   - TERM — Formalization added
   - Required read order mirrored correctly (README ↔ SYNAPSE_STATE.yaml)
-- Hands committed these changes in /home/notsolikely/Synapse_OS (WSL) as:
+- Hands committed these changes in /home/notsolikely/Synapse (WSL) as:
   - commit: 4c9838c (main)
   - scope includes governance updates + runtime tooling updates (governance guard, snapshot writer, doctor/schema validation updates)
 

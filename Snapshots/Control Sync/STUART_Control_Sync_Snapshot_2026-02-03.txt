@@ -10,7 +10,7 @@ CONTROL SYNC STATUS
 CANONICAL ROOTS CONFIRMED
 - Data:  /mnt/data/Ashby_Data
 - Engine: /mnt/data/Ashby_Engine
-- Governance: /mnt/data/Synapse_OS_Governance
+- Governance: /mnt/data/Synapse_Governance
 
 WHAT WAS DONE IN THIS CONTROL SYNC
 - Canon rehydration verified: Data + Engine + Governance folders exist under /mnt/data.

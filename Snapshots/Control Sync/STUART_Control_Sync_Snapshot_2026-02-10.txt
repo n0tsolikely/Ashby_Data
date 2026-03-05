@@ -8,7 +8,7 @@ CONTROL SYNC SNAPSHOT — 2026-02-10
 ────────────────────────────────────────────────────────
 
 CANONICAL STATE (THIS SESSION)
-- Governance (canonical): /mnt/data/Synapse_OS_Governance
+- Governance (canonical): /mnt/data/Synapse_Governance
 - Subject canonical baseline chosen: Ashby_CANON_2026-02-09_v25.zip
 - Canonical working trees (post-baseline switch):
   - Data:   /mnt/data/Ashby_Data
